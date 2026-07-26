@@ -1,9 +1,9 @@
 ﻿use anyhow::Result;
 use clap::Parser;
-use IDEOCODE::id::new_id;
-use IDEOCODE::message::{Message, ToolDefinition};
-use IDEOCODE::provider::{EventStream, Provider};
-use IDEOCODE::tool::{Registry, ToolContext, ToolExecutionMode};
+use ideocode::id::new_id;
+use ideocode::message::{Message, ToolDefinition};
+use ideocode::provider::{EventStream, Provider};
+use ideocode::tool::{Registry, ToolContext, ToolExecutionMode};
 use serde_json::json;
 use std::path::PathBuf;
 use std::sync::Arc;

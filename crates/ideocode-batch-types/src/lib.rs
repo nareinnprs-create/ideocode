@@ -1,4 +1,4 @@
-﻿use IDEOCODE_message_types::ToolCall;
+﻿use ideocode_message_types::ToolCall;
 use serde::{Deserialize, Serialize};
 
 /// Progress update from a running batch tool call

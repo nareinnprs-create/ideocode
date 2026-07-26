@@ -7,8 +7,8 @@ use crate::message::{ContentBlock, Role};
 use crate::session::{Session, SessionStatus, StoredMessage};
 use anyhow::{Context, Result};
 use chrono::{DateTime, Utc};
-pub use IDEOCODE_import_core::repo_ranking;
-use IDEOCODE_import_core::{
+pub use ideocode_import_core::repo_ranking;
+use ideocode_import_core::{
     ClaudeCodeContent, ClaudeCodeContentBlock, ClaudeCodeEntry, ClaudeCodeSessionInfo,
     SessionIndexEntry, SessionsIndex, claude_code_session_info_from_index,
     claude_text_from_content, claude_title_candidate, clean_optional_text, codex_title_candidate,
@@ -17,7 +17,7 @@ use IDEOCODE_import_core::{
     parse_rfc3339_json, parse_rfc3339_string, resolve_claude_session_path, truncate_title,
     truncate_title_text,
 };
-pub use IDEOCODE_import_core::{
+pub use ideocode_import_core::{
     cursor_cwd_from_transcript_path, cursor_session_id_from_path,
     extract_external_text_from_json as extract_external_text_from_json_value,
     imported_claude_code_session_id, imported_codex_session_id, imported_cursor_session_id,
@@ -320,7 +320,7 @@ pub fn list_claude_code_sessions_lazy(scan_limit: usize) -> Result<Vec<ClaudeCod
                 .map(|name| name.replace('-', "/"));
             let label = format!(
                 "Claude Code session {}",
-                IDEOCODE_core::util::truncate_str(&session_id, 8)
+                ideocode_core::util::truncate_str(&session_id, 8)
             );
             all_sessions.push(ClaudeCodeSessionInfo {
                 session_id: session_id.clone(),
@@ -435,7 +435,7 @@ fn truncate_import_text(text: String, max_bytes: usize) -> String {
     let prefix_budget = max_bytes.saturating_sub(suffix.len());
     format!(
         "{}{}",
-        IDEOCODE_core::util::truncate_str(&text, prefix_budget),
+        ideocode_core::util::truncate_str(&text, prefix_budget),
         suffix
     )
 }
@@ -601,32 +601,32 @@ pub fn import_session(session_id: &str) -> Result<Session> {
 }
 
 pub fn imported_session_id_for_target(
-    target: &IDEOCODE_session_types::ResumeTarget,
+    target: &ideocode_session_types::ResumeTarget,
 ) -> Option<String> {
     match target {
-        IDEOCODE_session_types::ResumeTarget::IDEOCODESession { session_id } => Some(session_id.clone()),
-        IDEOCODE_session_types::ResumeTarget::ClaudeCodeSession { session_id, .. } => {
+        ideocode_session_types::ResumeTarget::IDEOCODESession { session_id } => Some(session_id.clone()),
+        ideocode_session_types::ResumeTarget::ClaudeCodeSession { session_id, .. } => {
             Some(imported_claude_code_session_id(session_id))
         }
-        IDEOCODE_session_types::ResumeTarget::CodexSession { session_id, .. } => {
+        ideocode_session_types::ResumeTarget::CodexSession { session_id, .. } => {
             Some(imported_codex_session_id(session_id))
         }
-        IDEOCODE_session_types::ResumeTarget::PiSession { session_path } => {
+        ideocode_session_types::ResumeTarget::PiSession { session_path } => {
             Some(imported_pi_session_id(session_path))
         }
-        IDEOCODE_session_types::ResumeTarget::OpenCodeSession { session_id, .. } => {
+        ideocode_session_types::ResumeTarget::OpenCodeSession { session_id, .. } => {
             Some(imported_opencode_session_id(session_id))
         }
-        IDEOCODE_session_types::ResumeTarget::CursorSession { session_id, .. } => {
+        ideocode_session_types::ResumeTarget::CursorSession { session_id, .. } => {
             Some(imported_cursor_session_id(session_id))
         }
     }
 }
 
 pub fn resolve_resume_target_to_IDEOCODE(
-    target: &IDEOCODE_session_types::ResumeTarget,
-) -> Result<IDEOCODE_session_types::ResumeTarget> {
-    use IDEOCODE_session_types::ResumeTarget;
+    target: &ideocode_session_types::ResumeTarget,
+) -> Result<ideocode_session_types::ResumeTarget> {
+    use ideocode_session_types::ResumeTarget;
 
     let prepare_start = std::time::Instant::now();
     let cache_hit;
@@ -747,7 +747,7 @@ pub fn import_session_from_file(path: &Path, session_id: &str) -> Result<Session
 fn import_session_from_file_with_target(
     path: &Path,
     session_id: &str,
-    IDEOCODE_session_id: String,
+    ideocode_session_id: String,
     require_source_identity: bool,
 ) -> Result<Session> {
     let entries = load_claude_code_entries(path)?;
@@ -846,7 +846,7 @@ fn import_session_from_file_with_target(
         }
     }
 
-    let mut session = Session::create_with_id(IDEOCODE_session_id, None, title);
+    let mut session = Session::create_with_id(ideocode_session_id, None, title);
     session.provider_session_id = Some(session_id.to_string());
     session.provider_key = Some("claude-code".to_string());
     session.working_dir = working_dir;
@@ -881,16 +881,16 @@ fn remove_prepared_takeover_session(session_id: &str) {
 /// A stop failure rolls back the staged IDEOCODE session and leaves ordinary
 /// resume behavior unchanged.
 pub fn take_over_live_claude_session(
-    target: &IDEOCODE_session_types::ResumeTarget,
-) -> Result<IDEOCODE_session_types::ResumeTarget> {
+    target: &ideocode_session_types::ResumeTarget,
+) -> Result<ideocode_session_types::ResumeTarget> {
     take_over_live_claude_session_with_timeout(target, std::time::Duration::from_secs(10))
 }
 
 fn take_over_live_claude_session_with_timeout(
-    target: &IDEOCODE_session_types::ResumeTarget,
+    target: &ideocode_session_types::ResumeTarget,
     stop_timeout: std::time::Duration,
-) -> Result<IDEOCODE_session_types::ResumeTarget> {
-    use IDEOCODE_session_types::ResumeTarget;
+) -> Result<ideocode_session_types::ResumeTarget> {
+    use ideocode_session_types::ResumeTarget;
 
     let ResumeTarget::ClaudeCodeSession {
         session_id,
@@ -965,7 +965,7 @@ fn take_over_live_claude_session_with_timeout(
     }
 
     crate::logging::info(&format!(
-        "Claude takeover complete: source_session={session_id} source_pid={} IDEOCODE_session={takeover_id}",
+        "Claude takeover complete: source_session={session_id} source_pid={} ideocode_session={takeover_id}",
         live.pid
     ));
     crate::session_list_cache::invalidate();
@@ -1442,7 +1442,7 @@ pub fn import_cursor_session_from_path(
         .map(|id| id.to_string())
         .unwrap_or_else(|| cursor_session_id_from_path(session_path));
     let created_at =
-        IDEOCODE_import_core::file_modified_datetime(session_path).unwrap_or_else(Utc::now);
+        ideocode_import_core::file_modified_datetime(session_path).unwrap_or_else(Utc::now);
 
     let mut session = Session::create_with_id(imported_cursor_session_id(&session_id), None, None);
     session.provider_session_id = Some(session_id.clone());

@@ -16,8 +16,8 @@ use crate::auth::antigravity as antigravity_auth;
 use anyhow::{Context, Result};
 use chrono::Utc;
 
-pub use IDEOCODE_provider_antigravity::is_known_model;
-pub use IDEOCODE_provider_antigravity::{
+pub use ideocode_provider_antigravity::is_known_model;
+pub use ideocode_provider_antigravity::{
     AVAILABLE_MODELS, CatalogModel, CatalogSnapshot, DEFAULT_FALLBACK_MODEL, FETCH_MODELS_API_URL,
     FetchAvailableModelsResponse, GENERATE_CONTENT_API_URL, PersistedCatalog, X_GOOG_API_CLIENT,
     antigravity_compatible_schema, antigravity_user_agent, catalog_is_stale, catalog_model_detail,

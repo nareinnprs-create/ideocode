@@ -2,7 +2,7 @@
 
 use super::osa;
 use anyhow::Result;
-use IDEOCODE_tool_types::ToolOutput;
+use ideocode_tool_types::ToolOutput;
 
 pub fn list_apps() -> Result<ToolOutput> {
     let script = "tell application \"System Events\" to get name of every application process whose background only is false";

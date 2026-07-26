@@ -7,7 +7,7 @@
 //! effect. The goal is to prove no action panics or silently misbehaves.
 
 use super::*;
-use IDEOCODE_tool_core::{ToolContext, ToolExecutionMode};
+use ideocode_tool_core::{ToolContext, ToolExecutionMode};
 
 fn ctx() -> ToolContext {
     ToolContext {

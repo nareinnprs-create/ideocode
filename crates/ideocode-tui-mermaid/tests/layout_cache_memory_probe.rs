@@ -65,8 +65,8 @@ fn layout_cache_stays_bounded_under_50_distinct_renders() {
         .unwrap()
         .as_nanos();
 
-    IDEOCODE_tui_mermaid::reset_debug_stats();
-    let stats_before = IDEOCODE_tui_mermaid::debug_stats();
+    ideocode_tui_mermaid::reset_debug_stats();
+    let stats_before = ideocode_tui_mermaid::debug_stats();
     let limit = stats_before.layout_cache_limit;
     assert_eq!(limit, 32, "probe assumes LAYOUT_CACHE_MAX == 32");
     assert!(
@@ -79,9 +79,9 @@ fn layout_cache_stays_bounded_under_50_distinct_renders() {
     let mut render_errors = 0usize;
     for idx in 0..RENDERS {
         let content = probe_diagram(idx, nonce);
-        match IDEOCODE_tui_mermaid::render_mermaid_untracked(&content, Some(90)) {
-            IDEOCODE_tui_mermaid::RenderResult::Image { .. } => {}
-            IDEOCODE_tui_mermaid::RenderResult::Error(error) => {
+        match ideocode_tui_mermaid::render_mermaid_untracked(&content, Some(90)) {
+            ideocode_tui_mermaid::RenderResult::Image { .. } => {}
+            ideocode_tui_mermaid::RenderResult::Error(error) => {
                 render_errors += 1;
                 eprintln!("render {idx} failed: {error}");
             }
@@ -90,8 +90,8 @@ fn layout_cache_stays_bounded_under_50_distinct_renders() {
     assert_eq!(render_errors, 0, "all probe renders must succeed");
 
     let rss_after = vm_rss_bytes().expect("VmRSS readable on Linux");
-    let stats = IDEOCODE_tui_mermaid::debug_stats();
-    let memory = IDEOCODE_tui_mermaid::debug_memory_profile();
+    let stats = ideocode_tui_mermaid::debug_stats();
+    let memory = ideocode_tui_mermaid::debug_memory_profile();
 
     let rss_delta = rss_after.saturating_sub(rss_before);
     eprintln!("--- layout cache memory probe ---");

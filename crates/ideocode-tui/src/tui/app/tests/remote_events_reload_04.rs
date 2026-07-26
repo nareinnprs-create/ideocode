@@ -1210,7 +1210,7 @@ fn test_info_widget_remote_openai_uses_remote_provider_for_usage_and_context() {
     app.is_remote = true;
     app.remote_provider_name = Some("OpenAI".to_string());
     app.remote_provider_model = Some("gpt-5.4".to_string());
-    app.remote_resolved_credential = Some(IDEOCODE_provider_core::ResolvedCredential::Oauth);
+    app.remote_resolved_credential = Some(ideocode_provider_core::ResolvedCredential::Oauth);
     app.update_context_limit_for_model("gpt-5.4");
 
     let data = crate::tui::TuiState::info_widget_data(&app);
@@ -1281,7 +1281,7 @@ fn test_info_widget_remote_anthropic_api_key_shows_cost_based_usage() {
     app.is_remote = true;
     app.remote_provider_name = Some("Claude".to_string());
     app.remote_provider_model = Some("claude-sonnet-4-20250514".to_string());
-    app.remote_resolved_credential = Some(IDEOCODE_provider_core::ResolvedCredential::ApiKey);
+    app.remote_resolved_credential = Some(ideocode_provider_core::ResolvedCredential::ApiKey);
     app.token_accounting.total_input_tokens = 12_000;
     app.token_accounting.total_output_tokens = 3_400;
 
@@ -1303,7 +1303,7 @@ fn test_info_widget_remote_anthropic_api_key_shows_cost_based_usage() {
 
     // OAuth subscription keeps subscription bars; the server now reports the
     // resolved credential directly, so the widget reflects AnthropicOAuth.
-    app.remote_resolved_credential = Some(IDEOCODE_provider_core::ResolvedCredential::Oauth);
+    app.remote_resolved_credential = Some(ideocode_provider_core::ResolvedCredential::Oauth);
     let data = crate::tui::TuiState::info_widget_data(&app);
     assert_eq!(
         data.auth_method,
@@ -1324,7 +1324,7 @@ fn test_info_widget_remote_openai_billing_follows_resolved_credential() {
     app.token_accounting.total_input_tokens = 12_000;
     app.token_accounting.total_output_tokens = 3_400;
 
-    app.remote_resolved_credential = Some(IDEOCODE_provider_core::ResolvedCredential::ApiKey);
+    app.remote_resolved_credential = Some(ideocode_provider_core::ResolvedCredential::ApiKey);
     let data = crate::tui::TuiState::info_widget_data(&app);
     assert_eq!(
         data.auth_method,
@@ -1338,7 +1338,7 @@ fn test_info_widget_remote_openai_billing_follows_resolved_credential() {
     assert_eq!(usage.input_tokens, 12_000);
     assert_eq!(usage.output_tokens, 3_400);
 
-    app.remote_resolved_credential = Some(IDEOCODE_provider_core::ResolvedCredential::Oauth);
+    app.remote_resolved_credential = Some(ideocode_provider_core::ResolvedCredential::Oauth);
     let data = crate::tui::TuiState::info_widget_data(&app);
     assert_eq!(
         data.auth_method,
@@ -1590,7 +1590,7 @@ fn test_remote_anthropic_api_key_accrues_cost_from_token_usage() {
     app.is_remote = true;
     app.remote_provider_name = Some("Claude".to_string());
     app.remote_provider_model = Some("claude-sonnet-4-6".to_string());
-    app.remote_resolved_credential = Some(IDEOCODE_provider_core::ResolvedCredential::ApiKey);
+    app.remote_resolved_credential = Some(ideocode_provider_core::ResolvedCredential::ApiKey);
     crate::provider::anthropic::set_cache_ttl_1h(true);
 
     // One completed call with split-accounting cache telemetry.
@@ -1621,7 +1621,7 @@ fn test_remote_anthropic_api_key_accrues_cost_from_token_usage() {
     oauth_app.is_remote = true;
     oauth_app.remote_provider_name = Some("Claude".to_string());
     oauth_app.remote_provider_model = Some("claude-sonnet-4-6".to_string());
-    oauth_app.remote_resolved_credential = Some(IDEOCODE_provider_core::ResolvedCredential::Oauth);
+    oauth_app.remote_resolved_credential = Some(ideocode_provider_core::ResolvedCredential::Oauth);
     oauth_app.handle_server_event(
         crate::protocol::ServerEvent::TokenUsage {
             input: 1_000,
@@ -1647,7 +1647,7 @@ fn test_resumed_session_seeds_cost_from_history_token_totals() {
     app.is_remote = true;
     app.remote_provider_name = Some("Claude".to_string());
     app.remote_provider_model = Some("claude-sonnet-4-6".to_string());
-    app.remote_resolved_credential = Some(IDEOCODE_provider_core::ResolvedCredential::ApiKey);
+    app.remote_resolved_credential = Some(ideocode_provider_core::ResolvedCredential::ApiKey);
     crate::provider::anthropic::set_cache_ttl_1h(true);
 
     let totals = crate::protocol::TokenUsageTotals {
@@ -1681,7 +1681,7 @@ fn test_resumed_session_seeds_cost_from_history_token_totals() {
     oauth_app.is_remote = true;
     oauth_app.remote_provider_name = Some("Claude".to_string());
     oauth_app.remote_provider_model = Some("claude-sonnet-4-6".to_string());
-    oauth_app.remote_resolved_credential = Some(IDEOCODE_provider_core::ResolvedCredential::Oauth);
+    oauth_app.remote_resolved_credential = Some(ideocode_provider_core::ResolvedCredential::Oauth);
     oauth_app.seed_cost_from_history_totals(&totals);
     assert_eq!(oauth_app.cost.total_cost, 0.0);
 }
@@ -1699,7 +1699,7 @@ fn test_remote_fast_mode_tier_bills_premium_rates_and_reprices_on_toggle() {
     app.is_remote = true;
     app.remote_provider_name = Some("Claude".to_string());
     app.remote_provider_model = Some("claude-opus-4-6".to_string());
-    app.remote_resolved_credential = Some(IDEOCODE_provider_core::ResolvedCredential::ApiKey);
+    app.remote_resolved_credential = Some(ideocode_provider_core::ResolvedCredential::ApiKey);
 
     // Each TokenUsage below simulates a separate completed API call, so reset
     // the per-call usage bookkeeping between them (a real session does this at
@@ -2019,7 +2019,7 @@ fn test_remote_review_shows_processing_until_split_response() {
 
 #[test]
 fn test_remote_super_space_routes_next_prompt_to_new_session() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.is_remote = true;
         app.input = "hello from split".to_string();
@@ -2233,7 +2233,7 @@ fn test_externally_started_tool_turn_shows_running_tool_status() {
 
 #[test]
 fn test_remote_fork_with_prompt_stages_split_prompt() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.is_remote = true;
         app.input = "/fork explore plan b".to_string();
@@ -2270,7 +2270,7 @@ fn test_remote_fork_with_prompt_stages_split_prompt() {
 
 #[test]
 fn test_remote_btw_stages_question_in_forked_session() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.is_remote = true;
         app.input = "/btw what are we doing?".to_string();

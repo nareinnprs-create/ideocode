@@ -826,9 +826,9 @@ fn test_handle_post_connect_marker_without_reload_context_does_not_queue_selfdev
     remote.mark_history_loaded();
 
     let session_id = "session_marker_only";
-    let IDEOCODE_dir = crate::storage::IDEOCODE_dir().expect("IDEOCODE dir");
+    let ideocode_dir = crate::storage::ideocode_dir().expect("IDEOCODE dir");
     std::fs::write(
-        IDEOCODE_dir.join(format!("client-reload-pending-{}", session_id)),
+        ideocode_dir.join(format!("client-reload-pending-{}", session_id)),
         "Reloaded with build test123\n",
     )
     .expect("write client reload marker");
@@ -1620,7 +1620,7 @@ fn test_remote_done_recovers_stranded_soft_interrupt_as_queued_followup() {
 
 #[test]
 fn test_remote_done_auto_pokes_again_when_todos_remain() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         let rt = tokio::runtime::Runtime::new().unwrap();
         let _guard = rt.enter();

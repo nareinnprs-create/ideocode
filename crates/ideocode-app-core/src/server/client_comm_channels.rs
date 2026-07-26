@@ -3,7 +3,7 @@
     unsubscribe_session_from_channel,
 };
 use crate::protocol::{AgentInfo, ServerEvent, SwarmChannelInfo};
-use IDEOCODE_swarm_core::ChannelIndex;
+use ideocode_swarm_core::ChannelIndex;
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use tokio::sync::{RwLock, broadcast, mpsc};

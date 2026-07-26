@@ -1,5 +1,5 @@
 ﻿use anyhow::Result;
-pub use IDEOCODE_terminal_launch::{
+pub use ideocode_terminal_launch::{
     SpawnAttempt, TerminalCommand, build_hook_spawn_command, detected_resume_terminal, expand_home,
     parse_hook_command, resume_terminal_candidates, sh_escape, shell_command,
     snapshot_client_terminal_env,
@@ -31,7 +31,7 @@ pub fn spawn_command_in_new_terminal(command: &TerminalCommand, cwd: &Path) -> R
     if try_spawn_via_configured_hook(command, cwd) {
         return Ok(true);
     }
-    IDEOCODE_terminal_launch::spawn_command_in_new_terminal_with(command, cwd, |cmd| {
+    ideocode_terminal_launch::spawn_command_in_new_terminal_with(command, cwd, |cmd| {
         crate::platform::spawn_detached(cmd).map(|_| ())
     })
 }

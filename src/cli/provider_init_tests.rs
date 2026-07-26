@@ -194,7 +194,7 @@ fn test_auto_init_login_selection_preserves_order() {
 }
 
 #[test]
-fn test_init_provider_IDEOCODE_delegates_runtime_profile_to_wrapper() {
+fn test_init_provider_ideocode_delegates_runtime_profile_to_wrapper() {
     let _guard = lock_env();
     let _env_guard = crate::storage::lock_test_env();
     // Sandbox IDEOCODE_HOME: with the real home, persisted auth/credential state

@@ -5,23 +5,23 @@ use std::path::PathBuf;
 use std::time::{Duration, SystemTime};
 
 pub(super) fn telemetry_id_path() -> Option<PathBuf> {
-    storage::IDEOCODE_dir().ok().map(|d| d.join("telemetry_id"))
+    storage::ideocode_dir().ok().map(|d| d.join("telemetry_id"))
 }
 
 pub(super) fn install_recorded_path() -> Option<PathBuf> {
-    storage::IDEOCODE_dir()
+    storage::ideocode_dir()
         .ok()
         .map(|d| d.join("telemetry_install_sent"))
 }
 
 pub(super) fn version_recorded_path() -> Option<PathBuf> {
-    storage::IDEOCODE_dir()
+    storage::ideocode_dir()
         .ok()
         .map(|d| d.join("telemetry_version_sent"))
 }
 
 pub(super) fn telemetry_state_path(name: &str) -> Option<PathBuf> {
-    storage::IDEOCODE_dir().ok().map(|d| d.join(name))
+    storage::ideocode_dir().ok().map(|d| d.join(name))
 }
 
 pub(super) fn milestone_recorded_path(id: &str, key: &str) -> Option<PathBuf> {
@@ -230,7 +230,7 @@ pub(super) fn is_first_run() -> bool {
 }
 
 pub(super) fn version() -> String {
-    IDEOCODE_build_meta::pkg_version().to_string()
+    ideocode_build_meta::pkg_version().to_string()
 }
 
 pub(super) fn install_recorded_for_id(id: &str) -> bool {
@@ -264,7 +264,7 @@ pub(super) fn new_event_id() -> String {
 }
 
 pub(super) fn build_channel() -> String {
-    if std::env::var(IDEOCODE_selfdev_types::CLIENT_SELFDEV_ENV).is_ok() {
+    if std::env::var(ideocode_selfdev_types::CLIENT_SELFDEV_ENV).is_ok() {
         return "selfdev".to_string();
     }
     if let Ok(exe) = std::env::current_exe() {

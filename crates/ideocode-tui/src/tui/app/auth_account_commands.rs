@@ -74,7 +74,7 @@ pub(crate) fn handle_auth_command(app: &mut App, trimmed: &str) -> bool {
     }
 
     if trimmed == "/subscription" || trimmed == "/subscription status" {
-        app.show_IDEOCODE_subscription_status();
+        app.show_ideocode_subscription_status();
         return true;
     }
 
@@ -389,9 +389,9 @@ pub(crate) fn execute_account_command_local(app: &mut App, command: AccountComma
                 ))),
             }
         }
-        AccountCommand::IDEOCODEStatus => app.show_IDEOCODE_subscription_status(),
-        AccountCommand::IDEOCODEManage => app.open_IDEOCODE_account_management(),
-        AccountCommand::IDEOCODELogout => app.start_IDEOCODE_account_logout(),
+        AccountCommand::IDEOCODEStatus => app.show_ideocode_subscription_status(),
+        AccountCommand::IDEOCODEManage => app.open_ideocode_account_management(),
+        AccountCommand::IDEOCODELogout => app.start_ideocode_account_logout(),
         AccountCommand::Add { provider_id, label } => {
             execute_account_add_local(app, &provider_id, label.as_deref())
         }
@@ -648,7 +648,7 @@ fn save_default_provider_setting(app: &mut App, provider: Option<&str>) {
         // honors them as a routing + OAuth-vs-API decision. Rejecting them here
         // was itself an inconsistency: the picker could save a default the
         // `/account` command refused to set.
-        Some(other) if IDEOCODE_provider_core::AuthRoute::parse(other).is_some() => normalized,
+        Some(other) if ideocode_provider_core::AuthRoute::parse(other).is_some() => normalized,
         Some(other) => {
             app.push_display_message(DisplayMessage::error(format!(
                 "Unsupported default provider {}. Use claude, openai, anthropic-api, openai-api, copilot, gemini, openrouter, or auto.",
@@ -1168,7 +1168,7 @@ mod tests {
     }
 
     #[test]
-    fn parse_native_IDEOCODE_account_actions() {
+    fn parse_native_ideocode_account_actions() {
         assert!(matches!(
             parse_account_command("/account IDEOCODE login"),
             Some(Ok(AccountCommand::Login { provider_id })) if provider_id == "IDEOCODE"

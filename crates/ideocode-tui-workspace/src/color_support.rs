@@ -18,10 +18,10 @@ pub fn color_capability() -> ColorCapability {
 
 /// Terminals whose GPU glyph atlas corrupts under heavy per-cell *truecolor*
 /// churn (the macOS 26 "garbled glyphs" bug in the VS Code integrated terminal
-/// and Apple Terminal; see issue #330 and `IDEOCODE_tui_style::color`). Capping
+/// and Apple Terminal; see issue #330 and `ideocode_tui_style::color`). Capping
 /// these to the 256-color palette bounds the distinct-color space the atlas
 /// must cache, keeping markdown/mermaid colors readable. Mirrors the detection
-/// in `IDEOCODE_tui_style::color::fragile_glyph_cache_terminal`. Overridable with
+/// in `ideocode_tui_style::color::fragile_glyph_cache_terminal`. Overridable with
 /// `IDEOCODE_GLYPH_SAFE_MODE=on|off`.
 fn fragile_glyph_cache_terminal() -> bool {
     if let Ok(raw) = std::env::var("IDEOCODE_GLYPH_SAFE_MODE") {

@@ -490,9 +490,9 @@ fn load_startup_stub_preserves_metadata_but_skips_heavy_vectors() -> Result<()> 
         working_dir: Some(temp_home.path().to_string_lossy().to_string()),
         provider: "openai".to_string(),
         model: "gpt-5.4".to_string(),
-        IDEOCODE_version: "test".to_string(),
-        IDEOCODE_git_hash: Some("abc123".to_string()),
-        IDEOCODE_git_dirty: Some(false),
+        ideocode_version: "test".to_string(),
+        ideocode_git_hash: Some("abc123".to_string()),
+        ideocode_git_dirty: Some(false),
         os: "linux".to_string(),
         arch: "x86_64".to_string(),
         pid: 123,
@@ -564,9 +564,9 @@ fn load_for_remote_startup_preserves_messages_and_replay_but_skips_heavy_vectors
         working_dir: Some(temp_home.path().to_string_lossy().to_string()),
         provider: "openai".to_string(),
         model: "gpt-5.4".to_string(),
-        IDEOCODE_version: "test".to_string(),
-        IDEOCODE_git_hash: Some("abc123".to_string()),
-        IDEOCODE_git_dirty: Some(false),
+        ideocode_version: "test".to_string(),
+        ideocode_git_hash: Some("abc123".to_string()),
+        ideocode_git_dirty: Some(false),
         os: "linux".to_string(),
         arch: "x86_64".to_string(),
         pid: 123,
@@ -1367,7 +1367,7 @@ fn test_render_messages_renders_reasoning_before_answer_in_stored_order() {
     // ToolUse]` (see agent/turn_loops.rs push order). On resume/re-render the
     // reasoning must still appear *before* the answer text to match the live
     // streaming order, even though the Text block is stored first.
-    use IDEOCODE_render_core::REASONING_SENTINEL;
+    use ideocode_render_core::REASONING_SENTINEL;
 
     let _env_lock = lock_env();
     let _mode = EnvVarGuard::set("IDEOCODE_REASONING_DISPLAY", "full");
@@ -1410,7 +1410,7 @@ fn test_render_messages_renders_reasoning_before_answer_in_stored_order() {
 
 #[test]
 fn test_render_messages_renders_persisted_reasoning() {
-    use IDEOCODE_render_core::REASONING_SENTINEL;
+    use ideocode_render_core::REASONING_SENTINEL;
 
     let _env_lock = lock_env();
     let _mode = EnvVarGuard::set("IDEOCODE_REASONING_DISPLAY", "full");
@@ -1459,7 +1459,7 @@ fn test_render_messages_renders_persisted_reasoning() {
 
 #[test]
 fn test_render_messages_renders_legacy_reasoning_variant() {
-    use IDEOCODE_render_core::REASONING_SENTINEL;
+    use ideocode_render_core::REASONING_SENTINEL;
 
     let _env_lock = lock_env();
     let _mode = EnvVarGuard::set("IDEOCODE_REASONING_DISPLAY", "full");
@@ -1491,7 +1491,7 @@ fn test_render_messages_renders_legacy_reasoning_variant() {
 
 #[test]
 fn test_render_messages_hides_persisted_reasoning_in_current_mode() {
-    use IDEOCODE_render_core::REASONING_SENTINEL;
+    use ideocode_render_core::REASONING_SENTINEL;
 
     let _env_lock = lock_env();
     let _mode = EnvVarGuard::set("IDEOCODE_REASONING_DISPLAY", "current");
@@ -1538,7 +1538,7 @@ fn test_render_messages_hides_persisted_reasoning_in_current_mode() {
 
 #[test]
 fn test_render_messages_hides_persisted_reasoning_in_off_mode() {
-    use IDEOCODE_render_core::REASONING_SENTINEL;
+    use ideocode_render_core::REASONING_SENTINEL;
 
     let _env_lock = lock_env();
     let _mode = EnvVarGuard::set("IDEOCODE_REASONING_DISPLAY", "off");

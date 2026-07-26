@@ -957,11 +957,11 @@ fn build_claude_api_key_system_param(system: &str) -> Option<ClaudeApiSystem<'_>
 /// main provider's resolution so memory features authenticate the same way the
 /// agent does.
 fn anthropic_sidecar_prefers_api_key() -> bool {
-    match IDEOCODE_provider_core::runtime_env_pinned_mode(
-        IDEOCODE_provider_core::DualAuthProvider::Anthropic,
+    match ideocode_provider_core::runtime_env_pinned_mode(
+        ideocode_provider_core::DualAuthProvider::Anthropic,
     ) {
-        Some(IDEOCODE_provider_core::AuthMode::ApiKey) => true,
-        Some(IDEOCODE_provider_core::AuthMode::Oauth) => false,
+        Some(ideocode_provider_core::AuthMode::ApiKey) => true,
+        Some(ideocode_provider_core::AuthMode::Oauth) => false,
         None => auth::claude::load_credentials().is_err(),
     }
 }
@@ -1161,7 +1161,7 @@ mod tests {
         ) -> Result<crate::provider::EventStream> {
             let reply = self.reply.clone();
             let stream = futures::stream::once(async move {
-                Ok(IDEOCODE_message_types::StreamEvent::TextDelta(reply))
+                Ok(ideocode_message_types::StreamEvent::TextDelta(reply))
             });
             Ok(Box::pin(stream))
         }

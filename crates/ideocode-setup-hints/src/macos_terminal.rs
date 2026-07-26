@@ -1,5 +1,5 @@
 ﻿use anyhow::Result;
-use IDEOCODE_storage as storage;
+use ideocode_storage as storage;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::path::PathBuf;
@@ -78,7 +78,7 @@ struct MacTerminalPreference {
 }
 
 fn mac_terminal_pref_path() -> Result<PathBuf> {
-    Ok(storage::IDEOCODE_dir()?.join("preferred_terminal.json"))
+    Ok(storage::ideocode_dir()?.join("preferred_terminal.json"))
 }
 
 pub(super) fn load_preferred_macos_terminal() -> Option<MacTerminalKind> {
@@ -110,9 +110,9 @@ fn config_preferred_macos_terminal() -> Option<MacTerminalKind> {
     #[derive(Deserialize, Default)]
     struct Wrapper {
         #[serde(default)]
-        terminal: IDEOCODE_config_types::TerminalConfig,
+        terminal: ideocode_config_types::TerminalConfig,
     }
-    let dir = storage::IDEOCODE_dir().ok()?;
+    let dir = storage::ideocode_dir().ok()?;
     let text = std::fs::read_to_string(dir.join("config.toml")).ok()?;
     let wrapper = toml::from_str::<Wrapper>(&text).ok()?;
     let preferred = wrapper.terminal.preferred?;
@@ -158,13 +158,13 @@ pub(super) fn escape_applescript_text(input: &str) -> String {
     input.replace('\\', "\\\\").replace('"', "\\\"")
 }
 
-pub(super) fn paused_IDEOCODE_shell_command(exe_path: &str) -> String {
-    paused_IDEOCODE_shell_command_with_args(exe_path, &[])
+pub(super) fn paused_ideocode_shell_command(exe_path: &str) -> String {
+    paused_ideocode_shell_command_with_args(exe_path, &[])
 }
 
-/// Like [`paused_IDEOCODE_shell_command`] but passes extra CLI args (each
+/// Like [`paused_ideocode_shell_command`] but passes extra CLI args (each
 /// single-quoted) to the IDEOCODE invocation, e.g. `--resume <session-id>`.
-pub(super) fn paused_IDEOCODE_shell_command_with_args(exe_path: &str, args: &[String]) -> String {
+pub(super) fn paused_ideocode_shell_command_with_args(exe_path: &str, args: &[String]) -> String {
     let escaped_exe = escape_shell_single_quotes(exe_path);
     let mut arg_str = String::new();
     for arg in args {
@@ -333,14 +333,14 @@ mod tests {
 
     #[test]
     fn paused_shell_command_quotes_extra_args() {
-        let cmd = super::paused_IDEOCODE_shell_command_with_args(
+        let cmd = super::paused_ideocode_shell_command_with_args(
             "/usr/local/bin/IDEOCODE",
             &["--resume".to_string(), "session_fox_123_abc".to_string()],
         );
         assert!(cmd.contains("'/usr/local/bin/IDEOCODE' '--resume' 'session_fox_123_abc';"));
 
         // Single quotes in args must be escaped, not break out of quoting.
-        let cmd = super::paused_IDEOCODE_shell_command_with_args(
+        let cmd = super::paused_ideocode_shell_command_with_args(
             "/usr/local/bin/IDEOCODE",
             &["it's".to_string()],
         );
@@ -348,8 +348,8 @@ mod tests {
 
         // No args matches the plain command.
         assert_eq!(
-            super::paused_IDEOCODE_shell_command_with_args("/usr/local/bin/IDEOCODE", &[]),
-            super::paused_IDEOCODE_shell_command("/usr/local/bin/IDEOCODE"),
+            super::paused_ideocode_shell_command_with_args("/usr/local/bin/IDEOCODE", &[]),
+            super::paused_ideocode_shell_command("/usr/local/bin/IDEOCODE"),
         );
     }
 
@@ -376,7 +376,7 @@ mod tests {
         // iTerm `command` run in the user's login shell, so a fish/zsh-quirky
         // login shell would otherwise choke ("fish: Unsupported use of '='").
         // Both must wrap the snippet in `/bin/bash -lc`.
-        let shell_command = super::paused_IDEOCODE_shell_command("/usr/local/bin/IDEOCODE");
+        let shell_command = super::paused_ideocode_shell_command("/usr/local/bin/IDEOCODE");
         assert!(shell_command.contains("status=$?"));
 
         for terminal in [
@@ -398,7 +398,7 @@ mod tests {
     fn open_command_terminals_pass_snippet_to_bash_not_login_shell() {
         // Ghostty/Alacritty/WezTerm wrap via `open -na ... -e /bin/bash -lc`,
         // so the bash-specific snippet never reaches the login shell.
-        let shell_command = super::paused_IDEOCODE_shell_command("/usr/local/bin/IDEOCODE");
+        let shell_command = super::paused_ideocode_shell_command("/usr/local/bin/IDEOCODE");
         for terminal in [
             MacTerminalKind::Ghostty,
             MacTerminalKind::Alacritty,

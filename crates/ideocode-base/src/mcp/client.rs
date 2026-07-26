@@ -288,7 +288,7 @@ impl McpClient {
             capabilities: ClientCapabilities::default(),
             client_info: ClientInfo {
                 name: "IDEOCODE".to_string(),
-                version: IDEOCODE_build_meta::pkg_version().to_string(),
+                version: ideocode_build_meta::pkg_version().to_string(),
             },
         };
 

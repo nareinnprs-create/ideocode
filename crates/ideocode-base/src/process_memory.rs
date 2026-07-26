@@ -742,7 +742,7 @@ fn read_linux_memory_info(status: &str) -> Option<OsProcessMemoryInfo> {
 
 #[cfg(feature = "jemalloc-prof")]
 fn default_heap_profile_path() -> Result<PathBuf> {
-    let base = crate::storage::IDEOCODE_dir()?.join("profiles").join("heap");
+    let base = crate::storage::ideocode_dir()?.join("profiles").join("heap");
     let timestamp = chrono::Utc::now().format("%Y%m%dT%H%M%SZ");
     let pid = std::process::id();
     Ok(base.join(format!("IDEOCODE-{}-{}.heap", pid, timestamp)))

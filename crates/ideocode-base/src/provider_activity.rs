@@ -70,7 +70,7 @@ struct CachedStore {
 static LEDGER: Mutex<Option<CachedStore>> = Mutex::new(None);
 
 fn ledger_path() -> PathBuf {
-    crate::storage::IDEOCODE_dir()
+    crate::storage::ideocode_dir()
         .unwrap_or_else(|_| PathBuf::from(".").join(".IDEOCODE"))
         .join("provider_activity.json")
 }
@@ -404,7 +404,7 @@ mod tests {
     }
 
     #[test]
-    fn record_use_and_spend_roundtrip_under_IDEOCODE_home() {
+    fn record_use_and_spend_roundtrip_under_ideocode_home() {
         let _env_lock = lock_env();
         clear_ledger_cache();
         let temp = tempfile::tempdir().expect("tempdir");

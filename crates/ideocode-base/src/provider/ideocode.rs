@@ -24,7 +24,7 @@ impl IDEOCODEProvider {
     }
 
     fn apply_runtime_profile() {
-        let _ = crate::provider::activation::ProviderActivation::IDEOCODE_subscription(
+        let _ = crate::provider::activation::ProviderActivation::ideocode_subscription(
             crate::subscription_catalog::default_model().id,
         )
         .apply_env();
@@ -232,8 +232,8 @@ impl Provider for IDEOCODEProvider {
         self.inner.supports_compaction()
     }
 
-    fn uses_IDEOCODE_compaction(&self) -> bool {
-        self.inner.uses_IDEOCODE_compaction()
+    fn uses_ideocode_compaction(&self) -> bool {
+        self.inner.uses_ideocode_compaction()
     }
 
     async fn native_compact(
@@ -282,7 +282,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn IDEOCODE_provider_enables_subscription_runtime_mode() {
+    fn ideocode_provider_enables_subscription_runtime_mode() {
         let _guard = crate::storage::lock_test_env();
         crate::subscription_catalog::clear_runtime_env();
         let runtime = tokio::runtime::Runtime::new().expect("tokio runtime");
@@ -302,7 +302,7 @@ mod tests {
     }
 
     #[test]
-    fn IDEOCODE_provider_name_and_default_model_are_curated() {
+    fn ideocode_provider_name_and_default_model_are_curated() {
         let _guard = crate::storage::lock_test_env();
         crate::subscription_catalog::clear_runtime_env();
         let runtime = tokio::runtime::Runtime::new().expect("tokio runtime");
@@ -321,7 +321,7 @@ mod tests {
     }
 
     #[test]
-    fn IDEOCODE_provider_exposes_only_explicit_subscription_routes() {
+    fn ideocode_provider_exposes_only_explicit_subscription_routes() {
         use crate::subscription_catalog::IDEOCODETier;
 
         let plus_routes = IDEOCODEProvider::model_routes_for(IDEOCODETier::Plus);
@@ -329,7 +329,7 @@ mod tests {
             .iter()
             .find(|route| route.model == "gpt-5.5")
             .expect("Plus tier includes GPT-5.5");
-        let route_selection = IDEOCODE_provider_core::RouteSelection::from_model_route(gpt_route);
+        let route_selection = ideocode_provider_core::RouteSelection::from_model_route(gpt_route);
         let flagship_routes = IDEOCODEProvider::model_routes_for(IDEOCODETier::Flagship);
         let expected_models = vec![
             "claude-opus-4-8",
@@ -376,7 +376,7 @@ mod tests {
         assert_eq!(route_selection.routed_model_spec(), "gpt-5.5");
         assert_eq!(
             route_selection.runtime_key,
-            IDEOCODE_provider_core::RuntimeKey::IDEOCODESubscription
+            ideocode_provider_core::RuntimeKey::IDEOCODESubscription
         );
         assert_eq!(route_selection.api_method, "IDEOCODE-subscription");
         assert_eq!(route_selection.provider_label, "IDEOCODE Subscription");

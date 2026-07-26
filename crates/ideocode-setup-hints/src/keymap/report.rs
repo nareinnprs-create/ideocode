@@ -1,7 +1,7 @@
 ﻿//! Human-readable rendering of the keymap snapshot and detected conflicts,
 //! shared by the `/keys` command and the startup conflict hint.
 
-use IDEOCODE_config_types::KeybindingsConfig;
+use ideocode_config_types::KeybindingsConfig;
 
 use super::KeymapSnapshot;
 use super::conflicts::{Conflict, detect_conflicts};

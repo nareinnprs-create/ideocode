@@ -153,7 +153,7 @@ impl BuildRequest {
     const DEFAULT_TERMINAL_HISTORY_LIMIT: usize = 256;
 
     fn requests_dir() -> Result<PathBuf> {
-        let dir = storage::IDEOCODE_dir()?.join("selfdev-build-requests");
+        let dir = storage::ideocode_dir()?.join("selfdev-build-requests");
         storage::ensure_dir(&dir)?;
         Ok(dir)
     }
@@ -729,7 +729,7 @@ impl SelfDevTool {
     fn resolve_repo_dir(working_dir: Option<&std::path::Path>) -> Option<std::path::PathBuf> {
         if let Some(dir) = working_dir {
             for ancestor in dir.ancestors() {
-                if build::is_IDEOCODE_repo(ancestor) {
+                if build::is_ideocode_repo(ancestor) {
                     return Some(ancestor.to_path_buf());
                 }
             }
@@ -750,7 +750,7 @@ impl SelfDevTool {
     }
 
     fn build_lock_path(worktree_scope: &str) -> Result<PathBuf> {
-        let dir = storage::IDEOCODE_dir()?.join("selfdev-build-locks");
+        let dir = storage::ideocode_dir()?.join("selfdev-build-locks");
         storage::ensure_dir(&dir)?;
         Ok(dir.join(format!("{}.lock", worktree_scope)))
     }

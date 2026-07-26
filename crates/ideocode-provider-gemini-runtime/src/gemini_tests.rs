@@ -1,5 +1,5 @@
 ﻿use super::*;
-use IDEOCODE_base::message::{ContentBlock, Message, Role};
+use ideocode_base::message::{ContentBlock, Message, Role};
 
 struct EnvVarGuard {
     key: &'static str,
@@ -9,19 +9,19 @@ struct EnvVarGuard {
 impl EnvVarGuard {
     fn set_path(key: &'static str, value: &std::path::Path) -> Self {
         let previous = std::env::var_os(key);
-        IDEOCODE_base::env::set_var(key, value);
+        ideocode_base::env::set_var(key, value);
         Self { key, previous }
     }
 
     fn set_value(key: &'static str, value: &str) -> Self {
         let previous = std::env::var_os(key);
-        IDEOCODE_base::env::set_var(key, value);
+        ideocode_base::env::set_var(key, value);
         Self { key, previous }
     }
 
     fn unset(key: &'static str) -> Self {
         let previous = std::env::var_os(key);
-        IDEOCODE_base::env::remove_var(key);
+        ideocode_base::env::remove_var(key);
         Self { key, previous }
     }
 }
@@ -29,9 +29,9 @@ impl EnvVarGuard {
 impl Drop for EnvVarGuard {
     fn drop(&mut self) {
         if let Some(previous) = &self.previous {
-            IDEOCODE_base::env::set_var(self.key, previous);
+            ideocode_base::env::set_var(self.key, previous);
         } else {
-            IDEOCODE_base::env::remove_var(self.key);
+            ideocode_base::env::remove_var(self.key);
         }
     }
 }
@@ -120,7 +120,7 @@ fn available_models_display_prefers_discovered_models_and_current_model() {
 
 #[test]
 fn available_models_display_without_discovery_uses_current_model_only() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let temp = tempfile::TempDir::new().expect("tempdir");
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
 
@@ -135,12 +135,12 @@ fn available_models_display_without_discovery_uses_current_model_only() {
 
 #[test]
 fn available_models_display_seeds_from_persisted_catalog() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let temp = tempfile::TempDir::new().expect("tempdir");
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
 
     let path = GeminiProvider::persisted_catalog_path().expect("catalog path");
-    IDEOCODE_base::storage::write_json(
+    ideocode_base::storage::write_json(
         &path,
         &PersistedCatalog {
             models: vec!["gemini-3-pro-preview".to_string()],
@@ -591,7 +591,7 @@ fn parses_candidate_finish_message() {
 
 #[test]
 fn auth_mode_prefers_api_key_when_present() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let temp = tempfile::TempDir::new().expect("tempdir");
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
     let _google = EnvVarGuard::unset("GOOGLE_API_KEY");
@@ -606,7 +606,7 @@ fn auth_mode_prefers_api_key_when_present() {
 
 #[test]
 fn auth_mode_force_oauth_overrides_api_key() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let temp = tempfile::TempDir::new().expect("tempdir");
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
     let _google = EnvVarGuard::unset("GOOGLE_API_KEY");
@@ -618,7 +618,7 @@ fn auth_mode_force_oauth_overrides_api_key() {
 
 #[test]
 fn auth_mode_defaults_to_oauth_without_api_key() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let temp = tempfile::TempDir::new().expect("tempdir");
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
     let _key = EnvVarGuard::unset("GEMINI_API_KEY");
@@ -630,7 +630,7 @@ fn auth_mode_defaults_to_oauth_without_api_key() {
 
 #[test]
 fn developer_api_base_url_defaults_to_generativelanguage() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let _endpoint = EnvVarGuard::unset("GEMINI_API_ENDPOINT");
     let _version = EnvVarGuard::unset("GEMINI_API_VERSION");
 
@@ -642,7 +642,7 @@ fn developer_api_base_url_defaults_to_generativelanguage() {
 
 #[test]
 fn developer_api_base_url_honors_env_overrides() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let _endpoint = EnvVarGuard::set_value("GEMINI_API_ENDPOINT", "https://example.test/");
     let _version = EnvVarGuard::set_value("GEMINI_API_VERSION", "/v9/");
 
@@ -730,7 +730,7 @@ fn system_instruction_tool_guard_with_empty_system_still_emits_guidance() {
 #[test]
 fn fully_unsigned_history_has_no_signature_to_replay() {
     let messages = unsigned_tool_history();
-    let contents = IDEOCODE_provider_gemini::build_contents(&messages);
+    let contents = ideocode_provider_gemini::build_contents(&messages);
     let signed_calls = contents
         .iter()
         .flat_map(|content| content.parts.iter())
@@ -746,9 +746,9 @@ fn fully_unsigned_history_has_no_signature_to_replay() {
 #[test]
 fn downgrade_policy_removes_every_function_call_part() {
     let messages = unsigned_tool_history();
-    let contents = IDEOCODE_provider_gemini::build_contents_with_signature_policy(
+    let contents = ideocode_provider_gemini::build_contents_with_signature_policy(
         &messages,
-        IDEOCODE_provider_gemini::SignaturePolicy::DowngradeToolCallsToText,
+        ideocode_provider_gemini::SignaturePolicy::DowngradeToolCallsToText,
     );
     let parts: Vec<_> = contents
         .iter()
@@ -779,21 +779,21 @@ fn downgrade_policy_removes_every_function_call_part() {
 #[test]
 fn missing_thought_signature_errors_are_recognized_from_backend_bodies() {
     // Exact bodies reported in #482 and #518.
-    assert!(IDEOCODE_provider_gemini::is_missing_thought_signature_error(
+    assert!(ideocode_provider_gemini::is_missing_thought_signature_error(
         "Antigravity generateContent failed (HTTP 400 Bad Request): {\"error\": {\"code\": 400, \
          \"message\": \"Function call is missing a thought_signature in functionCall parts. This \
          is required for tools to work correctly, and missing thought_signature may lead to \
          degraded model performance. Additional data, function call [default_api:bash], position \
          7.\", \"status\": \"INVALID_ARGUMENT\"}}"
     ));
-    assert!(IDEOCODE_provider_gemini::is_missing_thought_signature_error(
+    assert!(ideocode_provider_gemini::is_missing_thought_signature_error(
         "missing a thoughtSignature"
     ));
     // Unrelated failures must not trigger the lossy downgrade retry.
-    assert!(!IDEOCODE_provider_gemini::is_missing_thought_signature_error(
+    assert!(!ideocode_provider_gemini::is_missing_thought_signature_error(
         "Antigravity generateContent failed (HTTP 429): rate limit exceeded"
     ));
-    assert!(!IDEOCODE_provider_gemini::is_missing_thought_signature_error(
+    assert!(!ideocode_provider_gemini::is_missing_thought_signature_error(
         "MALFORMED_FUNCTION_CALL"
     ));
 }

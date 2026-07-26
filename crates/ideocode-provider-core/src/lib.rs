@@ -60,7 +60,7 @@ pub use selection::{
 use anyhow::Result;
 use async_trait::async_trait;
 use futures::Stream;
-use IDEOCODE_message_types::{
+use ideocode_message_types::{
     ContentBlock, Message, Role, StreamEvent, ToolDefinition, messages_with_dynamic_system_context,
 };
 use serde::{Deserialize, Serialize};
@@ -404,7 +404,7 @@ pub trait Provider: Send + Sync {
     }
 
     /// Returns true if IDEOCODE should proactively run its own summary-based compaction.
-    fn uses_IDEOCODE_compaction(&self) -> bool {
+    fn uses_ideocode_compaction(&self) -> bool {
         self.supports_compaction()
     }
 
@@ -837,7 +837,7 @@ impl RouteSelection {
 
 /// OpenRouter catalog id for a bare model: claude models gain an `anthropic/`
 /// prefix, OpenAI models an `openai/` prefix, already-qualified ids pass
-/// through. Mirrors `IDEOCODE_base::provider::openrouter_catalog_model_id` but
+/// through. Mirrors `ideocode_base::provider::openrouter_catalog_model_id` but
 /// lives here so [`RouteSelection::routed_model_spec`] has no upward dep.
 fn openrouter_catalog_model_id(model: &str) -> String {
     let trimmed = model.trim();

@@ -45,7 +45,7 @@ pub use crash::{
     CrashedSessionsInfo, detect_crashed_sessions, find_recent_crashed_sessions,
     find_session_by_name_or_id, recover_crashed_sessions, recover_crashed_sessions_by_ids,
 };
-pub use IDEOCODE_session_types::{
+pub use ideocode_session_types::{
     EnvSnapshot, GitState, SessionImproveMode, SessionStatus, StoredCompactionState,
     StoredDisplayRole, StoredMemoryInjection, StoredMessage, StoredTokenUsage,
 };
@@ -1287,7 +1287,7 @@ request in this new forked session, using the inherited conversation only as con
     pub fn strip_oversized_images(&mut self, target_total_chars: usize) -> usize {
         let mut contents: Vec<&mut Vec<ContentBlock>> =
             self.messages.iter_mut().map(|m| &mut m.content).collect();
-        let stripped = IDEOCODE_compaction_core::strip_large_images_in_contents(
+        let stripped = ideocode_compaction_core::strip_large_images_in_contents(
             &mut contents,
             target_total_chars,
         );

@@ -50,7 +50,7 @@ fn first_three_launches_can_include_hotkey_notice_too() {
 fn default_resolved_hotkeys_match_legacy_three() {
     // With no config, the resolver reproduces the historical three hotkeys.
     let resolved = launch_hotkeys::resolve_launch_hotkeys(
-        &IDEOCODE_config_types::LaunchHotkeysConfig::default(),
+        &ideocode_config_types::LaunchHotkeysConfig::default(),
         "/usr/local/bin/IDEOCODE",
         "/home/u/.IDEOCODE/hotkey/last_dir",
         "/home/u/.IDEOCODE/hotkey/last_repo",
@@ -99,10 +99,10 @@ fn linux_hotkeys_install_automatically_and_respect_opt_out() {
 #[test]
 fn baked_repo_hotkey_cds_into_fixed_dir() {
     // A config-baked per-repo hotkey opens a fixed directory.
-    let config = IDEOCODE_config_types::LaunchHotkeysConfig {
+    let config = ideocode_config_types::LaunchHotkeysConfig {
         enabled: Some(true),
         imported: true,
-        entries: vec![IDEOCODE_config_types::LaunchHotkeyEntry {
+        entries: vec![ideocode_config_types::LaunchHotkeyEntry {
             chord: "cmd+[".to_string(),
             dir: "/Users/jeremy/IDEOCODE-github".to_string(),
             label: "IDEOCODE-github".to_string(),
@@ -145,7 +145,7 @@ fn install_writes_executable_scripts_and_plan() {
 
     let dir = tempfile::tempdir().expect("tempdir");
     let resolved = launch_hotkeys::resolve_launch_hotkeys(
-        &IDEOCODE_config_types::LaunchHotkeysConfig::default(),
+        &ideocode_config_types::LaunchHotkeysConfig::default(),
         "/usr/local/bin/IDEOCODE",
         "/home/u/.IDEOCODE/hotkey/last_dir",
         "/home/u/.IDEOCODE/hotkey/last_repo",
@@ -197,8 +197,8 @@ fn mac_hotkey_launch_agent_plist_uses_valid_xml_quotes() {
 }
 
 #[test]
-fn paused_IDEOCODE_shell_command_keeps_failures_visible() {
-    let command = paused_IDEOCODE_shell_command("/tmp/IDEOCODE");
+fn paused_ideocode_shell_command_keeps_failures_visible() {
+    let command = paused_ideocode_shell_command("/tmp/IDEOCODE");
     assert!(command.contains("Press Enter to close"));
     assert!(command.contains("IDEOCODE exited with status"));
     assert!(command.contains("IDEOCODE executable not found"));
@@ -393,7 +393,7 @@ fn conflict_hint_decision_warns_only_when_conflicts_change() {
 fn keymap_conflict_hint_full_path_debounces_and_persists_signature() {
     use crate::keymap::source::{DiscoveredBinding, KeySource};
     use crate::keymap::{KeyChord, KeymapSnapshot};
-    use IDEOCODE_config_types::KeybindingsConfig;
+    use ideocode_config_types::KeybindingsConfig;
 
     fn snapshot(bindings: Vec<DiscoveredBinding>) -> KeymapSnapshot {
         KeymapSnapshot {

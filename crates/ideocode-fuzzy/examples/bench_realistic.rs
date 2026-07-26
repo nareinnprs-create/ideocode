@@ -19,7 +19,7 @@
         "codxe",
         "openrouter",
     ] {
-        let prepared = IDEOCODE_fuzzy::PreparedTokenQuery::new(q);
+        let prepared = ideocode_fuzzy::PreparedTokenQuery::new(q);
         let start = std::time::Instant::now();
         let mut n = 0;
         for name in &names {

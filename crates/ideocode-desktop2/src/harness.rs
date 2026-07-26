@@ -4,7 +4,7 @@
 //! `IDEOCODE-harness-api-bridge`) on a background thread, attaches a session,
 //! and forwards streamed events to the UI thread over a channel.
 
-use IDEOCODE_harness_api::{ApiEvent, ApiRequest, ClientFrame, HarnessClient, write_frame};
+use ideocode_harness_api::{ApiEvent, ApiRequest, ClientFrame, HarnessClient, write_frame};
 use std::io::BufReader;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};

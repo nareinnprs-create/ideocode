@@ -19,7 +19,7 @@ fn model_dir() -> Option<PathBuf> {
     let dir = home
         .join(".IDEOCODE")
         .join("models")
-        .join(IDEOCODE_embedding::MODEL_NAME);
+        .join(ideocode_embedding::MODEL_NAME);
     dir.join("model.onnx").exists().then_some(dir)
 }
 
@@ -31,7 +31,7 @@ fn embed_latency_probe() {
         return;
     };
     let load_start = std::time::Instant::now();
-    let embedder = IDEOCODE_embedding::Embedder::load_from_dir(&dir).expect("load model");
+    let embedder = ideocode_embedding::Embedder::load_from_dir(&dir).expect("load model");
     let load = load_start.elapsed();
 
     // Warm once (first run pays one-time plan setup).

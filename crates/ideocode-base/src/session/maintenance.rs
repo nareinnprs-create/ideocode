@@ -2,7 +2,7 @@
 //!
 //! Session transcripts (`<id>.json`) are kept forever, but the atomic-write
 //! layer also leaves a single rolling `<id>.bak` next to each file as a
-//! crash-recovery copy (see `IDEOCODE_storage::write_bytes_inner`). That backup is
+//! crash-recovery copy (see `ideocode_storage::write_bytes_inner`). That backup is
 //! only ever consulted when the primary `.json` is found to be corrupt on the
 //! very next read. For sessions that have not been touched in weeks the primary
 //! is stable, so the stale `.bak` is pure disk overhead (these accumulate into
@@ -38,7 +38,7 @@ const PRUNE_INTERVAL_SECS: u64 = 24 * 60 * 60;
 /// the machine-wide prune interval has elapsed, so spawning many IDEOCODE
 /// processes at once does not trigger many full directory walks.
 pub fn prune_old_session_backups() {
-    if let Ok(base) = storage::IDEOCODE_dir() {
+    if let Ok(base) = storage::ideocode_dir() {
         let sessions_dir = base.join("sessions");
         if !claim_prune_slot(&base) {
             return;

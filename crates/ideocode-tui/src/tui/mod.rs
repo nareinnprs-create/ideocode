@@ -15,8 +15,8 @@ pub(crate) mod fuzzy;
 // Terminal image display + metadata helpers now live in the dependency-free
 // `IDEOCODE-terminal-image` crate (shared with the `read` tool). Re-exported here
 // so existing `crate::tui::image` / `crate::tui::image_metadata` paths keep working.
-pub use IDEOCODE_terminal_image::display as image;
-use IDEOCODE_terminal_image::metadata as image_metadata;
+pub use ideocode_terminal_image::display as image;
+use ideocode_terminal_image::metadata as image_metadata;
 pub mod info_widget;
 mod info_widget_layout;
 mod info_widget_overview;
@@ -29,7 +29,7 @@ pub mod markdown;
 mod memory_profile;
 pub mod mermaid;
 pub mod permissions {
-    pub use IDEOCODE_tui_permissions::*;
+    pub use ideocode_tui_permissions::*;
 }
 mod remote_diff;
 pub mod screenshot;
@@ -43,8 +43,8 @@ mod ui_diff;
 pub mod usage_overlay;
 pub mod visual_debug;
 pub mod workspace_client;
-pub use IDEOCODE_tui_workspace::workspace_map;
-pub use IDEOCODE_tui_workspace::workspace_map_widget;
+pub use ideocode_tui_workspace::workspace_map;
+pub use ideocode_tui_workspace::workspace_map_widget;
 
 pub use crate::generated_image::{
     generated_image_side_panel_markdown, generated_image_side_panel_page_id,
@@ -74,10 +74,10 @@ pub(crate) fn scheduled_notification_text(
 }
 
 pub(crate) use self::core::DisplayMessageRoleExt;
-pub use IDEOCODE_tui_core::{
+pub use ideocode_tui_core::{
     CopySelectionPane, CopySelectionPoint, CopySelectionRange, CopySelectionStatus,
 };
-pub use IDEOCODE_tui_messages::DisplayMessage;
+pub use ideocode_tui_messages::DisplayMessage;
 
 fn keyboard_enhancement_flags() -> crossterm::event::KeyboardEnhancementFlags {
     use crossterm::event::KeyboardEnhancementFlags;
@@ -1570,7 +1570,7 @@ fn primary_status_spinner_needs_full_redraw_with_policy(
 /// This matches the glyph's wall-clock cadence and the primary status spinner:
 /// faster wastes unchanged frames, while slower makes the motion visibly step.
 pub(crate) const REDRAW_SWARM_SPINNER: Duration =
-    Duration::from_millis(IDEOCODE_tui_render::swarm_gallery::STRIP_SPINNER_FRAME_MS);
+    Duration::from_millis(ideocode_tui_render::swarm_gallery::STRIP_SPINNER_FRAME_MS);
 
 /// Whether the swarm strip (above the status line) or the SwarmStatus dock
 /// widget is currently animating a status spinner for an active agent.
@@ -1587,7 +1587,7 @@ fn swarm_spinner_redraw_active(state: &dyn TuiState) -> bool {
         && state
             .inline_swarm_members()
             .iter()
-            .any(|m| IDEOCODE_tui_render::swarm_gallery::is_active_status(&m.status))
+            .any(|m| ideocode_tui_render::swarm_gallery::is_active_status(&m.status))
 }
 
 /// Whether the open `/resume` picker is showing at least one running session.
@@ -1819,7 +1819,7 @@ pub(crate) fn subscribe_metadata(
     resolve_subscribe_metadata(
         working_dir.as_deref(),
         remote_working_dir,
-        IDEOCODE_selfdev_types::client_selfdev_requested(),
+        ideocode_selfdev_types::client_selfdev_requested(),
     )
 }
 
@@ -1836,7 +1836,7 @@ pub(crate) fn resolve_subscribe_metadata(
     if !selfdev && let Some(dir) = client_working_dir {
         let mut current = Some(dir);
         while let Some(path) = current {
-            if crate::build::is_IDEOCODE_repo(path) {
+            if crate::build::is_ideocode_repo(path) {
                 selfdev = true;
                 break;
             }
@@ -1860,7 +1860,7 @@ pub use ui::{
 };
 
 pub fn display_messages_from_session(session: &crate::session::Session) -> Vec<DisplayMessage> {
-    let mut messages = IDEOCODE_tui_messages::display_messages_from_rendered_messages(
+    let mut messages = ideocode_tui_messages::display_messages_from_rendered_messages(
         crate::session::render_messages(session),
     );
     app::compact_display_messages_for_storage(&mut messages);

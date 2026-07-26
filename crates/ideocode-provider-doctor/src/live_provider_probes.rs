@@ -12,11 +12,11 @@
 use anyhow::{Context, anyhow, ensure};
 use serde::Deserialize;
 
-use IDEOCODE_base::message::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
-use IDEOCODE_base::provider::Provider;
-use IDEOCODE_base::provider_catalog::{OpenAiCompatibleProfile, ResolvedOpenAiCompatibleProfile};
-use IDEOCODE_provider_anthropic_runtime::AnthropicProvider;
-use IDEOCODE_provider_antigravity_runtime::AntigravityProvider;
+use ideocode_base::message::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
+use ideocode_base::provider::Provider;
+use ideocode_base::provider_catalog::{OpenAiCompatibleProfile, ResolvedOpenAiCompatibleProfile};
+use ideocode_provider_anthropic_runtime::AnthropicProvider;
+use ideocode_provider_antigravity_runtime::AntigravityProvider;
 
 /// Resolve the per-request timeout for an OpenAI-compatible smoke probe.
 ///
@@ -94,9 +94,9 @@ pub async fn fetch_live_openai_compatible_models(
     profile: OpenAiCompatibleProfile,
     api_key: &str,
 ) -> anyhow::Result<Vec<String>> {
-    let resolved = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(profile);
+    let resolved = ideocode_base::provider_catalog::resolve_openai_compatible_profile(profile);
     let url = format!("{}/models", resolved.api_base.trim_end_matches('/'));
-    let request = IDEOCODE_base::provider::shared_http_client().get(&url);
+    let request = ideocode_base::provider::shared_http_client().get(&url);
     let request = apply_provider_auth(request, &resolved, api_key);
     let response = tokio::time::timeout(std::time::Duration::from_secs(20), request.send())
         .await
@@ -125,7 +125,7 @@ pub async fn fetch_live_openai_compatible_models(
         .map(|model| normalize_openai_compatible_model_id(&resolved, model.id.trim()))
         .filter(|model| {
             !model.is_empty()
-                && IDEOCODE_base::provider_catalog::openai_compatible_profile_model_supports_chat(
+                && ideocode_base::provider_catalog::openai_compatible_profile_model_supports_chat(
                     resolved.id.as_str(),
                     model,
                 )
@@ -164,9 +164,9 @@ pub async fn run_live_openai_compatible_smoke(
     profile: OpenAiCompatibleProfile,
     api_key: &str,
     model: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let started = std::time::Instant::now();
-    let resolved = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(profile);
+    let resolved = ideocode_base::provider_catalog::resolve_openai_compatible_profile(profile);
     let url = format!(
         "{}/chat/completions",
         resolved.api_base.trim_end_matches('/')
@@ -178,7 +178,7 @@ pub async fn run_live_openai_compatible_smoke(
         ],
         "stream": false
     });
-    let request = IDEOCODE_base::provider::shared_http_client()
+    let request = ideocode_base::provider::shared_http_client()
         .post(&url)
         .json(&body);
     let request = apply_provider_auth(request, &resolved, api_key);
@@ -211,8 +211,8 @@ pub async fn run_live_openai_compatible_smoke(
         resolved.display_name,
         content
     );
-    let mut stage = IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-        IDEOCODE_base::live_tests::checkpoints::NON_STREAMING_CHAT_COMPLETION,
+    let mut stage = ideocode_base::live_tests::LiveVerificationStage::passed(
+        ideocode_base::live_tests::checkpoints::NON_STREAMING_CHAT_COMPLETION,
     )
     .with_duration_ms(started.elapsed().as_millis() as u64)
     .with_evidence("http_status", serde_json::json!(status.as_u16()))
@@ -228,8 +228,8 @@ pub async fn run_live_openai_compatible_smoke(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile;
-    use IDEOCODE_provider_metadata::{
+    use ideocode_base::provider_catalog::resolve_openai_compatible_profile;
+    use ideocode_provider_metadata::{
         GEMINI_OPENAI_COMPAT_PROFILE, OPENAI_NATIVE_OPENAI_COMPAT_PROFILE,
     };
 
@@ -383,9 +383,9 @@ pub async fn run_live_openai_compatible_stream_smoke(
     profile: OpenAiCompatibleProfile,
     api_key: &str,
     model: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let started = std::time::Instant::now();
-    let resolved = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(profile);
+    let resolved = ideocode_base::provider_catalog::resolve_openai_compatible_profile(profile);
     let url = format!(
         "{}/chat/completions",
         resolved.api_base.trim_end_matches('/')
@@ -398,7 +398,7 @@ pub async fn run_live_openai_compatible_stream_smoke(
         "stream": true,
         "stream_options": {"include_usage": true}
     });
-    let request = IDEOCODE_base::provider::shared_http_client()
+    let request = ideocode_base::provider::shared_http_client()
         .post(&url)
         .json(&body);
     let request = apply_provider_auth(request, &resolved, api_key);
@@ -460,8 +460,8 @@ pub async fn run_live_openai_compatible_stream_smoke(
         resolved.display_name,
         content
     );
-    let mut stage = IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-        IDEOCODE_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
+    let mut stage = ideocode_base::live_tests::LiveVerificationStage::passed(
+        ideocode_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
     )
     .with_duration_ms(started.elapsed().as_millis() as u64)
     .with_evidence("http_status", serde_json::json!(status.as_u16()))
@@ -478,9 +478,9 @@ pub async fn run_live_openai_compatible_tool_smoke(
     profile: OpenAiCompatibleProfile,
     api_key: &str,
     model: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let started = std::time::Instant::now();
-    let resolved = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(profile);
+    let resolved = ideocode_base::provider_catalog::resolve_openai_compatible_profile(profile);
     let url = format!(
         "{}/chat/completions",
         resolved.api_base.trim_end_matches('/')
@@ -511,7 +511,7 @@ pub async fn run_live_openai_compatible_tool_smoke(
     if !resolved.api_base.contains("fptcloud.com") {
         body["tool_choice"] = serde_json::json!("auto");
     }
-    let request = IDEOCODE_base::provider::shared_http_client()
+    let request = ideocode_base::provider::shared_http_client()
         .post(&url)
         .json(&body);
     let request = apply_provider_auth(request, &resolved, api_key);
@@ -546,7 +546,7 @@ pub async fn run_live_openai_compatible_tool_smoke(
         !tool_calls.is_empty(),
         "{} live tool-call smoke returned no tool calls: {}",
         resolved.display_name,
-        IDEOCODE_base::util::truncate_str(text.trim(), 1200)
+        ideocode_base::util::truncate_str(text.trim(), 1200)
     );
     let function = tool_calls[0]
         .get("function")
@@ -566,7 +566,7 @@ pub async fn run_live_openai_compatible_tool_smoke(
         .get("arguments")
         .and_then(|arguments| arguments.as_str())
         .context("live tool-call smoke response missing string arguments")?;
-    let parsed_arguments = IDEOCODE_base::message::ToolCall::parse_streamed_input_to_object(arguments);
+    let parsed_arguments = ideocode_base::message::ToolCall::parse_streamed_input_to_object(arguments);
     ensure!(
         parsed_arguments.is_object(),
         "{} live tool-call smoke returned non-object tool arguments: {:?}",
@@ -578,8 +578,8 @@ pub async fn run_live_openai_compatible_tool_smoke(
         .and_then(|choices| choices.get(0))
         .cloned()
         .unwrap_or(serde_json::Value::Null);
-    let mut stage = IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-        IDEOCODE_base::live_tests::checkpoints::TOOL_CALL_PARSE,
+    let mut stage = ideocode_base::live_tests::LiveVerificationStage::passed(
+        ideocode_base::live_tests::checkpoints::TOOL_CALL_PARSE,
     )
     .with_duration_ms(started.elapsed().as_millis() as u64)
     .with_evidence("http_status", serde_json::json!(status.as_u16()))
@@ -855,7 +855,7 @@ async fn consume_native_stream(
 /// text and reached a clean end-of-message.
 pub async fn run_live_claude_native_smoke(
     model: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let started = std::time::Instant::now();
     let provider = build_native_claude_provider(model)?;
     let messages = vec![Message {
@@ -885,12 +885,12 @@ pub async fn run_live_claude_native_smoke(
     ensure!(
         outcome.text.contains("AUTH_TEST_OK"),
         "native Claude smoke returned unexpected content: {:?} ({})",
-        IDEOCODE_base::util::truncate_str(outcome.text.trim(), 200),
+        ideocode_base::util::truncate_str(outcome.text.trim(), 200),
         outcome.diagnostics()
     );
 
-    let mut stage = IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-        IDEOCODE_base::live_tests::checkpoints::NON_STREAMING_CHAT_COMPLETION,
+    let mut stage = ideocode_base::live_tests::LiveVerificationStage::passed(
+        ideocode_base::live_tests::checkpoints::NON_STREAMING_CHAT_COMPLETION,
     )
     .with_duration_ms(started.elapsed().as_millis() as u64)
     .with_evidence("model", serde_json::json!(model))
@@ -912,7 +912,7 @@ pub async fn run_live_claude_native_smoke(
 /// checkpoint exists to guard.
 pub async fn run_live_claude_native_stream_smoke(
     model: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let started = std::time::Instant::now();
     let provider = build_native_claude_provider(model)?;
     let messages = vec![Message {
@@ -976,12 +976,12 @@ pub async fn run_live_claude_native_stream_smoke(
     ensure!(
         outcome.text.contains("STREAM_TEST_OK"),
         "native Claude stream smoke returned unexpected content: {:?} ({})",
-        IDEOCODE_base::util::truncate_str(outcome.text.trim(), 200),
+        ideocode_base::util::truncate_str(outcome.text.trim(), 200),
         outcome.diagnostics()
     );
 
-    let mut stage = IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-        IDEOCODE_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
+    let mut stage = ideocode_base::live_tests::LiveVerificationStage::passed(
+        ideocode_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
     )
     .with_duration_ms(started.elapsed().as_millis() as u64)
     .with_evidence("model", serde_json::json!(model))
@@ -1011,12 +1011,12 @@ pub async fn run_live_claude_native_stream_smoke(
 ///      produces a coherent final answer.
 ///
 /// This single round-trip is the evidence for the `tool_call_parse`,
-/// `tool_execution_loop`, `tool_result_followup`, and `real_IDEOCODE_tool_smoke`
+/// `tool_execution_loop`, `tool_result_followup`, and `real_ideocode_tool_smoke`
 /// checkpoints (mirroring how the OpenAI-compatible tool probe derives all
 /// four from one exchange).
 pub async fn run_live_claude_native_tool_smoke(
     model: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let started = std::time::Instant::now();
     let provider = build_native_claude_provider(model)?;
 
@@ -1063,7 +1063,7 @@ pub async fn run_live_claude_native_tool_smoke(
         !first.tool_calls.is_empty(),
         "native Claude tool smoke produced no tool call (stop_reason={:?}, text={:?})",
         first.stop_reason,
-        IDEOCODE_base::util::truncate_str(first.text.trim(), 200)
+        ideocode_base::util::truncate_str(first.text.trim(), 200)
     );
     let tool_call = first.tool_calls[0].clone();
     ensure!(
@@ -1071,7 +1071,7 @@ pub async fn run_live_claude_native_tool_smoke(
         "native Claude tool smoke called unexpected tool {:?} (expected {tool_name})",
         tool_call.name
     );
-    let parsed_arguments = IDEOCODE_base::message::ToolCall::parse_streamed_input_to_object(
+    let parsed_arguments = ideocode_base::message::ToolCall::parse_streamed_input_to_object(
         if tool_call.input_json.trim().is_empty() {
             "{}"
         } else {
@@ -1127,15 +1127,15 @@ pub async fn run_live_claude_native_tool_smoke(
     ensure!(
         second.text.contains("42"),
         "native Claude tool follow-up did not reflect the tool result token: {:?}",
-        IDEOCODE_base::util::truncate_str(second.text.trim(), 200)
+        ideocode_base::util::truncate_str(second.text.trim(), 200)
     );
 
     // Total usage spans both turns so spend accounting reflects the full
     // round-trip.
     let total_input = first.input_tokens + second.input_tokens;
     let total_output = first.output_tokens + second.output_tokens;
-    let mut stage = IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-        IDEOCODE_base::live_tests::checkpoints::TOOL_CALL_PARSE,
+    let mut stage = ideocode_base::live_tests::LiveVerificationStage::passed(
+        ideocode_base::live_tests::checkpoints::TOOL_CALL_PARSE,
     )
     .with_duration_ms(started.elapsed().as_millis() as u64)
     .with_evidence("model", serde_json::json!(model))
@@ -1155,7 +1155,7 @@ pub async fn run_live_claude_native_tool_smoke(
 /// (extended thinking) or hid it behind an opaque signal.
 pub async fn run_live_claude_native_reasoning_smoke(
     model: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let provider = build_native_claude_provider(model)?;
     run_live_native_provider_reasoning_smoke(&provider, model, "Claude").await
 }
@@ -1182,7 +1182,7 @@ fn build_native_antigravity_provider(model: &str) -> anyhow::Result<AntigravityP
 /// Stage: non-streaming chat completion (a single coherent final answer).
 pub async fn run_live_antigravity_native_smoke(
     model: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let started = std::time::Instant::now();
     let provider = build_native_antigravity_provider(model)?;
     let messages = vec![Message {
@@ -1212,12 +1212,12 @@ pub async fn run_live_antigravity_native_smoke(
     ensure!(
         outcome.text.contains("AUTH_TEST_OK"),
         "native Antigravity smoke returned unexpected content: {:?} ({})",
-        IDEOCODE_base::util::truncate_str(outcome.text.trim(), 200),
+        ideocode_base::util::truncate_str(outcome.text.trim(), 200),
         outcome.diagnostics()
     );
 
-    let mut stage = IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-        IDEOCODE_base::live_tests::checkpoints::NON_STREAMING_CHAT_COMPLETION,
+    let mut stage = ideocode_base::live_tests::LiveVerificationStage::passed(
+        ideocode_base::live_tests::checkpoints::NON_STREAMING_CHAT_COMPLETION,
     )
     .with_duration_ms(started.elapsed().as_millis() as u64)
     .with_evidence("model", serde_json::json!(model))
@@ -1239,7 +1239,7 @@ pub async fn run_live_antigravity_native_smoke(
 /// text and reached a clean end-of-message rather than requiring many deltas.
 pub async fn run_live_antigravity_native_stream_smoke(
     model: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let started = std::time::Instant::now();
     let provider = build_native_antigravity_provider(model)?;
     let messages = vec![Message {
@@ -1299,12 +1299,12 @@ pub async fn run_live_antigravity_native_stream_smoke(
     ensure!(
         outcome.text.contains("STREAM_TEST_OK"),
         "native Antigravity stream smoke returned unexpected content: {:?} ({})",
-        IDEOCODE_base::util::truncate_str(outcome.text.trim(), 200),
+        ideocode_base::util::truncate_str(outcome.text.trim(), 200),
         outcome.diagnostics()
     );
 
-    let mut stage = IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-        IDEOCODE_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
+    let mut stage = ideocode_base::live_tests::LiveVerificationStage::passed(
+        ideocode_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
     )
     .with_duration_ms(started.elapsed().as_millis() as u64)
     .with_evidence("model", serde_json::json!(model))
@@ -1333,10 +1333,10 @@ pub async fn run_live_antigravity_native_stream_smoke(
 /// reproduces the `400 ... "Function call is missing a thought_signature ...
 /// position N"` field failure (a single round-trip cannot). Evidence for the
 /// `tool_call_parse`, `tool_execution_loop`, `tool_result_followup`, and
-/// `real_IDEOCODE_tool_smoke` checkpoints.
+/// `real_ideocode_tool_smoke` checkpoints.
 pub async fn run_live_antigravity_native_tool_smoke(
     model: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let provider = build_native_antigravity_provider(model)?;
     run_live_native_provider_tool_smoke(&provider, model, "Antigravity").await
 }
@@ -1348,7 +1348,7 @@ pub async fn run_live_antigravity_native_tool_smoke(
 /// hides it behind an opaque signal (Gemini-3 thought signatures are opaque).
 pub async fn run_live_antigravity_native_reasoning_smoke(
     model: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let provider = build_native_antigravity_provider(model)?;
     run_live_native_provider_reasoning_smoke(&provider, model, "Antigravity").await
 }
@@ -1374,7 +1374,7 @@ pub async fn run_live_native_provider_smoke(
     provider: &dyn Provider,
     model: &str,
     label: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let started = std::time::Instant::now();
     let messages = vec![Message {
         role: Role::User,
@@ -1403,12 +1403,12 @@ pub async fn run_live_native_provider_smoke(
     ensure!(
         outcome.text.contains("AUTH_TEST_OK"),
         "native {label} smoke returned unexpected content: {:?} ({})",
-        IDEOCODE_base::util::truncate_str(outcome.text.trim(), 200),
+        ideocode_base::util::truncate_str(outcome.text.trim(), 200),
         outcome.diagnostics()
     );
 
-    let mut stage = IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-        IDEOCODE_base::live_tests::checkpoints::NON_STREAMING_CHAT_COMPLETION,
+    let mut stage = ideocode_base::live_tests::LiveVerificationStage::passed(
+        ideocode_base::live_tests::checkpoints::NON_STREAMING_CHAT_COMPLETION,
     )
     .with_duration_ms(started.elapsed().as_millis() as u64)
     .with_evidence("model", serde_json::json!(model))
@@ -1432,7 +1432,7 @@ pub async fn run_live_native_provider_stream_smoke(
     provider: &dyn Provider,
     model: &str,
     label: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let started = std::time::Instant::now();
     let messages = vec![Message {
         role: Role::User,
@@ -1491,12 +1491,12 @@ pub async fn run_live_native_provider_stream_smoke(
     ensure!(
         outcome.text.contains("STREAM_TEST_OK"),
         "native {label} stream smoke returned unexpected content: {:?} ({})",
-        IDEOCODE_base::util::truncate_str(outcome.text.trim(), 200),
+        ideocode_base::util::truncate_str(outcome.text.trim(), 200),
         outcome.diagnostics()
     );
 
-    let mut stage = IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-        IDEOCODE_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
+    let mut stage = ideocode_base::live_tests::LiveVerificationStage::passed(
+        ideocode_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
     )
     .with_duration_ms(started.elapsed().as_millis() as u64)
     .with_evidence("model", serde_json::json!(model))
@@ -1535,7 +1535,7 @@ pub async fn run_live_native_provider_reasoning_smoke(
     provider: &dyn Provider,
     model: &str,
     label: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let started = std::time::Instant::now();
     // A small logic word problem with a single unambiguous numeric answer (4
     // cows: chickens c + cows w give c + w = 7 heads and 2c + 4w = 22 legs, so
@@ -1584,13 +1584,13 @@ pub async fn run_live_native_provider_reasoning_smoke(
     ensure!(
         !outcome.text.trim().is_empty() && answered,
         "native {label} reasoning smoke produced no coherent answer: {:?} ({})",
-        IDEOCODE_base::util::truncate_str(outcome.text.trim(), 200),
+        ideocode_base::util::truncate_str(outcome.text.trim(), 200),
         outcome.diagnostics()
     );
 
     let classification = outcome.reasoning_capability();
-    let mut stage = IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-        IDEOCODE_base::live_tests::checkpoints::REASONING_CAPABILITY,
+    let mut stage = ideocode_base::live_tests::LiveVerificationStage::passed(
+        ideocode_base::live_tests::checkpoints::REASONING_CAPABILITY,
     )
     .with_duration_ms(started.elapsed().as_millis() as u64)
     .with_evidence("model", serde_json::json!(model))
@@ -1651,7 +1651,7 @@ pub async fn run_live_native_provider_tool_smoke(
     provider: &dyn Provider,
     model: &str,
     label: &str,
-) -> anyhow::Result<IDEOCODE_base::live_tests::LiveVerificationStage> {
+) -> anyhow::Result<ideocode_base::live_tests::LiveVerificationStage> {
     let started = std::time::Instant::now();
 
     let tool_name = "read";
@@ -1693,7 +1693,7 @@ pub async fn run_live_native_provider_tool_smoke(
         !first.tool_calls.is_empty(),
         "native {label} tool smoke produced no tool call (stop_reason={:?}, text={:?})",
         first.stop_reason,
-        IDEOCODE_base::util::truncate_str(first.text.trim(), 200)
+        ideocode_base::util::truncate_str(first.text.trim(), 200)
     );
     let tool_call = first.tool_calls[0].clone();
     ensure!(
@@ -1734,7 +1734,7 @@ pub async fn run_live_native_provider_tool_smoke(
     ensure!(
         second.text.contains("42"),
         "native {label} tool follow-up did not reflect the tool result token: {:?}",
-        IDEOCODE_base::util::truncate_str(second.text.trim(), 200)
+        ideocode_base::util::truncate_str(second.text.trim(), 200)
     );
 
     // Phase 2 (best-effort): drive an agentic loop that requires reading TWO
@@ -1910,8 +1910,8 @@ pub async fn run_live_native_provider_tool_smoke(
         parallel_tool_calls = "verified";
     }
 
-    let mut stage = IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-        IDEOCODE_base::live_tests::checkpoints::TOOL_CALL_PARSE,
+    let mut stage = ideocode_base::live_tests::LiveVerificationStage::passed(
+        ideocode_base::live_tests::checkpoints::TOOL_CALL_PARSE,
     )
     .with_duration_ms(started.elapsed().as_millis() as u64)
     .with_evidence("model", serde_json::json!(model))
@@ -1945,7 +1945,7 @@ pub async fn run_live_native_provider_tool_smoke(
 /// Parse a streamed tool-call argument blob into a JSON object (empty object for
 /// a blank payload), shared by the native tool smoke probes.
 fn parse_tool_arguments(input_json: &str) -> serde_json::Value {
-    IDEOCODE_base::message::ToolCall::parse_streamed_input_to_object(if input_json.trim().is_empty() {
+    ideocode_base::message::ToolCall::parse_streamed_input_to_object(if input_json.trim().is_empty() {
         "{}"
     } else {
         input_json.trim()

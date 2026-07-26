@@ -230,8 +230,8 @@ impl App {
             // clearly stale files: another client attached to the same session
             // may have just saved ITS queued messages during the same reload
             // handoff, and deleting a fresh file here would drop them.
-            if let Ok(IDEOCODE_dir) = crate::storage::IDEOCODE_dir() {
-                let path = IDEOCODE_dir.join(format!("client-input-{}", session_id));
+            if let Ok(ideocode_dir) = crate::storage::ideocode_dir() {
+                let path = ideocode_dir.join(format!("client-input-{}", session_id));
                 let is_stale = std::fs::metadata(&path)
                     .and_then(|meta| meta.modified())
                     .ok()
@@ -243,8 +243,8 @@ impl App {
             }
             return;
         }
-        if let Ok(IDEOCODE_dir) = crate::storage::IDEOCODE_dir() {
-            let path = IDEOCODE_dir.join(format!("client-input-{}", session_id));
+        if let Ok(ideocode_dir) = crate::storage::ideocode_dir() {
+            let path = ideocode_dir.join(format!("client-input-{}", session_id));
             let rate_limit_reset_in_ms =
                 if resume_prompt.is_some() || inflight_continuation.is_some() {
                     None
@@ -322,8 +322,8 @@ impl App {
         if message.trim().is_empty() {
             return;
         }
-        if let Ok(IDEOCODE_dir) = crate::storage::IDEOCODE_dir() {
-            let path = IDEOCODE_dir.join(format!("client-input-{}", session_id));
+        if let Ok(ideocode_dir) = crate::storage::ideocode_dir() {
+            let path = ideocode_dir.join(format!("client-input-{}", session_id));
             let inferred_hints = infer_spawned_session_startup_hints(&message);
             let data = serde_json::json!({
                 "cursor": 0,
@@ -359,8 +359,8 @@ impl App {
     }
 
     pub(super) fn restore_input_for_reload(session_id: &str) -> Option<RestoredReloadInput> {
-        let IDEOCODE_dir = crate::storage::IDEOCODE_dir().ok()?;
-        let path = IDEOCODE_dir.join(format!("client-input-{}", session_id));
+        let ideocode_dir = crate::storage::ideocode_dir().ok()?;
+        let path = ideocode_dir.join(format!("client-input-{}", session_id));
         if !path.exists() {
             return None;
         }
@@ -1754,7 +1754,7 @@ pub(super) fn handle_info_command(app: &mut App, trimmed: &str) -> bool {
     }
 
     if trimmed == "/version" {
-        let version = IDEOCODE_build_meta::version();
+        let version = ideocode_build_meta::version();
         let is_canary = if app.session.is_canary {
             " (canary/self-dev)"
         } else {
@@ -1852,7 +1852,7 @@ pub(super) fn handle_info_command(app: &mut App, trimmed: &str) -> bool {
     }
 
     if trimmed == "/info" {
-        let version = IDEOCODE_build_meta::version();
+        let version = ideocode_build_meta::version();
         let terminal_size = crossterm::terminal::size()
             .map(|(w, h)| format!("{}x{}", w, h))
             .unwrap_or_else(|_| "unknown".to_string());
@@ -1908,7 +1908,7 @@ pub(super) fn handle_info_command(app: &mut App, trimmed: &str) -> bool {
         if let Some(ref provider_id) = app.provider_session_id {
             info.push_str(&format!(
                 "Provider Session: {}...\n",
-                IDEOCODE_core::util::truncate_str(provider_id, 16)
+                ideocode_core::util::truncate_str(provider_id, 16)
             ));
         }
 
@@ -2002,7 +2002,7 @@ pub(super) fn handle_info_command(app: &mut App, trimmed: &str) -> bool {
                 format!(
                     "- supported: yes\n- mode: {}\n- IDEOCODE-managed: {}\n- active summary: {} ({})\n- compacted messages: {}\n- active messages: {}\n- summary chars: {}\n- estimated tokens: {}\n- effective tokens: {}\n- observed tokens: {}\n- usage: {:.1}%\n- compacting now: {}\n- budget: {}",
                     mode,
-                    if app.provider.uses_IDEOCODE_compaction() {
+                    if app.provider.uses_ideocode_compaction() {
                         "yes"
                     } else {
                         "no"

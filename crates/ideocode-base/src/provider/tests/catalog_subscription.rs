@@ -62,7 +62,7 @@ fn test_openai_live_catalog_replaces_static_fallback_list() {
         models[..2],
         [
             "gpt-5.4-live-only".to_string(),
-            IDEOCODE_provider_core::CHATGPT_WEB_MODEL.to_string()
+            ideocode_provider_core::CHATGPT_WEB_MODEL.to_string()
         ]
     );
     // The only entries allowed past the live catalog are the platform-API-only
@@ -70,7 +70,7 @@ fn test_openai_live_catalog_replaces_static_fallback_list() {
     // machine running the tests.
     for extra in &models[2..] {
         assert!(
-            IDEOCODE_provider_core::is_openai_api_only_pro_model(extra),
+            ideocode_provider_core::is_openai_api_only_pro_model(extra),
             "unexpected non-pro extra model '{extra}' in live catalog list"
         );
     }
@@ -332,7 +332,7 @@ fn test_filtered_display_models_respects_curated_subscription_catalog() {
 }
 
 #[test]
-fn test_remote_IDEOCODE_subscription_fallback_keeps_managed_route_identity() {
+fn test_remote_ideocode_subscription_fallback_keeps_managed_route_identity() {
     let models = vec![
         "claude-opus-4-8".to_string(),
         "claude-sonnet-4-6".to_string(),

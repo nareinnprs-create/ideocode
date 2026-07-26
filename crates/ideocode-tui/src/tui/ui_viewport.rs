@@ -915,7 +915,7 @@ pub(super) fn draw_messages(
             let hash = region.hash;
             let total_height = region.height;
             let image_end = region.end_line;
-            let is_fit = region.render == IDEOCODE_tui_messages::ImageRegionRender::Fit;
+            let is_fit = region.render == ideocode_tui_messages::ImageRegionRender::Fit;
 
             if let Some(native_latex) = crate::tui::markdown::handterm_native_latex_for_hash(hash) {
                 // Native math writes real terminal cells rather than an overlay,
@@ -1098,7 +1098,7 @@ pub(super) fn draw_messages(
                 // Only inline raster images use the prewarm pipeline; mermaid
                 // crops build their own state at draw time. In pinned mode the
                 // raster images still render in the flow, so always prefetch.
-                if region.render != IDEOCODE_tui_messages::ImageRegionRender::Fit {
+                if region.render != ideocode_tui_messages::ImageRegionRender::Fit {
                     continue;
                 }
                 // Skip the ones already on screen; the draw pass above warmed

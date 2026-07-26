@@ -759,7 +759,7 @@ fn test_help_topic_shows_back_command_details() {
 
 #[test]
 fn test_catchup_next_queues_resume_for_attention_session() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.is_remote = true;
         app.remote_session_id = Some(app.session.id.clone());
@@ -824,7 +824,7 @@ fn test_back_command_queues_return_without_showing_brief() {
 
 #[test]
 fn test_maybe_show_catchup_after_history_adds_brief_page_and_marks_seen() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.side_panel = test_side_panel_snapshot("plan", "Plan");
 
@@ -1314,7 +1314,7 @@ fn submit_git_command_and_wait_for_response(app: &mut App) {
 
 #[test]
 fn test_observe_command_enables_transient_page_without_persisting() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.input = "/observe on".to_string();
         app.submit_input();
@@ -1340,7 +1340,7 @@ fn test_observe_command_enables_transient_page_without_persisting() {
 
 #[test]
 fn test_splitview_command_enables_transient_page_without_persisting() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.input = "/splitview on".to_string();
         app.submit_input();

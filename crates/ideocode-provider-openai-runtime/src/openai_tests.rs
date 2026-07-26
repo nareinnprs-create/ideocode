@@ -3,8 +3,8 @@
 use super::*;
 use anyhow::Result;
 use futures::{SinkExt, StreamExt};
-use IDEOCODE_base::auth::codex::CodexCredentials;
-use IDEOCODE_message_types::{ContentBlock, Role};
+use ideocode_base::auth::codex::CodexCredentials;
+use ideocode_message_types::{ContentBlock, Role};
 use std::collections::{HashMap, HashSet};
 use std::ffi::OsString;
 use std::path::PathBuf;
@@ -23,19 +23,19 @@ struct EnvVarGuard {
 impl EnvVarGuard {
     fn set(key: &'static str, value: &str) -> Self {
         let previous = std::env::var_os(key);
-        IDEOCODE_base::env::set_var(key, value);
+        ideocode_base::env::set_var(key, value);
         Self { key, previous }
     }
 
     fn set_path(key: &'static str, value: &std::path::Path) -> Self {
         let previous = std::env::var_os(key);
-        IDEOCODE_base::env::set_var(key, value);
+        ideocode_base::env::set_var(key, value);
         Self { key, previous }
     }
 
     fn remove(key: &'static str) -> Self {
         let previous = std::env::var_os(key);
-        IDEOCODE_base::env::remove_var(key);
+        ideocode_base::env::remove_var(key);
         Self { key, previous }
     }
 }
@@ -43,9 +43,9 @@ impl EnvVarGuard {
 impl Drop for EnvVarGuard {
     fn drop(&mut self) {
         if let Some(previous) = &self.previous {
-            IDEOCODE_base::env::set_var(self.key, previous);
+            ideocode_base::env::set_var(self.key, previous);
         } else {
-            IDEOCODE_base::env::remove_var(self.key);
+            ideocode_base::env::remove_var(self.key);
         }
     }
 }
@@ -149,14 +149,14 @@ async fn test_persistent_ws_state_with_ping_notify() -> (
 
 struct LiveOpenAITestEnv {
     _lock: MutexGuard<'static, ()>,
-    _IDEOCODE_home: EnvVarGuard,
+    _ideocode_home: EnvVarGuard,
     _transport: EnvVarGuard,
     _temp: tempfile::TempDir,
 }
 
 impl LiveOpenAITestEnv {
     fn new() -> Result<Option<Self>> {
-        let lock = IDEOCODE_base::storage::lock_test_env();
+        let lock = ideocode_base::storage::lock_test_env();
         let Some(source_auth) = real_codex_auth_path() else {
             return Ok(None);
         };
@@ -176,12 +176,12 @@ impl LiveOpenAITestEnv {
         )?;
         std::fs::copy(source_auth, &target_auth)?;
 
-        let IDEOCODE_home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
+        let ideocode_home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
         let transport = EnvVarGuard::set("IDEOCODE_OPENAI_TRANSPORT", "https");
 
         Ok(Some(Self {
             _lock: lock,
-            _IDEOCODE_home: IDEOCODE_home,
+            _ideocode_home: ideocode_home,
             _transport: transport,
             _temp: temp,
         }))
@@ -194,18 +194,18 @@ fn real_codex_auth_path() -> Option<PathBuf> {
     path.exists().then_some(path)
 }
 
-async fn live_openai_catalog() -> Result<Option<IDEOCODE_base::provider::OpenAIModelCatalog>> {
+async fn live_openai_catalog() -> Result<Option<ideocode_base::provider::OpenAIModelCatalog>> {
     let Some(_env) = LiveOpenAITestEnv::new()? else {
         return Ok(None);
     };
-    let creds = IDEOCODE_base::auth::codex::load_credentials()?;
+    let creds = ideocode_base::auth::codex::load_credentials()?;
     if !OpenAIProvider::is_chatgpt_mode(&creds) {
         return Ok(None);
     }
 
     let token = openai_access_token(&Arc::new(RwLock::new(creds))).await?;
     Ok(Some(
-        IDEOCODE_base::provider::fetch_openai_model_catalog(&token).await?,
+        ideocode_base::provider::fetch_openai_model_catalog(&token).await?,
     ))
 }
 
@@ -213,7 +213,7 @@ async fn live_openai_smoke(model: &str, sentinel: &str) -> Result<Option<String>
     let Some(_env) = LiveOpenAITestEnv::new()? else {
         return Ok(None);
     };
-    let creds = IDEOCODE_base::auth::codex::load_credentials()?;
+    let creds = ideocode_base::auth::codex::load_credentials()?;
     if !OpenAIProvider::is_chatgpt_mode(&creds) {
         return Ok(None);
     }
@@ -238,26 +238,26 @@ include!("openai_tests/parsing_tools.rs");
 /// actually use.
 #[test]
 fn openai_credential_mode_runtime_provider_identity_round_trips() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let previous = std::env::var_os("IDEOCODE_RUNTIME_PROVIDER");
 
-    IDEOCODE_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "openai");
+    ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "openai");
     assert_eq!(
-        OpenAICredentialMode::from_runtime_env(IDEOCODE_provider_core::DualAuthProvider::OpenAI),
+        OpenAICredentialMode::from_runtime_env(ideocode_provider_core::DualAuthProvider::OpenAI),
         OpenAICredentialMode::OAuth,
         "OAuth selection must surface as the OAuth runtime identity"
     );
 
-    IDEOCODE_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "openai-api");
+    ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "openai-api");
     assert_eq!(
-        OpenAICredentialMode::from_runtime_env(IDEOCODE_provider_core::DualAuthProvider::OpenAI),
+        OpenAICredentialMode::from_runtime_env(ideocode_provider_core::DualAuthProvider::OpenAI),
         OpenAICredentialMode::ApiKey,
         "API-key selection must surface as the API-key runtime identity"
     );
 
     match previous {
-        Some(value) => IDEOCODE_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", value),
-        None => IDEOCODE_base::env::remove_var("IDEOCODE_RUNTIME_PROVIDER"),
+        Some(value) => ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", value),
+        None => ideocode_base::env::remove_var("IDEOCODE_RUNTIME_PROVIDER"),
     }
 }
 

@@ -59,7 +59,7 @@ fn prepare_body_preserves_multiline_user_prompt_lines() {
 /// the whole transcript per chunk.
 #[test]
 fn matching_suffix_len_detects_prepended_history() {
-    use IDEOCODE_tui_messages::MessageBoundary;
+    use ideocode_tui_messages::MessageBoundary;
 
     let old: Vec<DisplayMessage> = (0..4)
         .map(|i| DisplayMessage::system(format!("msg {i}")))

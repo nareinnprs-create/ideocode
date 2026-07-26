@@ -10,7 +10,7 @@ use super::{
 use crate::agent::Agent;
 use crate::plan::PlanItem;
 use crate::protocol::{NotificationType, ServerEvent};
-use IDEOCODE_agent_runtime::SoftInterruptSource;
+use ideocode_agent_runtime::SoftInterruptSource;
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use std::time::Instant;
@@ -21,7 +21,7 @@ type SessionAgents = Arc<RwLock<HashMap<String, Arc<Mutex<Agent>>>>>;
 /// Reject plans whose dependency graph contains a cycle. Cyclic items can never
 /// become runnable (`summarize_plan_graph` parks them in `blocked_ids` forever),
 /// so letting one into a live plan silently wedges all dependent work. This
-/// mirrors the acyclicity validation `IDEOCODE_plan::dag::seed`/`expand` already
+/// mirrors the acyclicity validation `ideocode_plan::dag::seed`/`expand` already
 /// enforce on the task-graph paths. Returns a user-facing error naming the
 /// cyclic item ids, or `None` when the graph is a valid DAG.
 fn plan_cycle_error(items: &[PlanItem]) -> Option<String> {
@@ -396,14 +396,14 @@ pub(super) async fn handle_comm_approve_plan(
             .map(|plan| plan.items.len())
             .unwrap_or_default();
         let merged_count = existing_count.saturating_add(items.len());
-        if merged_count > IDEOCODE_plan::MAX_PLAN_ITEMS {
+        if merged_count > ideocode_plan::MAX_PLAN_ITEMS {
             finish_request(
                 swarm_mutation_runtime,
                 &mutation_state,
                 PersistedSwarmMutationResponse::Error {
                     message: format!(
                         "Plan approval would contain {merged_count} items, exceeding the per-swarm limit of {}; finish or clear stale plan nodes first.",
-                        IDEOCODE_plan::MAX_PLAN_ITEMS
+                        ideocode_plan::MAX_PLAN_ITEMS
                     ),
                     retry_after_secs: None,
                 },

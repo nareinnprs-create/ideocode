@@ -32,7 +32,7 @@ fn sanitize_file_component(value: &str) -> String {
 }
 
 fn trace_dir() -> Result<std::path::PathBuf> {
-    Ok(crate::storage::IDEOCODE_dir()?.join("reload-traces"))
+    Ok(crate::storage::ideocode_dir()?.join("reload-traces"))
 }
 
 pub(super) fn trace_path(reload_id: &str) -> Result<std::path::PathBuf> {

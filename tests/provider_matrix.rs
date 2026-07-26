@@ -1,18 +1,18 @@
 ﻿use anyhow::Result;
-use IDEOCODE::auth::{AuthState, AuthStatus};
-use IDEOCODE::cli::provider_init::{
+use ideocode::auth::{AuthState, AuthStatus};
+use ideocode::cli::provider_init::{
     ProviderChoice, apply_login_provider_profile_env, choice_for_login_provider,
     init_provider_for_validation,
 };
-use IDEOCODE::provider::Provider;
-use IDEOCODE::provider_catalog::{
+use ideocode::provider::Provider;
+use ideocode::provider_catalog::{
     LoginProviderDescriptor, LoginProviderTarget, OPENAI_COMPAT_PROFILE, OpenAiCompatibleProfile,
     apply_openai_compatible_profile_env, load_api_key_from_env_or_config, login_providers,
     openai_compatible_profile_is_configured, openai_compatible_profiles,
     resolve_openai_compatible_profile, save_env_value_to_env_file,
     server_bootstrap_login_providers,
 };
-use IDEOCODE_provider_openrouter_runtime::OpenRouterProvider;
+use ideocode_provider_openrouter_runtime::OpenRouterProvider;
 use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::{Mutex, MutexGuard, OnceLock};
@@ -98,13 +98,13 @@ impl TestEnv {
             .collect::<Vec<_>>();
 
         for (key, _) in &saved {
-            IDEOCODE::env::remove_var(key);
+            ideocode::env::remove_var(key);
         }
 
         let config_root = temp.path().join("config").join("IDEOCODE");
         std::fs::create_dir_all(&config_root)?;
-        IDEOCODE::env::set_var("IDEOCODE_HOME", temp.path());
-        IDEOCODE::config::invalidate_config_cache();
+        ideocode::env::set_var("IDEOCODE_HOME", temp.path());
+        ideocode::config::invalidate_config_cache();
         apply_openai_compatible_profile_env(None);
         AuthStatus::invalidate_cache();
 
@@ -124,9 +124,9 @@ impl TestEnv {
     }
 
     fn clear_profile_keys(&self) {
-        IDEOCODE::env::remove_var("OPENROUTER_API_KEY");
+        ideocode::env::remove_var("OPENROUTER_API_KEY");
         for profile in openai_compatible_profiles() {
-            IDEOCODE::env::remove_var(profile.api_key_env);
+            ideocode::env::remove_var(profile.api_key_env);
         }
         AuthStatus::invalidate_cache();
     }
@@ -136,16 +136,16 @@ impl Drop for TestEnv {
     fn drop(&mut self) {
         apply_openai_compatible_profile_env(None);
         AuthStatus::invalidate_cache();
-        IDEOCODE::config::invalidate_config_cache();
+        ideocode::config::invalidate_config_cache();
         for (key, value) in &self.saved {
             if let Some(value) = value {
-                IDEOCODE::env::set_var(key, value);
+                ideocode::env::set_var(key, value);
             } else {
-                IDEOCODE::env::remove_var(key);
+                ideocode::env::remove_var(key);
             }
         }
         AuthStatus::invalidate_cache();
-        IDEOCODE::config::invalidate_config_cache();
+        ideocode::config::invalidate_config_cache();
     }
 }
 
@@ -196,7 +196,7 @@ fn clear_openai_compatible_runtime_env() {
         "IDEOCODE_PROVIDER_PROFILE_NAME",
         "IDEOCODE_NAMED_PROVIDER_PROFILE",
     ] {
-        IDEOCODE::env::remove_var(key);
+        ideocode::env::remove_var(key);
     }
     AuthStatus::invalidate_cache();
 }
@@ -249,7 +249,7 @@ fn write_profile_api_key_file(
     let path = env.config_dir().join(&resolved.env_file);
     std::fs::create_dir_all(env.config_dir())?;
     std::fs::write(&path, format!("{}={value}\n", resolved.api_key_env))?;
-    IDEOCODE::env::remove_var(&resolved.api_key_env);
+    ideocode::env::remove_var(&resolved.api_key_env);
     AuthStatus::invalidate_cache();
     Ok(())
 }
@@ -307,7 +307,7 @@ fn apply_competing_compatible_state(
                     env.config_file(),
                     format!("[provider]\ndefault_provider = \"{default_provider}\"\n"),
                 )?;
-                IDEOCODE::config::invalidate_config_cache();
+                ideocode::config::invalidate_config_cache();
             }
         }
     }
@@ -387,23 +387,23 @@ fn assert_no_active_compatible_profile_lock(context: &str) {
 fn seed_non_compatible_auto_auth(provider: LoginProviderDescriptor) -> bool {
     match provider.target {
         LoginProviderTarget::Claude => {
-            IDEOCODE::env::set_var("ANTHROPIC_API_KEY", "test-anthropic-key");
+            ideocode::env::set_var("ANTHROPIC_API_KEY", "test-anthropic-key");
             true
         }
         LoginProviderTarget::OpenAiApiKey => {
-            IDEOCODE::env::set_var("OPENAI_API_KEY", "sk-test-openai-key");
+            ideocode::env::set_var("OPENAI_API_KEY", "sk-test-openai-key");
             true
         }
         LoginProviderTarget::OpenRouter => {
-            IDEOCODE::env::set_var("OPENROUTER_API_KEY", "sk-test-openrouter-key");
+            ideocode::env::set_var("OPENROUTER_API_KEY", "sk-test-openrouter-key");
             true
         }
         LoginProviderTarget::Copilot => {
-            IDEOCODE::env::set_var("COPILOT_GITHUB_TOKEN", "gho_test-copilot-token");
+            ideocode::env::set_var("COPILOT_GITHUB_TOKEN", "gho_test-copilot-token");
             true
         }
         LoginProviderTarget::Cursor => {
-            IDEOCODE::env::set_var("CURSOR_API_KEY", "sk-test-cursor-key");
+            ideocode::env::set_var("CURSOR_API_KEY", "sk-test-cursor-key");
             true
         }
         _ => false,
@@ -723,7 +723,7 @@ fn provider_matrix_openai_compatible_auth_state_space_material_states_preserve_l
                         "runtime no-auth flag mismatch for {state_label}"
                     );
                     assert_eq!(
-                        IDEOCODE::provider::openrouter::has_credentials(),
+                        ideocode::provider::openrouter::has_credentials(),
                         expected_configured,
                         "runtime credentials mismatch for {state_label}"
                     );
@@ -778,7 +778,7 @@ fn provider_matrix_env_credentials_activate_openrouter_runtime() -> Result<()> {
         env.clear_profile_keys();
         apply_openai_compatible_profile_env(Some(profile));
         let resolved = resolve_openai_compatible_profile(profile);
-        IDEOCODE::env::set_var(&resolved.api_key_env, "matrix-env-secret");
+        ideocode::env::set_var(&resolved.api_key_env, "matrix-env-secret");
         AuthStatus::invalidate_cache();
 
         assert_eq!(
@@ -808,14 +808,14 @@ fn provider_matrix_env_credentials_activate_openrouter_runtime() -> Result<()> {
             Some("0")
         );
         assert!(
-            IDEOCODE::provider::openrouter::has_credentials(),
+            ideocode::provider::openrouter::has_credentials(),
             "expected credentials for {}",
             resolved.id
         );
         OpenRouterProvider::new()?;
         assert_eq!(AuthStatus::check().openrouter, AuthState::Available);
 
-        IDEOCODE::env::remove_var(&resolved.api_key_env);
+        ideocode::env::remove_var(&resolved.api_key_env);
     }
 
     Ok(())
@@ -837,7 +837,7 @@ fn provider_matrix_file_credentials_activate_openrouter_runtime() -> Result<()> 
         AuthStatus::invalidate_cache();
 
         assert!(
-            IDEOCODE::provider::openrouter::has_credentials(),
+            ideocode::provider::openrouter::has_credentials(),
             "expected file credentials for {}",
             resolved.id
         );
@@ -855,13 +855,13 @@ fn provider_matrix_custom_compat_overrides_flow_into_runtime() -> Result<()> {
     let env = TestEnv::new()?;
     env.clear_profile_keys();
 
-    IDEOCODE::env::set_var(
+    ideocode::env::set_var(
         "IDEOCODE_OPENAI_COMPAT_API_BASE",
         "https://api.groq.com/openai/v1/",
     );
-    IDEOCODE::env::set_var("IDEOCODE_OPENAI_COMPAT_API_KEY_NAME", "GROQ_API_KEY");
-    IDEOCODE::env::set_var("IDEOCODE_OPENAI_COMPAT_ENV_FILE", "groq.env");
-    IDEOCODE::env::set_var("IDEOCODE_OPENAI_COMPAT_DEFAULT_MODEL", "openai/gpt-oss-120b");
+    ideocode::env::set_var("IDEOCODE_OPENAI_COMPAT_API_KEY_NAME", "GROQ_API_KEY");
+    ideocode::env::set_var("IDEOCODE_OPENAI_COMPAT_ENV_FILE", "groq.env");
+    ideocode::env::set_var("IDEOCODE_OPENAI_COMPAT_DEFAULT_MODEL", "openai/gpt-oss-120b");
 
     apply_openai_compatible_profile_env(Some(OPENAI_COMPAT_PROFILE));
     let resolved = resolve_openai_compatible_profile(OPENAI_COMPAT_PROFILE);
@@ -889,7 +889,7 @@ fn provider_matrix_custom_compat_overrides_flow_into_runtime() -> Result<()> {
         std::env::var("IDEOCODE_OPENROUTER_ENV_FILE").ok().as_deref(),
         Some("groq.env")
     );
-    assert!(IDEOCODE::provider::openrouter::has_credentials());
+    assert!(ideocode::provider::openrouter::has_credentials());
     OpenRouterProvider::new()?;
     assert_eq!(AuthStatus::check().openrouter, AuthState::Available);
 
@@ -902,7 +902,7 @@ fn provider_matrix_custom_local_compat_without_api_key_activates_openrouter_runt
     let env = TestEnv::new()?;
     env.clear_profile_keys();
 
-    IDEOCODE::env::set_var("IDEOCODE_OPENAI_COMPAT_API_BASE", "http://localhost:11434/v1");
+    ideocode::env::set_var("IDEOCODE_OPENAI_COMPAT_API_BASE", "http://localhost:11434/v1");
 
     apply_openai_compatible_profile_env(Some(OPENAI_COMPAT_PROFILE));
     let resolved = resolve_openai_compatible_profile(OPENAI_COMPAT_PROFILE);
@@ -916,7 +916,7 @@ fn provider_matrix_custom_local_compat_without_api_key_activates_openrouter_runt
             .as_deref(),
         Some("1")
     );
-    assert!(IDEOCODE::provider::openrouter::has_credentials());
+    assert!(ideocode::provider::openrouter::has_credentials());
     OpenRouterProvider::new()?;
     assert_eq!(AuthStatus::check().openrouter, AuthState::Available);
 

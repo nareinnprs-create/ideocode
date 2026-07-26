@@ -4,8 +4,8 @@
 
 use anyhow::Result;
 use async_stream::stream;
-use IDEOCODE::message::{Message, StreamEvent, ToolDefinition};
-use IDEOCODE::provider::{EventStream, Provider};
+use ideocode::message::{Message, StreamEvent, ToolDefinition};
+use ideocode::provider::{EventStream, Provider};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 

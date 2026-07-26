@@ -106,7 +106,7 @@ fn test_input_shell_request_roundtrip() -> Result<()> {
 #[test]
 fn test_input_shell_result_event_roundtrip() -> Result<()> {
     let event = ServerEvent::InputShellResult {
-        result: IDEOCODE_message_types::InputShellResult {
+        result: ideocode_message_types::InputShellResult {
             command: "pwd".to_string(),
             cwd: Some("/tmp/project".to_string()),
             output: "/tmp/project\n".to_string(),
@@ -218,9 +218,9 @@ fn test_structured_set_route_decodes_as_set_route_not_set_model() -> Result<()> 
     // not be shadowed by the legacy `set_model` compatibility path.
     let request = Request::SetRoute {
         id: 7,
-        selection: IDEOCODE_provider_core::RouteSelection {
+        selection: ideocode_provider_core::RouteSelection {
             model: "gpt-5.5".to_string(),
-            runtime_key: IDEOCODE_provider_core::RuntimeKey::OpenAIApiKey,
+            runtime_key: ideocode_provider_core::RuntimeKey::OpenAIApiKey,
             api_method: "openai-api".to_string(),
             provider_label: "OpenAI".to_string(),
             detail: String::new(),
@@ -241,12 +241,12 @@ fn test_structured_set_route_decodes_as_set_route_not_set_model() -> Result<()> 
 }
 
 #[test]
-fn test_IDEOCODE_subscription_set_route_is_wire_safe() -> Result<()> {
+fn test_ideocode_subscription_set_route_is_wire_safe() -> Result<()> {
     let request = Request::SetRoute {
         id: 8,
-        selection: IDEOCODE_provider_core::RouteSelection {
+        selection: ideocode_provider_core::RouteSelection {
             model: "gpt-5.5".to_string(),
-            runtime_key: IDEOCODE_provider_core::RuntimeKey::IDEOCODESubscription,
+            runtime_key: ideocode_provider_core::RuntimeKey::IDEOCODESubscription,
             api_method: "IDEOCODE-subscription".to_string(),
             provider_label: "IDEOCODE Subscription".to_string(),
             detail: "IDEOCODE subscription routing · managed server-side".to_string(),
@@ -265,7 +265,7 @@ fn test_IDEOCODE_subscription_set_route_is_wire_safe() -> Result<()> {
     assert_eq!(selection.model, "gpt-5.5");
     assert_eq!(
         selection.runtime_key,
-        IDEOCODE_provider_core::RuntimeKey::IDEOCODESubscription
+        ideocode_provider_core::RuntimeKey::IDEOCODESubscription
     );
     assert_eq!(selection.routed_model_spec(), "gpt-5.5");
     Ok(())

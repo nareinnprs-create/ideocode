@@ -822,7 +822,7 @@ impl MemoryAgent {
         let retrieval_ctx = RetrievalContext {
             verified_ids: verified_ids.clone(),
             rejected_ids,
-            context_snippet: IDEOCODE_core::util::truncate_str(&context, 200).to_string(),
+            context_snippet: ideocode_core::util::truncate_str(&context, 200).to_string(),
         };
 
         // Step 4: Format and store for main agent
@@ -894,7 +894,7 @@ impl MemoryAgent {
                 "[{}] Memory relevant (semantic sim={:.2}): {}",
                 session_id,
                 sim,
-                IDEOCODE_core::util::truncate_str(&entry.content, 40)
+                ideocode_core::util::truncate_str(&entry.content, 40)
             ));
         }
         selected.into_iter().map(|(entry, _)| entry).collect()
@@ -1251,7 +1251,7 @@ impl MemoryAgent {
                 crate::logging::info(&format!(
                     "Memory gap detected: {} candidates retrieved but none relevant. Context: {}...",
                     ctx.rejected_ids.len(),
-                    IDEOCODE_core::util::truncate_str(&ctx.context_snippet, 100)
+                    ideocode_core::util::truncate_str(&ctx.context_snippet, 100)
                 ));
             }
 
@@ -1368,7 +1368,7 @@ async fn refine_clusters(
                 let member_contents: Vec<String> = project_ids
                     .iter()
                     .filter_map(|id| project_graph.get_memory(id))
-                    .map(|m| IDEOCODE_core::util::truncate_str(&m.content, 80).to_string())
+                    .map(|m| ideocode_core::util::truncate_str(&m.content, 80).to_string())
                     .collect();
                 if let Ok(name) = name_cluster_with_sidecar(&member_contents).await
                     && let Some(cluster) = project_graph.clusters.get_mut(cluster_id)

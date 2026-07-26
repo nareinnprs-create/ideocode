@@ -17,7 +17,7 @@ fn make_ctx(stdin_tx: Option<mpsc::UnboundedSender<StdinInputRequest>>) -> ToolC
     }
 }
 
-fn make_agent_ctx(signal: IDEOCODE_agent_runtime::InterruptSignal) -> ToolContext {
+fn make_agent_ctx(signal: ideocode_agent_runtime::InterruptSignal) -> ToolContext {
     ToolContext {
         session_id: "test-session".to_string(),
         message_id: "test-msg".to_string(),
@@ -243,7 +243,7 @@ async fn test_foreground_timeout_promotes_and_command_keeps_running() {
 #[tokio::test]
 async fn test_reload_persistable_bash_continues_in_background() {
     let tool = BashTool::new();
-    let signal = IDEOCODE_agent_runtime::InterruptSignal::new();
+    let signal = ideocode_agent_runtime::InterruptSignal::new();
     let ctx = make_agent_ctx(signal.clone());
 
     let signal_task = tokio::spawn(async move {
@@ -298,7 +298,7 @@ async fn test_reload_persistable_bash_continues_in_background() {
 #[tokio::test]
 async fn test_reload_persistable_bash_timeout_promotes_to_background() {
     let tool = BashTool::new();
-    let signal = IDEOCODE_agent_runtime::InterruptSignal::new();
+    let signal = ideocode_agent_runtime::InterruptSignal::new();
     let ctx = make_agent_ctx(signal);
 
     let result = tool

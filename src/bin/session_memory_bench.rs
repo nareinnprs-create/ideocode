@@ -1,8 +1,8 @@
 ﻿use clap::{Parser, ValueEnum};
-use IDEOCODE::message::{ContentBlock, Role};
-use IDEOCODE::process_memory;
-use IDEOCODE::session::Session;
-use IDEOCODE::side_panel::{
+use ideocode::message::{ContentBlock, Role};
+use ideocode::process_memory;
+use ideocode::session::Session;
+use ideocode::side_panel::{
     SidePanelPage, SidePanelPageFormat, SidePanelPageSource, SidePanelSnapshot,
 };
 
@@ -61,7 +61,7 @@ fn main() -> anyhow::Result<()> {
 
     let process_before = process_memory::snapshot_with_source("bench:session-memory:before");
     let session = load_or_build_session(&args)?;
-    let display_messages = IDEOCODE::tui::display_messages_from_session(&session);
+    let display_messages = ideocode::tui::display_messages_from_session(&session);
     let side_panel = build_side_panel(&args);
 
     let resident_provider_messages = match args.mode {
@@ -81,7 +81,7 @@ fn main() -> anyhow::Result<()> {
         BenchMode::Duplicated => "resident_ui",
     };
 
-    let client_memory = IDEOCODE::tui::transcript_memory_profile(
+    let client_memory = ideocode::tui::transcript_memory_profile(
         &session,
         &resident_provider_messages,
         &materialized_provider_messages,

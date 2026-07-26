@@ -1640,7 +1640,7 @@ fn render_swarm_message_centered_mode_caps_wrap_width_for_long_notifications() {
 fn render_swarm_message_collapsed_shows_tldr_and_expand_badge_only() {
     let saved = crate::tui::markdown::center_code_blocks();
     crate::tui::markdown::set_center_code_blocks(false);
-    let content = IDEOCODE_tui_messages::encode_collapsible_swarm_content(
+    let content = ideocode_tui_messages::encode_collapsible_swarm_content(
         "fixed the flaky test",
         "The flaky test was caused by a race in the setup helper.\n\nI rewrote it to use a barrier.",
     );
@@ -1666,12 +1666,12 @@ fn render_swarm_message_collapsed_shows_tldr_and_expand_badge_only() {
 fn render_swarm_message_expanded_shows_body_and_collapse_badge() {
     let saved = crate::tui::markdown::center_code_blocks();
     crate::tui::markdown::set_center_code_blocks(false);
-    let collapsed = IDEOCODE_tui_messages::encode_collapsible_swarm_content(
+    let collapsed = ideocode_tui_messages::encode_collapsible_swarm_content(
         "fixed the flaky test",
         "The flaky test was caused by a race in the setup helper.",
     );
     let expanded =
-        IDEOCODE_tui_messages::toggle_collapsible_swarm_content(&collapsed).expect("toggle");
+        ideocode_tui_messages::toggle_collapsible_swarm_content(&collapsed).expect("toggle");
     let msg = DisplayMessage::swarm("DM from sheep", expanded);
 
     let lines = render_swarm_message(&msg, 100, crate::config::DiffDisplayMode::Off);

@@ -1,1 +1,1 @@
-﻿pub(crate) use IDEOCODE_tui_core::stream_buffer::*;
+﻿pub(crate) use ideocode_tui_core::stream_buffer::*;

@@ -1,8 +1,8 @@
 ﻿use super::{ALL_OPENAI_MODELS, openrouter};
 use crate::auth;
 use crate::provider::models::provider_for_model;
-use IDEOCODE_provider_core::pricing as core_pricing;
-use IDEOCODE_provider_core::{RouteCheapnessEstimate, RouteCostConfidence, RouteCostSource};
+use ideocode_provider_core::pricing as core_pricing;
+use ideocode_provider_core::{RouteCheapnessEstimate, RouteCostConfidence, RouteCostSource};
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
@@ -235,7 +235,7 @@ pub(crate) fn cheapness_for_route(
     provider: &str,
     api_method: &str,
 ) -> Option<RouteCheapnessEstimate> {
-    use IDEOCODE_provider_core::{AuthMode, AuthRoute, DualAuthProvider};
+    use ideocode_provider_core::{AuthMode, AuthRoute, DualAuthProvider};
 
     // Dual-auth (Anthropic/OpenAI OAuth-vs-API) methods are recognized through
     // the single shared parser so pricing never disagrees with the routing
@@ -298,7 +298,7 @@ pub(crate) fn cheapness_for_route(
 mod tests {
     use super::*;
     use crate::env;
-    use IDEOCODE_provider_core::{RouteBillingKind, RouteCostConfidence, RouteCostSource};
+    use ideocode_provider_core::{RouteBillingKind, RouteCostConfidence, RouteCostSource};
 
     fn with_clean_provider_test_env<T>(f: impl FnOnce() -> T) -> T {
         let _guard = crate::storage::lock_test_env();

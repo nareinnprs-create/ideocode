@@ -3,11 +3,11 @@
 //! `IDEOCODE-base` so provider edits compile only this crate plus a binary
 //! relink instead of rebuilding the base -> app-core -> tui spine. The
 //! binary's composition root registers [`AnthropicProvider`] with
-//! `IDEOCODE_base::provider::external` at startup.
+//! `ideocode_base::provider::external` at startup.
 //!
 //! Pure header/attribution helpers that base's usage/sidecar code needs
 //! (`apply_oauth_attribution_headers`, `CLAUDE_CLI_USER_AGENT`, API-key
-//! loading, cache-TTL toggles) stay in `IDEOCODE_base::provider::anthropic`;
+//! loading, cache-TTL toggles) stay in `ideocode_base::provider::anthropic`;
 //! this crate re-uses them from there.
 
 //! Direct Anthropic API provider
@@ -15,31 +15,31 @@
 //! Uses the Anthropic Messages API directly without the Python SDK.
 //! This provides better control and eliminates the Python dependency.
 
-use IDEOCODE_base::auth;
-use IDEOCODE_base::auth::oauth;
-use IDEOCODE_provider_core::{EventStream, NativeToolResultSender, Provider};
+use ideocode_base::auth;
+use ideocode_base::auth::oauth;
+use ideocode_provider_core::{EventStream, NativeToolResultSender, Provider};
 fn oauth_beta_headers(model: &str) -> &'static str {
-    IDEOCODE_provider_core::anthropic_oauth_beta_headers(model)
+    ideocode_provider_core::anthropic_oauth_beta_headers(model)
 }
 
 use anyhow::{Context, Result};
 use async_trait::async_trait;
 use futures::StreamExt;
-use IDEOCODE_base::provider::anthropic::{
+use ideocode_base::provider::anthropic::{
     AVAILABLE_MODELS, AnthropicCredentialMode, CLAUDE_CLI_USER_AGENT,
     apply_oauth_attribution_headers, is_cache_ttl_1h, load_anthropic_api_key,
 };
 #[cfg(test)]
-use IDEOCODE_base::provider::anthropic::{OAUTH_BETA_HEADERS, effectively_1m};
+use ideocode_base::provider::anthropic::{OAUTH_BETA_HEADERS, effectively_1m};
 #[cfg(test)]
-use IDEOCODE_message_types::{ContentBlock, Role};
-use IDEOCODE_message_types::{Message, StreamEvent, ToolDefinition};
+use ideocode_message_types::{ContentBlock, Role};
+use ideocode_message_types::{Message, StreamEvent, ToolDefinition};
 #[cfg(test)]
-use IDEOCODE_provider_anthropic::{ApiContentBlock, ToolResultContent, ToolResultContentBlock};
-use IDEOCODE_provider_anthropic::{
+use ideocode_provider_anthropic::{ApiContentBlock, ToolResultContent, ToolResultContentBlock};
+use ideocode_provider_anthropic::{
     ApiMessage, ApiMetadata, ApiOutputConfig, ApiRequest, ApiSystem, ApiThinking, ApiTool,
 };
-use IDEOCODE_provider_core::{
+use ideocode_provider_core::{
     anthropic_is_1m_model as is_1m_model,
     anthropic_map_tool_name_from_oauth as map_tool_name_from_oauth,
     anthropic_strip_1m_suffix as strip_1m_suffix,
@@ -60,7 +60,7 @@ const API_URL: &str = "https://api.anthropic.com/v1/messages";
 const API_URL_OAUTH: &str = "https://api.anthropic.com/v1/messages?beta=true";
 
 #[cfg(test)]
-pub(crate) const OAUTH_BETA_HEADERS_1M: &str = IDEOCODE_provider_core::ANTHROPIC_OAUTH_BETA_HEADERS_1M;
+pub(crate) const OAUTH_BETA_HEADERS_1M: &str = ideocode_provider_core::ANTHROPIC_OAUTH_BETA_HEADERS_1M;
 
 #[derive(Debug, Clone, Default)]
 struct OAuthClientMetadata {
@@ -71,7 +71,7 @@ struct OAuthClientMetadata {
 }
 
 fn load_official_claude_client_metadata() -> OAuthClientMetadata {
-    let path = match IDEOCODE_base::storage::user_home_path(".claude.json") {
+    let path = match ideocode_base::storage::user_home_path(".claude.json") {
         Ok(path) => path,
         Err(_) => return OAuthClientMetadata::default(),
     };
@@ -173,7 +173,7 @@ async fn oauth_preflight_get(
 
     if !resp.status().is_success() {
         let status = resp.status();
-        let body = IDEOCODE_base::util::http_error_body(resp, "HTTP error").await;
+        let body = ideocode_base::util::http_error_body(resp, "HTTP error").await;
         anyhow::bail!("{} returned {}: {}", label, status, body);
     }
 
@@ -197,7 +197,7 @@ async fn oauth_preflight_post_json<T: Serialize + ?Sized>(
 
     if !resp.status().is_success() {
         let status = resp.status();
-        let body = IDEOCODE_base::util::http_error_body(resp, "HTTP error").await;
+        let body = ideocode_base::util::http_error_body(resp, "HTTP error").await;
         anyhow::bail!("{} returned {}: {}", label, status, body);
     }
 
@@ -208,7 +208,7 @@ fn record_oauth_preflight_result(label: &str, result: Result<()>) -> bool {
     match result {
         Ok(()) => true,
         Err(err) => {
-            IDEOCODE_base::logging::warn(&format!(
+            ideocode_base::logging::warn(&format!(
                 "Claude OAuth preflight {} failed; continuing because Claude Code treats this bootstrap traffic as nonessential: {:#}",
                 label, err
             ));
@@ -229,25 +229,25 @@ async fn ensure_oauth_preflight(
 
     let official = load_official_claude_client_metadata();
     let Some(device_id) = official.device_id else {
-        IDEOCODE_base::logging::warn(
+        ideocode_base::logging::warn(
             "Skipping Claude OAuth preflight: missing userID in ~/.claude.json",
         );
         return Ok(());
     };
     let Some(account_uuid) = official.account_uuid else {
-        IDEOCODE_base::logging::warn(
+        ideocode_base::logging::warn(
             "Skipping Claude OAuth preflight: missing accountUuid in ~/.claude.json",
         );
         return Ok(());
     };
     let Some(organization_uuid) = official.organization_uuid else {
-        IDEOCODE_base::logging::warn(
+        ideocode_base::logging::warn(
             "Skipping Claude OAuth preflight: missing organizationUuid in ~/.claude.json",
         );
         return Ok(());
     };
     let Some(email_address) = official.email_address else {
-        IDEOCODE_base::logging::warn(
+        ideocode_base::logging::warn(
             "Skipping Claude OAuth preflight: missing emailAddress in ~/.claude.json",
         );
         return Ok(());
@@ -312,7 +312,7 @@ async fn ensure_oauth_preflight(
             organization_uuid,
             account_uuid,
             user_type: "external".to_string(),
-            subscription_type: IDEOCODE_base::auth::claude::get_subscription_type()
+            subscription_type: ideocode_base::auth::claude::get_subscription_type()
                 .unwrap_or_else(|| "pro".to_string()),
             rate_limit_tier: "default_claude_ai".to_string(),
             first_token_time: 1_740_976_801_491,
@@ -338,13 +338,13 @@ async fn ensure_oauth_preflight(
 
     done_flag.store(true, Ordering::Relaxed);
     if all_ok {
-        IDEOCODE_base::logging::info("Claude OAuth preflight completed successfully");
+        ideocode_base::logging::info("Claude OAuth preflight completed successfully");
     }
     Ok(())
 }
 
 /// Quality-first default shared with model routing and first-run selection.
-const DEFAULT_MODEL: &str = IDEOCODE_provider_core::DEFAULT_CLAUDE_MODEL;
+const DEFAULT_MODEL: &str = ideocode_provider_core::DEFAULT_CLAUDE_MODEL;
 
 /// API version header
 const API_VERSION: &str = "2023-06-01";
@@ -382,7 +382,7 @@ pub struct AnthropicProvider {
 
 impl AnthropicProvider {
     fn is_usage_exhausted() -> bool {
-        let usage = IDEOCODE_base::usage::get_sync();
+        let usage = ideocode_base::usage::get_sync();
         usage.five_hour >= 0.99 && usage.seven_day >= 0.99
     }
 
@@ -427,18 +427,18 @@ impl AnthropicProvider {
             anyhow::bail!("resolved an empty Anthropic access token");
         }
         let catalog = if is_oauth {
-            IDEOCODE_base::provider::fetch_anthropic_model_catalog_oauth(&token).await?
+            ideocode_base::provider::fetch_anthropic_model_catalog_oauth(&token).await?
         } else {
-            IDEOCODE_base::provider::fetch_anthropic_model_catalog(&token).await?
+            ideocode_base::provider::fetch_anthropic_model_catalog(&token).await?
         };
         // Persist so the rest of the process benefits from the warm catalog,
         // exactly like the runtime's own prefetch.
-        IDEOCODE_base::provider::persist_anthropic_model_catalog(&catalog);
+        ideocode_base::provider::persist_anthropic_model_catalog(&catalog);
         if !catalog.context_limits.is_empty() {
-            IDEOCODE_base::provider::populate_context_limits(catalog.context_limits.clone());
+            ideocode_base::provider::populate_context_limits(catalog.context_limits.clone());
         }
         if !catalog.available_models.is_empty() {
-            IDEOCODE_base::provider::populate_anthropic_models(catalog.available_models.clone());
+            ideocode_base::provider::populate_anthropic_models(catalog.available_models.clone());
         }
         Ok(catalog.available_models)
     }
@@ -455,14 +455,14 @@ impl AnthropicProvider {
         // Trigger background usage fetch so extra_usage is known before first API call
         let _ = tokio::runtime::Handle::try_current().map(|_| {
             tokio::spawn(async {
-                let _ = IDEOCODE_base::usage::get().await;
+                let _ = ideocode_base::usage::get().await;
             })
         });
 
         let max_tokens_override = std::env::var("IDEOCODE_ANTHROPIC_MAX_TOKENS")
             .ok()
             .and_then(|v| v.trim().parse::<u32>().ok());
-        let reasoning_effort = IDEOCODE_base::config::config()
+        let reasoning_effort = ideocode_base::config::config()
             .provider
             .anthropic_reasoning_effort
             .as_deref()
@@ -470,13 +470,13 @@ impl AnthropicProvider {
             .map(|effort| Self::store_effort_for_model(&model, &effort));
 
         Self {
-            client: IDEOCODE_provider_core::shared_http_client(),
+            client: ideocode_provider_core::shared_http_client(),
             model: Arc::new(std::sync::RwLock::new(model)),
             reasoning_effort: Arc::new(std::sync::RwLock::new(reasoning_effort)),
             service_tier: Arc::new(std::sync::RwLock::new(None)),
             credentials: Arc::new(RwLock::new(None)),
             credential_mode: Arc::new(RwLock::new(AnthropicCredentialMode::from_runtime_env(
-                IDEOCODE_provider_core::DualAuthProvider::Anthropic,
+                ideocode_provider_core::DualAuthProvider::Anthropic,
             ))),
             max_tokens_override,
             oauth_session_id: Uuid::new_v4().to_string(),
@@ -490,21 +490,21 @@ impl AnthropicProvider {
 
     fn model_supports_output_effort(model: &str) -> bool {
         // Shared capability table (with an optimistic default for unknown 5.x+
-        // generations); see `IDEOCODE_provider_core::anthropic_reasoning_caps`.
+        // generations); see `ideocode_provider_core::anthropic_reasoning_caps`.
         // Fable 5 verified live 2026-07-01; Sonnet 5 verified live 2026-07-07.
-        IDEOCODE_provider_core::anthropic_reasoning_caps(model).output_effort
+        ideocode_provider_core::anthropic_reasoning_caps(model).output_effort
     }
 
     fn model_supports_adaptive_thinking(model: &str) -> bool {
-        IDEOCODE_provider_core::anthropic_reasoning_caps(model).adaptive_thinking
+        ideocode_provider_core::anthropic_reasoning_caps(model).adaptive_thinking
     }
 
     fn model_supports_manual_thinking(model: &str) -> bool {
-        IDEOCODE_provider_core::anthropic_reasoning_caps(model).manual_thinking
+        ideocode_provider_core::anthropic_reasoning_caps(model).manual_thinking
     }
 
     fn model_supports_xhigh_effort(model: &str) -> bool {
-        IDEOCODE_provider_core::anthropic_reasoning_caps(model).xhigh_effort
+        ideocode_provider_core::anthropic_reasoning_caps(model).xhigh_effort
     }
 
     /// `max` effort ("absolute maximum capability with no constraints on token
@@ -512,11 +512,11 @@ impl AnthropicProvider {
     /// except Claude Opus 4.5 where manual thinking keeps `max` as an alias for
     /// the strongest supported level.
     fn model_supports_max_effort(model: &str) -> bool {
-        IDEOCODE_provider_core::anthropic_reasoning_caps(model).max_effort
+        ideocode_provider_core::anthropic_reasoning_caps(model).max_effort
     }
 
     fn model_supports_reasoning_effort(model: &str) -> bool {
-        IDEOCODE_provider_core::anthropic_reasoning_caps(model).supports_reasoning_effort()
+        ideocode_provider_core::anthropic_reasoning_caps(model).supports_reasoning_effort()
     }
 
     fn normalize_reasoning_effort(raw: &str) -> Option<String> {
@@ -532,7 +532,7 @@ impl AnthropicProvider {
                 Some(value)
             }
             other => {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Warning: Ignoring unsupported Anthropic reasoning effort '{}'; expected none|low|medium|high|xhigh|max.",
                     other
                 ));
@@ -542,7 +542,7 @@ impl AnthropicProvider {
     }
 
     fn actual_effort_for_model(model: &str, effort: &str) -> String {
-        if IDEOCODE_base::prompt::is_swarm_effort(effort) {
+        if ideocode_base::prompt::is_swarm_effort(effort) {
             // Swarm rungs sit above `max` on the ladder and mean "strongest
             // reasoning the model supports", so cycling upward never lowers
             // the wire effort.
@@ -571,10 +571,10 @@ impl AnthropicProvider {
     /// the chosen swarm mode. Used when persisting the user's choice; request
     /// building resolves swarm to a real effort.
     fn store_effort_for_model(model: &str, effort: &str) -> String {
-        if IDEOCODE_base::prompt::is_deep_swarm_effort(effort) {
-            IDEOCODE_base::prompt::SWARM_DEEP_EFFORT.to_string()
-        } else if IDEOCODE_base::prompt::is_swarm_effort(effort) {
-            IDEOCODE_base::prompt::SWARM_EFFORT.to_string()
+        if ideocode_base::prompt::is_deep_swarm_effort(effort) {
+            ideocode_base::prompt::SWARM_DEEP_EFFORT.to_string()
+        } else if ideocode_base::prompt::is_swarm_effort(effort) {
+            ideocode_base::prompt::SWARM_EFFORT.to_string()
         } else {
             Self::actual_effort_for_model(model, effort)
         }
@@ -662,7 +662,7 @@ impl AnthropicProvider {
     /// 128K-output models to 32K and truncate long agentic turns mid-tool-call.
     fn max_tokens_for(&self, model: &str) -> u32 {
         self.max_tokens_override
-            .unwrap_or_else(|| IDEOCODE_provider_core::anthropic::anthropic_max_output_tokens(model))
+            .unwrap_or_else(|| ideocode_provider_core::anthropic::anthropic_max_output_tokens(model))
     }
 
     fn manual_thinking_budget(effort: &str, max_tokens: u32) -> Option<u32> {
@@ -671,7 +671,7 @@ impl AnthropicProvider {
             "medium" => 4_096,
             "high" => 8_192,
             "xhigh" | "max" => 16_384,
-            e if IDEOCODE_base::prompt::is_swarm_effort(e) => 16_384,
+            e if ideocode_base::prompt::is_swarm_effort(e) => 16_384,
             _ => return None,
         };
         let budget = desired.min(max_tokens.saturating_sub(1));
@@ -686,7 +686,7 @@ impl AnthropicProvider {
         // `display.show_thinking` is a request to *see* the model's reasoning.
         // Anthropic only streams thinking summaries when a thinking request is
         // present, so opting into the display must also opt into generating it.
-        let show_thinking = IDEOCODE_base::config::config().display.show_thinking;
+        let show_thinking = ideocode_base::config::config().display.show_thinking;
         self.build_reasoning_request_parts_inner(model, is_oauth, show_thinking)
     }
 
@@ -770,7 +770,7 @@ impl AnthropicProvider {
                 Ok(token) => return Ok(token),
                 Err(oauth_err) => match load_anthropic_api_key() {
                     Ok(key) => {
-                        IDEOCODE_base::logging::warn(&format!(
+                        ideocode_base::logging::warn(&format!(
                             "Claude OAuth is unusable in automatic credential mode ({oauth_err:#}); falling back to the configured Anthropic API key"
                         ));
                         return Ok((key, false));
@@ -813,7 +813,7 @@ impl AnthropicProvider {
 
         // Check if token needs refresh (expired or expiring within 5 minutes)
         if fresh_creds.expires_at < now + 300_000 && !fresh_creds.refresh_token.is_empty() {
-            IDEOCODE_base::logging::info(
+            ideocode_base::logging::info(
                 "OAuth token expired or expiring soon, attempting refresh...",
             );
 
@@ -826,7 +826,7 @@ impl AnthropicProvider {
             .await
             {
                 Ok(refreshed) => {
-                    IDEOCODE_base::logging::info("OAuth token refreshed successfully");
+                    ideocode_base::logging::info("OAuth token refreshed successfully");
 
                     // Cache the refreshed credentials
                     let mut cached = self.credentials.write().await;
@@ -839,7 +839,7 @@ impl AnthropicProvider {
                     return Ok((refreshed.access_token, true));
                 }
                 Err(e) => {
-                    IDEOCODE_base::logging::error(&format!("OAuth token refresh failed: {}", e));
+                    ideocode_base::logging::error(&format!("OAuth token refresh failed: {}", e));
                     // A still-unexpired token may remain usable until its
                     // actual expiry even when a proactive refresh fails. Once
                     // expired, however, returning it only guarantees a 401 and
@@ -892,14 +892,14 @@ impl AnthropicProvider {
         // choice so UI surfaces (model picker, header widget) report the auth
         // method that requests will actually use, instead of inferring it from
         // credential presence. `Auto` leaves the existing identity untouched.
-        if let Some(route) = mode.auth_route(IDEOCODE_provider_core::DualAuthProvider::Anthropic) {
-            IDEOCODE_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", route.runtime_provider_key());
+        if let Some(route) = mode.auth_route(ideocode_provider_core::DualAuthProvider::Anthropic) {
+            ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", route.runtime_provider_key());
         }
         // Drop any cached auth snapshot so surfaces that still consult the cheap
         // cached probe (auto-mode resolution, usage availability, account labels)
         // re-derive from the new credential choice on their next read instead of
         // lingering on a snapshot taken before the switch.
-        IDEOCODE_base::auth::AuthStatus::invalidate_cached_status();
+        ideocode_base::auth::AuthStatus::invalidate_cached_status();
         Ok(())
     }
 
@@ -913,7 +913,7 @@ impl AnthropicProvider {
     /// Convert our Message type to Anthropic API format
     /// Also repairs dangling tool_uses by injecting synthetic tool_results
     fn format_messages(&self, messages: &[Message], is_oauth: bool) -> Vec<ApiMessage> {
-        IDEOCODE_provider_anthropic::format_messages(messages, is_oauth)
+        ideocode_provider_anthropic::format_messages(messages, is_oauth)
     }
 
     /// Convert our ContentBlock to Anthropic API format
@@ -923,13 +923,13 @@ impl AnthropicProvider {
         blocks: &[ContentBlock],
         is_oauth: bool,
     ) -> Vec<ApiContentBlock> {
-        IDEOCODE_provider_anthropic::format_content_blocks(blocks, is_oauth)
+        ideocode_provider_anthropic::format_content_blocks(blocks, is_oauth)
     }
 
     /// Convert tool definitions to Anthropic API format
     /// Adds cache_control to the last tool for prompt caching
     fn format_tools(&self, tools: &[ToolDefinition], is_oauth: bool) -> Vec<ApiTool> {
-        IDEOCODE_provider_anthropic::format_tools(tools, is_oauth, is_cache_ttl_1h())
+        ideocode_provider_anthropic::format_tools(tools, is_oauth, is_cache_ttl_1h())
     }
 }
 
@@ -967,7 +967,7 @@ fn log_anthropic_canonical_input(
         "temperature": request.temperature,
     });
 
-    IDEOCODE_provider_core::fingerprint::log_provider_canonical_input(
+    ideocode_provider_core::fingerprint::log_provider_canonical_input(
         "anthropic",
         model,
         format,
@@ -1039,7 +1039,7 @@ impl Provider for AnthropicProvider {
 
         log_anthropic_canonical_input(&model, "anthropic_messages", &request, is_oauth, false);
 
-        IDEOCODE_base::logging::info(&format!(
+        ideocode_base::logging::info(&format!(
             "Anthropic transport: HTTPS SSE stream (oauth={})",
             is_oauth
         ));
@@ -1089,11 +1089,11 @@ impl Provider for AnthropicProvider {
             .clone()
     }
 
-    fn credential_mode(&self) -> IDEOCODE_provider_core::CredentialMode {
+    fn credential_mode(&self) -> ideocode_provider_core::CredentialMode {
         self.credential_mode_snapshot()
     }
 
-    fn set_credential_mode(&self, mode: IDEOCODE_provider_core::CredentialMode) -> Result<()> {
+    fn set_credential_mode(&self, mode: ideocode_provider_core::CredentialMode) -> Result<()> {
         AnthropicProvider::set_credential_mode(self, mode)
     }
 
@@ -1104,14 +1104,14 @@ impl Provider for AnthropicProvider {
         // for these models.
         let model: &str = if is_1m_model(model)
             && matches!(
-                IDEOCODE_provider_core::anthropic_context_mode(model),
-                IDEOCODE_provider_core::AnthropicContextMode::Native1M
+                ideocode_provider_core::anthropic_context_mode(model),
+                ideocode_provider_core::AnthropicContextMode::Native1M
             ) {
             strip_1m_suffix(model)
         } else {
             model
         };
-        if !IDEOCODE_base::provider::known_anthropic_model_ids()
+        if !ideocode_base::provider::known_anthropic_model_ids()
             .iter()
             .any(|known| known == model)
         {
@@ -1142,8 +1142,8 @@ impl Provider for AnthropicProvider {
     }
 
     fn available_models_for_switching(&self) -> Vec<String> {
-        IDEOCODE_base::provider::cached_anthropic_model_ids()
-            .unwrap_or_else(IDEOCODE_base::provider::known_anthropic_model_ids)
+        ideocode_base::provider::cached_anthropic_model_ids()
+            .unwrap_or_else(ideocode_base::provider::known_anthropic_model_ids)
     }
 
     fn available_models_display(&self) -> Vec<String> {
@@ -1264,39 +1264,39 @@ impl Provider for AnthropicProvider {
         }
 
         let catalog = if is_oauth {
-            match IDEOCODE_base::provider::fetch_anthropic_model_catalog_oauth(&token).await {
+            match ideocode_base::provider::fetch_anthropic_model_catalog_oauth(&token).await {
                 Ok(catalog) => Ok(catalog),
                 Err(err) if is_oauth_catalog_auth_error(&err.to_string()) => {
-                    IDEOCODE_base::logging::info(
+                    ideocode_base::logging::info(
                         "Anthropic OAuth model catalog auth failed; forcing token refresh and retrying...",
                     );
                     let refreshed_token =
                         force_refresh_oauth_token(Arc::clone(&self.credentials)).await?;
-                    IDEOCODE_base::provider::fetch_anthropic_model_catalog_oauth(&refreshed_token)
+                    ideocode_base::provider::fetch_anthropic_model_catalog_oauth(&refreshed_token)
                         .await
                 }
                 Err(err) => Err(err),
             }
         } else {
-            IDEOCODE_base::provider::fetch_anthropic_model_catalog(&token).await
+            ideocode_base::provider::fetch_anthropic_model_catalog(&token).await
         };
         let catalog = match catalog {
             Ok(catalog) => catalog,
             Err(err) => {
                 let credential_label = if is_oauth { "OAuth" } else { "API key" };
-                IDEOCODE_base::logging::warn(&format!(
+                ideocode_base::logging::warn(&format!(
                     "Anthropic {credential_label} model catalog refresh failed; keeping fallback list: {}",
                     err
                 ));
                 return Ok(());
             }
         };
-        IDEOCODE_base::provider::persist_anthropic_model_catalog(&catalog);
+        ideocode_base::provider::persist_anthropic_model_catalog(&catalog);
         if !catalog.context_limits.is_empty() {
-            IDEOCODE_base::provider::populate_context_limits(catalog.context_limits);
+            ideocode_base::provider::populate_context_limits(catalog.context_limits);
         }
         if !catalog.available_models.is_empty() {
-            IDEOCODE_base::provider::populate_anthropic_models(catalog.available_models);
+            ideocode_base::provider::populate_anthropic_models(catalog.available_models);
         }
         Ok(())
     }
@@ -1400,7 +1400,7 @@ impl Provider for AnthropicProvider {
 
         log_anthropic_canonical_input(&model, "anthropic_messages_split", &request, is_oauth, true);
 
-        IDEOCODE_base::logging::info(&format!(
+        ideocode_base::logging::info(&format!(
             "Anthropic transport: HTTPS SSE split stream (oauth={})",
             is_oauth
         ));
@@ -1471,21 +1471,21 @@ async fn run_stream_with_retries(
     for attempt in 0..MAX_RETRIES {
         if attempt > 0 {
             // Exponential backoff with jitter: ~1s, ~2s, ~4s
-            let delay = IDEOCODE_provider_core::retry_after::retry_delay(
+            let delay = ideocode_provider_core::retry_after::retry_delay(
                 attempt,
                 RETRY_BASE_DELAY_MS,
                 next_retry_delay.take(),
             );
             let _ = tx
                 .send(Ok(StreamEvent::ConnectionPhase {
-                    phase: IDEOCODE_message_types::ConnectionPhase::Retrying {
+                    phase: ideocode_message_types::ConnectionPhase::Retrying {
                         attempt: attempt + 1,
                         max: MAX_RETRIES,
                     },
                 }))
                 .await;
             tokio::time::sleep(delay).await;
-            IDEOCODE_base::logging::info(&format!(
+            ideocode_base::logging::info(&format!(
                 "Retrying Anthropic API request (attempt {}/{})",
                 attempt + 1,
                 MAX_RETRIES
@@ -1496,7 +1496,7 @@ async fn run_stream_with_retries(
         // mid-stream transport fault can roll the partial output back on the
         // consumer before the retry replays the response from the top.
         let (attempt_tx, attempt_guard) =
-            IDEOCODE_provider_core::attempt_tracker::track_attempt_output(tx.clone());
+            ideocode_provider_core::attempt_tracker::track_attempt_output(tx.clone());
 
         // Retries use a fresh unpooled client: the fault that broke attempt N
         // (e.g. TLS BadRecordMac from a corrupting middlebox) may also have
@@ -1506,7 +1506,7 @@ async fn run_stream_with_retries(
         let attempt_client = if attempt == 0 {
             client.clone()
         } else {
-            IDEOCODE_provider_core::fresh_transport_client()
+            ideocode_provider_core::fresh_transport_client()
         };
 
         match stream_response(
@@ -1535,17 +1535,17 @@ async fn run_stream_with_retries(
                 // OAuth auth failures: force refresh and retry once immediately.
                 if is_oauth && is_oauth_auth_error(&error_str) && !attempted_forced_refresh {
                     attempted_forced_refresh = true;
-                    IDEOCODE_base::logging::info(
+                    ideocode_base::logging::info(
                         "Anthropic OAuth authentication failed, forcing token refresh...",
                     );
                     let _ = tx
                         .send(Ok(StreamEvent::ConnectionPhase {
-                            phase: IDEOCODE_message_types::ConnectionPhase::Authenticating,
+                            phase: ideocode_message_types::ConnectionPhase::Authenticating,
                         }))
                         .await;
                     match force_refresh_oauth_token(Arc::clone(&credentials)).await {
                         Ok(refreshed_token) => {
-                            IDEOCODE_base::logging::info(
+                            ideocode_base::logging::info(
                                 "Forced OAuth token refresh succeeded, retrying request.",
                             );
                             token = refreshed_token;
@@ -1578,7 +1578,7 @@ async fn run_stream_with_retries(
                     && !saw_output
                     && let Some(fallback) = anthropic_fallback_model(&tried_models, &error_str)
                 {
-                    IDEOCODE_base::logging::warn(&format!(
+                    ideocode_base::logging::warn(&format!(
                         "Anthropic model '{}' is not available ({}); retrying with fallback '{}'",
                         model_name, e, fallback
                     ));
@@ -1615,7 +1615,7 @@ async fn run_stream_with_retries(
                     && !saw_output
                     && is_reasoning_unsupported_error(&error_str)
                 {
-                    IDEOCODE_base::logging::warn(&format!(
+                    ideocode_base::logging::warn(&format!(
                         "Anthropic model '{}' rejected the reasoning request ({}); retrying without thinking/effort",
                         model_name, e
                     ));
@@ -1635,7 +1635,7 @@ async fn run_stream_with_retries(
                         // the consumer. Tell it to discard the partial attempt
                         // so the retried response replays cleanly instead of
                         // duplicating.
-                        IDEOCODE_base::logging::warn(&format!(
+                        ideocode_base::logging::warn(&format!(
                             "Transient error after partial output; rolling back partial attempt and retrying: {}",
                             e
                         ));
@@ -1646,9 +1646,9 @@ async fn run_stream_with_retries(
                             }))
                             .await;
                     } else {
-                        IDEOCODE_base::logging::info(&format!("Transient error, will retry: {}", e));
+                        ideocode_base::logging::info(&format!("Transient error, will retry: {}", e));
                     }
-                    next_retry_delay = IDEOCODE_provider_core::retry_after::retry_after_from_error(&e);
+                    next_retry_delay = ideocode_provider_core::retry_after::retry_after_from_error(&e);
                     last_error = Some(e);
                     continue;
                 }
@@ -1735,14 +1735,14 @@ async fn stream_response(
     model_name: &str,
     oauth_session_id: &str,
 ) -> Result<()> {
-    use IDEOCODE_message_types::ConnectionPhase;
+    use ideocode_message_types::ConnectionPhase;
     let requested_model_base = strip_1m_suffix(&request.model).to_ascii_lowercase();
     if std::env::var("IDEOCODE_ANTHROPIC_DEBUG")
         .map(|v| v == "1")
         .unwrap_or(false)
         && let Ok(json) = serde_json::to_string_pretty(&request)
     {
-        IDEOCODE_base::logging::info(&format!("Anthropic request payload:\n{}", json));
+        ideocode_base::logging::info(&format!("Anthropic request payload:\n{}", json));
     }
 
     let _ = tx
@@ -1806,7 +1806,7 @@ async fn stream_response(
         .context("Failed to send request to Anthropic API")?;
 
     let connect_ms = connect_start.elapsed().as_millis();
-    IDEOCODE_base::logging::info(&format!(
+    ideocode_base::logging::info(&format!(
         "HTTP connection established in {}ms (status={})",
         connect_ms,
         response.status()
@@ -1814,9 +1814,9 @@ async fn stream_response(
 
     if !response.status().is_success() {
         let status = response.status();
-        let retry_after = IDEOCODE_provider_core::retry_after::retry_after(response.headers());
-        let error_text = IDEOCODE_base::util::http_error_body(response, "HTTP error").await;
-        return Err(IDEOCODE_provider_core::retry_after::error_with_retry_after(
+        let retry_after = ideocode_provider_core::retry_after::retry_after(response.headers());
+        let error_text = ideocode_base::util::http_error_body(response, "HTTP error").await;
+        return Err(ideocode_provider_core::retry_after::error_with_retry_after(
             format!("Anthropic API error ({}): {}", status, error_text),
             retry_after,
         ));
@@ -1839,14 +1839,14 @@ async fn stream_response(
     // Idle timeout between streamed chunks. Configurable via
     // `[provider] stream_idle_timeout_secs` / `IDEOCODE_STREAM_IDLE_TIMEOUT_SECS`
     // so slow reasoning models don't trip a premature timeout (issue #434).
-    let sse_chunk_timeout = IDEOCODE_base::provider::stream_idle_timeout();
+    let sse_chunk_timeout = ideocode_base::provider::stream_idle_timeout();
 
     loop {
         let chunk = match tokio::time::timeout(sse_chunk_timeout, stream.next()).await {
             Ok(Some(chunk_result)) => chunk_result.context("Error reading stream chunk")?,
             Ok(None) => break, // stream ended normally
             Err(_) => {
-                IDEOCODE_base::logging::warn(&format!(
+                ideocode_base::logging::warn(&format!(
                     "Anthropic SSE stream timed out (no data for {}s)",
                     sse_chunk_timeout.as_secs()
                 ));
@@ -1881,7 +1881,7 @@ async fn stream_response(
         if sse_state.cache_read_input_tokens.is_some()
             || sse_state.cache_creation_input_tokens.is_some()
         {
-            IDEOCODE_base::logging::info(&format!(
+            ideocode_base::logging::info(&format!(
                 "Prompt cache: read={:?} created={:?}",
                 sse_state.cache_read_input_tokens, sse_state.cache_creation_input_tokens
             ));
@@ -1901,7 +1901,7 @@ async fn stream_response(
 
 /// Check if an error is transient and should be retried
 fn is_retryable_error(error_str: &str) -> bool {
-    IDEOCODE_provider_core::is_transient_transport_error(error_str)
+    ideocode_provider_core::is_transient_transport_error(error_str)
         // Server errors (5xx)
         || error_str.contains("500 internal server error")
         || error_str.contains("502 bad gateway")
@@ -1980,21 +1980,21 @@ fn anthropic_model_quality_rank(model: &str) -> usize {
     if anthropic_model_is_retired(model) {
         return usize::MAX;
     }
-    let normalized = IDEOCODE_provider_core::model_id::strip_date_suffix(
-        &IDEOCODE_provider_core::model_id::canonical(model),
+    let normalized = ideocode_provider_core::model_id::strip_date_suffix(
+        &ideocode_provider_core::model_id::canonical(model),
     )
     .to_string();
-    IDEOCODE_provider_core::ALL_CLAUDE_MODELS
+    ideocode_provider_core::ALL_CLAUDE_MODELS
         .iter()
         .position(|candidate| {
-            IDEOCODE_provider_core::model_id::strip_date_suffix(
-                &IDEOCODE_provider_core::model_id::canonical(candidate),
+            ideocode_provider_core::model_id::strip_date_suffix(
+                &ideocode_provider_core::model_id::canonical(candidate),
             ) == normalized
         })
         // Curated models keep their position; unknown-but-not-retired models sort
         // just after the curated list so they only win when nothing curated is
         // available.
-        .unwrap_or(IDEOCODE_provider_core::ALL_CLAUDE_MODELS.len())
+        .unwrap_or(ideocode_provider_core::ALL_CLAUDE_MODELS.len())
 }
 
 /// Parse a server-recommended replacement model from a 404 body, e.g.
@@ -2025,7 +2025,7 @@ fn anthropic_recommended_model_from_error(error_str: &str) -> Option<String> {
         return None;
     }
     // Score each known catalog model by how many hint tokens it contains.
-    IDEOCODE_base::provider::known_anthropic_model_ids()
+    ideocode_base::provider::known_anthropic_model_ids()
         .into_iter()
         .filter(|candidate| !anthropic_model_is_retired(candidate))
         .map(|candidate| {
@@ -2073,7 +2073,7 @@ fn anthropic_fallback_model(tried: &[String], error_str: &str) -> Option<String>
     }
 
     // 2. Best available by curated quality order, skipping retired and tried.
-    IDEOCODE_base::provider::known_anthropic_model_ids()
+    ideocode_base::provider::known_anthropic_model_ids()
         .into_iter()
         .filter(|candidate| !already_tried(candidate) && !anthropic_model_is_retired(candidate))
         .min_by_key(|candidate| anthropic_model_quality_rank(candidate))
@@ -2123,7 +2123,7 @@ fn parse_sse_event(buffer: &mut String) -> Option<SseEvent> {
     for line in event_str.lines() {
         if let Some(rest) = line.strip_prefix("event: ") {
             event_type = rest.to_string();
-        } else if let Some(rest) = IDEOCODE_base::util::sse_data_line(line) {
+        } else if let Some(rest) = ideocode_base::util::sse_data_line(line) {
             data = rest.to_string();
         }
     }
@@ -2175,7 +2175,7 @@ fn process_sse_event(
                 // Log it so we can confirm there was no silent server-side
                 // substitution (and surface it under IDEOCODE_LOG_SERVED_MODEL).
                 if let Some(served) = parsed.message.model.as_deref() {
-                    IDEOCODE_base::logging::info(&format!("Anthropic served model={}", served));
+                    ideocode_base::logging::info(&format!("Anthropic served model={}", served));
                     if std::env::var("IDEOCODE_LOG_SERVED_MODEL").is_ok() {
                         eprintln!("[anthropic] served model={served}");
                     }
@@ -2190,7 +2190,7 @@ fn process_sse_event(
                         && served_base != state.requested_model_base
                     {
                         state.warned_model_substitution = true;
-                        IDEOCODE_base::logging::warn(&format!(
+                        ideocode_base::logging::warn(&format!(
                             "Anthropic served a DIFFERENT model than requested: requested '{}', served '{}'. The requested model is likely unavailable and is being substituted server-side.",
                             state.requested_model_base, served_base
                         ));
@@ -2208,7 +2208,7 @@ fn process_sse_event(
                     state.cache_creation_input_tokens =
                         usage.cache_creation_input_tokens.map(|t| t as u64);
                     if let Some(tier) = usage.service_tier.as_deref() {
-                        IDEOCODE_base::logging::info(&format!(
+                        ideocode_base::logging::info(&format!(
                             "Anthropic granted service_tier={}",
                             tier
                         ));
@@ -2306,11 +2306,11 @@ fn process_sse_event(
             // downstream consumers (the TUI stall guard) need to see *some*
             // event to know the stream is alive (issue #451).
             events.push(StreamEvent::ConnectionPhase {
-                phase: IDEOCODE_message_types::ConnectionPhase::Streaming,
+                phase: ideocode_message_types::ConnectionPhase::Streaming,
             });
         }
         "error" => {
-            IDEOCODE_base::logging::error(&format!("Anthropic stream error: {}", event.data));
+            ideocode_base::logging::error(&format!("Anthropic stream error: {}", event.data));
             events.push(StreamEvent::Error {
                 message: event.data.clone(),
                 retry_after_secs: None,
@@ -2329,7 +2329,7 @@ fn process_sse_event(
 // ============================================================================
 
 fn build_system_param(system: &str, is_oauth: bool) -> Option<ApiSystem> {
-    IDEOCODE_provider_anthropic::build_system_param(system, is_oauth, is_cache_ttl_1h())
+    ideocode_provider_anthropic::build_system_param(system, is_oauth, is_cache_ttl_1h())
 }
 
 fn build_system_param_split(
@@ -2337,7 +2337,7 @@ fn build_system_param_split(
     dynamic_part: &str,
     is_oauth: bool,
 ) -> Option<ApiSystem> {
-    IDEOCODE_provider_anthropic::build_system_param_split(
+    ideocode_provider_anthropic::build_system_param_split(
         static_part,
         dynamic_part,
         is_oauth,
@@ -2346,12 +2346,12 @@ fn build_system_param_split(
 }
 
 fn format_messages_with_identity(messages: Vec<ApiMessage>, is_oauth: bool) -> Vec<ApiMessage> {
-    IDEOCODE_provider_anthropic::format_messages_with_identity(messages, is_oauth, is_cache_ttl_1h())
+    ideocode_provider_anthropic::format_messages_with_identity(messages, is_oauth, is_cache_ttl_1h())
 }
 
 #[cfg(test)]
 fn add_message_cache_breakpoint(messages: &mut [ApiMessage]) {
-    IDEOCODE_provider_anthropic::add_message_cache_breakpoint(messages, is_cache_ttl_1h())
+    ideocode_provider_anthropic::add_message_cache_breakpoint(messages, is_cache_ttl_1h())
 }
 
 mod sse_types;

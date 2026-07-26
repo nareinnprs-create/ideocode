@@ -1,4 +1,4 @@
-﻿use IDEOCODE_message_types::{
+﻿use ideocode_message_types::{
     ContentBlock, Message as ChatMessage, Role, TOOL_OUTPUT_MISSING_TEXT, ToolDefinition,
     sanitize_tool_id,
 };

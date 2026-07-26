@@ -239,7 +239,7 @@ pub(super) fn compute_image_regions(
                 // Mermaid crop regions don't know their rendered width here;
                 // 0 = treat the rows as fully occupied for layout purposes.
                 width: 0,
-                render: IDEOCODE_tui_messages::ImageRegionRender::Crop,
+                render: ideocode_tui_messages::ImageRegionRender::Crop,
             });
         } else if let Some((hash, rows, cols)) =
             super::super::mermaid::parse_inline_image_placeholder(line)
@@ -256,7 +256,7 @@ pub(super) fn compute_image_regions(
                 hash,
                 height,
                 width: cols,
-                render: IDEOCODE_tui_messages::ImageRegionRender::Fit,
+                render: ideocode_tui_messages::ImageRegionRender::Fit,
             });
         }
     }

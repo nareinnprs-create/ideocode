@@ -57,13 +57,13 @@ fn merge_cursor_models_deduplicates_dynamic_entries() {
 
 #[test]
 fn available_models_display_seeds_from_persisted_catalog() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let temp = tempfile::TempDir::new().expect("tempdir");
     let prev_home = std::env::var_os("IDEOCODE_HOME");
-    IDEOCODE_base::env::set_var("IDEOCODE_HOME", temp.path());
+    ideocode_base::env::set_var("IDEOCODE_HOME", temp.path());
 
     let path = CursorCliProvider::persisted_catalog_path().expect("catalog path");
-    IDEOCODE_base::storage::write_json(
+    ideocode_base::storage::write_json(
         &path,
         &PersistedCatalog {
             models: vec!["cursor-disk-model".to_string()],
@@ -80,9 +80,9 @@ fn available_models_display_seeds_from_persisted_catalog() {
     );
 
     if let Some(prev_home) = prev_home {
-        IDEOCODE_base::env::set_var("IDEOCODE_HOME", prev_home);
+        ideocode_base::env::set_var("IDEOCODE_HOME", prev_home);
     } else {
-        IDEOCODE_base::env::remove_var("IDEOCODE_HOME");
+        ideocode_base::env::remove_var("IDEOCODE_HOME");
     }
 }
 
@@ -100,13 +100,13 @@ fn set_model_accepts_composer_models() {
 #[test]
 fn runtime_cursor_api_key_reads_env() {
     let previous = std::env::var_os("CURSOR_API_KEY");
-    IDEOCODE_base::env::set_var("CURSOR_API_KEY", "cursor-env-test");
+    ideocode_base::env::set_var("CURSOR_API_KEY", "cursor-env-test");
 
     assert_eq!(runtime_cursor_api_key().as_deref(), Some("cursor-env-test"));
 
     if let Some(previous) = previous {
-        IDEOCODE_base::env::set_var("CURSOR_API_KEY", previous);
+        ideocode_base::env::set_var("CURSOR_API_KEY", previous);
     } else {
-        IDEOCODE_base::env::remove_var("CURSOR_API_KEY");
+        ideocode_base::env::remove_var("CURSOR_API_KEY");
     }
 }

@@ -19,7 +19,7 @@ pub mod source;
 pub mod terminal;
 
 pub use chord::KeyChord;
-pub use conflicts::{Conflict, IDEOCODEBinding, conflict_signature, detect_conflicts, IDEOCODE_bindings};
+pub use conflicts::{Conflict, IDEOCODEBinding, conflict_signature, detect_conflicts, ideocode_bindings};
 pub use report::{render_report, render_status_line};
 pub use source::{DiscoveredBinding, KeySource};
 
@@ -112,7 +112,7 @@ pub fn collect_snapshot() -> KeymapSnapshot {
 
 /// Path of the on-disk keymap snapshot.
 pub fn snapshot_path() -> anyhow::Result<std::path::PathBuf> {
-    Ok(IDEOCODE_storage::IDEOCODE_dir()?.join("keymap-snapshot.json"))
+    Ok(ideocode_storage::ideocode_dir()?.join("keymap-snapshot.json"))
 }
 
 /// Collect a fresh snapshot and persist it to `~/.IDEOCODE/keymap-snapshot.json`.
@@ -123,9 +123,9 @@ pub fn refresh_and_save() -> KeymapSnapshot {
         // Regeneratable cache (refreshed at least daily): a power-loss losing the
         // newest copy just means one more refresh on the next launch, so skip the
         // ~8ms macOS `F_FULLFSYNC` and use the atomic-rename fast write.
-        && let Err(err) = IDEOCODE_storage::write_json_fast(&path, &snapshot)
+        && let Err(err) = ideocode_storage::write_json_fast(&path, &snapshot)
     {
-        IDEOCODE_logging::warn(&format!("keymap snapshot write failed: {err}"));
+        ideocode_logging::warn(&format!("keymap snapshot write failed: {err}"));
     }
     snapshot
 }
@@ -133,7 +133,7 @@ pub fn refresh_and_save() -> KeymapSnapshot {
 /// Load the last persisted snapshot, if any.
 pub fn load_snapshot() -> Option<KeymapSnapshot> {
     let path = snapshot_path().ok()?;
-    IDEOCODE_storage::read_json(&path).ok()
+    ideocode_storage::read_json(&path).ok()
 }
 
 /// Maximum age (seconds) before a cached snapshot is considered stale and

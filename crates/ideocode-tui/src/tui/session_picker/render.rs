@@ -8,7 +8,7 @@ impl SessionPicker {
             .unwrap_or_default()
             .as_millis()
             .saturating_div(u128::from(
-                IDEOCODE_tui_render::swarm_gallery::STRIP_SPINNER_FRAME_MS,
+                ideocode_tui_render::swarm_gallery::STRIP_SPINNER_FRAME_MS,
             )) as usize
     }
 
@@ -227,8 +227,8 @@ impl SessionPicker {
                     None => "working".to_string(),
                 };
                 Some((
-                    IDEOCODE_tui_render::swarm_gallery::STRIP_SPINNER_FRAMES[spinner_frame
-                        % IDEOCODE_tui_render::swarm_gallery::STRIP_SPINNER_FRAMES.len()],
+                    ideocode_tui_render::swarm_gallery::STRIP_SPINNER_FRAMES[spinner_frame
+                        % ideocode_tui_render::swarm_gallery::STRIP_SPINNER_FRAMES.len()],
                     rgb(255, 193, 7),
                     label,
                 ))
@@ -440,8 +440,8 @@ impl SessionPicker {
         let server_color: Color = rgb(255, 200, 100);
         let dim: Color = rgb(100, 100, 100);
         let spinner_frame = Self::running_spinner_frame();
-        let spinner = IDEOCODE_tui_render::swarm_gallery::STRIP_SPINNER_FRAMES
-            [spinner_frame % IDEOCODE_tui_render::swarm_gallery::STRIP_SPINNER_FRAMES.len()];
+        let spinner = ideocode_tui_render::swarm_gallery::STRIP_SPINNER_FRAMES
+            [spinner_frame % ideocode_tui_render::swarm_gallery::STRIP_SPINNER_FRAMES.len()];
 
         let items: Vec<ListItem> = if let Some(message) = self.loading_message.as_deref() {
             vec![
@@ -460,7 +460,7 @@ impl SessionPicker {
                 )])),
             ]
         } else if self.items.is_empty()
-            && self.filter_mode == IDEOCODE_tui_session_picker::SessionFilterMode::Active
+            && self.filter_mode == ideocode_tui_session_picker::SessionFilterMode::Active
         {
             vec![
                 ListItem::new(Line::from(vec![Span::styled(
@@ -562,7 +562,7 @@ impl SessionPicker {
                     .fg(rgb(255, 200, 100))
                     .add_modifier(Modifier::BOLD),
             ));
-        } else if self.filter_mode == IDEOCODE_tui_session_picker::SessionFilterMode::Active {
+        } else if self.filter_mode == ideocode_tui_session_picker::SessionFilterMode::Active {
             // The Active view breaks the count down into "still working" vs
             // "ready for input" so the user can triage at a glance. Counts are
             // derived from the visible rows so search/debug filters stay honest.

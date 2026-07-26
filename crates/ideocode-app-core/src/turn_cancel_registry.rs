@@ -23,7 +23,7 @@
 //! cancellation reaches the in-flight provider stream no matter which handle
 //! instance received the request.
 
-use IDEOCODE_agent_runtime::InterruptSignal;
+use ideocode_agent_runtime::InterruptSignal;
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{LazyLock, Mutex};

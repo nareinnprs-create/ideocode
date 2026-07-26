@@ -530,8 +530,8 @@ use theme_support::{
     system_message_color, tool_color, user_bg, user_color, user_text,
 };
 
-pub(crate) use IDEOCODE_tui_markdown::{CopyTargetKind, RawCopyTarget};
-pub(crate) use IDEOCODE_tui_messages::{
+pub(crate) use ideocode_tui_markdown::{CopyTargetKind, RawCopyTarget};
+pub(crate) use ideocode_tui_messages::{
     CopyTarget, EditToolRange, ImageRegion, MessageBoundary, PreparedChatFrame, PreparedMessages,
     PreparedSection, PreparedSectionKind, WrappedLineMap,
 };
@@ -1544,7 +1544,7 @@ impl CopyViewportSnapshot {
             .image_regions
             .iter()
             .find(|region| {
-                region.render == IDEOCODE_tui_messages::ImageRegionRender::Fit
+                region.render == ideocode_tui_messages::ImageRegionRender::Fit
                     && region.abs_line_idx == abs_line + 1
             })
             .map(|region| region.hash)
@@ -2410,7 +2410,7 @@ pub(crate) fn inline_image_body_target_from_screen(
         CopyViewportData::Dense { .. } => return None,
     };
     let region = prepared.image_regions.iter().find(|region| {
-        region.render == IDEOCODE_tui_messages::ImageRegionRender::Fit
+        region.render == ideocode_tui_messages::ImageRegionRender::Fit
             && point.abs_line >= region.abs_line_idx
             && point.abs_line < region.end_line
     })?;
@@ -2501,7 +2501,7 @@ pub fn draw(frame: &mut Frame, app: &dyn TuiState) {
     // Adapt the finished frame for light terminal backgrounds (no-op on dark).
     // Doing this at the buffer level covers every widget and overlay without
     // touching individual color call sites.
-    IDEOCODE_tui_style::adapt_buffer_for_theme(frame.buffer_mut());
+    ideocode_tui_style::adapt_buffer_for_theme(frame.buffer_mut());
     adapt_buffer_for_emoji_preference(frame.buffer_mut());
     // Cache eviction/clearing can outlive the last visible image. Carry Kitty
     // deletion commands on any completed frame so terminal-side pixel storage
@@ -2833,7 +2833,7 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
             let focus_key = crate::tui::keybind::swarm_panel_focus_key_label();
             // Use the same smooth cadence as the primary status spinner.
             let spinner_frame = (app.animation_elapsed()
-                * IDEOCODE_tui_render::swarm_gallery::STRIP_SPINNER_FPS)
+                * ideocode_tui_render::swarm_gallery::STRIP_SPINNER_FPS)
                 as usize;
             // Focused budget: chips + hints + a ~14-line detail viewport, but
             // never more than a third of the chat column so the transcript
@@ -3163,7 +3163,7 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     } else if swarm_page_active {
         let members = app.inline_swarm_members();
         let spinner_frame =
-            (app.animation_elapsed() * IDEOCODE_tui_render::swarm_gallery::STRIP_SPINNER_FPS) as usize;
+            (app.animation_elapsed() * ideocode_tui_render::swarm_gallery::STRIP_SPINNER_FPS) as usize;
         let lines = super::info_widget::swarm_gallery::render_swarm_page_lines(
             &members,
             app.swarm_panel_selected(),

@@ -1,7 +1,7 @@
 ﻿use crate::workspace::SessionCard;
 pub use crate::workspace::SessionTranscriptMessage;
 use anyhow::{Context, Result};
-use IDEOCODE_tui_messages::{
+use ideocode_tui_messages::{
     TranscriptPreviewLabels, latest_user_transcript_preview, transcript_preview_lines,
 };
 use serde::{Deserialize, Deserializer};
@@ -35,7 +35,7 @@ pub fn load_crashed_session_cards() -> Result<Vec<SessionCard>> {
 }
 
 pub fn load_session_card_by_id(session_id: &str) -> Result<Option<SessionCard>> {
-    let sessions_dir = IDEOCODE_sessions_dir()?;
+    let sessions_dir = ideocode_sessions_dir()?;
     let path = sessions_dir.join(format!("{session_id}.json"));
     if path.exists() {
         return load_session_card(&path, session_file_modified(&path));
@@ -49,7 +49,7 @@ pub fn load_session_card_by_id(session_id: &str) -> Result<Option<SessionCard>> 
 pub fn load_session_transcript_by_id(
     session_id: &str,
 ) -> Result<Option<Vec<SessionTranscriptMessage>>> {
-    let sessions_dir = IDEOCODE_sessions_dir()?;
+    let sessions_dir = ideocode_sessions_dir()?;
     let direct_path = sessions_dir.join(format!("{session_id}.json"));
     if direct_path.exists() {
         let session = load_stored_session(&direct_path)?;
@@ -118,7 +118,7 @@ pub fn load_largest_real_transcripts(
     max_sessions: usize,
     min_messages: usize,
 ) -> Result<Vec<BenchmarkTranscript>> {
-    let sessions_dir = IDEOCODE_sessions_dir()?;
+    let sessions_dir = ideocode_sessions_dir()?;
     if !sessions_dir.exists() {
         return Ok(Vec::new());
     }
@@ -172,7 +172,7 @@ pub fn load_largest_real_transcripts(
 }
 
 fn load_recent_session_cards_with_limit(limit: usize) -> Result<Vec<SessionCard>> {
-    let sessions_dir = IDEOCODE_sessions_dir()?;
+    let sessions_dir = ideocode_sessions_dir()?;
     if !sessions_dir.exists() {
         return Ok(Vec::new());
     }
@@ -399,15 +399,15 @@ fn load_stored_session(path: &Path) -> Result<StoredSession> {
     serde_json::from_str(&raw).with_context(|| format!("failed to parse {}", path.display()))
 }
 
-fn IDEOCODE_sessions_dir() -> Result<PathBuf> {
-    let IDEOCODE_home = match std::env::var_os("IDEOCODE_HOME") {
+fn ideocode_sessions_dir() -> Result<PathBuf> {
+    let ideocode_home = match std::env::var_os("IDEOCODE_HOME") {
         Some(path) => PathBuf::from(path),
         None => std::env::var_os("HOME")
             .map(PathBuf::from)
             .context("HOME is not set")?
             .join(".IDEOCODE"),
     };
-    Ok(IDEOCODE_home.join("sessions"))
+    Ok(ideocode_home.join("sessions"))
 }
 
 fn stored_string(value: Option<&str>) -> Option<String> {

@@ -177,7 +177,7 @@ fn test_render_channel_and_shared_context_as_compact_agent_rows() {
 #[test]
 fn test_render_file_activity_as_collapsible_compact_row() {
     crate::tui::markdown::set_center_code_blocks(false);
-    let content = IDEOCODE_tui_messages::encode_collapsible_swarm_content(
+    let content = ideocode_tui_messages::encode_collapsible_swarm_content(
         "src/auth.rs · modified",
         "```text\n-old\n+new\n```",
     );
@@ -594,9 +594,9 @@ fn test_light_theme_adapted_frame_has_readable_contrast() {
     terminal
         .draw(|frame| {
             crate::tui::ui::draw(frame, &state);
-            IDEOCODE_tui_style::theme_mode::adapt_buffer(
+            ideocode_tui_style::theme_mode::adapt_buffer(
                 frame.buffer_mut(),
-                IDEOCODE_tui_style::ThemeMode::Light,
+                ideocode_tui_style::ThemeMode::Light,
             );
         })
         .expect("draw");

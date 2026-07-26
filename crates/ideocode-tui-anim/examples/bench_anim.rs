@@ -182,7 +182,7 @@ fn main() {
     let od = time("old (trig/iter)", old_donut, frames, sw, sh);
     let nd = time(
         "new (angle table)",
-        IDEOCODE_tui_anim::sample_donut,
+        ideocode_tui_anim::sample_donut,
         frames,
         sw,
         sh,
@@ -192,7 +192,7 @@ fn main() {
     let oo = time("old (trig/iter)", old_orbit, frames, sw, sh);
     let no = time(
         "new (angle table)",
-        IDEOCODE_tui_anim::sample_orbit_rings,
+        ideocode_tui_anim::sample_orbit_rings,
         frames,
         sw,
         sh,

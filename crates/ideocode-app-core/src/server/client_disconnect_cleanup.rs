@@ -6,7 +6,7 @@
 };
 use crate::agent::Agent;
 use anyhow::Result;
-use IDEOCODE_agent_runtime::InterruptSignal;
+use ideocode_agent_runtime::InterruptSignal;
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use std::time::Duration;

@@ -12,15 +12,15 @@
 //! out of the monolithic root `IDEOCODE` crate so they compile as a separate
 //! rustc unit. The application core it builds on (server, agent, provider,
 //! auth, session, tool, config, ...) lives in `IDEOCODE-app-core` and is
-//! re-exported here via `pub use IDEOCODE_app_core::*`, so every existing
+//! re-exported here via `pub use ideocode_app_core::*`, so every existing
 //! `crate::<module>` path (e.g. `crate::config`, `crate::server`) keeps
 //! resolving unchanged across the tui code. The root `IDEOCODE` crate (cli + bin)
-//! re-exports this crate via `pub use IDEOCODE_tui::*`.
+//! re-exports this crate via `pub use ideocode_tui::*`.
 
 // Application core: re-export every `IDEOCODE-app-core` module (which itself
 // re-exports `IDEOCODE-base`) so `crate::<module>` paths resolve here exactly as
 // they did before the split.
-pub use IDEOCODE_app_core::*;
+pub use ideocode_app_core::*;
 
 // Presentation layer (kept in this crate).
 pub mod tui;

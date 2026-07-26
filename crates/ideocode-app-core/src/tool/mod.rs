@@ -37,16 +37,16 @@ use crate::compaction::CompactionManager;
 use crate::provider::Provider;
 use crate::skill::SkillRegistry;
 use anyhow::Result;
-use IDEOCODE_message_types::ToolDefinition;
+use ideocode_message_types::ToolDefinition;
 use serde_json::Value;
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use std::sync::{LazyLock, RwLock as StdRwLock};
 use tokio::sync::RwLock;
 
-pub(crate) use IDEOCODE_tool_core::intent_schema_property;
-pub use IDEOCODE_tool_core::{StdinInputRequest, Tool, ToolContext, ToolExecutionMode};
-pub use IDEOCODE_tool_types::{ToolImage, ToolOutput};
+pub(crate) use ideocode_tool_core::intent_schema_property;
+pub use ideocode_tool_core::{StdinInputRequest, Tool, ToolContext, ToolExecutionMode};
+pub use ideocode_tool_types::{ToolImage, ToolOutput};
 pub(crate) use session_search::spawn_recent_index_warmup;
 
 #[derive(Clone, Debug, Default)]
@@ -372,7 +372,7 @@ impl Registry {
     /// lower-level crates (e.g. config) can normalize tool names without
     /// depending on the tool subsystem; this method delegates to it.
     pub(crate) fn resolve_tool_name(name: &str) -> &str {
-        IDEOCODE_tool_types::resolve_tool_name(name)
+        ideocode_tool_types::resolve_tool_name(name)
     }
 
     /// Suggest up to 3 available tool names that look similar to `name`.

@@ -126,7 +126,7 @@ impl InlineTailBuffer {
 /// Compact one-line summary of a tool's input for the activity marker.
 /// Prefers the model-provided `intent`, then well-known per-tool fields.
 fn tool_marker_summary(name: &str, input: &serde_json::Value) -> String {
-    let raw = IDEOCODE_message_types::ToolCall::intent_from_input(input)
+    let raw = ideocode_message_types::ToolCall::intent_from_input(input)
         .or_else(|| {
             let field = match name {
                 "bash" => "command",

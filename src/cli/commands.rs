@@ -248,7 +248,7 @@ fn run_cloud_sessions_helper_command(action: CloudSessionsSubcommand) -> Result<
 }
 
 fn cloud_sessions_config_path() -> Result<PathBuf> {
-    Ok(crate::storage::IDEOCODE_dir()?.join("cloud_sessions.json"))
+    Ok(crate::storage::ideocode_dir()?.join("cloud_sessions.json"))
 }
 
 fn load_cloud_sessions_config() -> Result<Option<CloudSessionsConfig>> {
@@ -471,7 +471,7 @@ struct SyncCandidate {
 }
 
 fn cloud_sessions_sync_state_path() -> Result<PathBuf> {
-    Ok(crate::storage::IDEOCODE_dir()?.join("cloud_sessions_sync.json"))
+    Ok(crate::storage::ideocode_dir()?.join("cloud_sessions_sync.json"))
 }
 
 fn load_cloud_sessions_sync_state() -> Result<CloudSessionsSyncState> {
@@ -514,7 +514,7 @@ fn resolve_sync_sessions_dir(override_path: Option<&str>) -> Result<PathBuf> {
     if let Some(path) = override_path.map(str::trim).filter(|path| !path.is_empty()) {
         return Ok(expand_home_path(path));
     }
-    Ok(crate::storage::IDEOCODE_dir()?.join("sessions"))
+    Ok(crate::storage::ideocode_dir()?.join("sessions"))
 }
 
 fn expand_home_path(path: &str) -> PathBuf {
@@ -1791,7 +1791,7 @@ pub fn run_memory_command(cmd: MemorySubcommand) -> Result<()> {
         }
 
         MemorySubcommand::ClearTest => {
-            let test_dir = storage::IDEOCODE_dir()?.join("memory").join("test");
+            let test_dir = storage::ideocode_dir()?.join("memory").join("test");
             if test_dir.exists() {
                 let count = std::fs::read_dir(&test_dir)?.count();
                 std::fs::remove_dir_all(&test_dir)?;

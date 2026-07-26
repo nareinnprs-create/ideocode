@@ -6,8 +6,8 @@ async fn live_openai_catalog_lists_gpt_5_4_family() -> Result<()> {
         return Ok(());
     };
 
-    IDEOCODE_base::provider::populate_context_limits(catalog.context_limits.clone());
-    IDEOCODE_base::provider::populate_account_models(catalog.available_models.clone());
+    ideocode_base::provider::populate_context_limits(catalog.context_limits.clone());
+    ideocode_base::provider::populate_account_models(catalog.available_models.clone());
 
     assert!(
         catalog
@@ -18,7 +18,7 @@ async fn live_openai_catalog_lists_gpt_5_4_family() -> Result<()> {
         catalog.available_models
     );
     assert!(
-        IDEOCODE_base::provider::known_openai_model_ids()
+        ideocode_base::provider::known_openai_model_ids()
             .iter()
             .any(|model| model == "gpt-5.4"),
         "expected GPT-5.4 in display model list"
@@ -31,7 +31,7 @@ async fn live_openai_catalog_lists_gpt_5_4_family() -> Result<()> {
         .unwrap_or_default()
         >= 1_000_000;
     assert_eq!(
-        IDEOCODE_base::provider::known_openai_model_ids()
+        ideocode_base::provider::known_openai_model_ids()
             .iter()
             .any(|model| model == "gpt-5.4[1m]"),
         reports_long_context,
@@ -48,8 +48,8 @@ async fn live_openai_gpt_5_4_and_fast_requests_succeed() -> Result<()> {
         eprintln!("skipping live OpenAI response test: no real OAuth credentials");
         return Ok(());
     };
-    IDEOCODE_base::provider::populate_context_limits(catalog.context_limits.clone());
-    IDEOCODE_base::provider::populate_account_models(catalog.available_models.clone());
+    ideocode_base::provider::populate_context_limits(catalog.context_limits.clone());
+    ideocode_base::provider::populate_account_models(catalog.available_models.clone());
 
     let Some(plain_response) = live_openai_smoke("gpt-5.4", "IDEOCODE_GPT54_OK").await? else {
         eprintln!("skipping live OpenAI response test: no real OAuth credentials");
@@ -79,7 +79,7 @@ async fn live_openai_gpt_5_4_and_fast_requests_succeed() -> Result<()> {
         );
     }
 
-    if IDEOCODE_base::provider::known_openai_model_ids()
+    if ideocode_base::provider::known_openai_model_ids()
         .iter()
         .any(|model| model == "gpt-5.4[1m]")
     {
@@ -295,7 +295,7 @@ fn test_websocket_first_activity_payload_counts_typed_control_events() {
 
 #[test]
 fn test_websocket_completion_timeout_is_long_enough_for_reasoning() {
-    let timeout = std::hint::black_box(IDEOCODE_provider_openai::websocket_health::WEBSOCKET_COMPLETION_TIMEOUT_SECS);
+    let timeout = std::hint::black_box(ideocode_provider_openai::websocket_health::WEBSOCKET_COMPLETION_TIMEOUT_SECS);
     assert!(
         timeout >= 120,
         "completion timeout regressed to {}s; reasoning models may need several minutes",
@@ -378,7 +378,7 @@ fn test_websocket_next_activity_timeout_resets_after_api_activity() {
     let remaining = websocket_next_activity_timeout_secs(ws_started_at, last_api_activity_at, true)
         .expect("idle timeout should use last activity, not total request age");
     assert!(
-        remaining >= IDEOCODE_provider_openai::websocket_health::WEBSOCKET_COMPLETION_TIMEOUT_SECS.saturating_sub(3),
+        remaining >= ideocode_provider_openai::websocket_health::WEBSOCKET_COMPLETION_TIMEOUT_SECS.saturating_sub(3),
         "expected full idle budget to reset after activity, got {remaining}"
     );
 }

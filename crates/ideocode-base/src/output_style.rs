@@ -3,7 +3,7 @@
 //! Items are re-exported explicitly rather than with a glob so the crate
 //! boundary stays visible in the API surface.
 
-pub use IDEOCODE_core::output_style::{
+pub use ideocode_core::output_style::{
     emoji_enabled, replace_emoji_with_ascii, set_emoji_enabled, terminal_text,
     terminal_text_with_emoji,
 };

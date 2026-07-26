@@ -455,7 +455,7 @@ fn tool_scratch_dir() -> Option<std::path::PathBuf> {
         .filter(|value| !value.is_empty())
         .map(std::path::PathBuf::from)
         .or_else(|| {
-            crate::storage::IDEOCODE_dir()
+            crate::storage::ideocode_dir()
                 .ok()
                 .map(|dir| dir.join("scratch"))
         })?;

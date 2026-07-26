@@ -237,7 +237,7 @@ impl MemoryManager {
             anyhow::bail!("clear_test_storage only allowed in test mode");
         }
 
-        let test_dir = storage::IDEOCODE_dir()?.join("memory").join("test");
+        let test_dir = storage::ideocode_dir()?.join("memory").join("test");
         if test_dir.exists() {
             std::fs::remove_dir_all(&test_dir)?;
             crate::logging::info("Cleared test memory storage");
@@ -252,7 +252,7 @@ impl MemoryManager {
     fn project_memory_path(&self) -> Result<Option<PathBuf>> {
         // In test mode, use test directory
         if self.test_mode {
-            let test_dir = storage::IDEOCODE_dir()?.join("memory").join("test");
+            let test_dir = storage::ideocode_dir()?.join("memory").join("test");
             std::fs::create_dir_all(&test_dir)?;
             return Ok(Some(test_dir.join("test_project.json")));
         }
@@ -270,13 +270,13 @@ impl MemoryManager {
             format!("{:016x}", hasher.finish())
         };
 
-        let memory_dir = storage::IDEOCODE_dir()?.join("memory").join("projects");
+        let memory_dir = storage::ideocode_dir()?.join("memory").join("projects");
         Ok(Some(memory_dir.join(format!("{}.json", project_hash))))
     }
 
     fn legacy_notes_path(&self) -> Result<Option<PathBuf>> {
         if self.test_mode {
-            let test_dir = storage::IDEOCODE_dir()?.join("notes").join("test");
+            let test_dir = storage::ideocode_dir()?.join("notes").join("test");
             std::fs::create_dir_all(&test_dir)?;
             return Ok(Some(test_dir.join("test_notes.json")));
         }
@@ -295,7 +295,7 @@ impl MemoryManager {
         };
 
         Ok(Some(
-            storage::IDEOCODE_dir()?
+            storage::ideocode_dir()?
                 .join("notes")
                 .join(format!("{}.json", project_hash)),
         ))
@@ -353,11 +353,11 @@ impl MemoryManager {
 
     fn global_memory_path(&self) -> Result<PathBuf> {
         if self.test_mode {
-            let test_dir = storage::IDEOCODE_dir()?.join("memory").join("test");
+            let test_dir = storage::ideocode_dir()?.join("memory").join("test");
             std::fs::create_dir_all(&test_dir)?;
             Ok(test_dir.join("test_global.json"))
         } else {
-            Ok(storage::IDEOCODE_dir()?.join("memory").join("global.json"))
+            Ok(storage::ideocode_dir()?.join("memory").join("global.json"))
         }
     }
 

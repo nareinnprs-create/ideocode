@@ -25,14 +25,14 @@ impl Drop for EnvVarGuard {
 }
 
 #[test]
-fn IDEOCODE_auth_file_default_is_empty() {
+fn ideocode_auth_file_default_is_empty() {
     let auth = IDEOCODEAuthFile::default();
     assert!(auth.anthropic_accounts.is_empty());
     assert!(auth.active_anthropic_account.is_none());
 }
 
 #[test]
-fn IDEOCODE_auth_file_roundtrip() {
+fn ideocode_auth_file_roundtrip() {
     let auth = IDEOCODEAuthFile {
         anthropic_accounts: vec![AnthropicAccount {
             label: "work".to_string(),
@@ -57,12 +57,12 @@ fn IDEOCODE_auth_file_roundtrip() {
 }
 
 #[test]
-fn IDEOCODE_path_respects_IDEOCODE_home() {
+fn ideocode_path_respects_ideocode_home() {
     let _lock = crate::storage::lock_test_env();
     let temp = tempfile::TempDir::new().unwrap();
     let _home = EnvVarGuard::set("IDEOCODE_HOME", temp.path());
 
-    assert_eq!(IDEOCODE_path().unwrap(), temp.path().join("auth.json"));
+    assert_eq!(ideocode_path().unwrap(), temp.path().join("auth.json"));
     assert_eq!(
         claude_code_path().unwrap(),
         temp.path()
@@ -123,7 +123,7 @@ fn load_auth_file_renames_existing_labels_to_numbered_scheme() {
 }
 
 #[test]
-fn IDEOCODE_auth_file_multi_account() {
+fn ideocode_auth_file_multi_account() {
     let auth = IDEOCODEAuthFile {
         anthropic_accounts: vec![
             AnthropicAccount {
@@ -156,7 +156,7 @@ fn IDEOCODE_auth_file_multi_account() {
 }
 
 #[test]
-fn IDEOCODE_auth_file_legacy_migration_format() {
+fn ideocode_auth_file_legacy_migration_format() {
     let legacy_json = r#"{
         "anthropic": {
             "access": "legacy_acc",

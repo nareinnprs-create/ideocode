@@ -530,7 +530,7 @@ impl AcpRuntime {
                 }
                 other => {
                     if self.profile.is_extended() {
-                        self.write_IDEOCODE_extension_event(&attached_id, &other)
+                        self.write_ideocode_extension_event(&attached_id, &other)
                             .await?;
                     }
                 }
@@ -611,7 +611,7 @@ impl AcpRuntime {
                 }
             };
             if self.profile.is_extended() {
-                self.write_IDEOCODE_extension_event(&session.session_id, &event)
+                self.write_ideocode_extension_event(&session.session_id, &event)
                     .await?;
             }
             match event {
@@ -677,7 +677,7 @@ impl AcpRuntime {
         .await
     }
 
-    async fn write_IDEOCODE_extension_event(
+    async fn write_ideocode_extension_event(
         &self,
         session_id: &str,
         event: &ServerEvent,
@@ -923,7 +923,7 @@ fn initialize_result(params: &Value, profile: AcpProfile) -> Value {
         "agentInfo": {
             "name": "IDEOCODE",
             "title": "IDEOCODE",
-            "version": IDEOCODE_build_meta::pkg_version(),
+            "version": ideocode_build_meta::pkg_version(),
         },
         "authMethods": [],
     })
@@ -1129,7 +1129,7 @@ mod tests {
     }
 
     #[test]
-    fn initialize_standard_omits_IDEOCODE_meta() {
+    fn initialize_standard_omits_ideocode_meta() {
         let result = initialize_result(&json!({"protocolVersion": 1}), AcpProfile::Standard);
         assert_eq!(result["protocolVersion"], 1);
         assert!(result["agentCapabilities"].get("_meta").is_none());
@@ -1137,7 +1137,7 @@ mod tests {
     }
 
     #[test]
-    fn initialize_full_advertises_IDEOCODE_extension_meta() {
+    fn initialize_full_advertises_ideocode_extension_meta() {
         let result = initialize_result(&json!({"protocolVersion": 1}), AcpProfile::Full);
         assert_eq!(
             result["agentCapabilities"]["_meta"]["IDEOCODE"]["profile"],

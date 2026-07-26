@@ -277,7 +277,7 @@ pub fn log_pending_prepared(session_id: &str, prompt: &str, count: usize, memory
             "target_session": session_id,
             "count": count,
             "prompt_chars": prompt.chars().count(),
-            "prompt_preview": IDEOCODE_core::util::truncate_str(prompt, 500),
+            "prompt_preview": ideocode_core::util::truncate_str(prompt, 500),
             "memory_ids": memory_ids,
         })),
     );
@@ -373,7 +373,7 @@ pub fn log_candidate_filter(
             "target_session": session_id,
             "total_candidates": total_candidates,
             "after_dedup": after_dedup,
-            "context_preview": IDEOCODE_core::util::truncate_str(context_preview, 200),
+            "context_preview": ideocode_core::util::truncate_str(context_preview, 200),
         })),
     );
 }

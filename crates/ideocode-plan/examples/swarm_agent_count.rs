@@ -1,6 +1,6 @@
 ﻿//! Measure how many agents a swarm task graph would spawn.
 //!
-//! This drives the *real* task-DAG engine (`IDEOCODE_plan::dag`) with scripted mock
+//! This drives the *real* task-DAG engine (`ideocode_plan::dag`) with scripted mock
 //! workers and counts the things that map to live runtime behaviour:
 //!
 //! * **nodes**: total nodes in the final graph, including auto-inserted gates.
@@ -18,8 +18,8 @@
 
 use std::collections::{HashMap, HashSet};
 
-use IDEOCODE_plan::dag::sim::deep_artifact;
-use IDEOCODE_plan::dag::{
+use ideocode_plan::dag::sim::deep_artifact;
+use ideocode_plan::dag::{
     HandoffArtifact, Mode, NodeKind, NodeSpec, TaskGraph, complete_node, dispatch, expand_node,
     fail_node, inject_from_gate, ready_nodes, seed,
 };

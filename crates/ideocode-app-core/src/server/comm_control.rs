@@ -24,7 +24,7 @@ use crate::plan::{
     task_control_target_item_id,
 };
 use crate::protocol::{NotificationType, PlanGraphStatus, ServerEvent};
-use IDEOCODE_agent_runtime::SoftInterruptSource;
+use ideocode_agent_runtime::SoftInterruptSource;
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use tokio::sync::{Mutex, RwLock, broadcast, mpsc, watch};
@@ -388,18 +388,18 @@ fn deep_mode_assignment_content(
         // the strictest debts, named as priority probe targets.
         let audited: HashSet<&str> = audited_ids.iter().map(String::as_str).collect();
         let low_confidence_siblings: Vec<String> =
-            IDEOCODE_plan::bridge::low_confidence_completed_ids(plan)
+            ideocode_plan::bridge::low_confidence_completed_ids(plan)
                 .into_iter()
                 .filter(|id| audited.contains(id.as_str()))
                 .collect();
-        IDEOCODE_swarm_core::append_deep_gate_instructions(
+        ideocode_swarm_core::append_deep_gate_instructions(
             content,
             item_id,
             &audited_ids,
             &low_confidence_siblings,
         )
     } else {
-        IDEOCODE_swarm_core::append_deep_node_instructions(content, item_id)
+        ideocode_swarm_core::append_deep_node_instructions(content, item_id)
     }
 }
 
@@ -415,7 +415,7 @@ async fn task_snapshot_for(
     // resume/start/wake re-injects the same artifact context an initial
     // assignment would carry, then attach the deep-mode contract the same way
     // the initial assignment path does.
-    let hydrated = IDEOCODE_plan::bridge::hydrate_assignment(plan, task_id, &item.content);
+    let hydrated = ideocode_plan::bridge::hydrate_assignment(plan, task_id, &item.content);
     let is_composite_synthesis = plan
         .node_meta
         .get(task_id)
@@ -1612,7 +1612,7 @@ async fn handle_comm_assign_task_with_mode(
             let effective_content =
                 composite_synthesis_content(&item_id, &raw_content, is_composite_synthesis);
             let hydrated =
-                IDEOCODE_plan::bridge::hydrate_assignment(plan, &item_id, &effective_content);
+                ideocode_plan::bridge::hydrate_assignment(plan, &item_id, &effective_content);
             let content =
                 deep_mode_assignment_content(plan, &item_id, is_composite_synthesis, &hydrated);
 
@@ -2607,7 +2607,7 @@ async fn require_plan_driver_swarm(
         plans
             .get(&swarm_id)
             .map(|plan| {
-                IDEOCODE_plan::bridge::parse_mode(&plan.mode) == IDEOCODE_plan::dag::Mode::Deep
+                ideocode_plan::bridge::parse_mode(&plan.mode) == ideocode_plan::dag::Mode::Deep
                     && plan.participants.contains(req_session_id)
             })
             .unwrap_or(false)

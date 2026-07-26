@@ -18,7 +18,7 @@ use crate::provider_catalog::{
     load_api_key_from_env_or_config, normalize_api_base, openai_compatible_profiles,
     resolve_openai_compatible_profile,
 };
-pub use IDEOCODE_provider_openrouter::{
+pub use ideocode_provider_openrouter::{
     EndpointInfo, ModelInfo, ModelPricing, ModelTimestampIndex, ProviderRouting,
     all_model_timestamps, load_endpoints_disk_cache_public, load_model_pricing_disk_cache_public,
     load_model_timestamp_index, model_created_timestamp, model_created_timestamp_from_index,
@@ -32,7 +32,7 @@ pub use IDEOCODE_provider_openrouter::{
 /// exclusive), letting the model picker skip fabricated OpenRouter fallback
 /// routes that would 400 with "not a valid model ID" at request time.
 pub fn standard_catalog_lists_model(model_id: &str) -> Option<bool> {
-    let cache = IDEOCODE_provider_openrouter::load_disk_cache_entry_for_namespace("openrouter")?;
+    let cache = ideocode_provider_openrouter::load_disk_cache_entry_for_namespace("openrouter")?;
     if cache.models.is_empty() {
         return None;
     }

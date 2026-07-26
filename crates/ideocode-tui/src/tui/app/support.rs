@@ -68,10 +68,10 @@ pub(super) fn build_mailto_url(body: &str) -> String {
 }
 
 fn build_channel() -> String {
-    if std::env::var(IDEOCODE_selfdev_types::CLIENT_SELFDEV_ENV).is_ok() {
+    if std::env::var(ideocode_selfdev_types::CLIENT_SELFDEV_ENV).is_ok() {
         return "selfdev".to_string();
     }
-    if IDEOCODE_build_meta::is_release_build() {
+    if ideocode_build_meta::is_release_build() {
         return "release".to_string();
     }
     if let Ok(exe) = std::env::current_exe() {
@@ -89,7 +89,7 @@ fn build_channel() -> String {
 /// Read the persisted telemetry id without creating one (read-only, so
 /// `/support` never mutates telemetry state).
 fn read_telemetry_id() -> Option<String> {
-    let path = crate::storage::IDEOCODE_dir().ok()?.join("telemetry_id");
+    let path = crate::storage::ideocode_dir().ok()?.join("telemetry_id");
     let id = std::fs::read_to_string(path).ok()?;
     let id = id.trim().to_string();
     if id.is_empty() { None } else { Some(id) }
@@ -127,8 +127,8 @@ fn gather_diagnostics(app: &App) -> SupportDiagnostics {
         });
 
     SupportDiagnostics {
-        version: IDEOCODE_build_meta::version().to_string(),
-        git_hash: IDEOCODE_build_meta::git_hash().to_string(),
+        version: ideocode_build_meta::version().to_string(),
+        git_hash: ideocode_build_meta::git_hash().to_string(),
         build_channel: build_channel(),
         os: std::env::consts::OS.to_string(),
         arch: std::env::consts::ARCH.to_string(),

@@ -439,11 +439,11 @@ impl LiveVerificationAuth {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct LiveVerificationBuild {
-    pub IDEOCODE_version: String,
-    pub IDEOCODE_git_hash: String,
-    pub IDEOCODE_git_date: String,
-    pub IDEOCODE_git_dirty: bool,
-    pub IDEOCODE_semver: String,
+    pub ideocode_version: String,
+    pub ideocode_git_hash: String,
+    pub ideocode_git_date: String,
+    pub ideocode_git_dirty: bool,
+    pub ideocode_semver: String,
     pub os: String,
     pub arch: String,
     pub pid: u32,
@@ -451,13 +451,13 @@ pub struct LiveVerificationBuild {
 
 impl LiveVerificationBuild {
     pub fn current() -> Self {
-        let version = IDEOCODE_build_meta::version().to_string();
+        let version = ideocode_build_meta::version().to_string();
         Self {
-            IDEOCODE_git_dirty: version.contains("dirty"),
-            IDEOCODE_version: version,
-            IDEOCODE_git_hash: IDEOCODE_build_meta::git_hash().to_string(),
-            IDEOCODE_git_date: IDEOCODE_build_meta::git_date().to_string(),
-            IDEOCODE_semver: IDEOCODE_build_meta::semver().to_string(),
+            ideocode_git_dirty: version.contains("dirty"),
+            ideocode_version: version,
+            ideocode_git_hash: ideocode_build_meta::git_hash().to_string(),
+            ideocode_git_date: ideocode_build_meta::git_date().to_string(),
+            ideocode_semver: ideocode_build_meta::semver().to_string(),
             os: std::env::consts::OS.to_string(),
             arch: std::env::consts::ARCH.to_string(),
             pid: std::process::id(),
@@ -735,9 +735,9 @@ pub struct LiveVerificationCoverageEntry {
     pub expected_checkpoints: Vec<String>,
     pub result: LiveVerificationResult,
     pub retest_after: DateTime<Utc>,
-    pub IDEOCODE_version: String,
-    pub IDEOCODE_git_hash: String,
-    pub IDEOCODE_git_dirty: bool,
+    pub ideocode_version: String,
+    pub ideocode_git_hash: String,
+    pub ideocode_git_dirty: bool,
     #[serde(default)]
     pub user_ready: bool,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -770,11 +770,11 @@ pub struct LiveProviderModelCoveragePair {
     pub latest_recorded_at: DateTime<Utc>,
     /// IDEOCODE version string that produced the most recent entry for this pair.
     #[serde(default)]
-    pub latest_IDEOCODE_version: String,
+    pub latest_ideocode_version: String,
     /// Whether the most recent run came from a dirty (dev) build. Used to label
     /// the run as developer-driven vs user-driven (clean release build).
     #[serde(default)]
-    pub latest_IDEOCODE_dirty: bool,
+    pub latest_ideocode_dirty: bool,
     pub entries: usize,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub capabilities: Vec<String>,
@@ -970,9 +970,9 @@ fn update_coverage(event: &LiveVerificationEvent, path: &Path) -> Result<()> {
             expected_checkpoints: event.expected_checkpoints.clone(),
             result: event.result.clone(),
             retest_after: event.retest_after,
-            IDEOCODE_version: event.build.IDEOCODE_version.clone(),
-            IDEOCODE_git_hash: event.build.IDEOCODE_git_hash.clone(),
-            IDEOCODE_git_dirty: event.build.IDEOCODE_git_dirty,
+            ideocode_version: event.build.ideocode_version.clone(),
+            ideocode_git_hash: event.build.ideocode_git_hash.clone(),
+            ideocode_git_dirty: event.build.ideocode_git_dirty,
             user_ready: event.user_ready(),
             readiness_gaps,
             checkpoint_statuses,
@@ -1110,16 +1110,16 @@ pub fn format_provider_test_coverage_report(
     out.push_str(&format!(
         "Last tested: {} by {}\n",
         humanize_time_ago(entry.recorded_at, Utc::now()),
-        coverage_actor_label(entry.IDEOCODE_git_dirty, &entry.IDEOCODE_version),
+        coverage_actor_label(entry.ideocode_git_dirty, &entry.ideocode_version),
     ));
     out.push_str(&format!("Evidence source: {}\n", path.display()));
     out.push_str(&format!("Matching evidence entries: {}\n", matches.len()));
     out.push_str(&format!("Test name: {}\n", entry.test_name));
     out.push_str(&format!(
         "Tested with: IDEOCODE {} ({}){}\n\n",
-        entry.IDEOCODE_version,
-        entry.IDEOCODE_git_hash,
-        if entry.IDEOCODE_git_dirty { ", dirty" } else { "" }
+        entry.ideocode_version,
+        entry.ideocode_git_hash,
+        if entry.ideocode_git_dirty { ", dirty" } else { "" }
     ));
 
     out.push_str("## Checkpoints\n\n");
@@ -1214,8 +1214,8 @@ struct ProviderModelCoverageBuilder {
     provider_label: String,
     model: String,
     latest_recorded_at: Option<DateTime<Utc>>,
-    latest_IDEOCODE_version: String,
-    latest_IDEOCODE_dirty: bool,
+    latest_ideocode_version: String,
+    latest_ideocode_dirty: bool,
     entries: usize,
     capabilities: BTreeSet<String>,
     source_provider_ids: BTreeSet<String>,
@@ -1241,8 +1241,8 @@ impl ProviderModelCoverageBuilder {
             .unwrap_or(true)
         {
             self.latest_recorded_at = Some(entry.recorded_at);
-            self.latest_IDEOCODE_version = entry.IDEOCODE_version.clone();
-            self.latest_IDEOCODE_dirty = entry.IDEOCODE_git_dirty;
+            self.latest_ideocode_version = entry.ideocode_version.clone();
+            self.latest_ideocode_dirty = entry.ideocode_git_dirty;
         }
         self.capabilities.extend(entry.capabilities.iter().cloned());
         for (checkpoint, status) in &entry.checkpoint_statuses {
@@ -1276,8 +1276,8 @@ impl ProviderModelCoverageBuilder {
             source_provider_ids: self.source_provider_ids.into_iter().collect(),
             covered,
             latest_recorded_at: self.latest_recorded_at.unwrap_or_else(Utc::now),
-            latest_IDEOCODE_version: self.latest_IDEOCODE_version,
-            latest_IDEOCODE_dirty: self.latest_IDEOCODE_dirty,
+            latest_ideocode_version: self.latest_ideocode_version,
+            latest_ideocode_dirty: self.latest_ideocode_dirty,
             entries: self.entries,
             capabilities: self.capabilities.into_iter().collect(),
             passed_checkpoints,
@@ -1996,7 +1996,7 @@ pub fn format_strict_live_provider_model_coverage_summary(
             let tested = format!(
                 "last tested {} by {}",
                 humanize_time_ago(pair.latest_recorded_at, now),
-                coverage_actor_label(pair.latest_IDEOCODE_dirty, &pair.latest_IDEOCODE_version),
+                coverage_actor_label(pair.latest_ideocode_dirty, &pair.latest_ideocode_version),
             );
             let detail = if pair.covered {
                 tested
@@ -2682,9 +2682,9 @@ mod tests {
             expected_checkpoints: checkpoint_statuses.keys().cloned().collect(),
             result: LiveVerificationResult::Passed,
             retest_after: Utc::now() + Duration::days(1),
-            IDEOCODE_version: "test".to_string(),
-            IDEOCODE_git_hash: "test".to_string(),
-            IDEOCODE_git_dirty: false,
+            ideocode_version: "test".to_string(),
+            ideocode_git_hash: "test".to_string(),
+            ideocode_git_dirty: false,
             user_ready: false,
             readiness_gaps: Vec::new(),
             checkpoint_statuses,

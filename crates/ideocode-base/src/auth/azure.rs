@@ -95,7 +95,7 @@ pub fn apply_runtime_env() -> Result<()> {
 }
 
 pub async fn get_bearer_token() -> Result<String> {
-    IDEOCODE_azure_auth::get_bearer_token(COGNITIVE_SCOPE).await
+    ideocode_azure_auth::get_bearer_token(COGNITIVE_SCOPE).await
 }
 
 #[cfg(test)]

@@ -464,7 +464,7 @@ pub(crate) fn session_switcher_fuzzy_score(needle: &str, haystack: &str) -> Opti
         return Some(0);
     }
 
-    IDEOCODE_fuzzy::fuzzy_score_tokens(needle, haystack)
+    ideocode_fuzzy::fuzzy_score_tokens(needle, haystack)
 }
 
 pub(crate) fn session_info_inline_styled_lines(
@@ -966,11 +966,11 @@ pub(crate) fn model_picker_fuzzy_score(needle: &str, haystack: &str) -> Option<i
         return Some(0);
     }
 
-    IDEOCODE_fuzzy::fuzzy_score_tokens(needle, haystack)
+    ideocode_fuzzy::fuzzy_score_tokens(needle, haystack)
 }
 
 pub(crate) fn desktop_slash_fuzzy_score(needle: &str, haystack: &str) -> Option<i32> {
-    IDEOCODE_fuzzy::command_fuzzy_score(needle, haystack)
+    ideocode_fuzzy::command_fuzzy_score(needle, haystack)
 }
 
 pub(crate) fn dedupe_model_choices(choices: Vec<DesktopModelChoice>) -> Vec<DesktopModelChoice> {

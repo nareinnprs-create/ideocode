@@ -217,7 +217,7 @@ fn test_remote_placeholder_only_openai_routes_are_replaced_with_real_routes() {
     // details…"). Opening the picker must re-synthesize the model's real
     // routes (OpenAI OAuth/API key) instead of showing the placeholder as
     // the only option.
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         crate::env::set_var("OPENAI_API_KEY", "sk-test-openai-key");
         crate::auth::AuthStatus::invalidate_cache();
 
@@ -254,7 +254,7 @@ fn test_remote_placeholder_only_openai_routes_are_replaced_with_real_routes() {
 
 #[test]
 fn test_remote_hydrated_catalog_restores_missing_direct_bedrock_route() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let previous_enable = std::env::var_os("IDEOCODE_BEDROCK_ENABLE");
         crate::env::set_var("IDEOCODE_BEDROCK_ENABLE", "1");
         crate::auth::AuthStatus::invalidate_cache();
@@ -297,7 +297,7 @@ fn test_remote_hydrated_catalog_restores_missing_direct_bedrock_route() {
 
 #[test]
 fn test_remote_current_fpt_live_model_uses_fpt_route_not_copilot_without_cache() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         crate::env::set_var("FPT_API_KEY", "test-fpt-key");
 
         let mut app = create_test_app();
@@ -333,7 +333,7 @@ fn test_remote_fallback_claude_model_gets_api_key_route_without_oauth() {
     // catalog fallback (oversized route frames are downgraded to model names).
     // With only ANTHROPIC_API_KEY configured, the fallback must synthesize a
     // claude-api route; previously it only ever emitted claude-oauth routes.
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         crate::env::set_var("ANTHROPIC_API_KEY", "sk-ant-test-key");
         crate::auth::AuthStatus::invalidate_cache();
 
@@ -378,7 +378,7 @@ fn test_remote_cached_oauth_only_claude_route_gains_api_key_route_in_picker() {
     // released Claude model. When an Anthropic API key is configured, opening
     // the picker must add the claude-api route instead of trusting the stale
     // single-route cache forever.
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let _api_key_guard =
             AnthropicApiKeyGuard(std::env::var("ANTHROPIC_API_KEY").ok());
         crate::env::set_var("ANTHROPIC_API_KEY", "sk-ant-test-key");
@@ -423,8 +423,8 @@ fn test_remote_cached_oauth_only_claude_route_gains_api_key_route_in_picker() {
 }
 
 #[test]
-fn test_remote_IDEOCODE_subscription_catalog_is_not_augmented_with_local_auth_routes() {
-    with_temp_IDEOCODE_home(|| {
+fn test_remote_ideocode_subscription_catalog_is_not_augmented_with_local_auth_routes() {
+    with_temp_ideocode_home(|| {
         let previous_anthropic_key = std::env::var_os("ANTHROPIC_API_KEY");
         crate::env::set_var("ANTHROPIC_API_KEY", "sk-ant-test-key");
         crate::auth::AuthStatus::invalidate_cache();
@@ -479,8 +479,8 @@ fn test_remote_IDEOCODE_subscription_catalog_is_not_augmented_with_local_auth_ro
 }
 
 #[test]
-fn test_remote_mixed_catalog_keeps_IDEOCODE_subscription_separate_from_other_providers() {
-    ensure_test_IDEOCODE_home_if_unset();
+fn test_remote_mixed_catalog_keeps_ideocode_subscription_separate_from_other_providers() {
+    ensure_test_ideocode_home_if_unset();
     clear_persisted_test_ui_state();
     crate::tui::ui::clear_test_render_state_for_tests();
 
@@ -540,7 +540,7 @@ fn test_remote_mixed_catalog_keeps_IDEOCODE_subscription_separate_from_other_pro
     app.open_model_picker();
 
     assert_eq!(app.remote_model_options.len(), 5);
-    let IDEOCODE_routes = app
+    let ideocode_routes = app
         .remote_model_options
         .iter()
         .filter(|route| {
@@ -548,9 +548,9 @@ fn test_remote_mixed_catalog_keeps_IDEOCODE_subscription_separate_from_other_pro
                 && route.api_method == crate::subscription_catalog::IDEOCODE_ROUTE_API_METHOD
         })
         .collect::<Vec<_>>();
-    assert_eq!(IDEOCODE_routes.len(), 3);
+    assert_eq!(ideocode_routes.len(), 3);
     assert_eq!(
-        IDEOCODE_routes
+        ideocode_routes
             .iter()
             .map(|route| route.model.as_str())
             .collect::<std::collections::BTreeSet<_>>(),
@@ -576,8 +576,8 @@ fn test_remote_mixed_catalog_keeps_IDEOCODE_subscription_separate_from_other_pro
 }
 
 #[test]
-fn test_remote_hydrated_catalog_adds_entitled_IDEOCODE_subscription_routes() {
-    with_temp_IDEOCODE_home(|| {
+fn test_remote_hydrated_catalog_adds_entitled_ideocode_subscription_routes() {
+    with_temp_ideocode_home(|| {
         let previous_key = std::env::var_os(crate::subscription_catalog::IDEOCODE_API_KEY_ENV);
         let previous_tier = std::env::var_os(crate::subscription_catalog::IDEOCODE_TIER_ENV);
         crate::env::set_var(
@@ -644,7 +644,7 @@ fn test_remote_hydrated_catalog_adds_entitled_IDEOCODE_subscription_routes() {
             None => crate::env::remove_var(crate::subscription_catalog::IDEOCODE_TIER_ENV),
         }
 
-        let IDEOCODE_routes = app
+        let ideocode_routes = app
             .remote_model_options
             .iter()
             .filter(|route| {
@@ -659,9 +659,9 @@ fn test_remote_hydrated_catalog_adds_entitled_IDEOCODE_subscription_routes() {
             })
             .map(|model| model.id)
             .collect::<std::collections::BTreeSet<_>>();
-        assert_eq!(IDEOCODE_routes.len(), expected.len());
+        assert_eq!(ideocode_routes.len(), expected.len());
         assert_eq!(
-            IDEOCODE_routes
+            ideocode_routes
                 .iter()
                 .map(|route| route.model.as_str())
                 .collect::<std::collections::BTreeSet<_>>(),
@@ -688,8 +688,8 @@ fn test_remote_hydrated_catalog_adds_entitled_IDEOCODE_subscription_routes() {
 }
 
 #[test]
-fn test_remote_non_IDEOCODE_catalog_repairs_poisoned_all_IDEOCODE_routes() {
-    with_temp_IDEOCODE_home(|| {
+fn test_remote_non_ideocode_catalog_repairs_poisoned_all_ideocode_routes() {
+    with_temp_ideocode_home(|| {
         let previous_tier = std::env::var_os(crate::subscription_catalog::IDEOCODE_TIER_ENV);
         crate::env::set_var(crate::subscription_catalog::IDEOCODE_TIER_ENV, "plus");
 
@@ -723,7 +723,7 @@ fn test_remote_non_IDEOCODE_catalog_repairs_poisoned_all_IDEOCODE_routes() {
             None => crate::env::remove_var(crate::subscription_catalog::IDEOCODE_TIER_ENV),
         }
 
-        let IDEOCODE_routes = app
+        let ideocode_routes = app
             .remote_model_options
             .iter()
             .filter(|route| {
@@ -731,9 +731,9 @@ fn test_remote_non_IDEOCODE_catalog_repairs_poisoned_all_IDEOCODE_routes() {
                     && route.api_method == crate::subscription_catalog::IDEOCODE_ROUTE_API_METHOD
             })
             .collect::<Vec<_>>();
-        assert_eq!(IDEOCODE_routes.len(), 3);
+        assert_eq!(ideocode_routes.len(), 3);
         assert_eq!(
-            IDEOCODE_routes
+            ideocode_routes
                 .iter()
                 .map(|route| route.model.as_str())
                 .collect::<std::collections::BTreeSet<_>>(),
@@ -759,7 +759,7 @@ fn test_remote_non_IDEOCODE_catalog_repairs_poisoned_all_IDEOCODE_routes() {
 
 #[test]
 fn test_model_picker_ctrl_b_bedrock_selection_saves_bedrock_default() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.is_remote = true;
         app.remote_available_entries = vec!["amazon.nova-pro-v1:0".to_string()];
@@ -1262,7 +1262,7 @@ fn test_transfer_command_queues_pause_while_processing_locally() {
 
 #[test]
 fn test_create_transfer_session_from_parent_copies_todos_and_uses_compacted_context_only() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.session.working_dir = Some("/tmp".to_string());
         app.session.model = Some("test-model".to_string());
@@ -1838,7 +1838,7 @@ fn test_model_switch_notice_omits_placeholder_route_details() {
     // Selecting a model whose chosen row is a placeholder ("remote-catalog")
     // must not advertise a bogus provider/method or the "refreshing route
     // details…" text; those describe a catalog still being refreshed.
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let model = "placeholder-only-model";
         let mut app = create_test_app();
         app.is_remote = true;
@@ -1912,7 +1912,7 @@ fn test_catalog_update_rebuilds_open_model_picker_with_real_routes() {
     // A picker opened while the catalog is still names-only shows placeholder
     // rows. When the detailed catalog lands, the open picker must be rebuilt
     // rather than left stale until the user reopens it.
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let model = "gpt-5.5";
         let mut app = create_test_app();
         app.is_remote = true;

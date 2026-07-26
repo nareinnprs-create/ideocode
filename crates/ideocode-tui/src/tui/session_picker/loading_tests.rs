@@ -716,7 +716,7 @@ fn raw_content_system_reminder_detection_handles_arrays_strings_and_unicode() {
 }
 
 #[test]
-fn session_matches_query_searches_IDEOCODE_transcript_contents() {
+fn session_matches_query_searches_ideocode_transcript_contents() {
     let _env_lock = crate::storage::lock_test_env();
     let temp = tempfile::tempdir().expect("temp dir");
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
@@ -832,7 +832,7 @@ fn load_sessions_surfaces_external_cursor_transcript() {
 fn benchmark_real_resume_loading_phases() {
     invalidate_session_list_cache();
 
-    let sessions_dir = storage::IDEOCODE_dir().expect("IDEOCODE dir").join("sessions");
+    let sessions_dir = storage::ideocode_dir().expect("IDEOCODE dir").join("sessions");
     let scan_limit = session_scan_limit();
     let candidate_limit = session_candidate_window(scan_limit);
 
@@ -875,7 +875,7 @@ fn benchmark_real_resume_loading_phases() {
             Err(_) => summary_errors += 1,
         }
     }
-    let IDEOCODE_summary_elapsed = phase_start.elapsed();
+    let ideocode_summary_elapsed = phase_start.elapsed();
 
     let phase_start = std::time::Instant::now();
     let claude = load_external_claude_code_sessions(scan_limit);
@@ -928,7 +928,7 @@ fn benchmark_real_resume_loading_phases() {
         snapshot_count,
         candidates.len(),
         collect_candidates_elapsed.as_millis(),
-        IDEOCODE_summary_elapsed.as_millis(),
+        ideocode_summary_elapsed.as_millis(),
         sessions.len(),
         skipped_empty,
         skipped_imported,
@@ -1059,12 +1059,12 @@ fn onboarding_scoped_loader_returns_only_codex_sessions() {
 
     // A IDEOCODE session that must NOT appear in the scoped Codex view (the whole
     // point of the scoped loader is to skip parsing these on onboarding).
-    let mut IDEOCODE_session = Session::create_with_id(
+    let mut ideocode_session = Session::create_with_id(
         "session_onboarding_IDEOCODE_1780000000000".to_string(),
         Some("/tmp/IDEOCODE-onboard".to_string()),
         Some("IDEOCODE Onboarding".to_string()),
     );
-    IDEOCODE_session.append_stored_message(crate::session::StoredMessage {
+    ideocode_session.append_stored_message(crate::session::StoredMessage {
         id: "msg-1".to_string(),
         role: crate::message::Role::User,
         content: vec![crate::message::ContentBlock::Text {
@@ -1076,7 +1076,7 @@ fn onboarding_scoped_loader_returns_only_codex_sessions() {
         tool_duration_ms: None,
         token_usage: None,
     });
-    IDEOCODE_session.save().expect("save IDEOCODE session");
+    ideocode_session.save().expect("save IDEOCODE session");
 
     let (groups, orphans) = load_external_cli_sessions_grouped(ExternalCli::Codex);
     assert!(groups.is_empty(), "scoped loader produces only orphans");

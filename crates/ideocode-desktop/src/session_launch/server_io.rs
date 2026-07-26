@@ -11,7 +11,7 @@ use std::sync::{Mutex, OnceLock, mpsc::Receiver};
 use std::time::{Duration, Instant};
 
 use super::events::{desktop_event_from_server_value, model_catalog_event_from_server_value};
-use super::terminal::IDEOCODE_bin;
+use super::terminal::ideocode_bin;
 use super::{
     DesktopSessionCommand, DesktopSessionEvent, DesktopSessionEventSender, DesktopSessionStatus,
     SERVER_CONNECT_RETRY_DELAY, SERVER_START_TIMEOUT, default_desktop_working_dir,
@@ -36,12 +36,12 @@ pub(super) fn ensure_server_running() -> Result<()> {
         return Ok(());
     }
 
-    spawn_IDEOCODE_server_with_diagnostics()?;
+    spawn_ideocode_server_with_diagnostics()?;
     connect_server_with_retry_path(&path, SERVER_START_TIMEOUT).map(|_| ())
 }
 
-fn spawn_IDEOCODE_server_with_diagnostics() -> Result<()> {
-    let mut command = Command::new(IDEOCODE_bin());
+fn spawn_ideocode_server_with_diagnostics() -> Result<()> {
+    let mut command = Command::new(ideocode_bin());
     command
         .arg("serve")
         .stdin(Stdio::null())
@@ -225,7 +225,7 @@ pub(super) fn subscribe_to_server(
     let working_dir = default_desktop_working_dir().map(|path| path.display().to_string());
     let selfdev = working_dir
         .as_deref()
-        .and_then(|path| path_contains_IDEOCODE_repo(path).then_some(true));
+        .and_then(|path| path_contains_ideocode_repo(path).then_some(true));
     write_json_line(
         writer,
         json!({
@@ -254,7 +254,7 @@ fn desktop_client_instance_id() -> &'static str {
 }
 
 #[cfg(unix)]
-fn path_contains_IDEOCODE_repo(path: &str) -> bool {
+fn path_contains_ideocode_repo(path: &str) -> bool {
     let mut current = Some(Path::new(path));
     while let Some(path) = current {
         if path.join("crates/IDEOCODE-desktop").is_dir() && path.join("Cargo.toml").is_file() {

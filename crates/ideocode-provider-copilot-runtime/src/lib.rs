@@ -2,26 +2,26 @@
 //! tier detection, premium request modes), moved out of `IDEOCODE-base` so
 //! provider edits compile only this crate plus a binary relink instead of
 //! rebuilding the base -> app-core -> tui spine. The binary's composition
-//! root registers [`CopilotApiProvider`] with `IDEOCODE_base::provider::external`
+//! root registers [`CopilotApiProvider`] with `ideocode_base::provider::external`
 //! at startup.
 
 use anyhow::Result;
 use async_trait::async_trait;
 use chrono::Utc;
-use IDEOCODE_base::auth::copilot as copilot_auth;
-use IDEOCODE_message_types::{
+use ideocode_base::auth::copilot as copilot_auth;
+use ideocode_message_types::{
     ContentBlock, Message as ChatMessage, Role, StreamEvent, ToolDefinition,
 };
 #[cfg(test)]
-use IDEOCODE_provider_copilot::max_token_parameter_for_model as copilot_max_token_parameter_for_model;
-use IDEOCODE_provider_copilot::{
+use ideocode_provider_copilot::max_token_parameter_for_model as copilot_max_token_parameter_for_model;
+use ideocode_provider_copilot::{
     COPILOT_API_VERSION, PersistedCatalog,
     add_max_token_parameter as add_copilot_max_token_parameter,
     build_messages as build_copilot_messages, build_tools as build_copilot_tools,
 };
-use IDEOCODE_provider_copilot::{DEFAULT_MODEL, FALLBACK_MODELS};
-pub use IDEOCODE_provider_core::PremiumMode;
-use IDEOCODE_provider_core::{EventStream, Provider};
+use ideocode_provider_copilot::{DEFAULT_MODEL, FALLBACK_MODELS};
+pub use ideocode_provider_core::PremiumMode;
+use ideocode_provider_core::{EventStream, Provider};
 use serde_json::{Value, json};
 use std::sync::{Arc, RwLock};
 use tokio::sync::mpsc;
@@ -91,12 +91,12 @@ impl CopilotApiProvider {
     }
 
     fn persisted_catalog_path() -> Result<std::path::PathBuf> {
-        Ok(IDEOCODE_base::storage::app_config_dir()?.join("copilot_models_cache.json"))
+        Ok(ideocode_base::storage::app_config_dir()?.join("copilot_models_cache.json"))
     }
 
     fn load_persisted_catalog() -> Option<PersistedCatalog> {
         let path = Self::persisted_catalog_path().ok()?;
-        IDEOCODE_base::storage::read_json(&path)
+        ideocode_base::storage::read_json(&path)
             .ok()
             .filter(|catalog: &PersistedCatalog| !catalog.models.is_empty())
     }
@@ -112,8 +112,8 @@ impl CopilotApiProvider {
             models: models.to_vec(),
             fetched_at_rfc3339: Utc::now().to_rfc3339(),
         };
-        if let Err(error) = IDEOCODE_base::storage::write_json(&path, &payload) {
-            IDEOCODE_base::logging::warn(&format!(
+        if let Err(error) = ideocode_base::storage::write_json(&path, &payload) {
+            ideocode_base::logging::warn(&format!(
                 "Failed to persist Copilot model catalog {}: {}",
                 path.display(),
                 error
@@ -151,7 +151,7 @@ impl CopilotApiProvider {
             std::env::var("IDEOCODE_COPILOT_MODEL").unwrap_or_else(|_| DEFAULT_MODEL.to_string());
 
         let provider = Self {
-            client: IDEOCODE_provider_core::shared_http_client(),
+            client: ideocode_provider_core::shared_http_client(),
             model: Arc::new(RwLock::new(model)),
             github_token,
             bearer_token: Arc::new(tokio::sync::RwLock::new(None)),
@@ -187,7 +187,7 @@ impl CopilotApiProvider {
             std::env::var("IDEOCODE_COPILOT_MODEL").unwrap_or_else(|_| DEFAULT_MODEL.to_string());
 
         let provider = Self {
-            client: IDEOCODE_provider_core::shared_http_client(),
+            client: ideocode_provider_core::shared_http_client(),
             model: Arc::new(RwLock::new(model)),
             github_token,
             bearer_token: Arc::new(tokio::sync::RwLock::new(None)),
@@ -286,7 +286,7 @@ impl CopilotApiProvider {
         self.premium_mode
             .store(mode as u8, std::sync::atomic::Ordering::Relaxed);
         if mode != PremiumMode::Normal {
-            IDEOCODE_base::logging::info(&format!("Copilot premium mode set to {:?}", mode));
+            ideocode_base::logging::info(&format!("Copilot premium mode set to {:?}", mode));
         }
     }
 
@@ -304,7 +304,7 @@ impl CopilotApiProvider {
     pub async fn detect_tier_and_set_default(&self) {
         let detect_start = std::time::Instant::now();
         if std::env::var("IDEOCODE_COPILOT_MODEL").is_ok() {
-            IDEOCODE_base::logging::info(
+            ideocode_base::logging::info(
                 "Copilot model overridden via IDEOCODE_COPILOT_MODEL, skipping tier detection",
             );
             self.mark_init_done();
@@ -315,7 +315,7 @@ impl CopilotApiProvider {
         let bearer = match self.get_bearer_token().await {
             Ok(t) => t,
             Err(e) => {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Copilot tier detection: failed to get bearer token after {}ms: {}",
                     bearer_start.elapsed().as_millis(),
                     e
@@ -335,7 +335,7 @@ impl CopilotApiProvider {
                     .collect();
                 let all_ids: Vec<String> = models.iter().map(|m| m.id.clone()).collect();
                 let default = copilot_auth::choose_default_model(&models);
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Copilot tier detection: bearer={}ms, fetch_models={}ms, total={}ms, {} total, {} picker-enabled, default -> {}. Picker: [{}]. All: [{}]",
                     bearer_start.elapsed().as_millis(),
                     fetch_start.elapsed().as_millis(),
@@ -369,7 +369,7 @@ impl CopilotApiProvider {
                 );
             }
             Err(e) => {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Copilot tier detection: bearer={}ms, fetch_models={}ms, total={}ms, failed to fetch models: {}",
                     bearer_start.elapsed().as_millis(),
                     fetch_start.elapsed().as_millis(),
@@ -385,7 +385,7 @@ impl CopilotApiProvider {
         self.init_done
             .store(true, std::sync::atomic::Ordering::Release);
         self.init_ready.notify_waiters();
-        IDEOCODE_base::bus::Bus::global().publish_models_updated();
+        ideocode_base::bus::Bus::global().publish_models_updated();
     }
 
     pub fn complete_init_without_tier_detection(&self) {
@@ -445,7 +445,7 @@ impl CopilotApiProvider {
         is_user_initiated: bool,
         tx: mpsc::Sender<Result<StreamEvent>>,
     ) {
-        use IDEOCODE_message_types::ConnectionPhase;
+        use ideocode_message_types::ConnectionPhase;
 
         self.wait_for_init().await;
         let model = self
@@ -463,11 +463,11 @@ impl CopilotApiProvider {
 
         for attempt in 0..MAX_RETRIES {
             if attempt > 0 {
-                let delay = IDEOCODE_provider_core::attempt_tracker::retry_backoff_delay(
+                let delay = ideocode_provider_core::attempt_tracker::retry_backoff_delay(
                     attempt,
                     RETRY_BASE_DELAY_MS,
                 );
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Retrying Copilot API request (attempt {}/{}) after {}ms",
                     attempt + 1,
                     MAX_RETRIES,
@@ -484,7 +484,7 @@ impl CopilotApiProvider {
                 tokio::time::sleep(delay).await;
             }
 
-            IDEOCODE_base::logging::info(&format!(
+            ideocode_base::logging::info(&format!(
                 "Copilot request: X-Initiator={} model={}",
                 initiator, model
             ));
@@ -519,7 +519,7 @@ impl CopilotApiProvider {
             let attempt_client = if attempt == 0 {
                 self.client.clone()
             } else {
-                IDEOCODE_provider_core::fresh_transport_client()
+                ideocode_provider_core::fresh_transport_client()
             };
 
             let resp = attempt_client
@@ -554,7 +554,7 @@ impl CopilotApiProvider {
                     // retry classifier.
                     let error_str = format!("{e:#}").to_lowercase();
                     if is_retryable_error(&error_str) && attempt + 1 < MAX_RETRIES {
-                        IDEOCODE_base::logging::info(&format!(
+                        ideocode_base::logging::info(&format!(
                             "Transient Copilot error, will retry: {}",
                             e
                         ));
@@ -574,17 +574,17 @@ impl CopilotApiProvider {
             if Self::is_auth_error(status) && !attempted_auth_refresh {
                 attempted_auth_refresh = true;
                 *self.bearer_token.write().await = None;
-                IDEOCODE_base::logging::info("Copilot bearer token expired, refreshing...");
+                ideocode_base::logging::info("Copilot bearer token expired, refreshing...");
                 last_error = Some(anyhow::anyhow!("Copilot auth error (HTTP {})", status));
                 continue;
             }
 
             if !status.is_success() {
-                let body_text = IDEOCODE_base::util::http_error_body(resp, "HTTP error").await;
+                let body_text = ideocode_base::util::http_error_body(resp, "HTTP error").await;
                 let error_str =
                     format!("Copilot API error (HTTP {}): {}", status, body_text).to_lowercase();
                 if is_retryable_error(&error_str) && attempt + 1 < MAX_RETRIES {
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "Retryable Copilot HTTP error: {}",
                         error_str
                     ));
@@ -616,7 +616,7 @@ impl CopilotApiProvider {
             // mid-stream transport fault can roll the partial output back on
             // the consumer before the retry replays the response from the top.
             let (attempt_tx, attempt_guard) =
-                IDEOCODE_provider_core::attempt_tracker::track_attempt_output(tx.clone());
+                ideocode_provider_core::attempt_tracker::track_attempt_output(tx.clone());
 
             // Process SSE stream - returns Err on timeout/stream errors
             match self.process_sse_stream(resp, attempt_tx).await {
@@ -635,7 +635,7 @@ impl CopilotApiProvider {
                             // Partial output already reached the consumer; tell
                             // it to discard the partial attempt so the retried
                             // response replays cleanly instead of duplicating.
-                            IDEOCODE_base::logging::warn(&format!(
+                            ideocode_base::logging::warn(&format!(
                                 "Copilot stream failed after partial output (attempt {}/{}); rolling back partial attempt and retrying: {}",
                                 attempt + 1,
                                 MAX_RETRIES,
@@ -648,7 +648,7 @@ impl CopilotApiProvider {
                                 }))
                                 .await;
                         } else {
-                            IDEOCODE_base::logging::info(&format!(
+                            ideocode_base::logging::info(&format!(
                                 "Copilot stream failed (attempt {}/{}), will retry: {}",
                                 attempt + 1,
                                 MAX_RETRIES,
@@ -686,7 +686,7 @@ impl CopilotApiProvider {
         // Idle timeout between streamed chunks. Configurable via
         // `[provider] stream_idle_timeout_secs` / `IDEOCODE_STREAM_IDLE_TIMEOUT_SECS`
         // so slow reasoning models don't trip a premature timeout (issue #434).
-        let sse_chunk_timeout = IDEOCODE_base::provider::stream_idle_timeout();
+        let sse_chunk_timeout = ideocode_base::provider::stream_idle_timeout();
 
         let mut stream = resp.bytes_stream();
         let mut buffer = String::new();
@@ -705,7 +705,7 @@ impl CopilotApiProvider {
                 }
                 Ok(None) => break, // stream ended normally
                 Err(_) => {
-                    IDEOCODE_base::logging::warn(&format!(
+                    ideocode_base::logging::warn(&format!(
                         "Copilot SSE stream timed out (no data for {}s, saw_data={})",
                         sse_chunk_timeout.as_secs(),
                         saw_any_data
@@ -729,7 +729,7 @@ impl CopilotApiProvider {
                     continue;
                 }
 
-                if let Some(data) = IDEOCODE_base::util::sse_data_line(&line) {
+                if let Some(data) = ideocode_base::util::sse_data_line(&line) {
                     if data.trim() == "[DONE]" {
                         // Send usage info before done
                         if input_tokens > 0 || output_tokens > 0 {
@@ -742,7 +742,7 @@ impl CopilotApiProvider {
                                 }))
                                 .await;
                         }
-                        IDEOCODE_base::copilot_usage::record_request(
+                        ideocode_base::copilot_usage::record_request(
                             input_tokens,
                             output_tokens,
                             true,
@@ -868,7 +868,7 @@ impl CopilotApiProvider {
 }
 
 fn is_retryable_error(error_str: &str) -> bool {
-    IDEOCODE_provider_core::is_transient_transport_error(error_str)
+    ideocode_provider_core::is_transient_transport_error(error_str)
         || error_str.contains("500 internal server error")
         || error_str.contains("502 bad gateway")
         || error_str.contains("503 service unavailable")
@@ -893,7 +893,7 @@ impl Provider for CopilotApiProvider {
         self.wait_for_init().await;
 
         self.get_bearer_token().await.map_err(|e| {
-            IDEOCODE_base::logging::warn(&format!(
+            ideocode_base::logging::warn(&format!(
                 "Copilot bearer token acquisition failed (will trigger fallback): {}",
                 e
             ));
@@ -924,7 +924,7 @@ impl Provider for CopilotApiProvider {
         } else {
             Some(Value::Array(built_tools.clone()))
         };
-        IDEOCODE_provider_core::fingerprint::log_provider_canonical_input(
+        ideocode_provider_core::fingerprint::log_provider_canonical_input(
             "copilot",
             &model_for_fingerprint,
             "chat_completions",
@@ -1018,7 +1018,7 @@ impl Provider for CopilotApiProvider {
     async fn prefetch_models(&self) -> Result<()> {
         let grace_ms = Self::startup_prefetch_grace_ms();
         if self.created_at.elapsed().as_millis() < u128::from(grace_ms) {
-            IDEOCODE_base::logging::info(&format!(
+            ideocode_base::logging::info(&format!(
                 "Skipping Copilot model prefetch during startup grace window ({}ms)",
                 grace_ms
             ));
@@ -1045,7 +1045,7 @@ impl Provider for CopilotApiProvider {
     }
 
     fn context_window(&self) -> usize {
-        IDEOCODE_provider_core::context_limit_for_model_with_provider(&self.model(), Some(self.name()))
+        ideocode_provider_core::context_limit_for_model_with_provider(&self.model(), Some(self.name()))
             .unwrap_or(128_000)
     }
 

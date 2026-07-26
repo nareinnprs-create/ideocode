@@ -11,7 +11,7 @@
 //! - the extended prompt-cache-retention model predicate used by
 //!   cache-TTL routing.
 
-pub use IDEOCODE_provider_core::CredentialMode as OpenAICredentialMode;
+pub use ideocode_provider_core::CredentialMode as OpenAICredentialMode;
 
 const OPENAI_API_BASE: &str = "https://api.openai.com/v1";
 

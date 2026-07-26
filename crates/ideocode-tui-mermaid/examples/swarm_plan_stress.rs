@@ -1,4 +1,4 @@
-﻿//! Stress probe: build the mermaid source that `IDEOCODE_plan::mermaid::
+﻿//! Stress probe: build the mermaid source that `ideocode_plan::mermaid::
 //! swarm_plan_mermaid` (the production swarm plan-graph generator, re-exported
 //! to the TUI via `crate::tui::swarm_plan_graph`) emits for realistic +
 //! hostile plan data, then render through the real pipeline
@@ -18,8 +18,8 @@
 //!   (f) an item whose id is literally "more" alongside the summary node
 //!   (g) gate hexagons + wide fan-in (deep-mode shape)
 
-use IDEOCODE_plan::PlanItem;
-use IDEOCODE_plan::mermaid::swarm_plan_mermaid;
+use ideocode_plan::PlanItem;
+use ideocode_plan::mermaid::swarm_plan_mermaid;
 
 fn item(id: &str, content: &str, status: &str, blocked_by: &[&str]) -> PlanItem {
     PlanItem {
@@ -35,8 +35,8 @@ fn item(id: &str, content: &str, status: &str, blocked_by: &[&str]) -> PlanItem 
 }
 
 fn probe(name: &str, src: &str) -> bool {
-    match IDEOCODE_tui_mermaid::render_mermaid_untracked(src, Some(100)) {
-        IDEOCODE_tui_mermaid::RenderResult::Image {
+    match ideocode_tui_mermaid::render_mermaid_untracked(src, Some(100)) {
+        ideocode_tui_mermaid::RenderResult::Image {
             width,
             height,
             path,
@@ -52,7 +52,7 @@ fn probe(name: &str, src: &str) -> bool {
             );
             true
         }
-        IDEOCODE_tui_mermaid::RenderResult::Error(err) => {
+        ideocode_tui_mermaid::RenderResult::Error(err) => {
             println!("FAIL {name}: {err}");
             println!("---- offending source ----\n{src}\n--------------------------");
             false

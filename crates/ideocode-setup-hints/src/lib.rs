@@ -19,7 +19,7 @@
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use anyhow::Context;
 use anyhow::Result;
-use IDEOCODE_storage as storage;
+use ideocode_storage as storage;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::{self, IsTerminal};
@@ -52,7 +52,7 @@ use macos_terminal::load_preferred_macos_terminal;
 #[cfg(any(test, target_os = "macos"))]
 use macos_terminal::{
     MacTerminalKind, effective_macos_terminal, escape_applescript_text, escape_shell_single_quotes,
-    launch_command_for_macos_terminal, paused_IDEOCODE_shell_command, save_preferred_macos_terminal,
+    launch_command_for_macos_terminal, paused_ideocode_shell_command, save_preferred_macos_terminal,
 };
 #[cfg(windows)]
 use windows_setup::{
@@ -222,7 +222,7 @@ impl StartupHints {
 
 impl SetupHintsState {
     fn path() -> Result<PathBuf> {
-        Ok(storage::IDEOCODE_dir()?.join("setup_hints.json"))
+        Ok(storage::ideocode_dir()?.join("setup_hints.json"))
     }
 
     pub fn load() -> Self {
@@ -281,7 +281,7 @@ impl SetupHintsState {
 
 #[cfg(any(test, target_os = "macos", target_os = "linux", windows))]
 fn mac_hotkey_support_dir() -> Result<PathBuf> {
-    Ok(storage::IDEOCODE_dir()?.join("hotkey"))
+    Ok(storage::ideocode_dir()?.join("hotkey"))
 }
 
 /// File holding the last project directory IDEOCODE was launched from. The `Cmd+'`
@@ -311,13 +311,13 @@ fn mac_hotkey_plan_file() -> Result<PathBuf> {
 /// Returns the default (empty -> built-in 3 hotkeys) when the file is missing or
 /// the section is absent. Best-effort: a malformed config falls back to default
 /// rather than blocking hotkey install.
-fn load_launch_hotkeys_config() -> IDEOCODE_config_types::LaunchHotkeysConfig {
+fn load_launch_hotkeys_config() -> ideocode_config_types::LaunchHotkeysConfig {
     #[derive(serde::Deserialize, Default)]
     struct Wrapper {
         #[serde(default)]
-        launch_hotkeys: IDEOCODE_config_types::LaunchHotkeysConfig,
+        launch_hotkeys: ideocode_config_types::LaunchHotkeysConfig,
     }
-    let Ok(dir) = storage::IDEOCODE_dir() else {
+    let Ok(dir) = storage::ideocode_dir() else {
         return Default::default();
     };
     let path = dir.join("config.toml");
@@ -343,7 +343,7 @@ pub fn record_launch_dirs(dir: &std::path::Path, repo_dir: Option<&std::path::Pa
     #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     {
         if let Err(err) = record_launch_dirs_inner(dir, repo_dir) {
-            IDEOCODE_logging::warn(&format!("failed to record launch dirs for hotkeys: {err}"));
+            ideocode_logging::warn(&format!("failed to record launch dirs for hotkeys: {err}"));
         }
     }
     #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
@@ -443,16 +443,16 @@ fn mac_hotkey_launch_agent_plist(
 /// the launch command to an executable `.command` file and `open` it, which
 /// Terminal/iTerm run in a new window without any automation permission.
 #[cfg(target_os = "macos")]
-pub fn launch_IDEOCODE_in_macos_terminal(extra_args: &[String]) -> Result<()> {
+pub fn launch_ideocode_in_macos_terminal(extra_args: &[String]) -> Result<()> {
     let terminal = effective_macos_terminal();
     let exe = std::env::current_exe()?;
     let exe_path = exe.to_string_lossy().into_owned();
-    let shell_command = macos_terminal::paused_IDEOCODE_shell_command_with_args(&exe_path, extra_args);
+    let shell_command = macos_terminal::paused_ideocode_shell_command_with_args(&exe_path, extra_args);
 
     let command = match macos_terminal::no_automation_launch(terminal, &shell_command) {
         macos_terminal::NoAutomationLaunch::Shell(command) => command,
         macos_terminal::NoAutomationLaunch::CommandFile { app } => {
-            let dir = storage::IDEOCODE_dir()?.join("launcher");
+            let dir = storage::ideocode_dir()?.join("launcher");
             std::fs::create_dir_all(&dir)?;
             let script_path = dir.join("open_session.command");
             std::fs::write(
@@ -812,7 +812,7 @@ pub(crate) fn install_cli_launch_hints_notice() {
             }
         }
         Ok(_) => {}
-        Err(err) => IDEOCODE_logging::warn(&format!(
+        Err(err) => ideocode_logging::warn(&format!(
             "could not install external CLI launch-shortcut reminders: {err}"
         )),
     }
@@ -961,7 +961,7 @@ mod macos_run_loop {
 #[cfg(target_os = "macos")]
 fn run_macos_hotkey_listener() -> Result<()> {
     use global_hotkey::{GlobalHotKeyEvent, GlobalHotKeyManager, HotKeyState};
-    use IDEOCODE_terminal_launch::{TerminalCommand, spawn_command_in_new_terminal_with};
+    use ideocode_terminal_launch::{TerminalCommand, spawn_command_in_new_terminal_with};
 
     // `global-hotkey` on macOS registers a Carbon hotkey (`RegisterEventHotKey`)
     // whose events are dispatched through the application's Carbon event target,
@@ -984,7 +984,7 @@ fn run_macos_hotkey_listener() -> Result<()> {
     // The listener runs as its own launchd process and never goes through the
     // normal startup path, so initialize logging here. Diagnostics land in the
     // standard IDEOCODE log plus the plist's StandardOut/ErrorPath.
-    IDEOCODE_logging::init();
+    ideocode_logging::init();
     macos_hotkey_log("starting macOS IDEOCODE launch hotkey listener");
 
     let status = macos_run_loop::promote_to_ui_element();
@@ -1132,7 +1132,7 @@ fn load_direct_hotkey_launches() -> Vec<DirectHotkeyLaunch> {
 /// differently ordered spelling.
 pub fn record_launch_hotkey_use(chord: &str) {
     let Some(chord) = keymap::KeyChord::parse(chord).map(|chord| chord.canonical()) else {
-        IDEOCODE_logging::warn(&format!(
+        ideocode_logging::warn(&format!(
             "ignored invalid launch hotkey usage chord: {chord}"
         ));
         return;
@@ -1141,7 +1141,7 @@ pub fn record_launch_hotkey_use(chord: &str) {
     let uses = state.launch_hotkey_usage.entry(chord.clone()).or_insert(0);
     *uses = uses.saturating_add(1);
     if let Err(err) = state.save() {
-        IDEOCODE_logging::warn(&format!(
+        ideocode_logging::warn(&format!(
             "failed to record launch hotkey usage for {chord}: {err}"
         ));
     }
@@ -1154,7 +1154,7 @@ pub fn record_launch_hotkey_use(chord: &str) {
 /// even before/without the structured logger.
 #[cfg(target_os = "macos")]
 fn macos_hotkey_log(message: &str) {
-    IDEOCODE_logging::info(message);
+    ideocode_logging::info(message);
     eprintln!("[IDEOCODE hotkey] {message}");
 }
 
@@ -1212,7 +1212,7 @@ pub fn maybe_show_setup_hints() -> Option<StartupHints> {
         match mac_hotkey_action_for_state(&state) {
             MacHotkeyAction::Install => {
                 if let Err(err) = auto_install_macos_hotkey_listener(&mut state) {
-                    IDEOCODE_logging::warn(&format!(
+                    ideocode_logging::warn(&format!(
                         "failed to auto-install macOS Cmd+; hotkey listener: {err}"
                     ));
                 }
@@ -1222,7 +1222,7 @@ pub fn maybe_show_setup_hints() -> Option<StartupHints> {
                 // updated listener (and current binary path) takes effect on
                 // update without requiring them to re-run setup.
                 if let Err(err) = migrate_macos_hotkey_listener(&mut state) {
-                    IDEOCODE_logging::warn(&format!(
+                    ideocode_logging::warn(&format!(
                         "failed to migrate macOS Cmd+; hotkey listener: {err}"
                     ));
                 }
@@ -1248,19 +1248,19 @@ pub fn maybe_show_setup_hints() -> Option<StartupHints> {
                         state.launch_hotkey_tracking_version = LAUNCH_HOTKEY_TRACKING_VERSION;
                         let _ = state.save();
                         if action == LinuxHotkeySetupAction::Install {
-                            IDEOCODE_logging::info(&format!(
+                            ideocode_logging::info(&format!(
                                 "Automatically installed {} launch hotkeys on first launch",
                                 comp.name()
                             ));
                         } else {
-                            IDEOCODE_logging::info(&format!(
+                            ideocode_logging::info(&format!(
                                 "Migrated {} launch hotkeys to usage tracking v{}",
                                 comp.name(),
                                 LAUNCH_HOTKEY_TRACKING_VERSION
                             ));
                         }
                     }
-                    Err(err) => IDEOCODE_logging::warn(&format!(
+                    Err(err) => ideocode_logging::warn(&format!(
                         "failed to automatically configure {} launch hotkeys: {err}",
                         comp.name()
                     )),
@@ -1278,9 +1278,9 @@ pub fn maybe_show_setup_hints() -> Option<StartupHints> {
                 Ok(()) => {
                     state.launch_hotkey_tracking_version = LAUNCH_HOTKEY_TRACKING_VERSION;
                     let _ = state.save();
-                    IDEOCODE_logging::info("Migrated Windows launch hotkeys to usage tracking");
+                    ideocode_logging::info("Migrated Windows launch hotkeys to usage tracking");
                 }
-                Err(err) => IDEOCODE_logging::warn(&format!(
+                Err(err) => ideocode_logging::warn(&format!(
                     "failed to migrate Windows launch hotkeys to usage tracking: {err}"
                 )),
             }
@@ -1691,7 +1691,7 @@ fn install_niri_launch_hotkeys() -> Result<bool> {
 
     storage::write_bytes(&config_path, result.text.as_bytes())
         .with_context(|| format!("writing {}", config_path.display()))?;
-    IDEOCODE_logging::info(&format!(
+    ideocode_logging::info(&format!(
         "installed {} niri launch hotkey(s) into {}",
         hotkeys.len(),
         config_path.display()
@@ -1748,7 +1748,7 @@ fn install_flat_launch_hotkeys(comp: linux_env::LinuxCompositor) -> Result<bool>
 
     storage::write_bytes(&config_path, result.text.as_bytes())
         .with_context(|| format!("writing {}", config_path.display()))?;
-    IDEOCODE_logging::info(&format!(
+    ideocode_logging::info(&format!(
         "installed {} {} launch hotkey(s) into {}",
         binds.len(),
         comp.name(),
@@ -1856,7 +1856,7 @@ fn install_gnome_launch_hotkeys() -> Result<bool> {
         )?;
     }
 
-    IDEOCODE_logging::info(&format!(
+    ideocode_logging::info(&format!(
         "installed {} GNOME launch hotkey(s) via dconf",
         keybindings.len()
     ));
@@ -1894,7 +1894,7 @@ fn install_cinnamon_launch_hotkeys() -> Result<bool> {
         )?;
     }
 
-    IDEOCODE_logging::info(&format!(
+    ideocode_logging::info(&format!(
         "installed {} Cinnamon launch hotkey(s) via dconf",
         keybindings.len()
     ));
@@ -1921,7 +1921,7 @@ fn install_mate_launch_hotkeys() -> Result<bool> {
         changed |= dconf_write_checked(&format!("{base}binding"), &gvariant_string(&kb.binding))?;
     }
 
-    IDEOCODE_logging::info(&format!(
+    ideocode_logging::info(&format!(
         "installed {} MATE launch hotkey(s) via dconf",
         keybindings.len()
     ));
@@ -2002,7 +2002,7 @@ fn install_xfce_launch_hotkeys() -> Result<bool> {
         changed = true;
     }
 
-    IDEOCODE_logging::info(&format!(
+    ideocode_logging::info(&format!(
         "installed {} XFCE launch hotkey(s) via xfconf",
         wanted.len()
     ));
@@ -2049,7 +2049,7 @@ fn install_kde_launch_hotkeys() -> Result<bool> {
         .stderr(std::process::Stdio::null())
         .status();
 
-    IDEOCODE_logging::info(&format!(
+    ideocode_logging::info(&format!(
         "installed {} KDE launch hotkey(s) ({} + desktop files)",
         shortcuts.len(),
         rc_path.display()
@@ -2119,7 +2119,7 @@ fn backup_compositor_config(config_path: &std::path::Path) {
         .unwrap_or_else(|| "config".to_string());
     let backup = config_path.with_file_name(format!("{file_name}.bak-IDEOCODE-hotkeys-{ts}"));
     if let Err(err) = std::fs::copy(config_path, &backup) {
-        IDEOCODE_logging::warn(&format!(
+        ideocode_logging::warn(&format!(
             "failed to back up compositor config before hotkey install: {err}"
         ));
     }
@@ -2144,11 +2144,11 @@ fn reload_compositor_config(comp: linux_env::LinuxCompositor) {
         .status()
     {
         Ok(status) if status.success() => {}
-        Ok(status) => IDEOCODE_logging::warn(&format!(
+        Ok(status) => ideocode_logging::warn(&format!(
             "{} exited with {status} while reloading hotkey binds",
             cmd[0]
         )),
-        Err(err) => IDEOCODE_logging::warn(&format!("failed to run {} reload: {err}", cmd[0])),
+        Err(err) => ideocode_logging::warn(&format!("failed to run {} reload: {err}", cmd[0])),
     }
 }
 
@@ -2302,7 +2302,7 @@ pub(crate) fn conflict_hint_decision(signature: &str, previous: &str) -> Conflic
 /// The actual diagnostics are always available on demand via the `/keys`
 /// command; this only surfaces the proactive heads-up.
 pub fn maybe_show_keymap_conflict_hint(
-    keybindings: &IDEOCODE_config_types::KeybindingsConfig,
+    keybindings: &ideocode_config_types::KeybindingsConfig,
 ) -> Option<StartupHints> {
     if !io::stdin().is_terminal() || !io::stderr().is_terminal() {
         return None;
@@ -2323,7 +2323,7 @@ pub fn maybe_show_keymap_conflict_hint(
 /// Returns the optional notice and whether `state` was mutated (and therefore
 /// should be persisted by the caller).
 pub(crate) fn keymap_conflict_hint_for(
-    keybindings: &IDEOCODE_config_types::KeybindingsConfig,
+    keybindings: &ideocode_config_types::KeybindingsConfig,
     snapshot: &keymap::KeymapSnapshot,
     state: &mut SetupHintsState,
 ) -> (Option<StartupHints>, bool) {
@@ -2484,7 +2484,7 @@ fn create_desktop_shortcut(state: &mut SetupHintsState) -> Result<()> {
         state.desktop_shortcut_created = true;
         let _ = state.save();
 
-        IDEOCODE_logging::info(&format!("Created macOS app bundle: {}", app_dir.display()));
+        ideocode_logging::info(&format!("Created macOS app bundle: {}", app_dir.display()));
     }
 
     #[cfg(not(any(test, target_os = "macos")))]
@@ -2504,7 +2504,7 @@ fn auto_install_macos_hotkey_listener(state: &mut SetupHintsState) -> Result<()>
     state.hotkey_listener_version = HOTKEY_LISTENER_VERSION;
     state.launch_hotkey_tracking_version = LAUNCH_HOTKEY_TRACKING_VERSION;
     state.save()?;
-    IDEOCODE_logging::info(&format!(
+    ideocode_logging::info(&format!(
         "Installed macOS Cmd+; hotkey listener for {}",
         terminal.label()
     ));
@@ -2526,7 +2526,7 @@ fn migrate_macos_hotkey_listener(state: &mut SetupHintsState) -> Result<()> {
     state.hotkey_listener_version = HOTKEY_LISTENER_VERSION;
     state.launch_hotkey_tracking_version = LAUNCH_HOTKEY_TRACKING_VERSION;
     state.save()?;
-    IDEOCODE_logging::info(&format!(
+    ideocode_logging::info(&format!(
         "Migrated macOS Cmd+; hotkey listener to v{} for {}",
         HOTKEY_LISTENER_VERSION,
         terminal.label()
@@ -2549,11 +2549,11 @@ pub fn reinstall_launch_hotkeys_after_config_change() {
         }
         let preferred = load_preferred_macos_terminal();
         match install_macos_hotkey_listener(preferred) {
-            Ok(terminal) => IDEOCODE_logging::info(&format!(
+            Ok(terminal) => ideocode_logging::info(&format!(
                 "Reinstalled launch hotkeys after config change for {}",
                 terminal.label()
             )),
-            Err(err) => IDEOCODE_logging::warn(&format!("failed to reinstall launch hotkeys: {err}")),
+            Err(err) => ideocode_logging::warn(&format!("failed to reinstall launch hotkeys: {err}")),
         }
     }
 
@@ -2571,12 +2571,12 @@ pub fn reinstall_launch_hotkeys_after_config_change() {
             return;
         }
         match install_linux_launch_hotkeys(comp) {
-            Ok(true) => IDEOCODE_logging::info(&format!(
+            Ok(true) => ideocode_logging::info(&format!(
                 "Refreshed {} launch hotkeys after config change",
                 comp.name()
             )),
             Ok(false) => {}
-            Err(err) => IDEOCODE_logging::warn(&format!(
+            Err(err) => ideocode_logging::warn(&format!(
                 "failed to refresh {} launch hotkeys: {err}",
                 comp.name()
             )),

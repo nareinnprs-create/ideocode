@@ -1312,7 +1312,7 @@ pub struct ProviderConfig {
     pub model_picker_providers: Option<Vec<String>>,
     /// Max seconds to wait for streaming data before timing out a request with
     /// no data received. Base budget only: high reasoning efforts scale it up
-    /// automatically (see `IDEOCODE_base::provider::stream_idle_timeout_for_effort`).
+    /// automatically (see `ideocode_base::provider::stream_idle_timeout_for_effort`).
     /// Default: 180. Overridable via `IDEOCODE_STREAM_IDLE_TIMEOUT_SECS`.
     pub stream_idle_timeout_secs: u64,
 }

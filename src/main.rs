@@ -109,7 +109,7 @@ fn run_main() -> Result<()> {
     // check for updates, or emit first-run telemetry disclosure text into the
     // parent CLI's hook output.
     if let Some(source) = cli_launch_hint_source_invocation() {
-        return IDEOCODE::setup_hints::run_setup_hotkey(false, false, false, Some(&source));
+        return ideocode::setup_hints::run_setup_hotkey(false, false, false, Some(&source));
     }
 
     // The macOS global-hotkey listener must run on the real main thread with a
@@ -118,14 +118,14 @@ fn run_main() -> Result<()> {
     // otherwise move execution onto a worker thread with no run loop and leave
     // the Cmd+; hotkey silently dead.
     if is_macos_hotkey_listener_invocation() {
-        return IDEOCODE::setup_hints::run_macos_hotkey_listener_main_thread();
+        return ideocode::setup_hints::run_macos_hotkey_listener_main_thread();
     }
 
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()?;
 
-    runtime.block_on(async { IDEOCODE::run().await })
+    runtime.block_on(async { ideocode::run().await })
 }
 
 /// True when invoked as `IDEOCODE setup-hotkey --listen-macos-hotkey`.

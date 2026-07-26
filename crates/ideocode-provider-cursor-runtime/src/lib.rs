@@ -2,19 +2,19 @@
 //! of `IDEOCODE-base` so provider edits compile only this crate plus a binary
 //! relink instead of rebuilding the base -> app-core -> tui spine. The
 //! binary's composition root registers [`CursorCliProvider`] with
-//! `IDEOCODE_base::provider::external` at startup.
+//! `ideocode_base::provider::external` at startup.
 //!
 //! The pure model-catalog data (`AVAILABLE_MODELS`, `is_known_model`) stays in
-//! `IDEOCODE_base::provider::cursor` because base's model-routing logic needs it
+//! `ideocode_base::provider::cursor` because base's model-routing logic needs it
 //! without a runtime.
 
 use anyhow::{Context, Result};
 use async_trait::async_trait;
 use chrono::Utc;
-use IDEOCODE_base::auth::cursor as cursor_auth;
-use IDEOCODE_base::provider::cursor::{AVAILABLE_MODELS, DEFAULT_MODEL};
-use IDEOCODE_message_types::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
-use IDEOCODE_provider_core::{EventStream, Provider};
+use ideocode_base::auth::cursor as cursor_auth;
+use ideocode_base::provider::cursor::{AVAILABLE_MODELS, DEFAULT_MODEL};
+use ideocode_message_types::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
+use ideocode_provider_core::{EventStream, Provider};
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::{Value, json};
@@ -153,7 +153,7 @@ async fn fetch_available_models(client: &reqwest::Client, api_key: &str) -> Resu
 
     if !response.status().is_success() {
         let status = response.status();
-        let body = IDEOCODE_base::util::http_error_body(response, "HTTP error").await;
+        let body = ideocode_base::util::http_error_body(response, "HTTP error").await;
         anyhow::bail!(
             "Cursor model catalog request failed ({}): {}",
             status,
@@ -174,7 +174,7 @@ async fn fetch_available_models(client: &reqwest::Client, api_key: &str) -> Resu
 }
 
 fn runtime_cursor_api_key() -> Option<String> {
-    IDEOCODE_base::auth::cursor::load_api_key().ok()
+    ideocode_base::auth::cursor::load_api_key().ok()
 }
 
 pub struct CursorCliProvider {
@@ -185,12 +185,12 @@ pub struct CursorCliProvider {
 
 impl CursorCliProvider {
     fn persisted_catalog_path() -> Result<std::path::PathBuf> {
-        Ok(IDEOCODE_base::storage::app_config_dir()?.join("cursor_models_cache.json"))
+        Ok(ideocode_base::storage::app_config_dir()?.join("cursor_models_cache.json"))
     }
 
     fn load_persisted_catalog() -> Option<PersistedCatalog> {
         let path = Self::persisted_catalog_path().ok()?;
-        IDEOCODE_base::storage::read_json(&path)
+        ideocode_base::storage::read_json(&path)
             .ok()
             .filter(|catalog: &PersistedCatalog| !catalog.models.is_empty())
     }
@@ -206,8 +206,8 @@ impl CursorCliProvider {
             models: models.to_vec(),
             fetched_at_rfc3339: Utc::now().to_rfc3339(),
         };
-        if let Err(error) = IDEOCODE_base::storage::write_json(&path, &payload) {
-            IDEOCODE_base::logging::warn(&format!(
+        if let Err(error) = ideocode_base::storage::write_json(&path, &payload) {
+            ideocode_base::logging::warn(&format!(
                 "Failed to persist Cursor model catalog {}: {}",
                 path.display(),
                 error
@@ -226,7 +226,7 @@ impl CursorCliProvider {
     pub fn new() -> Self {
         let model = std::env::var("IDEOCODE_CURSOR_MODEL").unwrap_or_else(|_| DEFAULT_MODEL.into());
         let provider = Self {
-            client: IDEOCODE_provider_core::shared_http_client(),
+            client: ideocode_provider_core::shared_http_client(),
             model: Arc::new(RwLock::new(model)),
             fetched_models: Arc::new(RwLock::new(Vec::new())),
         };
@@ -263,7 +263,7 @@ impl Provider for CursorCliProvider {
             "system": system_value.as_ref(),
             "prompt": &prompt,
         });
-        IDEOCODE_provider_core::fingerprint::log_provider_canonical_input(
+        ideocode_provider_core::fingerprint::log_provider_canonical_input(
             "cursor",
             &model,
             "cursor_cli_prompt",
@@ -278,7 +278,7 @@ impl Provider for CursorCliProvider {
             ],
         );
         let client = self.client.clone();
-        let (tx, rx) = mpsc::channel::<Result<IDEOCODE_message_types::StreamEvent>>(100);
+        let (tx, rx) = mpsc::channel::<Result<ideocode_message_types::StreamEvent>>(100);
 
         tokio::spawn(async move {
             let result = run_native_text_command(client, tx.clone(), &prompt, &model).await;
@@ -331,10 +331,10 @@ impl Provider for CursorCliProvider {
         merge_cursor_models(&dynamic, &self.model())
     }
 
-    fn model_routes(&self) -> Vec<IDEOCODE_provider_core::ModelRoute> {
+    fn model_routes(&self) -> Vec<ideocode_provider_core::ModelRoute> {
         self.available_models_display()
             .into_iter()
-            .map(|model| IDEOCODE_provider_core::ModelRoute {
+            .map(|model| ideocode_provider_core::ModelRoute {
                 model,
                 provider: "Cursor".to_string(),
                 api_method: "cursor".to_string(),
@@ -353,7 +353,7 @@ impl Provider for CursorCliProvider {
         match fetch_available_models(&self.client, &api_key).await {
             Ok(models) => {
                 if !models.is_empty() {
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "Discovered Cursor models: {}",
                         models.join(", ")
                     ));
@@ -365,7 +365,7 @@ impl Provider for CursorCliProvider {
                 }
             }
             Err(err) => {
-                IDEOCODE_base::logging::warn(&format!(
+                ideocode_base::logging::warn(&format!(
                     "Cursor model catalog refresh failed; keeping fallback list: {}",
                     err
                 ));

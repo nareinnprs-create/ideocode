@@ -2,7 +2,7 @@
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64_STANDARD};
 use bytes::Bytes;
 use futures::Stream;
-use IDEOCODE_message_types::{StreamEvent, sanitize_tool_id};
+use ideocode_message_types::{StreamEvent, sanitize_tool_id};
 use serde::Deserialize;
 use serde_json::Value;
 use std::collections::{HashMap, HashSet, VecDeque};
@@ -17,7 +17,7 @@ static RECOVERED_TEXT_WRAPPED_TOOL_CALLS: AtomicU64 = AtomicU64::new(0);
 static NORMALIZED_NULL_TOOL_ARGUMENTS: AtomicU64 = AtomicU64::new(0);
 
 fn truncated_stream_payload_context(data: &str) -> String {
-    IDEOCODE_core::util::truncate_str(&data.trim().replace("\n", "\\n"), 240).to_string()
+    ideocode_core::util::truncate_str(&data.trim().replace("\n", "\\n"), 240).to_string()
 }
 
 fn is_structured_response_event(data: &str) -> bool {
@@ -165,7 +165,7 @@ fn stream_text_or_recovered_tool_call(
 
     if let Some((prefix, tool_name, arguments, suffix)) = parse_text_wrapped_tool_call(text) {
         let total = RECOVERED_TEXT_WRAPPED_TOOL_CALLS.fetch_add(1, Ordering::Relaxed) + 1;
-        IDEOCODE_logging::warn(&format!(
+        ideocode_logging::warn(&format!(
             "[openai] Recovered text-wrapped tool call for '{}' (total={})",
             tool_name, total
         ));
@@ -240,7 +240,7 @@ fn normalize_openai_tool_arguments(raw_arguments: String) -> String {
     let trimmed = raw_arguments.trim();
     if trimmed.is_empty() || trimmed == "null" {
         let total = NORMALIZED_NULL_TOOL_ARGUMENTS.fetch_add(1, Ordering::Relaxed) + 1;
-        IDEOCODE_logging::warn(&format!(
+        ideocode_logging::warn(&format!(
             "[openai] Normalized empty/null tool arguments to empty object (total={})",
             total
         ));
@@ -302,7 +302,7 @@ pub fn parse_openai_response_event(
     }
 
     if is_websocket_fallback_notice(data) {
-        IDEOCODE_logging::warn(&format!("OpenAI stream transport notice: {}", data.trim()));
+        ideocode_logging::warn(&format!("OpenAI stream transport notice: {}", data.trim()));
         return None;
     }
 
@@ -320,7 +320,7 @@ pub fn parse_openai_response_event(
     let event: ResponseSseEvent = match serde_json::from_str(data) {
         Ok(parsed) => parsed,
         Err(error) => {
-            IDEOCODE_logging::warn(&format!(
+            ideocode_logging::warn(&format!(
                 "OpenAI SSE JSON parse failed: {} payload={}",
                 error,
                 truncated_stream_payload_context(data)
@@ -456,7 +456,7 @@ pub fn parse_openai_response_event(
             return pending.pop_front();
         }
         "response.failed" | "response.error" | "error" => {
-            IDEOCODE_logging::warn(&format!(
+            ideocode_logging::warn(&format!(
                 "OpenAI stream error event (type={}): response={:?}, error={:?}",
                 event.kind, event.response, event.error
             ));
@@ -645,7 +645,7 @@ fn handle_openai_image_generation_item(
     let image_bytes = match BASE64_STANDARD.decode(result_b64) {
         Ok(bytes) => bytes,
         Err(err) => {
-            IDEOCODE_logging::warn(&format!(
+            ideocode_logging::warn(&format!(
                 "OpenAI image_generation_call returned invalid base64: {}",
                 err
             ));
@@ -684,7 +684,7 @@ fn handle_openai_image_generation_item(
         .join(".IDEOCODE")
         .join("generated-images");
     if let Err(err) = std::fs::create_dir_all(&dir) {
-        IDEOCODE_logging::warn(&format!(
+        ideocode_logging::warn(&format!(
             "Failed to create OpenAI generated image directory: {}",
             err
         ));
@@ -697,7 +697,7 @@ fn handle_openai_image_generation_item(
     let filename = format!("{}-{}.{}", timestamp_ms, safe_id, extension);
     let path = dir.join(filename);
     if let Err(err) = std::fs::write(&path, image_bytes) {
-        IDEOCODE_logging::warn(&format!("Failed to save OpenAI generated image: {}", err));
+        ideocode_logging::warn(&format!("Failed to save OpenAI generated image: {}", err));
         return Some(StreamEvent::TextDelta(
             "\n[Generated image received, but IDEOCODE could not save it.]\n".to_string(),
         ));
@@ -732,7 +732,7 @@ fn handle_openai_image_generation_item(
     }) {
         Some(path) => Some(path.display().to_string()),
         None => {
-            IDEOCODE_logging::warn("Failed to save OpenAI generated image metadata");
+            ideocode_logging::warn("Failed to save OpenAI generated image metadata");
             None
         }
     };
@@ -790,7 +790,7 @@ impl OpenAIResponsesStream {
 
             let mut data_lines = Vec::new();
             for line in event_str.lines() {
-                if let Some(data) = IDEOCODE_core::util::sse_data_line(line) {
+                if let Some(data) = ideocode_core::util::sse_data_line(line) {
                     data_lines.push(data);
                 }
             }

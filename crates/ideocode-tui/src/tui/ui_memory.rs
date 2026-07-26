@@ -1,1 +1,1 @@
-﻿pub(crate) use IDEOCODE_tui_render::memory_tiles::*;
+﻿pub(crate) use ideocode_tui_render::memory_tiles::*;

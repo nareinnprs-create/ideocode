@@ -609,9 +609,9 @@ pub(in crate::tui::app) async fn handle_post_connect<B: ratatui::backend::Backen
             // eagerly here was the root cause of issue #328.
             let session_id = app.reload_handoff_session_id();
             if (has_reload_ctx_for_session || !app.reload_info.is_empty())
-                && let Ok(IDEOCODE_dir) = crate::storage::IDEOCODE_dir()
+                && let Ok(ideocode_dir) = crate::storage::ideocode_dir()
             {
-                let marker = IDEOCODE_dir.join(format!("client-reload-pending-{}", session_id));
+                let marker = ideocode_dir.join(format!("client-reload-pending-{}", session_id));
                 let info = if app.reload_info.is_empty() {
                     "reload".to_string()
                 } else {
@@ -753,8 +753,8 @@ pub(super) fn load_reload_reconnect_hints(
 
     let has_client_reload_marker = session_to_resume
         .and_then(|sid| {
-            let IDEOCODE_dir = crate::storage::IDEOCODE_dir().ok()?;
-            let marker = IDEOCODE_dir.join(format!("client-reload-pending-{}", sid));
+            let ideocode_dir = crate::storage::ideocode_dir().ok()?;
+            let marker = ideocode_dir.join(format!("client-reload-pending-{}", sid));
             if marker.exists() {
                 let info = std::fs::read_to_string(&marker).ok()?;
                 let _ = std::fs::remove_file(&marker);

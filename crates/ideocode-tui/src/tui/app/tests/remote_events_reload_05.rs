@@ -112,7 +112,7 @@ fn test_save_input_for_reload_persists_inflight_queued_continuation() {
 
 #[test]
 fn test_reload_preserves_completed_confidence_spike_challenge() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         let reload_session_id = format!("test-confidence-spike-reload-{}", std::process::id());
         app.todo_confidence_spike_challenged = true;
@@ -148,7 +148,7 @@ fn test_reload_preserves_completed_confidence_spike_challenge() {
 
 #[test]
 fn test_completion_gate_nudges_stop_after_budget_exhausted() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.auto_poke_incomplete_todos = true;
 
@@ -204,7 +204,7 @@ fn test_save_input_for_reload_removes_stale_file_when_state_is_empty() {
     app.queued_messages.push("old queued".to_string());
     app.save_input_for_reload(&session_id);
 
-    let path = crate::storage::IDEOCODE_dir()
+    let path = crate::storage::ideocode_dir()
         .expect("IDEOCODE dir")
         .join(format!("client-input-{}", session_id));
     assert!(path.exists(), "first save should write the reload file");
@@ -260,7 +260,7 @@ fn test_save_input_for_reload_removes_stale_file_when_state_is_empty() {
 /// `Auto-poking: N incomplete todos` every ~7s, one refused API call each).
 #[test]
 fn test_repeated_guardrail_refusals_stop_auto_poke_loop() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         let rt = tokio::runtime::Runtime::new().unwrap();
         let _guard = rt.enter();

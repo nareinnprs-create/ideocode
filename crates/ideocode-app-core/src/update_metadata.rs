@@ -85,7 +85,7 @@ impl UpdateMetadata {
 }
 
 pub(super) fn metadata_path() -> Result<PathBuf> {
-    Ok(storage::IDEOCODE_dir()?.join("update_metadata.json"))
+    Ok(storage::ideocode_dir()?.join("update_metadata.json"))
 }
 
 pub(super) fn record_release_update_duration(duration: Duration) {

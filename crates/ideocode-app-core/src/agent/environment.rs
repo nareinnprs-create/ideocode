@@ -62,7 +62,7 @@ impl Agent {
         reason: &str,
         detail: EnvSnapshotDetail,
     ) -> EnvSnapshot {
-        let (IDEOCODE_git_hash, IDEOCODE_git_dirty) = match detail {
+        let (ideocode_git_hash, ideocode_git_dirty) = match detail {
             EnvSnapshotDetail::Full => IDEOCODE_REPO_SOURCE_STATE.clone(),
             EnvSnapshotDetail::Minimal => (None, None),
         };
@@ -82,9 +82,9 @@ impl Agent {
             working_dir,
             provider: self.provider.name().to_string(),
             model: self.provider.model().to_string(),
-            IDEOCODE_version: IDEOCODE_build_meta::version().to_string(),
-            IDEOCODE_git_hash,
-            IDEOCODE_git_dirty,
+            ideocode_version: ideocode_build_meta::version().to_string(),
+            ideocode_git_hash,
+            ideocode_git_dirty,
             os: std::env::consts::OS.to_string(),
             arch: std::env::consts::ARCH.to_string(),
             pid: std::process::id(),

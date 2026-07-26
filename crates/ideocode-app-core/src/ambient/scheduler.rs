@@ -11,7 +11,7 @@ use std::time::Duration;
 // Usage record types
 // ---------------------------------------------------------------------------
 
-pub use IDEOCODE_ambient_types::{RateLimitInfo, UsageRecord, UsageSource};
+pub use ideocode_ambient_types::{RateLimitInfo, UsageRecord, UsageSource};
 
 // ---------------------------------------------------------------------------
 // Usage log — rolling, persisted to disk
@@ -46,7 +46,7 @@ impl UsageLog {
     }
 
     fn default_path() -> PathBuf {
-        storage::IDEOCODE_dir()
+        storage::ideocode_dir()
             .unwrap_or_else(|_| std::env::temp_dir())
             .join("ambient")
             .join("usage.json")

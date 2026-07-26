@@ -7,7 +7,7 @@
 //! label the error so UIs can stay quiet about it.
 
 use super::update_metadata::UpdateMetadata;
-use IDEOCODE_update_core::format_duration_estimate;
+use ideocode_update_core::format_duration_estimate;
 use std::time::{Duration, SystemTime};
 
 /// How long to stop checking after GitHub reports the rate limit is exhausted

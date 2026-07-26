@@ -313,7 +313,7 @@ async fn audit_openrouter_context_windows(
 ) -> AuthTestContextAuditReport {
     use crate::provider::Provider as _;
 
-    let provider = match IDEOCODE_provider_openrouter_runtime::OpenRouterProvider::new() {
+    let provider = match ideocode_provider_openrouter_runtime::OpenRouterProvider::new() {
         Ok(provider) => provider,
         Err(err) => {
             return AuthTestContextAuditReport {

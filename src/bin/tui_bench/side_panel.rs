@@ -1,6 +1,6 @@
 ﻿use super::{SidePanelSource, make_text};
 use anyhow::{Context, Result};
-use IDEOCODE::side_panel::{
+use ideocode::side_panel::{
     SidePanelPage, SidePanelPageFormat, SidePanelPageSource, SidePanelSnapshot,
 };
 use std::fs;

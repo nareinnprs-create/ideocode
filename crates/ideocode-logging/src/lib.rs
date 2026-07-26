@@ -180,13 +180,13 @@ pub struct Logger {
 }
 
 fn log_dir() -> Option<PathBuf> {
-    IDEOCODE_storage::logs_dir().ok()
+    ideocode_storage::logs_dir().ok()
 }
 
 impl Logger {
     fn new() -> Option<Self> {
         let log_dir = log_dir()?;
-        IDEOCODE_storage::ensure_dir(&log_dir).ok()?;
+        ideocode_storage::ensure_dir(&log_dir).ok()?;
 
         // Use date-based log file
         let date = Local::now().format("%Y-%m-%d");
@@ -583,9 +583,9 @@ fn cleanup_old_logs_in(log_dir: &std::path::Path, now: chrono::DateTime<Local>) 
         // Only consider our own date-stamped log files.
         let name = entry.file_name();
         let Some(name) = name.to_str() else { continue };
-        let is_IDEOCODE_log = (name.starts_with("IDEOCODE-") || name.starts_with("IDEOCODE-desktop-"))
+        let is_ideocode_log = (name.starts_with("IDEOCODE-") || name.starts_with("IDEOCODE-desktop-"))
             && name.ends_with(".log");
-        if !is_IDEOCODE_log {
+        if !is_ideocode_log {
             continue;
         }
 
@@ -605,7 +605,7 @@ fn cleanup_old_logs_in(log_dir: &std::path::Path, now: chrono::DateTime<Local>) 
 
 fn truncate(s: &str, max_len: usize) -> String {
     if s.len() > max_len {
-        format!("{}...", IDEOCODE_core::util::truncate_str(s, max_len))
+        format!("{}...", ideocode_core::util::truncate_str(s, max_len))
     } else {
         s.to_string()
     }
@@ -735,7 +735,7 @@ mod tests {
     }
 
     #[test]
-    fn cleanup_removes_only_old_IDEOCODE_logs() {
+    fn cleanup_removes_only_old_ideocode_logs() {
         use std::time::{Duration, SystemTime};
 
         let dir = std::env::temp_dir().join(format!(

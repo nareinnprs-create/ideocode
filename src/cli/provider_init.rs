@@ -1249,7 +1249,7 @@ pub async fn login_and_bootstrap_provider(
             disable_subscription_runtime_mode();
             Arc::new(provider::MultiProvider::new())
         }
-        LoginProviderTarget::IDEOCODE => Arc::new(provider::IDEOCODE::IDEOCODEProvider::new()),
+        LoginProviderTarget::IDEOCODE => Arc::new(provider::ideocode::IDEOCODEProvider::new()),
         LoginProviderTarget::Claude | LoginProviderTarget::ClaudeApiKey => {
             disable_subscription_runtime_mode();
             Arc::new(provider::MultiProvider::new())
@@ -1298,7 +1298,7 @@ pub async fn login_and_bootstrap_provider(
             disable_subscription_runtime_mode();
             clear_initial_model_provider();
             crate::env::set_var("IDEOCODE_ACTIVE_PROVIDER", "cursor");
-            Arc::new(IDEOCODE_provider_cursor_runtime::CursorCliProvider::new())
+            Arc::new(ideocode_provider_cursor_runtime::CursorCliProvider::new())
         }
         LoginProviderTarget::Copilot => {
             disable_subscription_runtime_mode();
@@ -1308,13 +1308,13 @@ pub async fn login_and_bootstrap_provider(
             disable_subscription_runtime_mode();
             clear_initial_model_provider();
             crate::env::set_var("IDEOCODE_ACTIVE_PROVIDER", "gemini");
-            Arc::new(IDEOCODE_provider_gemini_runtime::GeminiProvider::new())
+            Arc::new(ideocode_provider_gemini_runtime::GeminiProvider::new())
         }
         LoginProviderTarget::Antigravity => {
             disable_subscription_runtime_mode();
             clear_initial_model_provider();
             crate::env::set_var("IDEOCODE_ACTIVE_PROVIDER", "antigravity");
-            Arc::new(IDEOCODE_provider_antigravity_runtime::AntigravityProvider::new())
+            Arc::new(ideocode_provider_antigravity_runtime::AntigravityProvider::new())
         }
         LoginProviderTarget::Google => {
             anyhow::bail!("Google login cannot be used as a model provider bootstrap");
@@ -1403,7 +1403,7 @@ async fn init_provider_with_options(
     let provider: Arc<dyn provider::Provider> = match choice {
         ProviderChoice::IDEOCODE => {
             init_notice("Using IDEOCODE subscription provider");
-            Arc::new(provider::IDEOCODE::IDEOCODEProvider::new())
+            Arc::new(provider::ideocode::IDEOCODEProvider::new())
         }
         ProviderChoice::Claude => {
             disable_subscription_runtime_mode();
@@ -1452,7 +1452,7 @@ async fn init_provider_with_options(
             init_notice("Using Cursor native HTTPS provider (experimental)");
             clear_initial_model_provider();
             crate::env::set_var("IDEOCODE_ACTIVE_PROVIDER", "cursor");
-            Arc::new(IDEOCODE_provider_cursor_runtime::CursorCliProvider::new())
+            Arc::new(ideocode_provider_cursor_runtime::CursorCliProvider::new())
         }
         ProviderChoice::Copilot => {
             disable_subscription_runtime_mode();
@@ -1473,7 +1473,7 @@ async fn init_provider_with_options(
             }
             clear_initial_model_provider();
             crate::env::set_var("IDEOCODE_ACTIVE_PROVIDER", "gemini");
-            Arc::new(IDEOCODE_provider_gemini_runtime::GeminiProvider::new())
+            Arc::new(ideocode_provider_gemini_runtime::GeminiProvider::new())
         }
         ProviderChoice::Openrouter => {
             disable_subscription_runtime_mode();
@@ -1570,13 +1570,13 @@ async fn init_provider_with_options(
                     anyhow::anyhow!("Unknown provider profile '{}'", profile_name)
                 })?;
                 Arc::new(
-                    IDEOCODE_provider_openrouter_runtime::OpenRouterProvider::new_named_openai_compatible(
+                    ideocode_provider_openrouter_runtime::OpenRouterProvider::new_named_openai_compatible(
                         &profile_name,
                         profile,
                     )?,
                 )
             } else {
-                Arc::new(IDEOCODE_provider_openrouter_runtime::OpenRouterProvider::new()?)
+                Arc::new(ideocode_provider_openrouter_runtime::OpenRouterProvider::new()?)
             }
         }
         ProviderChoice::Antigravity => {
@@ -1585,7 +1585,7 @@ async fn init_provider_with_options(
             init_notice("Using Antigravity provider (experimental)");
             clear_initial_model_provider();
             crate::env::set_var("IDEOCODE_ACTIVE_PROVIDER", "antigravity");
-            Arc::new(IDEOCODE_provider_antigravity_runtime::AntigravityProvider::new())
+            Arc::new(ideocode_provider_antigravity_runtime::AntigravityProvider::new())
         }
         ProviderChoice::Google => {
             disable_subscription_runtime_mode();

@@ -1,7 +1,7 @@
 ﻿use futures::StreamExt;
-use IDEOCODE::message::{ContentBlock, Message, ToolDefinition};
-use IDEOCODE::provider::Provider;
-use IDEOCODE_provider_claude_cli_runtime::ClaudeProvider;
+use ideocode::message::{ContentBlock, Message, ToolDefinition};
+use ideocode::provider::Provider;
+use ideocode_provider_claude_cli_runtime::ClaudeProvider;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -9,7 +9,7 @@ async fn main() -> anyhow::Result<()> {
     let provider = ClaudeProvider::new();
 
     let messages = vec![Message {
-        role: IDEOCODE::message::Role::User,
+        role: ideocode::message::Role::User,
         content: vec![ContentBlock::Text {
             text: "Say hello in exactly 5 words.".to_string(),
             cache_control: None,

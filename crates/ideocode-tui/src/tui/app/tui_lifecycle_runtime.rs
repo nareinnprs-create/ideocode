@@ -305,7 +305,7 @@ impl App {
             let mut assistant_turns = 0;
             let mut total_chars = 0;
 
-            for item in IDEOCODE_tui_messages::display_messages_from_rendered_messages(
+            for item in ideocode_tui_messages::display_messages_from_rendered_messages(
                 crate::session::render_messages(&session),
             ) {
                 if item.role == "user" {

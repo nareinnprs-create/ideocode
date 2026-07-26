@@ -6,7 +6,7 @@
 //! Splitting it out lets the two halves compile as separate rustc units so the
 //! largest compilation unit (and its peak memory) is roughly halved.
 //!
-//! `IDEOCODE-app-core` re-exports this crate via `pub use IDEOCODE_base::*`, so every
+//! `IDEOCODE-app-core` re-exports this crate via `pub use ideocode_base::*`, so every
 //! existing `crate::<module>` path in the upper layers keeps resolving.
 
 #![allow(
@@ -86,7 +86,7 @@ pub mod subscription_api;
 pub mod subscription_catalog;
 pub mod telegram;
 pub mod telemetry {
-    pub use IDEOCODE_telemetry_core::*;
+    pub use ideocode_telemetry_core::*;
 }
 pub mod terminal_launch;
 pub mod todo;
@@ -95,4 +95,4 @@ pub mod usage;
 pub mod util;
 #[cfg(not(feature = "embeddings"))]
 pub use embedding_stub as embedding;
-pub use IDEOCODE_core::{terminal_eprint, terminal_eprintln, terminal_print, terminal_println};
+pub use ideocode_core::{terminal_eprint, terminal_eprintln, terminal_print, terminal_println};

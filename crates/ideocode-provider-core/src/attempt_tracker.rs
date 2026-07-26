@@ -16,7 +16,7 @@
 //! tools live mid-stream) and keeps its no-retry-after-output guard instead.
 
 use anyhow::Result;
-use IDEOCODE_message_types::StreamEvent;
+use ideocode_message_types::StreamEvent;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::sync::mpsc;
@@ -150,7 +150,7 @@ mod tests {
     fn status_events_are_not_replay_visible() {
         assert!(!stream_event_is_replay_visible(
             &StreamEvent::ConnectionPhase {
-                phase: IDEOCODE_message_types::ConnectionPhase::Connecting,
+                phase: ideocode_message_types::ConnectionPhase::Connecting,
             }
         ));
         assert!(!stream_event_is_replay_visible(&StreamEvent::TokenUsage {
@@ -176,7 +176,7 @@ mod tests {
 
         attempt_tx
             .send(Ok(StreamEvent::ConnectionPhase {
-                phase: IDEOCODE_message_types::ConnectionPhase::Connecting,
+                phase: ideocode_message_types::ConnectionPhase::Connecting,
             }))
             .await
             .unwrap();
@@ -210,7 +210,7 @@ mod tests {
         let (attempt_tx, guard) = track_attempt_output(outer_tx);
         attempt_tx
             .send(Ok(StreamEvent::ConnectionPhase {
-                phase: IDEOCODE_message_types::ConnectionPhase::Connecting,
+                phase: ideocode_message_types::ConnectionPhase::Connecting,
             }))
             .await
             .unwrap();

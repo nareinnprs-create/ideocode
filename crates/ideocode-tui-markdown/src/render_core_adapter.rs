@@ -1,4 +1,4 @@
-﻿//! Adapter: backend-neutral [`IDEOCODE_render_core::Document`] -> ratatui lines.
+﻿//! Adapter: backend-neutral [`ideocode_render_core::Document`] -> ratatui lines.
 //!
 //! This is the thin TUI-side translation layer for the shared render core. It
 //! resolves the core's semantic [`StyleRole`]/[`FillRole`] to this crate's
@@ -8,7 +8,7 @@
 //! The legacy `render_markdown*` path remains authoritative; this adapter is
 //! validated against it before any switchover.
 
-use IDEOCODE_render_core::{
+use ideocode_render_core::{
     Alignment as CoreAlignment, BlockKind, Document, FillRole, StyleRole, StyledLine, StyledSpan,
 };
 use ratatui::layout::Alignment;
@@ -32,7 +32,7 @@ pub fn document_to_lines(doc: &Document) -> Vec<Line<'static>> {
 /// and a closing `└─`.
 fn push_code_block(
     lines: &mut Vec<Line<'static>>,
-    block: &IDEOCODE_render_core::Block,
+    block: &ideocode_render_core::Block,
     language: Option<&str>,
 ) {
     let dim = Style::default().fg(md_dim_color());
@@ -51,7 +51,7 @@ fn push_code_block(
 
 /// Render a display-math block with the legacy frame: `┌─ math `, `│ ` gutter
 /// per source line, and a closing `└─`.
-fn push_math_display(lines: &mut Vec<Line<'static>>, block: &IDEOCODE_render_core::Block) {
+fn push_math_display(lines: &mut Vec<Line<'static>>, block: &ideocode_render_core::Block) {
     let dim = Style::default().fg(md_dim_color());
     lines.push(Line::from(Span::styled("┌─ math ".to_string(), dim)).left_aligned());
     for sl in &block.lines {
@@ -129,7 +129,7 @@ fn role_color(role: StyleRole, kind: &BlockKind) -> ratatui::style::Color {
 
 /// Parse markdown and render it to ratatui lines through the shared core.
 pub fn render_markdown_via_core(text: &str) -> Vec<Line<'static>> {
-    document_to_lines_with_width(&IDEOCODE_render_core::parse_markdown(text), None)
+    document_to_lines_with_width(&ideocode_render_core::parse_markdown(text), None)
 }
 
 /// Like [`document_to_lines`] but lays out width-dependent blocks (tables,
@@ -190,7 +190,7 @@ fn rule_width(width: Option<usize>) -> usize {
 /// reflowed with the authoritative legacy wrapper (which keeps words intact
 /// across span boundaries and repeats code/quote gutters).
 pub fn render_markdown_via_core_wrapped(text: &str, width: usize) -> Vec<Line<'static>> {
-    let doc = IDEOCODE_render_core::parse_markdown(text);
+    let doc = ideocode_render_core::parse_markdown(text);
     let lines = document_to_lines_with_width(&doc, Some(width));
     crate::wrap_lines(lines, width)
 }

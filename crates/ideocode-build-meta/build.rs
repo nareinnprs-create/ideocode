@@ -7,7 +7,7 @@ use std::process::Command;
 // This is the single source of truth for the IDEOCODE_* compile-time values that
 // previously lived in the root `IDEOCODE` crate's build.rs. It is hosted in the
 // leaf `IDEOCODE-build-meta` crate so every workspace crate can read identical
-// values (via `IDEOCODE_build_meta::*`) without duplicating this script.
+// values (via `ideocode_build_meta::*`) without duplicating this script.
 //
 // NOTE: because this crate's own package version is unrelated to IDEOCODE's, we
 // parse the root `Cargo.toml` `[package].version` for the base semver instead

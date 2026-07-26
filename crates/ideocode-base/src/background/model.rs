@@ -163,7 +163,7 @@ pub(super) fn progress_wait_reason(
 
 // Progress-display formatting now lives in `IDEOCODE-background-types` (pure
 // functions over BackgroundTaskProgress); re-export for existing callers.
-pub use IDEOCODE_background_types::{
+pub use ideocode_background_types::{
     format_progress_display, format_progress_summary, render_progress_bar,
 };
 

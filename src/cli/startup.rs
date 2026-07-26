@@ -135,30 +135,30 @@ pub async fn run() -> Result<()> {
 pub fn register_external_provider_runtimes() {
     crate::provider::external::register_external_provider(
         crate::provider::external::GEMINI_RUNTIME,
-        || std::sync::Arc::new(IDEOCODE_provider_gemini_runtime::GeminiProvider::new()),
+        || std::sync::Arc::new(ideocode_provider_gemini_runtime::GeminiProvider::new()),
     );
     crate::provider::external::register_external_provider(
         crate::provider::external::CURSOR_RUNTIME,
-        || std::sync::Arc::new(IDEOCODE_provider_cursor_runtime::CursorCliProvider::new()),
+        || std::sync::Arc::new(ideocode_provider_cursor_runtime::CursorCliProvider::new()),
     );
     crate::provider::external::register_external_provider(
         crate::provider::external::ANTIGRAVITY_RUNTIME,
-        || std::sync::Arc::new(IDEOCODE_provider_antigravity_runtime::AntigravityProvider::new()),
+        || std::sync::Arc::new(ideocode_provider_antigravity_runtime::AntigravityProvider::new()),
     );
     crate::provider::external::register_external_provider(
         crate::provider::external::CLAUDE_CLI_RUNTIME,
-        || std::sync::Arc::new(IDEOCODE_provider_claude_cli_runtime::ClaudeProvider::new()),
+        || std::sync::Arc::new(ideocode_provider_claude_cli_runtime::ClaudeProvider::new()),
     );
     crate::provider::external::register_external_provider(
         crate::provider::external::ANTHROPIC_RUNTIME,
-        || std::sync::Arc::new(IDEOCODE_provider_anthropic_runtime::AnthropicProvider::new()),
+        || std::sync::Arc::new(ideocode_provider_anthropic_runtime::AnthropicProvider::new()),
     );
     // OpenRouter serves several identities (aggregator, pinned API-key
     // runtime, direct OpenAI-compatible profiles, named config profiles)
     // through one concrete type, so it registers a parameterized factory.
     crate::provider::external::register_openrouter_factory(|spec| {
         use crate::provider::external::OpenRouterRuntimeSpec;
-        use IDEOCODE_provider_openrouter_runtime::OpenRouterProvider;
+        use ideocode_provider_openrouter_runtime::OpenRouterProvider;
         let provider: std::sync::Arc<dyn crate::provider::Provider> = match spec {
             OpenRouterRuntimeSpec::Default => std::sync::Arc::new(OpenRouterProvider::new()?),
             OpenRouterRuntimeSpec::OpenRouterApiKey => {
@@ -174,10 +174,10 @@ pub fn register_external_provider_runtimes() {
         Ok(provider)
     });
     crate::provider::external::register_profile_catalog_refresh(
-        IDEOCODE_provider_openrouter_runtime::maybe_schedule_openai_compatible_profile_catalog_refresh,
+        ideocode_provider_openrouter_runtime::maybe_schedule_openai_compatible_profile_catalog_refresh,
     );
     crate::provider::external::register_standard_openrouter_catalog_refresh(
-        IDEOCODE_provider_openrouter_runtime::maybe_schedule_standard_openrouter_catalog_refresh,
+        ideocode_provider_openrouter_runtime::maybe_schedule_standard_openrouter_catalog_refresh,
     );
     // API-backed OpenAI routes use Codex/platform credentials. The runtime is
     // still registered without them so browser-backed ChatGPT models remain
@@ -186,8 +186,8 @@ pub fn register_external_provider_runtimes() {
         crate::provider::external::OPENAI_RUNTIME,
         || {
             let provider = match crate::auth::codex::load_credentials() {
-                Ok(credentials) => IDEOCODE_provider_openai_runtime::OpenAIProvider::new(credentials),
-                Err(_) => IDEOCODE_provider_openai_runtime::OpenAIProvider::new_browser_only(),
+                Ok(credentials) => ideocode_provider_openai_runtime::OpenAIProvider::new(credentials),
+                Err(_) => ideocode_provider_openai_runtime::OpenAIProvider::new_browser_only(),
             };
             Some(std::sync::Arc::new(provider) as std::sync::Arc<dyn crate::provider::Provider>)
         },
@@ -200,7 +200,7 @@ pub fn register_external_provider_runtimes() {
         crate::provider::external::COPILOT_RUNTIME,
         || {
             let provider = std::sync::Arc::new(
-                IDEOCODE_provider_copilot_runtime::CopilotApiProvider::new().ok()?,
+                ideocode_provider_copilot_runtime::CopilotApiProvider::new().ok()?,
             );
             let eager_tier_detection = std::env::var("IDEOCODE_NON_INTERACTIVE").is_err();
             if eager_tier_detection && tokio::runtime::Handle::try_current().is_ok() {
@@ -311,7 +311,7 @@ fn spawn_background_update_check(args: &Args) {
                 && update_available
             {
                 Bus::global().publish(BusEvent::UpdateStatus(UpdateStatus::Available {
-                    current: IDEOCODE_build_meta::version().to_string(),
+                    current: ideocode_build_meta::version().to_string(),
                     latest: "latest source".to_string(),
                 }));
                 if auto_update {

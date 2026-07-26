@@ -1,12 +1,12 @@
 ﻿use crate::build;
 use crate::storage;
 use anyhow::{Context, Result};
-use IDEOCODE_update_core::{
+use ideocode_update_core::{
     BACKGROUND_UPDATE_THRESHOLD, estimate_release_update_duration, estimate_source_update_duration,
     format_duration_estimate, get_asset_name, summarize_git_pull_failure, update_estimate,
     verify_asset_checksum_text, version_is_newer,
 };
-pub use IDEOCODE_update_core::{
+pub use ideocode_update_core::{
     DownloadProgress, GIT_PULL_DIVERGED_SUMMARY, GitHubAsset, GitHubRelease, PreparedUpdate,
     UpdateCheckResult, UpdateEstimate, format_download_progress_bar, summarize_update_error,
     summary_is_divergence,
@@ -93,15 +93,15 @@ fn unicode_display_width(s: &str) -> usize {
 }
 
 pub fn is_release_build() -> bool {
-    IDEOCODE_build_meta::is_release_build()
+    ideocode_build_meta::is_release_build()
 }
 
 fn current_update_semver() -> &'static str {
-    IDEOCODE_build_meta::update_semver()
+    ideocode_build_meta::update_semver()
 }
 
 fn source_build_root() -> Result<PathBuf> {
-    Ok(storage::IDEOCODE_dir()?.join("builds").join("source"))
+    Ok(storage::ideocode_dir()?.join("builds").join("source"))
 }
 
 fn source_build_repo_dir() -> Result<PathBuf> {
@@ -205,7 +205,7 @@ fn github_api_request(
     // shared unauthenticated 60 req/h per-IP bucket, which other tools on the
     // same machine or NAT can exhaust and cause spurious 403s on update
     // checks. Falls back to unauthenticated when no token is available.
-    if let Some(token) = IDEOCODE_base::github::github_public_api_token() {
+    if let Some(token) = ideocode_base::github::github_public_api_token() {
         request.bearer_auth(token)
     } else {
         request
@@ -322,7 +322,7 @@ fn install_main_source_update_blocking(latest_sha: &str) -> Result<PathBuf> {
 }
 
 fn prepare_stable_update_blocking() -> Result<PreparedUpdate> {
-    let current_version = IDEOCODE_build_meta::version();
+    let current_version = ideocode_build_meta::version();
     let current_update_version = current_update_semver();
     let release = fetch_latest_release_blocking()?;
     let release_version = release.tag_name.trim_start_matches('v');
@@ -366,11 +366,11 @@ fn prepare_stable_update_blocking() -> Result<PreparedUpdate> {
 }
 
 fn prepare_main_update_blocking() -> Result<PreparedUpdate> {
-    let current_hash = IDEOCODE_build_meta::git_hash();
+    let current_hash = ideocode_build_meta::git_hash();
     if current_hash.is_empty() || current_hash == "unknown" {
         crate::logging::info("Main channel: no git hash in binary, skipping update check");
         return Ok(PreparedUpdate::None {
-            current: IDEOCODE_build_meta::version().to_string(),
+            current: ideocode_build_meta::version().to_string(),
         });
     }
 
@@ -585,7 +585,7 @@ fn check_for_stable_update_blocking() -> Result<Option<GitHubRelease>> {
 ///   - Tries to build from source if cargo is available
 ///   - Falls back to latest GitHub Release if not
 fn check_for_main_update_blocking() -> Result<Option<GitHubRelease>> {
-    let current_hash = IDEOCODE_build_meta::git_hash();
+    let current_hash = ideocode_build_meta::git_hash();
     if current_hash.is_empty() || current_hash == "unknown" {
         crate::logging::info("Main channel: no git hash in binary, skipping update check");
         return Ok(None);
@@ -1110,7 +1110,7 @@ pub fn check_and_maybe_update(auto_install: bool) -> UpdateCheckResult {
 
     match check_for_update_blocking() {
         Ok(Some(release)) => {
-            let current = IDEOCODE_build_meta::version().to_string();
+            let current = ideocode_build_meta::version().to_string();
             let latest = release.tag_name.clone();
 
             Bus::global().publish(BusEvent::UpdateStatus(UpdateStatus::Available {
@@ -1198,7 +1198,7 @@ fn repair_stale_shared_server_after_no_update() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use IDEOCODE_update_core::parse_sha256sums;
+    use ideocode_update_core::parse_sha256sums;
     use sha2::{Digest, Sha256};
 
     #[test]
@@ -1309,9 +1309,9 @@ mod tests {
         let stderr = b"hint: You have divergent branches and need to specify how to reconcile them.\nfatal: Need to specify how to reconcile divergent branches.\n";
         assert_eq!(
             summarize_git_pull_failure(stderr),
-            IDEOCODE_update_core::GIT_PULL_DIVERGED_SUMMARY
+            ideocode_update_core::GIT_PULL_DIVERGED_SUMMARY
         );
-        assert!(IDEOCODE_update_core::summary_is_divergence(
+        assert!(ideocode_update_core::summary_is_divergence(
             &summarize_git_pull_failure(stderr)
         ));
     }

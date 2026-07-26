@@ -1,8 +1,8 @@
 ﻿//! Server handlers for the task-DAG mutation ops (seed/expand/complete/inject).
 //!
 //! These are the live counterparts of the validated engine ops in
-//! `IDEOCODE_plan::dag`. Each handler lifts the swarm's current `VersionedPlan` into
-//! a `TaskGraph` (via `IDEOCODE_plan::bridge`), applies the engine op (which enforces
+//! `ideocode_plan::dag`. Each handler lifts the swarm's current `VersionedPlan` into
+//! a `TaskGraph` (via `ideocode_plan::bridge`), applies the engine op (which enforces
 //! acyclicity, ownership, gate insertion, and artifact validation), lowers the
 //! result back into the plan, then persists and broadcasts using the existing
 //! swarm machinery. This keeps a single source of truth and reuses the scheduler,
@@ -14,9 +14,9 @@ use super::{
 };
 use crate::protocol::ServerEvent;
 use crate::protocol::TaskGraphNodeSpec;
-use IDEOCODE_plan::MAX_PLAN_ITEMS;
-use IDEOCODE_plan::bridge::{apply_task_graph, parse_kind, to_task_graph};
-use IDEOCODE_plan::dag::{self, HandoffArtifact, NodeSpec, NodeStatus, TaskGraph};
+use ideocode_plan::MAX_PLAN_ITEMS;
+use ideocode_plan::bridge::{apply_task_graph, parse_kind, to_task_graph};
+use ideocode_plan::dag::{self, HandoffArtifact, NodeSpec, NodeStatus, TaskGraph};
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use tokio::sync::mpsc;

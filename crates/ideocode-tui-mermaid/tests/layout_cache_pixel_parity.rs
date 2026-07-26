@@ -31,7 +31,7 @@
 
 #![cfg(feature = "renderer")]
 
-use IDEOCODE_tui_mermaid::{RenderResult, debug_stats, render_mermaid_untracked};
+use ideocode_tui_mermaid::{RenderResult, debug_stats, render_mermaid_untracked};
 
 /// Render and return (hash, png path, png bytes), panicking on render errors.
 fn render_png(label: &str, content: &str, width: u16) -> (u64, std::path::PathBuf, Vec<u8>) {

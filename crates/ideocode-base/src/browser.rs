@@ -32,8 +32,8 @@ const REQUIRED_BRIDGE_ACTION_PROBES: &[(&str, &str)] = &[
     ),
 ];
 
-fn IDEOCODE_dir() -> PathBuf {
-    storage::IDEOCODE_dir().unwrap_or_else(|_| {
+fn ideocode_dir() -> PathBuf {
+    storage::ideocode_dir().unwrap_or_else(|_| {
         dirs::home_dir()
             .unwrap_or_else(|| PathBuf::from("."))
             .join(".IDEOCODE")
@@ -41,7 +41,7 @@ fn IDEOCODE_dir() -> PathBuf {
 }
 
 fn browser_dir() -> PathBuf {
-    IDEOCODE_dir().join("browser")
+    ideocode_dir().join("browser")
 }
 
 pub fn browser_binary_path() -> PathBuf {
@@ -407,7 +407,7 @@ pub async fn ensure_browser_setup() -> Result<String> {
 
 async fn download_browser_binary() -> Result<()> {
     let asset_name = get_platform_asset_name();
-    let client = IDEOCODE_provider_core::shared_http_client();
+    let client = ideocode_provider_core::shared_http_client();
 
     let mut request = client
         .get(GITHUB_API_LATEST)

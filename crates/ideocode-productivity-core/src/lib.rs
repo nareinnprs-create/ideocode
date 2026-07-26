@@ -65,7 +65,7 @@ pub fn render_svg(report: &ProductivityReport) -> String {
 }
 
 fn save_png(png: &[u8]) -> Result<PathBuf> {
-    let dir = IDEOCODE_storage::IDEOCODE_dir()?.join("generated-images");
+    let dir = ideocode_storage::ideocode_dir()?.join("generated-images");
     std::fs::create_dir_all(&dir)?;
     let ts = chrono::Local::now().format("%Y%m%d-%H%M%S");
     let path = dir.join(format!("productivity-{ts}.png"));

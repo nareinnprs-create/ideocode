@@ -8,16 +8,16 @@ fn test_env_lock() -> std::sync::MutexGuard<'static, ()> {
         .unwrap_or_else(|poisoned| poisoned.into_inner())
 }
 
-fn with_temp_IDEOCODE_home<T>(f: impl FnOnce() -> T) -> T {
+fn with_temp_ideocode_home<T>(f: impl FnOnce() -> T) -> T {
     let _guard = test_env_lock();
     let temp_home = tempfile::tempdir().expect("tempdir");
     let prev_home = std::env::var_os("IDEOCODE_HOME");
-    IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp_home.path());
+    ideocode_core::env::set_var("IDEOCODE_HOME", temp_home.path());
     let result = f();
     if let Some(prev_home) = prev_home {
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", prev_home);
+        ideocode_core::env::set_var("IDEOCODE_HOME", prev_home);
     } else {
-        IDEOCODE_core::env::remove_var("IDEOCODE_HOME");
+        ideocode_core::env::remove_var("IDEOCODE_HOME");
     }
     result
 }
@@ -193,7 +193,7 @@ fn test_client_update_candidate_prefers_dev_binary_for_selfdev() {
     let _guard = test_env_lock();
     let temp_home = tempfile::tempdir().expect("tempdir");
     let prev_home = std::env::var_os("IDEOCODE_HOME");
-    IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp_home.path());
+    ideocode_core::env::set_var("IDEOCODE_HOME", temp_home.path());
 
     let version = "test-current";
     let version_binary =
@@ -209,24 +209,24 @@ fn test_client_update_candidate_prefers_dev_binary_for_selfdev() {
     );
 
     if let Some(prev_home) = prev_home {
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", prev_home);
+        ideocode_core::env::set_var("IDEOCODE_HOME", prev_home);
     } else {
-        IDEOCODE_core::env::remove_var("IDEOCODE_HOME");
+        ideocode_core::env::remove_var("IDEOCODE_HOME");
     }
 }
 
 #[test]
-fn launcher_dir_uses_sandbox_bin_when_IDEOCODE_home_is_set() {
-    with_temp_IDEOCODE_home(|| {
+fn launcher_dir_uses_sandbox_bin_when_ideocode_home_is_set() {
+    with_temp_ideocode_home(|| {
         let launcher_dir = launcher_dir().expect("launcher dir");
-        let expected = storage::IDEOCODE_dir().expect("IDEOCODE dir").join("bin");
+        let expected = storage::ideocode_dir().expect("IDEOCODE dir").join("bin");
         assert_eq!(launcher_dir, expected);
     });
 }
 
 #[test]
 fn update_launcher_symlink_stays_inside_sandbox_home() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let version = "sandbox-current";
         let version_binary =
             install_binary_at_version(std::env::current_exe().as_ref().unwrap(), version)
@@ -234,7 +234,7 @@ fn update_launcher_symlink_stays_inside_sandbox_home() {
         update_current_symlink(version).expect("update current symlink");
 
         let launcher = update_launcher_symlink_to_current().expect("update launcher");
-        let expected_launcher = storage::IDEOCODE_dir()
+        let expected_launcher = storage::ideocode_dir()
             .expect("IDEOCODE dir")
             .join("bin")
             .join(binary_name());
@@ -275,7 +275,7 @@ fn dirty_source_state_uses_fingerprint_in_version_label() {
 
 #[test]
 fn pending_activation_can_complete_and_roll_back() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let current_version = "stable-prev";
         let shared_version = "shared-prev";
         install_binary_at_version(std::env::current_exe().as_ref().unwrap(), current_version)
@@ -335,7 +335,7 @@ fn pending_activation_can_complete_and_roll_back() {
 
 #[test]
 fn shared_server_candidate_prefers_approved_channel_over_current() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let approved_version = "shared-ok";
         let current_version = "current-dev";
         install_binary_at_version(std::env::current_exe().as_ref().unwrap(), approved_version)
@@ -357,7 +357,7 @@ fn shared_server_candidate_prefers_approved_channel_over_current() {
 
 #[test]
 fn normal_shared_server_candidate_repairs_stale_shared_channel_to_stable() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let stale_version = "0.14.2";
         let installed_version = "0.17.0";
         install_binary_at_version(std::env::current_exe().as_ref().unwrap(), stale_version)
@@ -380,7 +380,7 @@ fn normal_shared_server_candidate_repairs_stale_shared_channel_to_stable() {
 
 #[test]
 fn normal_shared_server_candidate_allows_shared_channel_matching_stable() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let installed_version = "0.17.0";
         install_binary_at_version(std::env::current_exe().as_ref().unwrap(), installed_version)
             .expect("install installed version");
@@ -395,7 +395,7 @@ fn normal_shared_server_candidate_allows_shared_channel_matching_stable() {
 
 #[test]
 fn normal_shared_server_candidate_ignores_shared_channel_with_missing_marker() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let shared_version = "0.14.2";
         let installed_version = "0.17.0";
         install_binary_at_version(std::env::current_exe().as_ref().unwrap(), shared_version)
@@ -414,7 +414,7 @@ fn normal_shared_server_candidate_ignores_shared_channel_with_missing_marker() {
 
 #[test]
 fn normal_shared_server_candidate_ignores_shared_channel_with_corrupt_marker() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let shared_version = "0.14.2";
         let installed_version = "0.17.0";
         install_binary_at_version(std::env::current_exe().as_ref().unwrap(), shared_version)
@@ -437,7 +437,7 @@ fn normal_shared_server_candidate_ignores_shared_channel_with_corrupt_marker() {
 
 #[test]
 fn version_match_detects_installed_channel_by_semver_or_git_hash() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         std::fs::create_dir_all(builds_dir().unwrap()).expect("create builds dir");
         std::fs::write(stable_version_file().unwrap(), "0.17.0").expect("write stable marker");
         assert!(version_matches_installed_channel(
@@ -457,7 +457,7 @@ fn version_match_detects_installed_channel_by_semver_or_git_hash() {
 
 #[test]
 fn shared_server_tracks_stable_when_marker_missing() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         std::fs::create_dir_all(builds_dir().unwrap()).expect("create builds dir");
         // No shared-server marker at all: nothing deliberate to protect.
         assert!(shared_server_tracks_stable().expect("tracks stable"));
@@ -466,7 +466,7 @@ fn shared_server_tracks_stable_when_marker_missing() {
 
 #[test]
 fn shared_server_tracks_stable_when_equal_to_stable() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         std::fs::create_dir_all(builds_dir().unwrap()).expect("create builds dir");
         std::fs::write(stable_version_file().unwrap(), "0.17.0").expect("write stable");
         std::fs::write(shared_server_version_file().unwrap(), "0.17.0").expect("write shared");
@@ -476,7 +476,7 @@ fn shared_server_tracks_stable_when_equal_to_stable() {
 
 #[test]
 fn shared_server_does_not_track_stable_when_pinned_to_selfdev() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         std::fs::create_dir_all(builds_dir().unwrap()).expect("create builds dir");
         std::fs::write(stable_version_file().unwrap(), "0.17.0").expect("write stable");
         std::fs::write(
@@ -490,7 +490,7 @@ fn shared_server_does_not_track_stable_when_pinned_to_selfdev() {
 
 #[test]
 fn advance_shared_server_carries_forward_when_tracking_stable() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let old = "0.17.0";
         let new = "0.18.0";
         install_binary_at_version(std::env::current_exe().as_ref().unwrap(), old)
@@ -512,7 +512,7 @@ fn advance_shared_server_carries_forward_when_tracking_stable() {
 
 #[test]
 fn advance_shared_server_preserves_pinned_selfdev_build() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let stable_old = "0.17.0";
         let selfdev = "56f43c3d-dirty-deadbeef";
         let update = "0.18.0";
@@ -579,7 +579,7 @@ fn daemon_reload_target_version() -> Option<String> {
 /// the server too.
 #[test]
 fn update_leaves_daemon_reload_target_stale_when_shared_server_pinned_to_selfdev() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         // Field state: client + server both on an old self-dev build.
         let old_selfdev = "3f160da1-dirty-e756d52efca9";
         install_binary_at_version(std::env::current_exe().as_ref().unwrap(), old_selfdev)
@@ -627,7 +627,7 @@ fn update_leaves_daemon_reload_target_stale_when_shared_server_pinned_to_selfdev
 /// path.
 #[test]
 fn update_advances_daemon_reload_target_when_shared_server_tracks_stable() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let old_release = "0.14.3";
         install_binary_at_version(std::env::current_exe().as_ref().unwrap(), old_release)
             .expect("install old release");
@@ -675,7 +675,7 @@ fn candidate_version(candidate: Option<(PathBuf, &'static str)>) -> Option<Strin
 /// that fix.
 #[test]
 fn selfdev_reload_target_diverges_from_update_probe_when_shared_server_pinned() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let old_selfdev = "3f160da1-dirty-e756d52efca9";
         install_binary_at_version(std::env::current_exe().as_ref().unwrap(), old_selfdev)
             .expect("install old selfdev");
@@ -735,7 +735,7 @@ fn write_versioned_binary(version: &str, mtime: std::time::SystemTime) -> PathBu
 #[test]
 fn repair_repoints_stale_shared_server_to_newer_stable() {
     use std::time::{Duration, SystemTime};
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let base = SystemTime::UNIX_EPOCH + Duration::from_secs(1_000_000);
         let old = "0.14.6";
         let new = "0.22.0";
@@ -765,7 +765,7 @@ fn repair_repoints_stale_shared_server_to_newer_stable() {
 #[test]
 fn repair_is_noop_when_shared_server_already_matches_stable() {
     use std::time::{Duration, SystemTime};
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let base = SystemTime::UNIX_EPOCH + Duration::from_secs(1_000_000);
         let v = "0.22.0";
         write_versioned_binary(v, base);
@@ -783,7 +783,7 @@ fn repair_is_noop_when_shared_server_already_matches_stable() {
 #[test]
 fn repair_preserves_fresher_selfdev_pin() {
     use std::time::{Duration, SystemTime};
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let base = SystemTime::UNIX_EPOCH + Duration::from_secs(1_000_000);
         let stable_old = "0.14.3";
         let selfdev_new = "56f43c3d-dirty-deadbeef";
@@ -809,7 +809,7 @@ fn repair_preserves_fresher_selfdev_pin() {
 #[test]
 fn repair_preserves_older_selfdev_pin() {
     use std::time::{Duration, SystemTime};
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let base = SystemTime::UNIX_EPOCH + Duration::from_secs(1_000_000);
         let selfdev_old = "56f43c3d-dirty-deadbeef";
         let stable_new = "0.22.0";
@@ -833,7 +833,7 @@ fn repair_preserves_older_selfdev_pin() {
 #[test]
 fn repair_never_downgrades_when_stable_is_older() {
     use std::time::{Duration, SystemTime};
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let base = SystemTime::UNIX_EPOCH + Duration::from_secs(1_000_000);
         let shared_new = "0.22.0";
         let stable_old = "0.14.3";

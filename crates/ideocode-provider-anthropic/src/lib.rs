@@ -1,5 +1,5 @@
-﻿use IDEOCODE_message_types::{ContentBlock, Message, Role, ToolDefinition, sanitize_tool_id};
-use IDEOCODE_provider_core::anthropic_map_tool_name_for_oauth as map_tool_name_for_oauth;
+﻿use ideocode_message_types::{ContentBlock, Message, Role, ToolDefinition, sanitize_tool_id};
+use ideocode_provider_core::anthropic_map_tool_name_for_oauth as map_tool_name_for_oauth;
 use serde::Serialize;
 use serde_json::{Value, json};
 
@@ -33,7 +33,7 @@ pub fn format_messages(messages: &[Message], is_oauth: bool) -> Vec<ApiMessage> 
     // Find dangling tool_uses (no matching tool_result)
     let dangling: HashSet<_> = tool_use_ids.difference(&tool_result_ids).cloned().collect();
     if !dangling.is_empty() {
-        IDEOCODE_logging::info(&format!(
+        ideocode_logging::info(&format!(
             "[anthropic] Repairing {} dangling tool_use(s) by injecting synthetic tool_results",
             dangling.len()
         ));
@@ -98,7 +98,7 @@ pub fn format_messages(messages: &[Message], is_oauth: bool) -> Vec<ApiMessage> 
     }
 
     if merged.len() != pre_merge_count {
-        IDEOCODE_logging::info(&format!(
+        ideocode_logging::info(&format!(
             "[anthropic] Merged {} consecutive same-role messages",
             pre_merge_count - merged.len()
         ));
@@ -123,7 +123,7 @@ pub fn format_messages(messages: &[Message], is_oauth: bool) -> Vec<ApiMessage> 
                 // Check next message
                 if let Some(next) = merged.get(i + 1) {
                     if next.role != "user" {
-                        IDEOCODE_logging::warn(&format!(
+                        ideocode_logging::warn(&format!(
                             "[anthropic] Message {} has tool_use but next message is {} (should be user)",
                             i, next.role
                         ));
@@ -142,7 +142,7 @@ pub fn format_messages(messages: &[Message], is_oauth: bool) -> Vec<ApiMessage> 
 
                         for tu_id in &tool_uses {
                             if !tool_results.contains(*tu_id) {
-                                IDEOCODE_logging::warn(&format!(
+                                ideocode_logging::warn(&format!(
                                     "[anthropic] Message {} has tool_use {} but no matching tool_result in message {}",
                                     i,
                                     tu_id,
@@ -152,7 +152,7 @@ pub fn format_messages(messages: &[Message], is_oauth: bool) -> Vec<ApiMessage> 
                         }
                     }
                 } else {
-                    IDEOCODE_logging::warn(&format!(
+                    ideocode_logging::warn(&format!(
                         "[anthropic] Message {} has tool_use but no next message",
                         i
                     ));
@@ -682,14 +682,14 @@ pub fn format_messages_with_identity(
 ///
 /// Budget: system (1) + tools (1) + messages (up to 2) = 4 total, within Anthropic's limit.
 pub fn add_message_cache_breakpoint(messages: &mut [ApiMessage], cache_ttl_1h: bool) {
-    IDEOCODE_logging::info(&format!(
+    ideocode_logging::info(&format!(
         "Conversation caching: {} messages to process",
         messages.len()
     ));
 
     if messages.len() < 3 {
         // Need at least: user + assistant + user to be worth caching
-        IDEOCODE_logging::info("Conversation caching: too few messages, skipping");
+        ideocode_logging::info("Conversation caching: too few messages, skipping");
         return;
     }
 
@@ -705,7 +705,7 @@ pub fn add_message_cache_breakpoint(messages: &mut [ApiMessage], cache_ttl_1h: b
     }
 
     if assistant_indices.is_empty() {
-        IDEOCODE_logging::info("Conversation caching: no assistant message found");
+        ideocode_logging::info("Conversation caching: no assistant message found");
         return;
     }
 
@@ -732,7 +732,7 @@ pub fn add_message_cache_breakpoint(messages: &mut [ApiMessage], cache_ttl_1h: b
             }
         }
         if added {
-            IDEOCODE_logging::info(&format!(
+            ideocode_logging::info(&format!(
                 "Conversation caching: breakpoint {}/{} at message {} [{}]",
                 slot + 1,
                 total,
@@ -740,7 +740,7 @@ pub fn add_message_cache_breakpoint(messages: &mut [ApiMessage], cache_ttl_1h: b
                 label
             ));
         } else {
-            IDEOCODE_logging::info(&format!(
+            ideocode_logging::info(&format!(
                 "Conversation caching: no cacheable block in assistant message {} [{}]",
                 idx, label
             ));
@@ -831,7 +831,7 @@ mod cache_prefix_invariant_tests {
     //! These tests pin that invariant so a refactor cannot silently break the cache.
 
     use super::*;
-    use IDEOCODE_message_types::{ContentBlock, Message, Role};
+    use ideocode_message_types::{ContentBlock, Message, Role};
 
     fn text_msg(role: Role, text: &str) -> Message {
         Message {

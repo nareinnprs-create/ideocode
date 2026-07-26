@@ -171,7 +171,7 @@ fn save(mission: &Mission) -> Result<()> {
 }
 
 fn mission_path(session_id: &str) -> Result<PathBuf> {
-    Ok(crate::storage::IDEOCODE_dir()?
+    Ok(crate::storage::ideocode_dir()?
         .join("missions")
         .join(format!("{}.json", sanitize_session_id(session_id))))
 }

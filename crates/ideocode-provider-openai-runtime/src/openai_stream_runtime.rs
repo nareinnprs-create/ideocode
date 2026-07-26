@@ -80,19 +80,19 @@ pub(super) async fn stream_response(
     initial_status_detail: String,
     tx: mpsc::Sender<Result<StreamEvent>>,
 ) -> Result<(), OpenAIStreamFailure> {
-    use IDEOCODE_message_types::ConnectionPhase;
+    use ideocode_message_types::ConnectionPhase;
     let request_model = openai_request_model(&request);
     let stream_started_at = Instant::now();
     log_openai_stream_lifecycle(
-        IDEOCODE_base::logging::LogLevel::Info,
+        ideocode_base::logging::LogLevel::Info,
         "https_request_start",
         vec![
             ("model", request_model.clone()),
             ("transport", "https".to_string()),
         ],
     );
-    let usage_snapshot = IDEOCODE_base::usage::get_openai_usage_sync();
-    IDEOCODE_base::logging::info(&format!(
+    let usage_snapshot = ideocode_base::usage::get_openai_usage_sync();
+    ideocode_base::logging::info(&format!(
         "OpenAI limit diag: starting fresh HTTPS request usage=({})",
         usage_snapshot.diagnostic_fields()
     ));
@@ -128,13 +128,13 @@ pub(super) async fn stream_response(
         .map_err(OpenAIStreamFailure::Other)?;
 
     let connect_ms = connect_start.elapsed().as_millis();
-    IDEOCODE_base::logging::info(&format!(
+    ideocode_base::logging::info(&format!(
         "HTTP connection established in {}ms (status={})",
         connect_ms,
         response.status()
     ));
     log_openai_stream_lifecycle(
-        IDEOCODE_base::logging::LogLevel::Info,
+        ideocode_base::logging::LogLevel::Info,
         "https_connected",
         vec![
             ("model", request_model.clone()),
@@ -143,7 +143,7 @@ pub(super) async fn stream_response(
         ],
     );
     if response.status().is_success() && usage_snapshot.exhausted() {
-        IDEOCODE_base::logging::warn(&format!(
+        ideocode_base::logging::warn(&format!(
             "OpenAI limit diag: fresh HTTPS request accepted while local usage indicates exhausted usage=({})",
             usage_snapshot.diagnostic_fields()
         ));
@@ -151,11 +151,11 @@ pub(super) async fn stream_response(
 
     if !response.status().is_success() {
         let status = response.status();
-        let retry_after = IDEOCODE_provider_core::retry_after::retry_after(response.headers());
+        let retry_after = ideocode_provider_core::retry_after::retry_after(response.headers());
 
-        let body = IDEOCODE_base::util::http_error_body(response, "HTTP error").await;
+        let body = ideocode_base::util::http_error_body(response, "HTTP error").await;
         log_openai_stream_lifecycle(
-            IDEOCODE_base::logging::LogLevel::Warn,
+            ideocode_base::logging::LogLevel::Warn,
             "https_http_error",
             vec![
                 ("model", request_model.clone()),
@@ -177,8 +177,8 @@ pub(super) async fn stream_response(
         if let Some(reason) = classify_unavailable_model_error(status, &body)
             && let Some(model_name) = request.get("model").and_then(|m| m.as_str())
         {
-            IDEOCODE_base::provider::record_model_unavailable_for_account(model_name, &reason);
-            IDEOCODE_base::logging::warn(&format!(
+            ideocode_base::provider::record_model_unavailable_for_account(model_name, &reason);
+            ideocode_base::logging::warn(&format!(
                 "Recorded OpenAI model '{}' as unavailable: {}",
                 model_name, reason
             ));
@@ -203,7 +203,7 @@ pub(super) async fn stream_response(
 
             match force_refresh_openai_token(&credentials, &refresh_token).await {
                 Ok(_) => {
-                    IDEOCODE_base::logging::info(
+                    ideocode_base::logging::info(
                         "OpenAI access token rejected; refreshed credentials and will retry",
                     );
                     // Surface a retryable error so the retry loop reconnects
@@ -228,7 +228,7 @@ pub(super) async fn stream_response(
             format!("OpenAI API error {}: {}", status, body)
         };
         return Err(OpenAIStreamFailure::Other(
-            IDEOCODE_provider_core::retry_after::error_with_retry_after(msg, retry_after),
+            ideocode_provider_core::retry_after::error_with_retry_after(msg, retry_after),
         ));
     }
 
@@ -259,7 +259,7 @@ pub(super) async fn stream_response(
             Ok(None) => break, // stream ended normally
             Err(_) => {
                 log_openai_stream_lifecycle(
-                    IDEOCODE_base::logging::LogLevel::Warn,
+                    ideocode_base::logging::LogLevel::Warn,
                     "https_stream_idle_timeout",
                     vec![
                         ("model", request_model.clone()),
@@ -289,7 +289,7 @@ pub(super) async fn stream_response(
                     }
                     if is_retryable_error(&message.to_lowercase()) {
                         log_openai_stream_lifecycle(
-                            IDEOCODE_base::logging::LogLevel::Warn,
+                            ideocode_base::logging::LogLevel::Warn,
                             "https_stream_retryable_error",
                             vec![
                                 ("model", request_model.clone()),
@@ -309,7 +309,7 @@ pub(super) async fn stream_response(
                 if tx.send(Ok(event)).await.is_err() {
                     // Receiver dropped, stop streaming
                     log_openai_stream_lifecycle(
-                        IDEOCODE_base::logging::LogLevel::Warn,
+                        ideocode_base::logging::LogLevel::Warn,
                         "consumer_dropped",
                         vec![
                             ("model", request_model.clone()),
@@ -325,7 +325,7 @@ pub(super) async fn stream_response(
             }
             Err(e) => {
                 log_openai_stream_lifecycle(
-                    IDEOCODE_base::logging::LogLevel::Warn,
+                    ideocode_base::logging::LogLevel::Warn,
                     "https_stream_error",
                     vec![
                         ("model", request_model.clone()),
@@ -346,7 +346,7 @@ pub(super) async fn stream_response(
 
     if !saw_message_end {
         log_openai_stream_lifecycle(
-            IDEOCODE_base::logging::LogLevel::Warn,
+            ideocode_base::logging::LogLevel::Warn,
             "https_eof_before_message_end",
             vec![
                 ("model", request_model.clone()),
@@ -362,7 +362,7 @@ pub(super) async fn stream_response(
     }
 
     log_openai_stream_lifecycle(
-        IDEOCODE_base::logging::LogLevel::Info,
+        ideocode_base::logging::LogLevel::Info,
         "https_stream_complete",
         vec![
             ("model", request_model),
@@ -404,7 +404,7 @@ pub(super) async fn try_persistent_ws_continuation(
         Some(s) => s,
         None => {
             log_openai_stream_lifecycle(
-                IDEOCODE_base::logging::LogLevel::Info,
+                ideocode_base::logging::LogLevel::Info,
                 "persistent_reuse_unavailable_detail",
                 vec![
                     ("model", request_model.clone()),
@@ -417,10 +417,10 @@ pub(super) async fn try_persistent_ws_continuation(
 
     // Check connection age - reconnect before the 60-min server limit
     if state.connected_at.elapsed() >= Duration::from_secs(WEBSOCKET_PERSISTENT_MAX_AGE_SECS) {
-        IDEOCODE_base::logging::info("Persistent WS connection too old; forcing reconnect");
+        ideocode_base::logging::info("Persistent WS connection too old; forcing reconnect");
         *guard = None;
         log_openai_stream_lifecycle(
-            IDEOCODE_base::logging::LogLevel::Info,
+            ideocode_base::logging::LogLevel::Info,
             "persistent_state_reset",
             vec![
                 ("model", request_model.clone()),
@@ -444,13 +444,13 @@ pub(super) async fn try_persistent_ws_continuation(
             reset_reason,
             detail,
         }) => {
-            IDEOCODE_base::logging::info(&format!(
+            ideocode_base::logging::info(&format!(
                 "Persistent WS healthcheck requested reconnect before reuse: {}",
                 detail
             ));
             *guard = None;
             log_openai_stream_lifecycle(
-                IDEOCODE_base::logging::LogLevel::Info,
+                ideocode_base::logging::LogLevel::Info,
                 "persistent_state_reset",
                 vec![
                     ("model", request_model.clone()),
@@ -462,13 +462,13 @@ pub(super) async fn try_persistent_ws_continuation(
             return PersistentWsResult::NotAvailable;
         }
         Err(err) => {
-            IDEOCODE_base::logging::warn(&format!(
+            ideocode_base::logging::warn(&format!(
                 "Persistent WS healthcheck failed: {}; forcing reconnect",
                 err
             ));
             *guard = None;
             log_openai_stream_lifecycle(
-                IDEOCODE_base::logging::LogLevel::Warn,
+                ideocode_base::logging::LogLevel::Warn,
                 "persistent_state_reset",
                 vec![
                     ("model", request_model.clone()),
@@ -486,12 +486,12 @@ pub(super) async fn try_persistent_ws_continuation(
     // was reset (e.g., after compaction) - we need a fresh connection.
     if input_item_count <= state.last_input_item_count {
         let last_input_item_count = state.last_input_item_count;
-        IDEOCODE_base::logging::info(&format!(
+        ideocode_base::logging::info(&format!(
             "Input items didn't grow ({} <= {}); conversation may have been compacted, reconnecting",
             input_item_count, last_input_item_count
         ));
         log_openai_stream_lifecycle(
-            IDEOCODE_base::logging::LogLevel::Info,
+            ideocode_base::logging::LogLevel::Info,
             "persistent_state_reset",
             vec![
                 ("model", request_model.clone()),
@@ -516,16 +516,16 @@ pub(super) async fn try_persistent_ws_continuation(
     let (incremental_items, skipped_reasoning_items) =
         persistent_ws_incremental_items(input, state.last_input_item_count);
     if skipped_reasoning_items > 0 {
-        IDEOCODE_base::logging::info(&format!(
+        ideocode_base::logging::info(&format!(
             "Skipped {} reasoning item(s) in persistent WS continuation delta to avoid duplicate rs_* replay",
             skipped_reasoning_items
         ));
     }
     if incremental_items.is_empty() {
-        IDEOCODE_base::logging::info("No incremental items to send; need fresh request");
+        ideocode_base::logging::info("No incremental items to send; need fresh request");
         *guard = None;
         log_openai_stream_lifecycle(
-            IDEOCODE_base::logging::LogLevel::Info,
+            ideocode_base::logging::LogLevel::Info,
             "persistent_state_reset",
             vec![
                 ("model", request_model.clone()),
@@ -539,15 +539,15 @@ pub(super) async fn try_persistent_ws_continuation(
     let previous_response_id = state.last_response_id.clone();
     let request_prompt_cache_key_hash = request
         .get("prompt_cache_key")
-        .map(IDEOCODE_provider_core::fingerprint::stable_hash_json);
-    let usage_snapshot = IDEOCODE_base::usage::get_openai_usage_sync();
-    IDEOCODE_base::logging::info(&format!(
+        .map(ideocode_provider_core::fingerprint::stable_hash_json);
+    let usage_snapshot = ideocode_base::usage::get_openai_usage_sync();
+    ideocode_base::logging::info(&format!(
         "OpenAI limit diag: attempting persistent WS reuse previous_response_id_present={} usage=({}) state=({})",
         !previous_response_id.is_empty(),
         usage_snapshot.diagnostic_fields(),
         state.diag_snapshot().log_fields()
     ));
-    IDEOCODE_base::logging::info(&format!(
+    ideocode_base::logging::info(&format!(
         "Persistent WS continuation: previous_response_id={} {} tool_callback={} (was {} now {})",
         previous_response_id,
         incremental_stats.log_fields(),
@@ -556,7 +556,7 @@ pub(super) async fn try_persistent_ws_continuation(
         input_item_count,
     ));
     log_openai_stream_lifecycle(
-        IDEOCODE_base::logging::LogLevel::Info,
+        ideocode_base::logging::LogLevel::Info,
         "persistent_reuse_start",
         vec![
             ("model", request_model.clone()),
@@ -660,14 +660,14 @@ pub(super) async fn try_persistent_ws_continuation(
         .unwrap_or(0);
     let prompt_cache_key_hash = continuation_request
         .get("prompt_cache_key")
-        .map(IDEOCODE_provider_core::fingerprint::stable_hash_json);
+        .map(ideocode_provider_core::fingerprint::stable_hash_json);
     let model_for_fingerprint = continuation_request
         .get("model")
         .and_then(|value| value.as_str())
         .unwrap_or("unknown");
     let continuation_payload = serde_json::json!({
         "type": continuation_request.get("type"),
-        "previous_response_id_hash": IDEOCODE_provider_core::fingerprint::stable_hash_str(&previous_response_id),
+        "previous_response_id_hash": ideocode_provider_core::fingerprint::stable_hash_str(&previous_response_id),
         "model": continuation_request.get("model"),
         "instructions": continuation_request.get("instructions"),
         "input": &incremental_items,
@@ -681,7 +681,7 @@ pub(super) async fn try_persistent_ws_continuation(
         "prompt_cache_key": continuation_request.get("prompt_cache_key"),
         "prompt_cache_retention": continuation_request.get("prompt_cache_retention"),
     });
-    IDEOCODE_provider_core::fingerprint::log_provider_canonical_input(
+    ideocode_provider_core::fingerprint::log_provider_canonical_input(
         "openai",
         model_for_fingerprint,
         "openai_responses_ws_delta",
@@ -748,13 +748,13 @@ pub(super) async fn try_persistent_ws_continuation(
 
     // Send the continuation request on the existing WebSocket
     let send_started_at = Instant::now();
-    emit_connection_phase(tx, IDEOCODE_message_types::ConnectionPhase::SendingRequest).await;
+    emit_connection_phase(tx, ideocode_message_types::ConnectionPhase::SendingRequest).await;
     if let Err(e) = state.ws_stream.send(WsMessage::Text(request_text)).await {
         return PersistentWsResult::Failed(format!("send error: {}", e));
     }
-    emit_connection_phase(tx, IDEOCODE_message_types::ConnectionPhase::WaitingForResponse).await;
+    emit_connection_phase(tx, ideocode_message_types::ConnectionPhase::WaitingForResponse).await;
     state.last_activity_at = Instant::now();
-    IDEOCODE_base::logging::info(&format!(
+    ideocode_base::logging::info(&format!(
         "Persistent WS continuation request sent in {}ms ({})",
         send_started_at.elapsed().as_millis(),
         incremental_stats.log_fields(),
@@ -825,9 +825,9 @@ pub(super) async fn try_persistent_ws_continuation(
             Ok(WsMessage::Text(text)) => {
                 let text = text.to_string();
                 if !logged_first_server_event {
-                    emit_connection_phase(tx, IDEOCODE_message_types::ConnectionPhase::Streaming)
+                    emit_connection_phase(tx, ideocode_message_types::ConnectionPhase::Streaming)
                         .await;
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "Persistent WS first server event after {}ms ({})",
                         stream_started.elapsed().as_millis(),
                         incremental_stats.log_fields(),
@@ -854,15 +854,15 @@ pub(super) async fn try_persistent_ws_continuation(
                         .and_then(|id| id.as_str())
                 {
                     new_response_id = Some(id.to_string());
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "Persistent WS got new response_id after {}ms: {} ({})",
                         stream_started.elapsed().as_millis(),
                         id,
                         incremental_stats.log_fields(),
                     ));
-                    let usage_snapshot = IDEOCODE_base::usage::get_openai_usage_sync();
+                    let usage_snapshot = ideocode_base::usage::get_openai_usage_sync();
                     if usage_snapshot.exhausted() {
-                        IDEOCODE_base::logging::warn(&format!(
+                        ideocode_base::logging::warn(&format!(
                             "OpenAI limit diag: persistent WS reuse accepted request while local usage indicates exhausted usage=({}) state=({})",
                             usage_snapshot.diagnostic_fields(),
                             state.diag_snapshot().log_fields()
@@ -941,11 +941,11 @@ pub(super) async fn try_persistent_ws_continuation(
     // the server, and the next continuation would fail with "No tool output
     // found for function call ...". Only completed responses are reusable.
     if !saw_response_completed {
-        IDEOCODE_base::logging::info(
+        ideocode_base::logging::info(
             "Persistent WS consumer dropped before response.completed; clearing response chain",
         );
         log_openai_stream_lifecycle(
-            IDEOCODE_base::logging::LogLevel::Info,
+            ideocode_base::logging::LogLevel::Info,
             "persistent_state_reset",
             vec![
                 ("model", request_model),
@@ -967,14 +967,14 @@ pub(super) async fn try_persistent_ws_continuation(
         state.message_count += 1;
         state.last_activity_at = Instant::now();
         state.last_response_completed_at = Instant::now();
-        IDEOCODE_base::logging::info(&format!(
+        ideocode_base::logging::info(&format!(
             "Persistent WS continuation success after {}ms (chain length: {}, {})",
             stream_started.elapsed().as_millis(),
             state.message_count,
             incremental_stats.log_fields(),
         ));
         log_openai_stream_lifecycle(
-            IDEOCODE_base::logging::LogLevel::Info,
+            ideocode_base::logging::LogLevel::Info,
             "persistent_reuse_stream_complete",
             vec![
                 ("model", request_model),
@@ -989,10 +989,10 @@ pub(super) async fn try_persistent_ws_continuation(
         PersistentWsResult::Success
     } else {
         // Got response but no response_id - can't chain further
-        IDEOCODE_base::logging::warn("Persistent WS: no response_id in response; breaking chain");
+        ideocode_base::logging::warn("Persistent WS: no response_id in response; breaking chain");
         *guard = None;
         log_openai_stream_lifecycle(
-            IDEOCODE_base::logging::LogLevel::Warn,
+            ideocode_base::logging::LogLevel::Warn,
             "persistent_state_reset",
             vec![
                 ("model", request_model),
@@ -1016,7 +1016,7 @@ pub(super) async fn stream_response_websocket_persistent(
     persistent_ws: Arc<Mutex<Option<PersistentWsState>>>,
     input_item_count: usize,
 ) -> Result<(), OpenAIStreamFailure> {
-    use IDEOCODE_message_types::ConnectionPhase;
+    use ideocode_message_types::ConnectionPhase;
     let request_model = request
         .get("model")
         .and_then(|m| m.as_str())
@@ -1026,7 +1026,7 @@ pub(super) async fn stream_response_websocket_persistent(
         .unwrap_or_else(|| "unknown".to_string());
     let stream_started_at = Instant::now();
     log_openai_stream_lifecycle(
-        IDEOCODE_base::logging::LogLevel::Info,
+        ideocode_base::logging::LogLevel::Info,
         "fresh_ws_request_start",
         vec![
             ("model", request_model_label.clone()),
@@ -1036,8 +1036,8 @@ pub(super) async fn stream_response_websocket_persistent(
     );
 
     let access_token = openai_access_token(&credentials).await?;
-    let usage_snapshot = IDEOCODE_base::usage::get_openai_usage_sync();
-    IDEOCODE_base::logging::info(&format!(
+    let usage_snapshot = ideocode_base::usage::get_openai_usage_sync();
+    ideocode_base::logging::info(&format!(
         "OpenAI limit diag: opening fresh persistent WS request usage=({})",
         usage_snapshot.diagnostic_fields()
     ));
@@ -1099,12 +1099,12 @@ pub(super) async fn stream_response_websocket_persistent(
     let (mut ws_stream, _response) = match connect_result {
         Ok((stream, response)) => {
             let connect_ms = connect_start.elapsed().as_millis();
-            IDEOCODE_base::logging::info(&format!(
+            ideocode_base::logging::info(&format!(
                 "WebSocket connection established in {}ms (persistent mode)",
                 connect_ms
             ));
             log_openai_stream_lifecycle(
-                IDEOCODE_base::logging::LogLevel::Info,
+                ideocode_base::logging::LogLevel::Info,
                 "fresh_ws_connected",
                 vec![
                     ("model", request_model_label.clone()),
@@ -1171,7 +1171,7 @@ pub(super) async fn stream_response_websocket_persistent(
         .await
         .map_err(|err| OpenAIStreamFailure::Other(anyhow::anyhow!(err)))?;
     emit_connection_phase(&tx, ConnectionPhase::WaitingForResponse).await;
-    IDEOCODE_base::logging::info(&format!(
+    ideocode_base::logging::info(&format!(
         "Fresh WS request sent in {}ms ({})",
         request_send_started_at.elapsed().as_millis(),
         request_input_stats.log_fields(),
@@ -1251,7 +1251,7 @@ pub(super) async fn stream_response_websocket_persistent(
                     let text = text.to_string();
                     if !logged_first_server_event {
                         emit_connection_phase(&tx, ConnectionPhase::Streaming).await;
-                        IDEOCODE_base::logging::info(&format!(
+                        ideocode_base::logging::info(&format!(
                             "Fresh WS first server event after {}ms ({})",
                             ws_started_at.elapsed().as_millis(),
                             request_input_stats.log_fields(),
@@ -1275,14 +1275,14 @@ pub(super) async fn stream_response_websocket_persistent(
                             .and_then(|id| id.as_str())
                     {
                         response_id = Some(id.to_string());
-                        IDEOCODE_base::logging::info(&format!(
+                        ideocode_base::logging::info(&format!(
                             "Fresh WS got response_id after {}ms: {} (will save for continuation; {})",
                             ws_started_at.elapsed().as_millis(),
                             id,
                             request_input_stats.log_fields(),
                         ));
                         if usage_snapshot.exhausted() {
-                            IDEOCODE_base::logging::warn(&format!(
+                            ideocode_base::logging::warn(&format!(
                                 "OpenAI limit diag: fresh WS request accepted while local usage indicates exhausted usage=({})",
                                 usage_snapshot.diagnostic_fields()
                             ));
@@ -1322,7 +1322,7 @@ pub(super) async fn stream_response_websocket_persistent(
                         }
                         if tx.send(Ok(event)).await.is_err() {
                             log_openai_stream_lifecycle(
-                                IDEOCODE_base::logging::LogLevel::Warn,
+                                ideocode_base::logging::LogLevel::Warn,
                                 "consumer_dropped",
                                 vec![
                                     ("model", request_model_label.clone()),
@@ -1358,7 +1358,7 @@ pub(super) async fn stream_response_websocket_persistent(
                         }
                         if tx.send(Ok(event)).await.is_err() {
                             log_openai_stream_lifecycle(
-                                IDEOCODE_base::logging::LogLevel::Warn,
+                                ideocode_base::logging::LogLevel::Warn,
                                 "consumer_dropped",
                                 vec![
                                     ("model", request_model_label.clone()),
@@ -1411,14 +1411,14 @@ pub(super) async fn stream_response_websocket_persistent(
     // Save the WebSocket connection and response_id for reuse on next turn
     if let Some(resp_id) = response_id {
         let mut guard = persistent_ws.lock().await;
-        IDEOCODE_base::logging::info(&format!(
+        ideocode_base::logging::info(&format!(
             "Saving persistent WS connection after {}ms (response_id={}, {})",
             ws_started_at.elapsed().as_millis(),
             resp_id,
             request_input_stats.log_fields(),
         ));
         log_openai_stream_lifecycle(
-            IDEOCODE_base::logging::LogLevel::Info,
+            ideocode_base::logging::LogLevel::Info,
             "fresh_ws_stream_complete_saved",
             vec![
                 ("model", request_model_label.clone()),
@@ -1446,11 +1446,11 @@ pub(super) async fn stream_response_websocket_persistent(
             request_model_label.clone(),
         );
     } else {
-        IDEOCODE_base::logging::info(
+        ideocode_base::logging::info(
             "No response_id captured from WS stream; connection not saved for reuse",
         );
         log_openai_stream_lifecycle(
-            IDEOCODE_base::logging::LogLevel::Warn,
+            ideocode_base::logging::LogLevel::Warn,
             "fresh_ws_stream_complete_not_saved",
             vec![
                 ("model", request_model_label),
@@ -1485,8 +1485,8 @@ fn maybe_record_runtime_model_unavailable_from_stream_error(model: &str, message
         .or_else(|| classify_unavailable_model_error(StatusCode::FORBIDDEN, message));
 
     if let Some(reason) = reason {
-        IDEOCODE_base::provider::record_model_unavailable_for_account(model, &reason);
-        IDEOCODE_base::logging::warn(&format!(
+        ideocode_base::provider::record_model_unavailable_for_account(model, &reason);
+        ideocode_base::logging::warn(&format!(
             "Recorded OpenAI model '{}' as unavailable from stream error: {}",
             model, reason
         ));
@@ -1541,7 +1541,7 @@ pub(super) fn is_retryable_error(error_str: &str) -> bool {
     // TLS BadRecordMac / fatal-alert, TLS handshake EOF, DNS/route failures,
     // and HTTP/2 stream/protocol faults). Keeping the OpenAI path delegated
     // here ensures retry behavior is unified across providers (issue #338).
-    IDEOCODE_provider_core::is_transient_transport_error(error_str)
+    ideocode_provider_core::is_transient_transport_error(error_str)
         // OpenAI-specific transport wrapper.
         || error_str.contains("failed to send request to openai api")
         // Stream/decode errors specific to the OpenAI streaming runtime.

@@ -7,7 +7,7 @@ use super::{SessionAgents, SwarmMember};
 use crate::config::SafetyConfig;
 use crate::session::Session;
 use anyhow::{Context, Result};
-use IDEOCODE_agent_runtime::{InterruptSignal, SoftInterruptSource};
+use ideocode_agent_runtime::{InterruptSignal, SoftInterruptSource};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;

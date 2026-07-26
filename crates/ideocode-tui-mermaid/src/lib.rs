@@ -12,7 +12,7 @@
 //! - Skip redundant renders when nothing changed
 //! - Clear only on render failure, not before every render
 
-use IDEOCODE_tui_workspace::color_support::rgb;
+use ideocode_tui_workspace::color_support::rgb;
 #[path = "mermaid_active.rs"]
 mod active;
 #[path = "mermaid_debug.rs"]

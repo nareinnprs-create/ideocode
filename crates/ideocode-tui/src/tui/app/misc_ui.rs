@@ -160,24 +160,24 @@ impl App {
         let runtime_provider = active_runtime_provider_key();
         let auth_status = crate::auth::AuthStatus::check_fast();
 
-        let pinned_anthropic = IDEOCODE_provider_core::pinned_mode_for(
-            IDEOCODE_provider_core::DualAuthProvider::Anthropic,
+        let pinned_anthropic = ideocode_provider_core::pinned_mode_for(
+            ideocode_provider_core::DualAuthProvider::Anthropic,
             runtime_provider.as_deref(),
         );
-        let pinned_openai = IDEOCODE_provider_core::pinned_mode_for(
-            IDEOCODE_provider_core::DualAuthProvider::OpenAI,
+        let pinned_openai = ideocode_provider_core::pinned_mode_for(
+            ideocode_provider_core::DualAuthProvider::OpenAI,
             runtime_provider.as_deref(),
         );
         let is_explicit_anthropic_api = matches!(
             pinned_anthropic,
-            Some(IDEOCODE_provider_core::AuthMode::ApiKey)
+            Some(ideocode_provider_core::AuthMode::ApiKey)
         );
         let is_explicit_anthropic_oauth =
-            matches!(pinned_anthropic, Some(IDEOCODE_provider_core::AuthMode::Oauth));
+            matches!(pinned_anthropic, Some(ideocode_provider_core::AuthMode::Oauth));
         let is_explicit_openai_api =
-            matches!(pinned_openai, Some(IDEOCODE_provider_core::AuthMode::ApiKey));
+            matches!(pinned_openai, Some(ideocode_provider_core::AuthMode::ApiKey));
         let is_explicit_openai_oauth =
-            matches!(pinned_openai, Some(IDEOCODE_provider_core::AuthMode::Oauth));
+            matches!(pinned_openai, Some(ideocode_provider_core::AuthMode::Oauth));
 
         let is_anthropic = provider_name.contains("anthropic") || provider_name.contains("claude");
         let is_openai = provider_name.contains("openai");
@@ -348,7 +348,7 @@ impl App {
         // when it is an API key (OAuth subscriptions are not metered per token).
         let api_key_billed = matches!(
             self.remote_resolved_credential,
-            Some(IDEOCODE_provider_core::ResolvedCredential::ApiKey)
+            Some(ideocode_provider_core::ResolvedCredential::ApiKey)
         );
 
         // For dual-auth providers (Anthropic/OpenAI) we require an API-key

@@ -17,7 +17,7 @@
 pub mod translate;
 
 use anyhow::{Context, Result};
-use IDEOCODE_harness_api::{API_VERSION_MAJOR, ApiEvent, ErrorCode, ServerFrame};
+use ideocode_harness_api::{API_VERSION_MAJOR, ApiEvent, ErrorCode, ServerFrame};
 use serde_json::Value;
 use std::path::PathBuf;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
@@ -27,17 +27,17 @@ pub fn api_socket_path() -> PathBuf {
     if let Ok(custom) = std::env::var("IDEOCODE_API_SOCKET") {
         return PathBuf::from(custom);
     }
-    IDEOCODE_home().join("IDEOCODE-api.sock")
+    ideocode_home().join("IDEOCODE-api.sock")
 }
 
 pub fn legacy_socket_path() -> PathBuf {
     if let Ok(custom) = std::env::var("IDEOCODE_SOCKET") {
         return PathBuf::from(custom);
     }
-    IDEOCODE_home().join("IDEOCODE.sock")
+    ideocode_home().join("IDEOCODE.sock")
 }
 
-fn IDEOCODE_home() -> PathBuf {
+fn ideocode_home() -> PathBuf {
     if let Ok(dir) = std::env::var("IDEOCODE_RUNTIME_DIR") {
         return PathBuf::from(dir);
     }

@@ -5,36 +5,36 @@
 /// Test safety system: action classification
 #[test]
 fn test_safety_classification() {
-    use IDEOCODE::safety::SafetySystem;
+    use ideocode::safety::SafetySystem;
 
     let safety = SafetySystem::new();
 
     // Tier 1: auto-allowed
-    assert!(safety.classify("read") == IDEOCODE::safety::ActionTier::AutoAllowed);
-    assert!(safety.classify("glob") == IDEOCODE::safety::ActionTier::AutoAllowed);
-    assert!(safety.classify("grep") == IDEOCODE::safety::ActionTier::AutoAllowed);
-    assert!(safety.classify("memory") == IDEOCODE::safety::ActionTier::AutoAllowed);
-    assert!(safety.classify("todoread") == IDEOCODE::safety::ActionTier::AutoAllowed);
-    assert!(safety.classify("todowrite") == IDEOCODE::safety::ActionTier::AutoAllowed);
+    assert!(safety.classify("read") == ideocode::safety::ActionTier::AutoAllowed);
+    assert!(safety.classify("glob") == ideocode::safety::ActionTier::AutoAllowed);
+    assert!(safety.classify("grep") == ideocode::safety::ActionTier::AutoAllowed);
+    assert!(safety.classify("memory") == ideocode::safety::ActionTier::AutoAllowed);
+    assert!(safety.classify("todoread") == ideocode::safety::ActionTier::AutoAllowed);
+    assert!(safety.classify("todowrite") == ideocode::safety::ActionTier::AutoAllowed);
 
     // Tier 2: requires permission
-    assert!(safety.classify("bash") == IDEOCODE::safety::ActionTier::RequiresPermission);
-    assert!(safety.classify("edit") == IDEOCODE::safety::ActionTier::RequiresPermission);
-    assert!(safety.classify("write") == IDEOCODE::safety::ActionTier::RequiresPermission);
+    assert!(safety.classify("bash") == ideocode::safety::ActionTier::RequiresPermission);
+    assert!(safety.classify("edit") == ideocode::safety::ActionTier::RequiresPermission);
+    assert!(safety.classify("write") == ideocode::safety::ActionTier::RequiresPermission);
     assert!(
-        safety.classify("create_pull_request") == IDEOCODE::safety::ActionTier::RequiresPermission
+        safety.classify("create_pull_request") == ideocode::safety::ActionTier::RequiresPermission
     );
-    assert!(safety.classify("send_email") == IDEOCODE::safety::ActionTier::RequiresPermission);
+    assert!(safety.classify("send_email") == ideocode::safety::ActionTier::RequiresPermission);
 
     // Case insensitive
-    assert!(safety.classify("READ") == IDEOCODE::safety::ActionTier::AutoAllowed);
-    assert!(safety.classify("Bash") == IDEOCODE::safety::ActionTier::RequiresPermission);
+    assert!(safety.classify("READ") == ideocode::safety::ActionTier::AutoAllowed);
+    assert!(safety.classify("Bash") == ideocode::safety::ActionTier::RequiresPermission);
 }
 
 /// Test safety system: permission request queue + decision flow
 #[test]
 fn test_safety_permission_flow() {
-    use IDEOCODE::safety::{PermissionRequest, PermissionResult, SafetySystem, Urgency};
+    use ideocode::safety::{PermissionRequest, PermissionResult, SafetySystem, Urgency};
 
     let safety = SafetySystem::new();
 
@@ -80,7 +80,7 @@ fn test_safety_permission_flow() {
 /// Test safety system: transcript saving
 #[test]
 fn test_safety_transcript() {
-    use IDEOCODE::safety::{AmbientTranscript, SafetySystem, TranscriptStatus};
+    use ideocode::safety::{AmbientTranscript, SafetySystem, TranscriptStatus};
 
     let safety = SafetySystem::new();
 
@@ -107,7 +107,7 @@ fn test_safety_transcript() {
 /// Test safety system: summary generation
 #[test]
 fn test_safety_summary_generation() {
-    use IDEOCODE::safety::{ActionLog, ActionTier, SafetySystem};
+    use ideocode::safety::{ActionLog, ActionTier, SafetySystem};
 
     let safety = SafetySystem::new();
 

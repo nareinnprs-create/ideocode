@@ -3,7 +3,7 @@
 //!
 //! The flow is:
 //!   1. enumerate IDEOCODE's configured bindings as `(field, label, KeyChord)`
-//!      from [`IDEOCODE_config_types::KeybindingsConfig`] ([`IDEOCODE_bindings`]),
+//!      from [`ideocode_config_types::KeybindingsConfig`] ([`ideocode_bindings`]),
 //!   2. index the discovered machine bindings from a [`KeymapSnapshot`],
 //!   3. report every overlap as a [`Conflict`] that names the exact config
 //!      field so a warning can point the user at the right line.
@@ -13,7 +13,7 @@
 
 use std::collections::HashMap;
 
-use IDEOCODE_config_types::KeybindingsConfig;
+use ideocode_config_types::KeybindingsConfig;
 
 use super::KeymapSnapshot;
 use super::chord::KeyChord;
@@ -90,7 +90,7 @@ fn describe_action(b: &DiscoveredBinding) -> String {
 /// disabled or fail to parse are skipped. Multi-binding fields (the workspace
 /// navigation keys accept a comma-separated list) expand into one entry per
 /// chord.
-pub fn IDEOCODE_bindings(cfg: &KeybindingsConfig) -> Vec<IDEOCODEBinding> {
+pub fn ideocode_bindings(cfg: &KeybindingsConfig) -> Vec<IDEOCODEBinding> {
     // (field, action, raw-value) for single-chord fields.
     let single: &[(&str, &str, &str)] = &[
         ("scroll_up", "Scroll up", cfg.scroll_up.as_str()),
@@ -291,7 +291,7 @@ pub fn detect_conflicts(cfg: &KeybindingsConfig, snapshot: &KeymapSnapshot) -> V
         std::collections::HashSet::new();
     let mut conflicts = Vec::new();
 
-    for IDEOCODE in IDEOCODE_bindings(cfg) {
+    for IDEOCODE in ideocode_bindings(cfg) {
         let Some(interceptors) = by_chord.get(&IDEOCODE.chord) else {
             continue;
         };
@@ -374,7 +374,7 @@ mod tests {
     #[test]
     fn enumerates_default_bindings() {
         let cfg = KeybindingsConfig::default();
-        let binds = IDEOCODE_bindings(&cfg);
+        let binds = ideocode_bindings(&cfg);
         // The defaults include model_switch_next = ctrl+tab.
         assert!(
             binds

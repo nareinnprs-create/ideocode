@@ -94,8 +94,8 @@ use crate::runtime_memory_log::{
 use crate::tool::selfdev::ReloadContext;
 use crate::transport::Listener;
 use anyhow::Result;
-use IDEOCODE_agent_runtime::{InterruptSignal, SoftInterruptSource};
-use IDEOCODE_swarm_core::{
+use ideocode_agent_runtime::{InterruptSignal, SoftInterruptSource};
+use ideocode_swarm_core::{
     append_swarm_completion_report_instructions, format_structured_completion_report,
     summarize_plan_items, truncate_detail,
 };
@@ -733,8 +733,8 @@ impl Server {
             id,
             name,
             icon,
-            git_hash: IDEOCODE_build_meta::git_hash().to_string(),
-            version: IDEOCODE_build_meta::version().to_string(),
+            git_hash: ideocode_build_meta::git_hash().to_string(),
+            version: ideocode_build_meta::version().to_string(),
         };
         crate::process_title::set_server_title(&identity.name);
 
@@ -1823,7 +1823,7 @@ impl Server {
         let registry_identity = self.identity.display_name();
         tokio::spawn(async move {
             let hash_path = format!("{}.hash", registry_info.socket.display());
-            let _ = std::fs::write(&hash_path, IDEOCODE_build_meta::git_hash());
+            let _ = std::fs::write(&hash_path, ideocode_build_meta::git_hash());
 
             let mut registry = crate::registry::ServerRegistry::load()
                 .await

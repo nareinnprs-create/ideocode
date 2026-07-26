@@ -1,4 +1,4 @@
-﻿use IDEOCODE_message_types::{
+﻿use ideocode_message_types::{
     ContentBlock, Message, Role, TOOL_OUTPUT_MISSING_TEXT, sanitize_tool_id,
 };
 use serde_json::Value;
@@ -440,7 +440,7 @@ pub fn build_chat_messages(
     }
 
     if delayed_results > 0 {
-        IDEOCODE_logging::info(&format!(
+        ideocode_logging::info(&format!(
             "[openrouter] Delayed {} tool output(s) to preserve call ordering",
             delayed_results
         ));
@@ -451,13 +451,13 @@ pub fn build_chat_messages(
     }
 
     if injected_missing > 0 {
-        IDEOCODE_logging::info(&format!(
+        ideocode_logging::info(&format!(
             "[openrouter] Injected {} synthetic tool output(s) to prevent API error",
             injected_missing
         ));
     }
     if skipped_results > 0 {
-        IDEOCODE_logging::info(&format!(
+        ideocode_logging::info(&format!(
             "[openrouter] Filtered {} orphaned tool result(s) to prevent API error",
             skipped_results
         ));
@@ -528,13 +528,13 @@ pub fn build_chat_messages(
     api_messages = normalized;
 
     if missing_reasoning > 0 {
-        IDEOCODE_logging::info(&format!(
+        ideocode_logging::info(&format!(
             "[openrouter] Filled reasoning_content on {} tool-call message(s)",
             missing_reasoning
         ));
     }
     if extra_outputs > 0 {
-        IDEOCODE_logging::info(&format!(
+        ideocode_logging::info(&format!(
             "[openrouter] Safety-injected {} missing tool output(s) at request build",
             extra_outputs
         ));
@@ -578,7 +578,7 @@ pub fn build_chat_messages(
                 "content": missing_output.clone()
             }));
         }
-        IDEOCODE_logging::info(&format!(
+        ideocode_logging::info(&format!(
             "[openrouter] Appended {} tool output(s) to satisfy call ordering",
             missing_after.len()
         ));
@@ -665,13 +665,13 @@ pub fn build_chat_messages(
     api_messages = reordered;
 
     if injected_ordered > 0 {
-        IDEOCODE_logging::info(&format!(
+        ideocode_logging::info(&format!(
             "[openrouter] Inserted {} tool output(s) to enforce call ordering",
             injected_ordered
         ));
     }
     if dropped_orphans > 0 {
-        IDEOCODE_logging::info(&format!(
+        ideocode_logging::info(&format!(
             "[openrouter] Dropped {} orphaned tool output(s) during re-ordering",
             dropped_orphans
         ));

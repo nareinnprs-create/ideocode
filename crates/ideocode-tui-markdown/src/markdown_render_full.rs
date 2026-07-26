@@ -19,7 +19,7 @@ pub fn thread_render_count() -> u64 {
 
 pub fn render_markdown_with_width(text: &str, max_width: Option<usize>) -> Vec<Line<'static>> {
     let render_start = Instant::now();
-    let text = IDEOCODE_render_core::normalize_latex_math(text);
+    let text = ideocode_render_core::normalize_latex_math(text);
     let text = escape_currency_dollars(&text);
     let text = preserve_line_oriented_softbreaks(&text);
     let text = text.as_str();
@@ -535,7 +535,7 @@ pub fn render_markdown_with_width(text: &str, max_width: Option<usize>) -> Vec<L
                     match latex_mode {
                         LatexRenderingMode::None => current_cell.push_str(&format!("${math}$")),
                         LatexRenderingMode::Unicode | LatexRenderingMode::Image => {
-                            current_cell.push_str(&IDEOCODE_render_core::render_inline_latex(&math));
+                            current_cell.push_str(&ideocode_render_core::render_inline_latex(&math));
                         }
                     }
                 } else {
@@ -586,7 +586,7 @@ pub fn render_markdown_with_width(text: &str, max_width: Option<usize>) -> Vec<L
                     match latex_mode {
                         LatexRenderingMode::None => current_cell.push_str(&format!("$${math}$$")),
                         LatexRenderingMode::Unicode | LatexRenderingMode::Image => {
-                            current_cell.push_str(&IDEOCODE_render_core::render_inline_latex(&math));
+                            current_cell.push_str(&ideocode_render_core::render_inline_latex(&math));
                         }
                     }
                 } else {

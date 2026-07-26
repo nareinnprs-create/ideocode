@@ -43,7 +43,7 @@ fn test_new_for_remote_restored_soft_interrupt_resend_triggers_dispatch_state() 
 
 #[test]
 fn test_new_for_remote_does_not_requeue_acked_pending_soft_interrupts() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         let session_id = "test-remote-acked";
 
@@ -104,7 +104,7 @@ fn test_new_for_remote_does_not_requeue_acked_pending_soft_interrupts() {
 
 #[test]
 fn test_initial_history_bootstrap_preserves_restored_interleave_state() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let session_id = "session_reload_restore_interleave";
         let mut session = crate::session::Session::create_with_id(
             session_id.to_string(),
@@ -182,7 +182,7 @@ fn test_initial_history_bootstrap_preserves_restored_interleave_state() {
 
 #[test]
 fn test_initial_history_bootstrap_skips_resubmit_when_prompt_already_in_history() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let session_id = "session_reload_prompt_already_in_history";
         let mut session = crate::session::Session::create_with_id(
             session_id.to_string(),

@@ -12,7 +12,7 @@ use crate::gateway::GatewayClient;
 use crate::protocol::ServerEvent;
 use crate::provider::Provider;
 use crate::transport::{Listener, Stream};
-use IDEOCODE_agent_runtime::InterruptSignal;
+use ideocode_agent_runtime::InterruptSignal;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::future::Future;
 use std::sync::Arc;

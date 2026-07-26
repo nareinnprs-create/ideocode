@@ -202,7 +202,7 @@ fn save_github_token_creates_config_dir() -> Result<()> {
     let _guard = crate::storage::lock_test_env();
     let dir = TempDir::new().map_err(|e| anyhow!(e))?;
     let config_dir = dir.path().join("github-copilot");
-    let prev_IDEOCODE_home = std::env::var_os("IDEOCODE_HOME");
+    let prev_ideocode_home = std::env::var_os("IDEOCODE_HOME");
     let prev_xdg_config_home = std::env::var_os("XDG_CONFIG_HOME");
 
     crate::env::remove_var("IDEOCODE_HOME");
@@ -222,7 +222,7 @@ fn save_github_token_creates_config_dir() -> Result<()> {
     let loaded = load_token_from_json(&hosts_path)?;
     assert_eq!(loaded, "gho_newtoken");
 
-    if let Some(prev) = prev_IDEOCODE_home {
+    if let Some(prev) = prev_ideocode_home {
         crate::env::set_var("IDEOCODE_HOME", prev);
     } else {
         crate::env::remove_var("IDEOCODE_HOME");
@@ -237,7 +237,7 @@ fn save_github_token_creates_config_dir() -> Result<()> {
 }
 
 #[test]
-fn legacy_copilot_config_dir_uses_IDEOCODE_home_external_dir() -> Result<()> {
+fn legacy_copilot_config_dir_uses_ideocode_home_external_dir() -> Result<()> {
     let _guard = crate::storage::lock_test_env();
     let dir = TempDir::new().map_err(|e| anyhow!(e))?;
     let prev = std::env::var_os("IDEOCODE_HOME");
@@ -264,7 +264,7 @@ fn legacy_copilot_config_dir_uses_IDEOCODE_home_external_dir() -> Result<()> {
 fn save_github_token_makes_future_loads_available() -> Result<()> {
     let _guard = crate::storage::lock_test_env();
     let dir = TempDir::new().map_err(|e| anyhow!(e))?;
-    let prev_IDEOCODE_home = std::env::var_os("IDEOCODE_HOME");
+    let prev_ideocode_home = std::env::var_os("IDEOCODE_HOME");
     let prev_xdg_config_home = std::env::var_os("XDG_CONFIG_HOME");
 
     crate::env::set_var("IDEOCODE_HOME", dir.path());
@@ -281,7 +281,7 @@ fn save_github_token_makes_future_loads_available() -> Result<()> {
     );
     assert_eq!(load_github_token()?, "gho_persisted_token");
 
-    if let Some(prev) = prev_IDEOCODE_home {
+    if let Some(prev) = prev_ideocode_home {
         crate::env::set_var("IDEOCODE_HOME", prev);
     } else {
         crate::env::remove_var("IDEOCODE_HOME");
@@ -542,7 +542,7 @@ fn live_verify_failure_record_blocks_auto_use() -> Result<()> {
     // does not touch the developer's real auth-validation.json.
     let _guard = crate::storage::lock_test_env();
     let dir = TempDir::new().map_err(|e| anyhow!(e))?;
-    let prev_IDEOCODE_home = std::env::var_os("IDEOCODE_HOME");
+    let prev_ideocode_home = std::env::var_os("IDEOCODE_HOME");
     crate::env::set_var("IDEOCODE_HOME", dir.path());
 
     // Ensure no env token is present, otherwise the gate short-circuits to
@@ -592,7 +592,7 @@ fn live_verify_failure_record_blocks_auto_use() -> Result<()> {
             crate::env::set_var(k, prev);
         }
     }
-    if let Some(prev) = prev_IDEOCODE_home {
+    if let Some(prev) = prev_ideocode_home {
         crate::env::set_var("IDEOCODE_HOME", prev);
     } else {
         crate::env::remove_var("IDEOCODE_HOME");

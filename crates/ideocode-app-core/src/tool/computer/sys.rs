@@ -2,7 +2,7 @@
 
 use super::osa;
 use anyhow::{Result, bail};
-use IDEOCODE_tool_types::ToolOutput;
+use ideocode_tool_types::ToolOutput;
 use serde_json::json;
 use std::process::Command;
 use std::thread::sleep;

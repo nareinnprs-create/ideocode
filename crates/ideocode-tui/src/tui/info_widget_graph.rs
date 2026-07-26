@@ -1,3 +1,3 @@
 ﻿//! Compatibility re-export for memory graph topology helpers.
 
-pub use IDEOCODE_tui_core::{GraphEdge, GraphNode, build_graph_topology, graph_node_score};
+pub use ideocode_tui_core::{GraphEdge, GraphNode, build_graph_topology, graph_node_score};

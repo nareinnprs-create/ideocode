@@ -6,7 +6,7 @@ use crate::agent::Agent;
 use crate::build;
 use crate::mcp::McpConfig;
 use anyhow::Result;
-use IDEOCODE_agent_runtime::{InterruptSignal, SoftInterruptSource};
+use ideocode_agent_runtime::{InterruptSignal, SoftInterruptSource};
 use std::collections::{BTreeMap, HashMap};
 use std::sync::Arc;
 use std::time::Duration;
@@ -237,8 +237,8 @@ pub(super) async fn execute_debug_command(
         let connected_servers: Vec<String> = connected.keys().cloned().collect();
 
         let config = McpConfig::load();
-        let config_path = if let Ok(IDEOCODE_dir) = crate::storage::IDEOCODE_dir() {
-            let path = IDEOCODE_dir.join("mcp.json");
+        let config_path = if let Ok(ideocode_dir) = crate::storage::ideocode_dir() {
+            let path = ideocode_dir.join("mcp.json");
             if path.exists() {
                 Some(path.to_string_lossy().to_string())
             } else {
@@ -601,8 +601,8 @@ pub(super) async fn execute_debug_command(
         manifest.canary_status = Some(crate::build::CanaryStatus::Testing);
         manifest.save()?;
 
-        let IDEOCODE_dir = crate::storage::IDEOCODE_dir()?;
-        let info_path = IDEOCODE_dir.join("reload-info");
+        let ideocode_dir = crate::storage::ideocode_dir()?;
+        let info_path = ideocode_dir.join("reload-info");
         std::fs::write(&info_path, format!("reload:{}", hash))?;
 
         let _request_id = super::send_reload_signal(hash.clone(), None, false);
@@ -624,7 +624,7 @@ mod tests {
     use crate::tool::Registry;
     use anyhow::Result;
     use async_trait::async_trait;
-    use IDEOCODE_agent_runtime::InterruptSignal;
+    use ideocode_agent_runtime::InterruptSignal;
     use std::collections::HashMap;
     use std::ffi::OsString;
     use std::sync::{Arc, Mutex, OnceLock};

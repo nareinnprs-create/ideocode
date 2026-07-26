@@ -68,7 +68,7 @@ pub(super) fn install_available() -> Result<Vec<String>> {
             .with_context(|| format!("installing {} SessionStart hook", source.label()))
         {
             Ok(()) => installed.push(source.label().to_string()),
-            Err(err) => IDEOCODE_logging::warn(&format!(
+            Err(err) => ideocode_logging::warn(&format!(
                 "could not install {} launch-shortcut reminder: {err}",
                 source.label()
             )),
@@ -200,7 +200,7 @@ fn install_hook(path: &Path, source: CliSource) -> Result<()> {
     std::fs::create_dir_all(parent)?;
     let mut bytes = serde_json::to_vec_pretty(&root)?;
     bytes.push(b'\n');
-    IDEOCODE_storage::write_bytes(path, &bytes)
+    ideocode_storage::write_bytes(path, &bytes)
         .with_context(|| format!("writing {}", path.display()))?;
     Ok(())
 }
@@ -264,7 +264,7 @@ fn upsert_hook(root: &mut Value, command: &str) -> Result<bool> {
 }
 
 fn hook_command(source: CliSource) -> Result<String> {
-    let executable = trusted_IDEOCODE_executable()?;
+    let executable = trusted_ideocode_executable()?;
     Ok(format!(
         "{} {HOOK_COMMAND_MARKER}{}",
         quote_hook_executable(&executable),
@@ -276,7 +276,7 @@ fn hook_command(source: CliSource) -> Result<String> {
 /// bare `IDEOCODE` lookup in the external CLI's project-scoped PATH. Falling back
 /// to the current absolute executable is still safer than shell resolution and
 /// remains valid for immutable release/self-dev build channels.
-fn trusted_IDEOCODE_executable() -> Result<PathBuf> {
+fn trusted_ideocode_executable() -> Result<PathBuf> {
     #[cfg(windows)]
     {
         if let Some(local_app_data) = std::env::var_os("LOCALAPPDATA") {

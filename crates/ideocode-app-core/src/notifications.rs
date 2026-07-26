@@ -11,10 +11,10 @@ use crate::config::{SafetyConfig, config};
 use crate::logging;
 use crate::safety::AmbientTranscript;
 
-use IDEOCODE_notify_email::{
+use ideocode_notify_email::{
     ReplyAction, SendEmailRequest, build_permission_email_html, poll_imap_once, send_email,
 };
-pub use IDEOCODE_notify_email::{extract_permission_id, parse_permission_reply};
+pub use ideocode_notify_email::{extract_permission_id, parse_permission_reply};
 
 /// Notification priority levels (maps to ntfy priority header).
 #[derive(Debug, Clone, Copy)]

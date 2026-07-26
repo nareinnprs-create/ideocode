@@ -14,7 +14,7 @@
 //! caller; only the *decision* lives here.
 
 use crate::auth::AuthStatus;
-use IDEOCODE_provider_core::ActiveProvider;
+use ideocode_provider_core::ActiveProvider;
 
 /// The credential a request will actually be sent with.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -25,11 +25,11 @@ pub enum ActiveCredential {
     ApiKey,
 }
 
-impl From<IDEOCODE_provider_core::ResolvedCredential> for ActiveCredential {
-    fn from(value: IDEOCODE_provider_core::ResolvedCredential) -> Self {
+impl From<ideocode_provider_core::ResolvedCredential> for ActiveCredential {
+    fn from(value: ideocode_provider_core::ResolvedCredential) -> Self {
         match value {
-            IDEOCODE_provider_core::ResolvedCredential::Oauth => Self::OAuth,
-            IDEOCODE_provider_core::ResolvedCredential::ApiKey => Self::ApiKey,
+            ideocode_provider_core::ResolvedCredential::Oauth => Self::OAuth,
+            ideocode_provider_core::ResolvedCredential::ApiKey => Self::ApiKey,
         }
     }
 }
@@ -74,19 +74,19 @@ pub fn resolve_dual_credential_auth(
 ) -> Option<ResolvedProviderAuth> {
     // Map the execution slot onto the canonical dual-auth provider. Anything
     // without an OAuth-vs-API decision (Copilot, Gemini, ...) returns None.
-    let dual = IDEOCODE_provider_core::DualAuthProvider::from_active_provider(provider)?;
+    let dual = ideocode_provider_core::DualAuthProvider::from_active_provider(provider)?;
 
     // A single canonical parser decides whether `runtime_provider` explicitly
     // pins OAuth or API key for *this* provider. This replaces the per-provider
     // hand-written alias matches that used to drift apart.
     let forced =
-        IDEOCODE_provider_core::pinned_mode_for(dual, runtime_provider).map(|mode| match mode {
-            IDEOCODE_provider_core::AuthMode::Oauth => ActiveCredential::OAuth,
-            IDEOCODE_provider_core::AuthMode::ApiKey => ActiveCredential::ApiKey,
+        ideocode_provider_core::pinned_mode_for(dual, runtime_provider).map(|mode| match mode {
+            ideocode_provider_core::AuthMode::Oauth => ActiveCredential::OAuth,
+            ideocode_provider_core::AuthMode::ApiKey => ActiveCredential::ApiKey,
         });
 
     let (has_oauth, has_api_key) = match dual {
-        IDEOCODE_provider_core::DualAuthProvider::Anthropic => {
+        ideocode_provider_core::DualAuthProvider::Anthropic => {
             let has_oauth = auth.anthropic.has_oauth;
             // `has_api_key` already folds in the ANTHROPIC_API_KEY env var via the
             // auth probe, but re-check defensively so an env-only key set after the
@@ -95,7 +95,7 @@ pub fn resolve_dual_credential_auth(
                 auth.anthropic.has_api_key || std::env::var("ANTHROPIC_API_KEY").is_ok();
             (has_oauth, has_api_key)
         }
-        IDEOCODE_provider_core::DualAuthProvider::OpenAI => {
+        ideocode_provider_core::DualAuthProvider::OpenAI => {
             (auth.openai_has_oauth, auth.openai_has_api_key)
         }
     };

@@ -18,7 +18,7 @@ use crate::provider::Provider;
 use crate::tool::Registry;
 use crate::transport::WriteHalf;
 use anyhow::Result;
-use IDEOCODE_agent_runtime::InterruptSignal;
+use ideocode_agent_runtime::InterruptSignal;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -99,7 +99,7 @@ pub(super) fn restored_session_was_interrupted(
 fn mark_remote_reload_started(request_id: &str) {
     crate::server::write_reload_state(
         request_id,
-        IDEOCODE_build_meta::version(),
+        ideocode_build_meta::version(),
         crate::server::ReloadPhase::Starting,
         None,
     );
@@ -984,7 +984,7 @@ pub(super) async fn handle_reload(
         let _ = client_event_tx.send(ServerEvent::Reloading { new_socket: None });
     }
 
-    let hash = IDEOCODE_build_meta::git_hash().to_string();
+    let hash = ideocode_build_meta::git_hash().to_string();
     let signal_request_id =
         crate::server::send_reload_signal(hash, triggering_session.clone(), prefer_selfdev_binary);
 

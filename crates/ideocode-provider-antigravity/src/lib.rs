@@ -1,5 +1,5 @@
 ﻿use chrono::{DateTime, Utc};
-use IDEOCODE_provider_gemini::CodeAssistGenerateResponse;
+use ideocode_provider_gemini::CodeAssistGenerateResponse;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::{HashMap, HashSet};

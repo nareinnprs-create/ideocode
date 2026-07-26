@@ -221,10 +221,10 @@ fn description_tells_models_to_check_status_before_setup() {
 async fn readiness_does_not_trust_a_stale_setup_marker() {
     use std::os::unix::fs::PermissionsExt;
 
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let prev_home = std::env::var_os("IDEOCODE_HOME");
     let temp = tempfile::TempDir::new().expect("create temp dir");
-    IDEOCODE_base::env::set_var("IDEOCODE_HOME", temp.path());
+    ideocode_base::env::set_var("IDEOCODE_HOME", temp.path());
 
     let browser_dir = temp.path().join("browser");
     std::fs::create_dir_all(&browser_dir).expect("create browser dir");
@@ -250,8 +250,8 @@ async fn readiness_does_not_trust_a_stale_setup_marker() {
     assert!(message.contains("capability discovery"), "{message}");
 
     if let Some(prev_home) = prev_home {
-        IDEOCODE_base::env::set_var("IDEOCODE_HOME", prev_home);
+        ideocode_base::env::set_var("IDEOCODE_HOME", prev_home);
     } else {
-        IDEOCODE_base::env::remove_var("IDEOCODE_HOME");
+        ideocode_base::env::remove_var("IDEOCODE_HOME");
     }
 }

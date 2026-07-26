@@ -1,6 +1,6 @@
 ﻿use super::{MigrationContext, binary_name};
 use anyhow::Result;
-use IDEOCODE_storage as storage;
+use ideocode_storage as storage;
 use std::path::PathBuf;
 
 /// Get path to builds directory
@@ -8,7 +8,7 @@ pub fn builds_dir() -> Result<PathBuf> {
     let dir = resolve_builds_dir(
         std::env::var_os("IDEOCODE_HOME").map(PathBuf::from),
         std::env::var_os("LOCALAPPDATA").map(PathBuf::from),
-        storage::IDEOCODE_dir()?,
+        storage::ideocode_dir()?,
         cfg!(windows),
     );
     storage::ensure_dir(&dir)?;
@@ -16,13 +16,13 @@ pub fn builds_dir() -> Result<PathBuf> {
 }
 
 fn resolve_builds_dir(
-    IDEOCODE_home: Option<PathBuf>,
+    ideocode_home: Option<PathBuf>,
     local_app_data: Option<PathBuf>,
-    default_IDEOCODE_dir: PathBuf,
+    default_ideocode_dir: PathBuf,
     is_windows: bool,
 ) -> PathBuf {
-    if let Some(IDEOCODE_home) = IDEOCODE_home {
-        return IDEOCODE_home.join("builds");
+    if let Some(ideocode_home) = ideocode_home {
+        return ideocode_home.join("builds");
     }
 
     if is_windows && let Some(local_app_data) = local_app_data {
@@ -32,7 +32,7 @@ fn resolve_builds_dir(
         return local_app_data.join("IDEOCODE").join("builds");
     }
 
-    default_IDEOCODE_dir.join("builds")
+    default_ideocode_dir.join("builds")
 }
 
 /// Get path to build manifest
@@ -81,7 +81,7 @@ mod tests {
     }
 
     #[test]
-    fn IDEOCODE_home_override_wins_on_windows() {
+    fn ideocode_home_override_wins_on_windows() {
         let resolved = resolve_builds_dir(
             Some(PathBuf::from("/isolated-IDEOCODE")),
             Some(PathBuf::from("/local-app-data")),
@@ -93,7 +93,7 @@ mod tests {
     }
 
     #[test]
-    fn non_windows_builds_stay_under_IDEOCODE_home() {
+    fn non_windows_builds_stay_under_ideocode_home() {
         let resolved = resolve_builds_dir(
             None,
             Some(PathBuf::from("/ignored/local-app-data")),
@@ -207,12 +207,12 @@ pub fn read_shared_server_version() -> Result<Option<String>> {
 
 /// Get path to build log file
 pub fn build_log_path() -> Result<PathBuf> {
-    Ok(storage::IDEOCODE_dir()?.join("build.log"))
+    Ok(storage::ideocode_dir()?.join("build.log"))
 }
 
 /// Get path to build progress file (for TUI to watch)
 pub fn build_progress_path() -> Result<PathBuf> {
-    Ok(storage::IDEOCODE_dir()?.join("build-progress"))
+    Ok(storage::ideocode_dir()?.join("build-progress"))
 }
 
 /// Write current build progress (for TUI to display)

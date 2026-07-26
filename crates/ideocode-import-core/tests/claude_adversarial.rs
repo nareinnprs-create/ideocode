@@ -13,7 +13,7 @@
 //! Pure functions only (no filesystem / env), so safe to run in parallel.
 //! Authored by swarm Worker C (dolphin).
 
-use IDEOCODE_import_core::{
+use ideocode_import_core::{
     ClaudeCodeContent, ClaudeCodeContentBlock, ClaudeCodeEntry, claude_text_from_content,
     ordered_claude_code_message_entries,
 };

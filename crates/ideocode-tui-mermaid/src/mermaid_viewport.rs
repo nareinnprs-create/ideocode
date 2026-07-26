@@ -1545,7 +1545,7 @@ pub(super) fn clear_image_area(area: Rect, buf: &mut Buffer) {
     if let Ok(mut dbg) = MERMAID_DEBUG.lock() {
         dbg.stats.clear_operations += 1;
     }
-    IDEOCODE_tui_workspace::color_support::clear_buf(clamped, buf);
+    ideocode_tui_workspace::color_support::clear_buf(clamped, buf);
 }
 
 /// Invalidate last render state for a hash (call when content changes)

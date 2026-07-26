@@ -14,7 +14,7 @@ use crate::test_support::*;
 /// Spin up an in-process server backed by a `MockProvider`.
 async fn start_inprocess_server(
     label: &str,
-    provider: Arc<dyn IDEOCODE::provider::Provider>,
+    provider: Arc<dyn ideocode::provider::Provider>,
 ) -> Result<(
     std::path::PathBuf,
     std::path::PathBuf,

@@ -7,7 +7,7 @@
 //! request/response types and helpers (from `IDEOCODE-provider-gemini`)
 //! importable at their historical `crate::provider::gemini::*` paths.
 
-pub use IDEOCODE_provider_gemini::{
+pub use ideocode_provider_gemini::{
     AVAILABLE_MODELS, CODE_ASSIST_API_VERSION, CODE_ASSIST_ENDPOINT, ClientMetadata,
     CodeAssistGenerateRequest, CodeAssistGenerateResponse, DEFAULT_MODEL, GEMINI_API_ENDPOINT,
     GEMINI_API_VERSION, GeminiCandidate, GeminiContent, GeminiFunctionCall,

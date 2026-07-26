@@ -1,4 +1,4 @@
-﻿pub use IDEOCODE_build_support::{
+﻿pub use ideocode_build_support::{
     BinaryChoice, BinaryVersionReport, BuildInfo, BuildManifest, CanaryStatus, CrashInfo,
     DevBinarySourceMetadata, MigrationContext, PendingActivation, PublishedBuild,
     SELFDEV_CARGO_PROFILE, SelfDevBuildCommand, SelfDevBuildTarget, SharedServerRepair,
@@ -9,7 +9,7 @@
     current_build_info, current_git_diff, current_git_hash, current_git_hash_full,
     current_source_state, current_version_file, ensure_source_state_matches, find_dev_binary,
     find_repo_in_ancestors, get_commit_message, get_repo_dir, install_binary_at_version,
-    install_local_release, install_version, is_IDEOCODE_repo, is_working_tree_dirty,
+    install_local_release, install_version, is_ideocode_repo, is_working_tree_dirty,
     launcher_binary_path, launcher_dir, load_migration_context, manifest_path,
     migration_context_path, preferred_reload_candidate, promote_version_to_shared_server,
     publish_local_current_build, publish_local_current_build_for_source, read_build_progress,

@@ -7,8 +7,8 @@
 
 /// Resolve the context window for `model` on the Anthropic route.
 pub(crate) fn resolve(model: &str) -> usize {
-    IDEOCODE_base::provider::context_limit_for_model_with_provider(model, Some("claude"))
-        .unwrap_or(IDEOCODE_provider_core::DEFAULT_CONTEXT_LIMIT)
+    ideocode_base::provider::context_limit_for_model_with_provider(model, Some("claude"))
+        .unwrap_or(ideocode_provider_core::DEFAULT_CONTEXT_LIMIT)
 }
 
 #[cfg(test)]

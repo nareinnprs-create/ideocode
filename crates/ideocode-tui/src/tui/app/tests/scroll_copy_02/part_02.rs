@@ -733,7 +733,7 @@ fn test_click_on_inline_image_label_line_cycles_level() {
     use crate::tui::ui::inline_image_ui::{
         AllFit, ImageExpandLevel, InlineImageItem, build_section,
     };
-    use IDEOCODE_tui_messages::PreparedChatFrame;
+    use ideocode_tui_messages::PreparedChatFrame;
 
     let _render_lock = scroll_render_test_lock();
     let mut app = create_test_app();
@@ -840,7 +840,7 @@ fn test_kitty_jitter_click_on_image_label_still_cycles_level() {
     use crate::tui::ui::inline_image_ui::{
         AllFit, ImageExpandLevel, InlineImageItem, build_section,
     };
-    use IDEOCODE_tui_messages::PreparedChatFrame;
+    use ideocode_tui_messages::PreparedChatFrame;
 
     let _render_lock = scroll_render_test_lock();
     let mut app = create_test_app();
@@ -1178,7 +1178,7 @@ fn test_click_on_inline_image_body_cycles_level() {
     use crate::tui::ui::inline_image_ui::{
         AllFit, ImageExpandLevel, InlineImageItem, build_section,
     };
-    use IDEOCODE_tui_messages::PreparedChatFrame;
+    use ideocode_tui_messages::PreparedChatFrame;
 
     let _render_lock = scroll_render_test_lock();
     let mut app = create_test_app();

@@ -42,7 +42,7 @@ pub(super) fn tool_output_side_pane_images(
     tool_name: &str,
     tool_input: &serde_json::Value,
     output: &ToolOutput,
-) -> Vec<IDEOCODE_session_types::RenderedImage> {
+) -> Vec<ideocode_session_types::RenderedImage> {
     if output.images.is_empty() {
         return Vec::new();
     }
@@ -55,7 +55,7 @@ pub(super) fn tool_output_side_pane_images(
     output
         .images
         .iter()
-        .map(|img| IDEOCODE_session_types::RenderedImage {
+        .map(|img| ideocode_session_types::RenderedImage {
             media_type: img.media_type.clone(),
             data: img.data.clone(),
             label: img
@@ -64,10 +64,10 @@ pub(super) fn tool_output_side_pane_images(
                 .map(|label| label.trim().to_string())
                 .filter(|label| !label.is_empty())
                 .or_else(|| fallback_label.clone()),
-            source: IDEOCODE_session_types::RenderedImageSource::ToolResult {
+            source: ideocode_session_types::RenderedImageSource::ToolResult {
                 tool_name: tool_name.to_string(),
             },
-            anchor: Some(IDEOCODE_session_types::RenderedImageAnchor::ToolCall {
+            anchor: Some(ideocode_session_types::RenderedImageAnchor::ToolCall {
                 id: tool_call_id.to_string(),
             }),
         })

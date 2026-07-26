@@ -464,7 +464,7 @@ async fn worker_proposal_is_lost_when_coordinator_cached_channel_is_closed() {
 
     // Register a live soft-interrupt queue for the coordinator so the
     // fallback path is observable.
-    let coord_queue: IDEOCODE_agent_runtime::SoftInterruptQueue =
+    let coord_queue: ideocode_agent_runtime::SoftInterruptQueue =
         Arc::new(std::sync::Mutex::new(Vec::new()));
     fx.soft_interrupt_queues
         .write()
@@ -602,7 +602,7 @@ async fn direct_update_notification_is_lost_on_stale_cached_event_tx() {
 
     // Register a soft-interrupt queue for the worker so the fallback this
     // site does have is observable.
-    let interrupt_queue: IDEOCODE_agent_runtime::SoftInterruptQueue =
+    let interrupt_queue: ideocode_agent_runtime::SoftInterruptQueue =
         Arc::new(std::sync::Mutex::new(Vec::new()));
     fx.soft_interrupt_queues
         .write()

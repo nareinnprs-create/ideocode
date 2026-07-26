@@ -1,5 +1,5 @@
 ﻿use chrono::{DateTime, Utc};
-use IDEOCODE_message_types::{ContentBlock, Message, Role, ToolCall};
+use ideocode_message_types::{ContentBlock, Message, Role, ToolCall};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
@@ -189,9 +189,9 @@ pub struct EnvSnapshot {
     pub working_dir: Option<String>,
     pub provider: String,
     pub model: String,
-    pub IDEOCODE_version: String,
-    pub IDEOCODE_git_hash: Option<String>,
-    pub IDEOCODE_git_dirty: Option<bool>,
+    pub ideocode_version: String,
+    pub ideocode_git_hash: Option<String>,
+    pub ideocode_git_dirty: Option<bool>,
     pub os: String,
     pub arch: String,
     pub pid: u32,
@@ -686,8 +686,8 @@ pub struct SessionSearchResult {
 #[derive(Debug, Clone, Default)]
 pub struct SessionSearchReport {
     pub results: Vec<SessionSearchResult>,
-    pub scanned_IDEOCODE_sessions: usize,
-    pub candidate_IDEOCODE_sessions: usize,
+    pub scanned_ideocode_sessions: usize,
+    pub candidate_ideocode_sessions: usize,
     pub scanned_external_sessions: usize,
     pub external_sources: Vec<&'static str>,
     pub read_errors: usize,
@@ -728,8 +728,8 @@ pub fn format_session_search_results(
 
     output.push_str(&format!(
         "_Scanned: {} IDEOCODE sessions ({} candidates), {} external sessions{}{}._\n\n",
-        report.scanned_IDEOCODE_sessions,
-        report.candidate_IDEOCODE_sessions,
+        report.scanned_ideocode_sessions,
+        report.candidate_ideocode_sessions,
         report.scanned_external_sessions,
         if report.external_sources.is_empty() {
             String::new()

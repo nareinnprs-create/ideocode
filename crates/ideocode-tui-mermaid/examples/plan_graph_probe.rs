@@ -3,12 +3,12 @@
 //! and report success/error. Useful when iterating on the renderer:
 //!   cargo run -p IDEOCODE-tui-mermaid --features renderer --example plan_graph_probe
 fn probe(name: &str, src: &str) -> bool {
-    match IDEOCODE_tui_mermaid::render_mermaid_untracked(src, Some(100)) {
-        IDEOCODE_tui_mermaid::RenderResult::Image { width, height, .. } => {
+    match ideocode_tui_mermaid::render_mermaid_untracked(src, Some(100)) {
+        ideocode_tui_mermaid::RenderResult::Image { width, height, .. } => {
             println!("OK   {name}: {width}x{height}");
             true
         }
-        IDEOCODE_tui_mermaid::RenderResult::Error(err) => {
+        ideocode_tui_mermaid::RenderResult::Error(err) => {
             println!("FAIL {name}: {err}");
             false
         }

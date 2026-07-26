@@ -22,7 +22,7 @@ use crate::session::Session;
 use crate::tool;
 use crate::tool::ambient as ambient_tools;
 use chrono::Utc;
-use IDEOCODE_agent_runtime::{SoftInterruptMessage, SoftInterruptQueue, SoftInterruptSource};
+use ideocode_agent_runtime::{SoftInterruptMessage, SoftInterruptQueue, SoftInterruptSource};
 use std::sync::Arc;
 use tokio::sync::{Notify, RwLock};
 
@@ -320,7 +320,7 @@ impl AmbientRunnerHandle {
 
     /// Get recent transcript log summaries.
     pub async fn log_json(&self) -> String {
-        let transcripts_dir = match crate::storage::IDEOCODE_dir() {
+        let transcripts_dir = match crate::storage::ideocode_dir() {
             Ok(d) => d.join("ambient").join("transcripts"),
             Err(e) => return format!("{{\"error\": \"{}\"}}", e),
         };
@@ -998,7 +998,7 @@ impl AmbientRunnerHandle {
         }
 
         // Find the IDEOCODE binary
-        let IDEOCODE_bin =
+        let ideocode_bin =
             std::env::current_exe().unwrap_or_else(|_| std::path::PathBuf::from("IDEOCODE"));
 
         // Spawn kitty with `IDEOCODE ambient run-visible`
@@ -1008,7 +1008,7 @@ impl AmbientRunnerHandle {
                 "--title",
                 "🤖 IDEOCODE ambient cycle",
                 "-e",
-                &IDEOCODE_bin.to_string_lossy(),
+                &ideocode_bin.to_string_lossy(),
                 "ambient",
                 "run-visible",
             ])

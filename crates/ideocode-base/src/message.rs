@@ -1,6 +1,6 @@
 ﻿use crate::logging;
 use base64::Engine as _;
-use IDEOCODE_background_types::{
+use ideocode_background_types::{
     BackgroundTaskCompleted, BackgroundTaskProgressEvent, BackgroundTaskStatus,
 };
 use regex::Regex;
@@ -8,7 +8,7 @@ use std::collections::HashSet;
 use std::path::Path;
 use std::sync::OnceLock;
 
-pub use IDEOCODE_message_types::{
+pub use ideocode_message_types::{
     CacheControl, ConnectionPhase, ContentBlock, InputShellResult, Message, Role, StreamEvent,
     TOOL_OUTPUT_MISSING_TEXT, ToolCall, ToolDefinition, cache_relevant_message_hashes,
     cache_relevant_message_value, cache_relevant_messages, ends_with_fresh_user_turn,
@@ -352,16 +352,16 @@ pub fn generated_image_rendered_image(
     id: &str,
     path: &str,
     output_format: &str,
-) -> Option<IDEOCODE_session_types::RenderedImage> {
+) -> Option<ideocode_session_types::RenderedImage> {
     let (media_type, data) = generated_image_payload(path, output_format)?;
-    Some(IDEOCODE_session_types::RenderedImage {
+    Some(ideocode_session_types::RenderedImage {
         media_type,
         data,
         label: Some(path.to_string()),
-        source: IDEOCODE_session_types::RenderedImageSource::ToolResult {
+        source: ideocode_session_types::RenderedImageSource::ToolResult {
             tool_name: GENERATED_IMAGE_TOOL_NAME.to_string(),
         },
-        anchor: Some(IDEOCODE_session_types::RenderedImageAnchor::ToolCall { id: id.to_string() }),
+        anchor: Some(ideocode_session_types::RenderedImageAnchor::ToolCall { id: id.to_string() }),
     })
 }
 

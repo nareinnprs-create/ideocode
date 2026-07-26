@@ -66,7 +66,7 @@ impl App {
         notices.join("\n")
     }
 
-    pub(super) fn show_IDEOCODE_subscription_status(&mut self) {
+    pub(super) fn show_ideocode_subscription_status(&mut self) {
         let configured_key = crate::subscription_catalog::configured_api_key().is_some();
         let configured_base = crate::subscription_catalog::configured_api_base()
             .unwrap_or_else(|| crate::subscription_catalog::DEFAULT_IDEOCODE_API_BASE.to_string());
@@ -280,7 +280,7 @@ impl App {
         use crate::provider_catalog::LoginProviderTarget;
 
         if matches!(provider.target, LoginProviderTarget::IDEOCODE) {
-            self.start_IDEOCODE_account_logout();
+            self.start_ideocode_account_logout();
             return;
         }
 
@@ -554,7 +554,7 @@ impl App {
                     }
                 }
             }
-            crate::provider_catalog::LoginProviderTarget::IDEOCODE => self.start_IDEOCODE_login(),
+            crate::provider_catalog::LoginProviderTarget::IDEOCODE => self.start_ideocode_login(),
             crate::provider_catalog::LoginProviderTarget::Claude => self.start_claude_login(),
             crate::provider_catalog::LoginProviderTarget::ClaudeApiKey => {
                 self.start_anthropic_api_key_login()
@@ -603,7 +603,7 @@ impl App {
         self.start_claude_login_for_account(&label);
     }
 
-    fn start_IDEOCODE_login(&mut self) {
+    fn start_ideocode_login(&mut self) {
         self.push_display_message(DisplayMessage::system(
             "IDEOCODE Account Login\n\nRequesting a secure browser approval flow. No email or API key will be requested in the terminal."
                 .to_string(),
@@ -775,7 +775,7 @@ impl App {
         });
     }
 
-    pub(super) fn open_IDEOCODE_account_management(&mut self) {
+    pub(super) fn open_ideocode_account_management(&mut self) {
         let url = crate::subscription_catalog::IDEOCODE_ACCOUNT_URL;
         let opened = Self::open_auth_browser(url);
         self.push_display_message(DisplayMessage::system(format!(
@@ -790,7 +790,7 @@ impl App {
         self.set_status_notice("IDEOCODE account management");
     }
 
-    pub(super) fn start_IDEOCODE_account_logout(&mut self) {
+    pub(super) fn start_ideocode_account_logout(&mut self) {
         self.set_status_notice("IDEOCODE account: logging out");
         let session_id = self.session.id.clone();
         let Ok(handle) = tokio::runtime::Handle::try_current() else {

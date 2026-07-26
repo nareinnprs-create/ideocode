@@ -18,7 +18,7 @@
 use std::collections::HashMap;
 
 use crossterm::event::{KeyCode, KeyModifiers};
-use IDEOCODE_tui_core::keybind::format_binding;
+use ideocode_tui_core::keybind::format_binding;
 use serde::{Deserialize, Serialize};
 
 use super::App;
@@ -690,7 +690,7 @@ impl App {
         let registry = self.hotkey_registry(self.is_remote);
         let usage = self.hotkey_usage.get_or_insert_with(load_state);
         let listing = render_hotkeys_listing(&registry, usage, now_unix());
-        self.push_display_message(IDEOCODE_tui_messages::DisplayMessage::system(listing));
+        self.push_display_message(ideocode_tui_messages::DisplayMessage::system(listing));
         true
     }
 
@@ -728,7 +728,7 @@ impl App {
         // translates those, so let them through to the lookup.
         let macos_option_char = cfg!(target_os = "macos")
             && modifiers.is_empty()
-            && IDEOCODE_tui_core::keybind::macos_option_char_to_ascii_key(code).is_some();
+            && ideocode_tui_core::keybind::macos_option_char_to_ascii_key(code).is_some();
         if modifiers.is_empty() && code != KeyCode::BackTab && !macos_option_char {
             return;
         }

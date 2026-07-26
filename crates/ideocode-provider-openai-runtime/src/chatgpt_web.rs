@@ -1,6 +1,6 @@
 ﻿use anyhow::{Context, Result};
-use IDEOCODE_message_types::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
-use IDEOCODE_provider_core::EventStream;
+use ideocode_message_types::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
+use ideocode_provider_core::EventStream;
 use serde_json::{Value, json};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -96,7 +96,7 @@ impl ChatGptWebState {
             anyhow::bail!("ChatGPT web response consumer was closed before browser setup");
         }
 
-        let status = IDEOCODE_base::browser::ensure_browser_ready_noninteractive()
+        let status = ideocode_base::browser::ensure_browser_ready_noninteractive()
             .await
             .context(
                 "ChatGPT web transport needs the Firefox Browser Agent Bridge. Run `IDEOCODE browser status`, start Firefox, and log in at chatgpt.com",
@@ -110,7 +110,7 @@ impl ChatGptWebState {
         let _turn_guard = self.turn_lock.lock().await;
         let (tab_id, fork_name) = open_chatgpt_tab().await?;
         let result = async {
-            send_phase(tx, IDEOCODE_message_types::ConnectionPhase::Authenticating).await?;
+            send_phase(tx, ideocode_message_types::ConnectionPhase::Authenticating).await?;
 
             wait_for_editor(tab_id).await?;
             prepare_chatgpt_page(tab_id).await?;
@@ -119,7 +119,7 @@ impl ChatGptWebState {
                 anyhow::bail!("ChatGPT web response consumer was closed before submission");
             }
 
-            send_phase(tx, IDEOCODE_message_types::ConnectionPhase::SendingRequest).await?;
+            send_phase(tx, ideocode_message_types::ConnectionPhase::SendingRequest).await?;
             if tx.is_closed() {
                 anyhow::bail!("ChatGPT web response consumer was closed before submission");
             }
@@ -131,7 +131,7 @@ impl ChatGptWebState {
             .await
             .context("Failed to submit the prompt in ChatGPT")?;
 
-            send_phase(tx, IDEOCODE_message_types::ConnectionPhase::WaitingForResponse).await?;
+            send_phase(tx, ideocode_message_types::ConnectionPhase::WaitingForResponse).await?;
 
             poll_for_response(tab_id, tx).await
         }
@@ -152,7 +152,7 @@ impl ChatGptWebState {
 
 async fn send_phase(
     tx: &mpsc::Sender<Result<StreamEvent>>,
-    phase: IDEOCODE_message_types::ConnectionPhase,
+    phase: ideocode_message_types::ConnectionPhase,
 ) -> Result<()> {
     tx.send(Ok(StreamEvent::ConnectionPhase { phase }))
         .await
@@ -482,7 +482,7 @@ return { text, busy, terminal, alert, model: message ? message.dataset.messageMo
         }
 
         if !text.is_empty() && !streaming_emitted {
-            send_phase(tx, IDEOCODE_message_types::ConnectionPhase::Streaming).await?;
+            send_phase(tx, ideocode_message_types::ConnectionPhase::Streaming).await?;
             streaming_emitted = true;
         }
 
@@ -691,7 +691,7 @@ Act as the assistant for the conversation above and obey the IDEOCODE system ins
 You do not have native access to IDEOCODE tools in this web transport. When a tool is needed,
 request exactly one tool and stop by emitting this exact envelope with raw JSON and no code fence:
 
-<IDEOCODE_tool_call>{"name":"tool_name","input":{"argument":"value"}}</IDEOCODE_tool_call>
+<ideocode_tool_call>{"name":"tool_name","input":{"argument":"value"}}</ideocode_tool_call>
 
 The name must exactly match one of the advertised IDEOCODE tools. Put every required field,
 including `intent` when its schema requires one, inside `input`. IDEOCODE will execute the tool
@@ -745,7 +745,7 @@ async fn evaluate(tab_id: u64, script: &str) -> Result<Value> {
 }
 
 async fn bridge_command(action: &str, params: Value) -> Result<Value> {
-    let binary = IDEOCODE_base::browser::browser_binary_path();
+    let binary = ideocode_base::browser::browser_binary_path();
     if !binary.exists() {
         anyhow::bail!(
             "Browser bridge binary is not installed. Run `IDEOCODE browser setup` once, then log in at chatgpt.com in Firefox"

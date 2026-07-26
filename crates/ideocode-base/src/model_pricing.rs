@@ -1,6 +1,6 @@
 ﻿//! Live model pricing catalog backed by <https://models.dev>.
 //!
-//! IDEOCODE's static pricing tables (`IDEOCODE_provider_core::pricing`) only cover
+//! IDEOCODE's static pricing tables (`ideocode_provider_core::pricing`) only cover
 //! first-party Anthropic/OpenAI models and go stale whenever a provider ships
 //! new models or changes prices. models.dev publishes a free, no-auth JSON
 //! catalog (`https://models.dev/api.json`) with per-model `input`/`output`/
@@ -58,7 +58,7 @@ static MEMORY_CACHE: Mutex<Option<(PathBuf, Arc<PricingCache>)>> = Mutex::new(No
 static REFRESH_IN_FLIGHT: AtomicBool = AtomicBool::new(false);
 
 fn cache_path() -> PathBuf {
-    crate::storage::IDEOCODE_dir()
+    crate::storage::ideocode_dir()
         .unwrap_or_else(|_| PathBuf::from(".").join(".IDEOCODE"))
         .join("cache")
         .join(CACHE_FILE)
@@ -99,11 +99,11 @@ fn save_cache(cache: &PricingCache) {
 
 /// Translate a IDEOCODE provider key (runtime key, activity source key, or
 /// compatible-profile id) to the models.dev provider id.
-pub fn models_dev_provider_id(IDEOCODE_provider: &str) -> Option<&'static str> {
-    let key = IDEOCODE_provider
+pub fn models_dev_provider_id(ideocode_provider: &str) -> Option<&'static str> {
+    let key = ideocode_provider
         .trim()
         .strip_prefix("openai-compatible:")
-        .unwrap_or_else(|| IDEOCODE_provider.trim());
+        .unwrap_or_else(|| ideocode_provider.trim());
     Some(match key {
         "anthropic" | "claude" | "claude:api-key" | "anthropic-api" => "anthropic",
         "openai" | "openai:api-key" | "openai-api" => "openai",
@@ -143,14 +143,14 @@ pub fn models_dev_provider_id(IDEOCODE_provider: &str) -> Option<&'static str> {
 /// Strip IDEOCODE-local suffixes/prefixes a model id may carry before catalog
 /// lookup (`[1m]` long-context alias, `provider/` prefixes for OpenRouter ids).
 fn normalize_model_id(model: &str) -> &str {
-    IDEOCODE_provider_core::model_id::strip_long_context_suffix(model).trim()
+    ideocode_provider_core::model_id::strip_long_context_suffix(model).trim()
 }
 
 /// Look up live pricing for `model` under a IDEOCODE provider key. Returns `None`
 /// when the catalog has no entry; never blocks on the network. Schedules a
 /// background refresh when the disk cache is missing or stale.
-pub fn lookup(IDEOCODE_provider: &str, model: &str) -> Option<ModelCost> {
-    let provider_id = models_dev_provider_id(IDEOCODE_provider)?;
+pub fn lookup(ideocode_provider: &str, model: &str) -> Option<ModelCost> {
+    let provider_id = models_dev_provider_id(ideocode_provider)?;
     let cache = ensure_cache_fresh()?;
     let models = cache.providers.get(provider_id)?;
     let model = normalize_model_id(model);
@@ -357,7 +357,7 @@ mod tests {
     }
 
     #[test]
-    fn provider_key_mapping_covers_IDEOCODE_providers() {
+    fn provider_key_mapping_covers_ideocode_providers() {
         assert_eq!(models_dev_provider_id("claude:api-key"), Some("anthropic"));
         assert_eq!(models_dev_provider_id("openai:api-key"), Some("openai"));
         assert_eq!(

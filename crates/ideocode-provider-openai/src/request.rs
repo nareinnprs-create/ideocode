@@ -1,8 +1,8 @@
-﻿use IDEOCODE_message_types::{
+﻿use ideocode_message_types::{
     ContentBlock, Message as ChatMessage, Role, TOOL_OUTPUT_MISSING_TEXT, ToolDefinition,
     sanitize_tool_id,
 };
-use IDEOCODE_provider_core::openai_schema::{
+use ideocode_provider_core::openai_schema::{
     openai_compatible_schema, schema_supports_strict, strict_normalize_schema,
 };
 use serde_json::Value;
@@ -561,7 +561,7 @@ pub fn build_responses_input_with_logger(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use IDEOCODE_message_types::ToolDefinition;
+    use ideocode_message_types::ToolDefinition;
     use serde_json::json;
 
     #[test]

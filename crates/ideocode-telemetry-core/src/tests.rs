@@ -70,17 +70,17 @@ fn lock_telemetry_test_state() -> std::sync::MutexGuard<'static, ()> {
 #[test]
 fn test_opt_out_env_var() {
     let _guard = lock_test_env();
-    IDEOCODE_core::env::set_var("IDEOCODE_NO_TELEMETRY", "1");
+    ideocode_core::env::set_var("IDEOCODE_NO_TELEMETRY", "1");
     assert!(!is_enabled());
-    IDEOCODE_core::env::remove_var("IDEOCODE_NO_TELEMETRY");
+    ideocode_core::env::remove_var("IDEOCODE_NO_TELEMETRY");
 }
 
 #[test]
 fn test_do_not_track() {
     let _guard = lock_test_env();
-    IDEOCODE_core::env::set_var("DO_NOT_TRACK", "1");
+    ideocode_core::env::set_var("DO_NOT_TRACK", "1");
     assert!(!is_enabled());
-    IDEOCODE_core::env::remove_var("DO_NOT_TRACK");
+    ideocode_core::env::remove_var("DO_NOT_TRACK");
 }
 
 #[test]
@@ -95,18 +95,18 @@ fn test_is_ci_detects_ci_env() {
         "GITLAB_CI",
         "CIRCLECI",
     ] {
-        IDEOCODE_core::env::remove_var(key);
+        ideocode_core::env::remove_var(key);
     }
     assert!(
         !is_ci(),
         "expected non-CI baseline after clearing CI markers"
     );
-    IDEOCODE_core::env::set_var("CI", "true");
+    ideocode_core::env::set_var("CI", "true");
     assert!(
         is_ci(),
         "CI env var should mark the run as CI (gates install skip)"
     );
-    IDEOCODE_core::env::remove_var("CI");
+    ideocode_core::env::remove_var("CI");
     assert!(!is_ci());
 }
 
@@ -594,7 +594,7 @@ fn test_install_marker_tracks_current_telemetry_id() {
     let _guard = lock_test_env();
     let prev_home = std::env::var_os("IDEOCODE_HOME");
     let temp = tempfile::TempDir::new().expect("create temp dir");
-    IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp.path());
+    ideocode_core::env::set_var("IDEOCODE_HOME", temp.path());
 
     assert!(!install_recorded_for_id("id-a"));
     mark_install_recorded("id-a");
@@ -602,9 +602,9 @@ fn test_install_marker_tracks_current_telemetry_id() {
     assert!(!install_recorded_for_id("id-b"));
 
     if let Some(prev_home) = prev_home {
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", prev_home);
+        ideocode_core::env::set_var("IDEOCODE_HOME", prev_home);
     } else {
-        IDEOCODE_core::env::remove_var("IDEOCODE_HOME");
+        ideocode_core::env::remove_var("IDEOCODE_HOME");
     }
 }
 
@@ -613,7 +613,7 @@ fn test_install_conversion_id_is_validated_and_consumed() {
     let _guard = lock_test_env();
     let prev_home = std::env::var_os("IDEOCODE_HOME");
     let temp = tempfile::TempDir::new().expect("create temp dir");
-    IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp.path());
+    ideocode_core::env::set_var("IDEOCODE_HOME", temp.path());
 
     let path = install_conversion_id_path().expect("conversion path");
     write_private_file(&path, "11111111-2222-4333-8444-555555555555\n");
@@ -634,9 +634,9 @@ fn test_install_conversion_id_is_validated_and_consumed() {
     ));
 
     if let Some(prev_home) = prev_home {
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", prev_home);
+        ideocode_core::env::set_var("IDEOCODE_HOME", prev_home);
     } else {
-        IDEOCODE_core::env::remove_var("IDEOCODE_HOME");
+        ideocode_core::env::remove_var("IDEOCODE_HOME");
     }
 }
 
@@ -645,7 +645,7 @@ fn test_attributed_install_bypasses_existing_install_marker() {
     let _guard = lock_test_env();
     let prev_home = std::env::var_os("IDEOCODE_HOME");
     let temp = tempfile::TempDir::new().expect("create temp dir");
-    IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp.path());
+    ideocode_core::env::set_var("IDEOCODE_HOME", temp.path());
 
     let id = get_or_create_id().expect("telemetry id");
     mark_install_recorded(&id);
@@ -661,9 +661,9 @@ fn test_attributed_install_bypasses_existing_install_marker() {
     assert!(should_record_install_for_id(&id, conversion_id.as_deref()));
 
     if let Some(prev_home) = prev_home {
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", prev_home);
+        ideocode_core::env::set_var("IDEOCODE_HOME", prev_home);
     } else {
-        IDEOCODE_core::env::remove_var("IDEOCODE_HOME");
+        ideocode_core::env::remove_var("IDEOCODE_HOME");
     }
 }
 
@@ -672,18 +672,18 @@ fn test_install_conversion_id_is_removed_when_telemetry_is_disabled() {
     let _guard = lock_test_env();
     let prev_home = std::env::var_os("IDEOCODE_HOME");
     let temp = tempfile::TempDir::new().expect("create temp dir");
-    IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp.path());
+    ideocode_core::env::set_var("IDEOCODE_HOME", temp.path());
     let path = install_conversion_id_path().expect("conversion path");
     write_private_file(&path, "11111111-2222-4333-8444-555555555555\n");
 
-    IDEOCODE_core::env::set_var("IDEOCODE_NO_TELEMETRY", "1");
+    ideocode_core::env::set_var("IDEOCODE_NO_TELEMETRY", "1");
     record_install_if_first_run();
-    IDEOCODE_core::env::remove_var("IDEOCODE_NO_TELEMETRY");
+    ideocode_core::env::remove_var("IDEOCODE_NO_TELEMETRY");
     assert!(!path.exists());
 
     if let Some(prev_home) = prev_home {
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", prev_home);
+        ideocode_core::env::set_var("IDEOCODE_HOME", prev_home);
     } else {
-        IDEOCODE_core::env::remove_var("IDEOCODE_HOME");
+        ideocode_core::env::remove_var("IDEOCODE_HOME");
     }
 }

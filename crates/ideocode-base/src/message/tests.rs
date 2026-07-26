@@ -71,13 +71,13 @@ fn generated_image_rendered_image_uses_inline_tool_anchor() {
     assert_eq!(image.label.as_deref(), image_path.to_str());
     assert_eq!(
         image.source,
-        IDEOCODE_session_types::RenderedImageSource::ToolResult {
+        ideocode_session_types::RenderedImageSource::ToolResult {
             tool_name: GENERATED_IMAGE_TOOL_NAME.to_string(),
         }
     );
     assert_eq!(
         image.anchor,
-        Some(IDEOCODE_session_types::RenderedImageAnchor::ToolCall {
+        Some(ideocode_session_types::RenderedImageAnchor::ToolCall {
             id: "image_call_123".to_string(),
         })
     );

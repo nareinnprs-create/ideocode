@@ -22,10 +22,10 @@ const INPUT_SHELL_MAX_OUTPUT_LEN: usize = 30_000;
 
 /// Remove reasoning-marked lines from committed transcript text. Reasoning lines
 /// are wrapped in emphasis containing the invisible [`REASONING_SENTINEL`]
-/// (see `IDEOCODE_tui_markdown::reasoning_line_markup`). Trailing blank lines left
+/// (see `ideocode_tui_markdown::reasoning_line_markup`). Trailing blank lines left
 /// behind are trimmed so the remaining answer renders cleanly.
 pub(super) fn strip_reasoning_lines(content: &str) -> String {
-    let sentinel = IDEOCODE_tui_markdown::REASONING_SENTINEL;
+    let sentinel = ideocode_tui_markdown::REASONING_SENTINEL;
     let mut out_lines: Vec<&str> = Vec::new();
     for line in content.split('\n') {
         if line.contains(sentinel) {
@@ -3092,7 +3092,7 @@ impl App {
         for ch in text.chars() {
             if ch == '\n' {
                 let line = std::mem::take(&mut self.reasoning_pending_line);
-                committed.push_str(&IDEOCODE_tui_markdown::reasoning_line_markup(&line));
+                committed.push_str(&ideocode_tui_markdown::reasoning_line_markup(&line));
             } else {
                 self.reasoning_pending_line.push(ch);
             }
@@ -3101,7 +3101,7 @@ impl App {
             self.streaming.streaming_text.push_str(&committed);
         }
         // Re-append the live tail for the in-progress (partial) line.
-        let partial = IDEOCODE_tui_markdown::reasoning_partial_markup(&self.reasoning_pending_line);
+        let partial = ideocode_tui_markdown::reasoning_partial_markup(&self.reasoning_pending_line);
         self.reasoning_partial_len = partial.len();
         self.streaming.streaming_text.push_str(&partial);
         self.refresh_split_view_if_needed();
@@ -3120,7 +3120,7 @@ impl App {
         if !pending.is_empty() {
             self.streaming
                 .streaming_text
-                .push_str(&IDEOCODE_tui_markdown::reasoning_line_markup(&pending));
+                .push_str(&ideocode_tui_markdown::reasoning_line_markup(&pending));
         }
         self.reasoning_streaming = false;
 

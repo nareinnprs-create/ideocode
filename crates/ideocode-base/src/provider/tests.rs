@@ -154,19 +154,19 @@ fn save_test_openai_compatible_login_config(default_model: &str) {
 }
 
 fn save_test_openrouter_model_cache(namespace: &str, source_api_base: &str, model_ids: &[&str]) {
-    let IDEOCODE_home = std::env::var_os("IDEOCODE_HOME").expect("test IDEOCODE_HOME should be set");
-    let cache_dir = std::path::PathBuf::from(IDEOCODE_home).join("cache");
+    let ideocode_home = std::env::var_os("IDEOCODE_HOME").expect("test IDEOCODE_HOME should be set");
+    let cache_dir = std::path::PathBuf::from(ideocode_home).join("cache");
     std::fs::create_dir_all(&cache_dir).expect("create model cache dir");
-    let cache = IDEOCODE_provider_openrouter::DiskCache {
-        cached_at: IDEOCODE_provider_openrouter::current_unix_secs().expect("current unix time"),
+    let cache = ideocode_provider_openrouter::DiskCache {
+        cached_at: ideocode_provider_openrouter::current_unix_secs().expect("current unix time"),
         source_api_base: Some(source_api_base.to_string()),
         models: model_ids
             .iter()
-            .map(|id| IDEOCODE_provider_openrouter::ModelInfo {
+            .map(|id| ideocode_provider_openrouter::ModelInfo {
                 id: (*id).to_string(),
                 name: String::new(),
                 context_length: None,
-                pricing: IDEOCODE_provider_openrouter::ModelPricing::default(),
+                pricing: ideocode_provider_openrouter::ModelPricing::default(),
                 created: None,
             })
             .collect(),
@@ -376,7 +376,7 @@ fn openai_model_route_roundtrip_preserves_auth_method_for_model_switches() {
 
 #[test]
 fn active_explicit_credential_reflects_openai_switch_immediately_and_none_for_auto() {
-    use IDEOCODE_provider_core::{Provider, ResolvedCredential};
+    use ideocode_provider_core::{Provider, ResolvedCredential};
     with_clean_provider_test_env(|| {
         let rt = enter_test_runtime();
         let _runtime_guard = rt.enter();
@@ -464,7 +464,7 @@ fn openai_model_routes_cover_oauth_api_and_no_auth_state_space() {
 
         crate::env::set_var("OPENAI_API_KEY", "sk-test-openai-api-key");
         std::fs::remove_file(
-            crate::storage::IDEOCODE_dir()
+            crate::storage::ideocode_dir()
                 .unwrap()
                 .join("openai-auth.json"),
         )
@@ -775,7 +775,7 @@ fn standard_openrouter_catalog_refresh_fires_when_named_profile_owns_slot() {
             // running) an `openrouter` catalog refresh; clear the process-wide
             // backoff/in-flight tracker or this assertion is flaky under
             // parallel test execution.
-            IDEOCODE_provider_openrouter_runtime::reset_profile_catalog_refresh_tracker_for_tests();
+            ideocode_provider_openrouter_runtime::reset_profile_catalog_refresh_tracker_for_tests();
 
             assert!(
                 openrouter::maybe_schedule_standard_openrouter_catalog_refresh(
@@ -798,7 +798,7 @@ struct StubExternalRuntime {
     api_method: &'static str,
     models: &'static [&'static str],
     model: std::sync::RwLock<String>,
-    credential_mode: std::sync::RwLock<IDEOCODE_provider_core::CredentialMode>,
+    credential_mode: std::sync::RwLock<ideocode_provider_core::CredentialMode>,
 }
 
 impl StubExternalRuntime {
@@ -814,7 +814,7 @@ impl StubExternalRuntime {
             api_method,
             models,
             model: std::sync::RwLock::new(models[0].to_string()),
-            credential_mode: std::sync::RwLock::new(IDEOCODE_provider_core::CredentialMode::Auto),
+            credential_mode: std::sync::RwLock::new(ideocode_provider_core::CredentialMode::Auto),
         }
     }
 
@@ -918,13 +918,13 @@ impl Provider for StubExternalRuntime {
             })
             .collect()
     }
-    fn credential_mode(&self) -> IDEOCODE_provider_core::CredentialMode {
+    fn credential_mode(&self) -> ideocode_provider_core::CredentialMode {
         *self
             .credential_mode
             .read()
             .unwrap_or_else(|poisoned| poisoned.into_inner())
     }
-    fn set_credential_mode(&self, mode: IDEOCODE_provider_core::CredentialMode) -> anyhow::Result<()> {
+    fn set_credential_mode(&self, mode: ideocode_provider_core::CredentialMode) -> anyhow::Result<()> {
         *self
             .credential_mode
             .write()
@@ -979,7 +979,7 @@ fn register_test_external_runtimes() {
     // composition root does. The dev-dependency cycle is test-only.
     external::register_openrouter_factory(|spec| {
         use external::OpenRouterRuntimeSpec;
-        use IDEOCODE_provider_openrouter_runtime::OpenRouterProvider;
+        use ideocode_provider_openrouter_runtime::OpenRouterProvider;
         let provider: Arc<dyn Provider> = match spec {
             OpenRouterRuntimeSpec::Default => Arc::new(OpenRouterProvider::new()?),
             OpenRouterRuntimeSpec::OpenRouterApiKey => {
@@ -995,10 +995,10 @@ fn register_test_external_runtimes() {
         Ok(provider)
     });
     external::register_profile_catalog_refresh(
-        IDEOCODE_provider_openrouter_runtime::maybe_schedule_openai_compatible_profile_catalog_refresh,
+        ideocode_provider_openrouter_runtime::maybe_schedule_openai_compatible_profile_catalog_refresh,
     );
     external::register_standard_openrouter_catalog_refresh(
-        IDEOCODE_provider_openrouter_runtime::maybe_schedule_standard_openrouter_catalog_refresh,
+        ideocode_provider_openrouter_runtime::maybe_schedule_standard_openrouter_catalog_refresh,
     );
 }
 
@@ -1052,7 +1052,7 @@ fn new_session_fork_reloads_changed_config_provider_and_model() {
             assert_eq!(fresh.model(), "gpt-5.5");
             assert_eq!(
                 fresh.active_resolved_credential(),
-                Some(IDEOCODE_provider_core::ResolvedCredential::ApiKey)
+                Some(ideocode_provider_core::ResolvedCredential::ApiKey)
             );
 
             // Ordinary forks still preserve the existing session's selection.

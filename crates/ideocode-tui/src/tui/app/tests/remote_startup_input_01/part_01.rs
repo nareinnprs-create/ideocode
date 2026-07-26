@@ -11,7 +11,7 @@ fn test_finish_turn_without_followup_clears_visible_turn_started() {
 
 #[test]
 fn test_finish_turn_does_not_duplicate_existing_poke_followup() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         crate::todo::save_todos(
             &app.session.id,
@@ -41,8 +41,8 @@ fn test_finish_turn_does_not_duplicate_existing_poke_followup() {
 
 #[test]
 fn test_review_prefers_openai_oauth_gpt_5_4_when_available() {
-    with_temp_IDEOCODE_home(|| {
-        let auth_path = crate::storage::IDEOCODE_dir()
+    with_temp_ideocode_home(|| {
+        let auth_path = crate::storage::ideocode_dir()
             .expect("IDEOCODE dir")
             .join("openai-auth.json");
         std::fs::write(
@@ -118,7 +118,7 @@ fn test_pending_remote_dispatch_counts_as_processing_for_tui_state() {
 
 #[test]
 fn test_startup_message_restore_uses_hidden_system_queue() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let session_id = "startup-hidden-queue-test";
         super::App::save_startup_message_for_session(
             session_id,
@@ -180,7 +180,7 @@ fn test_judge_startup_prompts_describe_visible_mirror_context() {
 
 #[test]
 fn test_prepare_review_spawned_session_uses_visible_transcript_for_judge_sessions() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         for title in ["judge", "autojudge"] {
             let parent_id = format!("parent_{title}_visible_context");
             let child_id = format!("child_{title}_visible_context");
@@ -286,7 +286,7 @@ fn test_prepare_review_spawned_session_uses_visible_transcript_for_judge_session
 
 #[test]
 fn test_queue_autojudge_remote_targets_original_non_judge_session() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.is_remote = true;
 
@@ -323,7 +323,7 @@ fn test_queue_autojudge_remote_targets_original_non_judge_session() {
 
 #[test]
 fn test_new_for_remote_restores_spawn_startup_hints_and_dispatch_state() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let session_id = "session_spawn_child";
         let mut session = crate::session::Session::create_with_id(
             session_id.to_string(),
@@ -395,7 +395,7 @@ fn test_new_for_remote_restores_spawn_startup_hints_and_dispatch_state() {
 
 #[test]
 fn test_remote_startup_done_event_does_not_cancel_pending_judge_launch() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let session_id = "session_judge_startup_done_guard";
         let mut session = crate::session::Session::create_with_id(
             session_id.to_string(),
@@ -448,7 +448,7 @@ fn test_remote_startup_done_event_does_not_cancel_pending_judge_launch() {
 
 #[test]
 fn test_remote_startup_judge_hidden_prompt_dispatches_once_history_is_loaded() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let session_id = "session_judge_startup_dispatch";
         let mut session = crate::session::Session::create_with_id(
             session_id.to_string(),
@@ -496,7 +496,7 @@ fn test_remote_startup_judge_hidden_prompt_dispatches_once_history_is_loaded() {
 
 #[test]
 fn test_new_for_remote_fresh_spawn_restores_local_transcript() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let session_id = "session_spawn_fresh_skip";
         let mut session = crate::session::Session::create_with_id(
             session_id.to_string(),
@@ -563,7 +563,7 @@ fn test_new_for_remote_fresh_spawn_restores_local_transcript() {
 
 #[test]
 fn test_new_for_remote_restores_display_history_without_retaining_session_transcript() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let session_id = "session_remote_restore_lightweight";
         let mut session = crate::session::Session::create_with_id(
             session_id.to_string(),
@@ -600,7 +600,7 @@ fn test_new_for_remote_restores_display_history_without_retaining_session_transc
 
 #[test]
 fn test_restore_session_restores_local_judge_processing_state() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let session_id = "session_local_judge_child";
         let mut session = crate::session::Session::create_with_id(
             session_id.to_string(),
@@ -702,7 +702,7 @@ fn test_model_picker_includes_copilot_models_in_remote_mode() {
     // Temp home: opening the picker with empty remote_model_options hydrates
     // the persisted remote catalog cache, so a shared test home lets routes
     // written by other tests leak into this picker.
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         configure_test_remote_models_with_copilot(&mut app);
 
@@ -1034,7 +1034,7 @@ fn test_model_picker_remote_falls_back_to_current_model_when_catalog_empty() {
     // Temp home: an empty remote catalog triggers hydration of the persisted
     // remote catalog cache, so a shared test home would replace the fallback
     // entry with whatever routes another test cached.
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.is_remote = true;
         app.remote_provider_name = Some("openrouter".to_string());

@@ -302,11 +302,11 @@ fn test_generated_image_event_roundtrip() -> Result<()> {
 fn test_side_pane_images_event_roundtrip() -> Result<()> {
     let event = ServerEvent::SidePaneImages {
         session_id: "session_active".to_string(),
-        images: vec![IDEOCODE_session_types::RenderedImage {
+        images: vec![ideocode_session_types::RenderedImage {
             media_type: "image/png".to_string(),
             data: "base64-data".to_string(),
             label: Some("openclaw.png".to_string()),
-            source: IDEOCODE_session_types::RenderedImageSource::ToolResult {
+            source: ideocode_session_types::RenderedImageSource::ToolResult {
                 tool_name: "read".to_string(),
             },
             anchor: None,
@@ -324,7 +324,7 @@ fn test_side_pane_images_event_roundtrip() -> Result<()> {
     assert_eq!(images[0].label.as_deref(), Some("openclaw.png"));
     assert_eq!(
         images[0].source,
-        IDEOCODE_session_types::RenderedImageSource::ToolResult {
+        ideocode_session_types::RenderedImageSource::ToolResult {
             tool_name: "read".to_string(),
         }
     );
@@ -374,7 +374,7 @@ fn test_history_event_decodes_without_compaction_mode_for_older_servers() -> Res
     assert_eq!(connection_type.as_deref(), Some("websocket"));
     assert_eq!(
         compaction_mode,
-        IDEOCODE_config_types::CompactionMode::Reactive
+        ideocode_config_types::CompactionMode::Reactive
     );
     assert!(!side_panel.has_pages());
     Ok(())
@@ -425,16 +425,16 @@ fn test_history_event_roundtrip_preserves_side_panel_snapshot() -> Result<()> {
         subagent_model: None,
         autoreview_enabled: None,
         autojudge_enabled: None,
-        compaction_mode: IDEOCODE_config_types::CompactionMode::Reactive,
+        compaction_mode: ideocode_config_types::CompactionMode::Reactive,
         activity: None,
-        side_panel: IDEOCODE_side_panel_types::SidePanelSnapshot {
+        side_panel: ideocode_side_panel_types::SidePanelSnapshot {
             focused_page_id: Some("page-1".to_string()),
-            pages: vec![IDEOCODE_side_panel_types::SidePanelPage {
+            pages: vec![ideocode_side_panel_types::SidePanelPage {
                 id: "page-1".to_string(),
                 title: "Notes".to_string(),
                 file_path: "/tmp/notes.md".to_string(),
-                format: IDEOCODE_side_panel_types::SidePanelPageFormat::Markdown,
-                source: IDEOCODE_side_panel_types::SidePanelPageSource::Managed,
+                format: ideocode_side_panel_types::SidePanelPageFormat::Markdown,
+                source: ideocode_side_panel_types::SidePanelPageSource::Managed,
                 content: "# Notes".to_string(),
                 updated_at_ms: 42,
             }],
@@ -516,14 +516,14 @@ fn test_compacted_history_event_roundtrip() -> Result<()> {
 #[test]
 fn test_side_panel_state_event_roundtrip() -> Result<()> {
     let event = ServerEvent::SidePanelState {
-        snapshot: IDEOCODE_side_panel_types::SidePanelSnapshot {
+        snapshot: ideocode_side_panel_types::SidePanelSnapshot {
             focused_page_id: Some("page-1".to_string()),
-            pages: vec![IDEOCODE_side_panel_types::SidePanelPage {
+            pages: vec![ideocode_side_panel_types::SidePanelPage {
                 id: "page-1".to_string(),
                 title: "Notes".to_string(),
                 file_path: "/tmp/notes.md".to_string(),
-                format: IDEOCODE_side_panel_types::SidePanelPageFormat::Markdown,
-                source: IDEOCODE_side_panel_types::SidePanelPageSource::Managed,
+                format: ideocode_side_panel_types::SidePanelPageFormat::Markdown,
+                source: ideocode_side_panel_types::SidePanelPageSource::Managed,
                 content: "updated".to_string(),
                 updated_at_ms: 99,
             }],

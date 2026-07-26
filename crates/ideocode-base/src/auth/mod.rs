@@ -817,7 +817,7 @@ fn build_auth_status_uncached(mode: AuthProbeMode) -> (AuthStatus, Vec<(&'static
     let mut status = AuthStatus::default();
     let mut timings = Vec::new();
 
-    record_auth_probe_step(&mut timings, "IDEOCODE", || probe_IDEOCODE_status(&mut status));
+    record_auth_probe_step(&mut timings, "IDEOCODE", || probe_ideocode_status(&mut status));
     record_auth_probe_step(&mut timings, "anthropic", || {
         probe_anthropic_status(&mut status)
     });
@@ -877,7 +877,7 @@ fn token_state(result: anyhow::Result<bool>) -> AuthState {
     }
 }
 
-fn probe_IDEOCODE_status(status: &mut AuthStatus) {
+fn probe_ideocode_status(status: &mut AuthStatus) {
     if crate::subscription_catalog::has_credentials() {
         status.IDEOCODE = AuthState::Available;
     }

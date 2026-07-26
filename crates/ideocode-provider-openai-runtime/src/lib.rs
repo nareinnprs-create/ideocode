@@ -2,22 +2,22 @@
 //! persistent WebSocket), moved out of `IDEOCODE-base` so provider edits compile
 //! only this crate plus a binary relink instead of rebuilding the
 //! base -> app-core -> tui spine. The binary's composition root registers
-//! [`OpenAIProvider`] with `IDEOCODE_base::provider::external` at startup.
+//! [`OpenAIProvider`] with `ideocode_base::provider::external` at startup.
 //!
-//! Model-catalog/account-availability state stays in `IDEOCODE_base::provider`
+//! Model-catalog/account-availability state stays in `ideocode_base::provider`
 //! (it is shared vocabulary for routing), as does the pure request shaping in
-//! `IDEOCODE_base::provider::openai_request`.
+//! `ideocode_base::provider::openai_request`.
 
 use anyhow::{Context, Result};
 use async_trait::async_trait;
 use futures::{FutureExt, SinkExt, StreamExt as FuturesStreamExt};
-use IDEOCODE_base::auth::codex::CodexCredentials;
-use IDEOCODE_base::auth::oauth;
-use IDEOCODE_base::provider::openai_request::{build_responses_input, build_tools};
+use ideocode_base::auth::codex::CodexCredentials;
+use ideocode_base::auth::oauth;
+use ideocode_base::provider::openai_request::{build_responses_input, build_tools};
 #[cfg(test)]
-use IDEOCODE_message_types::TOOL_OUTPUT_MISSING_TEXT;
-use IDEOCODE_message_types::{Message as ChatMessage, StreamEvent, ToolDefinition};
-use IDEOCODE_provider_core::{EventStream, Provider};
+use ideocode_message_types::TOOL_OUTPUT_MISSING_TEXT;
+use ideocode_message_types::{Message as ChatMessage, StreamEvent, ToolDefinition};
+use ideocode_provider_core::{EventStream, Provider};
 
 #[cfg(test)]
 const OPENAI_API_BASE: &str = "https://api.openai.com/v1";
@@ -40,10 +40,10 @@ use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
 
 const CHATGPT_API_BASE: &str = "https://chatgpt.com/backend-api/codex";
 const RESPONSES_PATH: &str = "responses";
-const DEFAULT_MODEL: &str = IDEOCODE_provider_core::DEFAULT_OPENAI_MODEL;
+const DEFAULT_MODEL: &str = ideocode_provider_core::DEFAULT_OPENAI_MODEL;
 const ORIGINATOR: &str = "codex_cli_rs";
 
-pub(crate) const CHATGPT_WEB_MODEL: &str = IDEOCODE_provider_core::CHATGPT_WEB_MODEL;
+pub(crate) const CHATGPT_WEB_MODEL: &str = ideocode_provider_core::CHATGPT_WEB_MODEL;
 
 pub(crate) fn is_chatgpt_web_model(model: &str) -> bool {
     model.trim() == CHATGPT_WEB_MODEL
@@ -97,20 +97,20 @@ static WEBSOCKET_PERSISTENT_IDLE_RECONNECT_SECS: LazyLock<Option<u64>> = LazyLoc
     match std::env::var("IDEOCODE_OPENAI_WS_IDLE_RECONNECT_SECS") {
         Ok(raw) => match raw.trim().parse::<u64>() {
             Ok(0) => {
-                IDEOCODE_base::logging::info(
+                ideocode_base::logging::info(
                     "OpenAI persistent WS idle reconnect disabled (IDEOCODE_OPENAI_WS_IDLE_RECONNECT_SECS=0); relying on healthcheck + max-age",
                 );
                 None
             }
             Ok(secs) => {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "OpenAI persistent WS idle reconnect threshold set to {}s (IDEOCODE_OPENAI_WS_IDLE_RECONNECT_SECS)",
                     secs
                 ));
                 Some(secs)
             }
             Err(_) => {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Warning: invalid IDEOCODE_OPENAI_WS_IDLE_RECONNECT_SECS '{}'; using default {}s",
                     raw, WEBSOCKET_PERSISTENT_IDLE_RECONNECT_SECS_DEFAULT
                 ));
@@ -149,7 +149,7 @@ impl OpenAITransportMode {
             "websocket" | "ws" | "wss" => Self::WebSocket,
             "https" | "http" | "sse" => Self::HTTPS,
             other => {
-                IDEOCODE_base::logging::warn(&format!(
+                ideocode_base::logging::warn(&format!(
                     "Unknown IDEOCODE_OPENAI_TRANSPORT '{}'; using auto. Use: auto, websocket, or https.",
                     other
                 ));
@@ -196,16 +196,16 @@ enum OpenAINativeCompactionMode {
     Off,
 }
 
-/// Shared dual-auth credential pin (see `IDEOCODE_provider_core::CredentialMode`).
+/// Shared dual-auth credential pin (see `ideocode_provider_core::CredentialMode`).
 /// The OpenAI-specific alias is kept so existing call sites read naturally.
-pub(crate) use IDEOCODE_provider_core::CredentialMode as OpenAICredentialMode;
+pub(crate) use ideocode_provider_core::CredentialMode as OpenAICredentialMode;
 
 /// Load Codex credentials for the given credential pin.
 pub(crate) fn load_credentials_for_mode(mode: OpenAICredentialMode) -> Result<CodexCredentials> {
     match mode {
-        OpenAICredentialMode::Auto => IDEOCODE_base::auth::codex::load_credentials(),
-        OpenAICredentialMode::OAuth => IDEOCODE_base::auth::codex::load_oauth_credentials(),
-        OpenAICredentialMode::ApiKey => IDEOCODE_base::auth::codex::load_api_key_credentials(),
+        OpenAICredentialMode::Auto => ideocode_base::auth::codex::load_credentials(),
+        OpenAICredentialMode::OAuth => ideocode_base::auth::codex::load_oauth_credentials(),
+        OpenAICredentialMode::ApiKey => ideocode_base::auth::codex::load_api_key_credentials(),
     }
 }
 
@@ -216,7 +216,7 @@ impl OpenAINativeCompactionMode {
             "explicit" | "manual" => Self::Explicit,
             "off" | "disabled" | "none" => Self::Off,
             other => {
-                IDEOCODE_base::logging::warn(&format!(
+                ideocode_base::logging::warn(&format!(
                     "Unknown OpenAI native compaction mode '{}'; using auto. Use: auto, explicit, or off.",
                     other
                 ));
@@ -244,7 +244,7 @@ impl OpenAITransport {
 }
 
 fn log_openai_stream_lifecycle(
-    level: IDEOCODE_base::logging::LogLevel,
+    level: ideocode_base::logging::LogLevel,
     phase: &str,
     fields: Vec<(&str, String)>,
 ) {
@@ -257,7 +257,7 @@ fn log_openai_stream_lifecycle(
             .into_iter()
             .map(|(key, value)| (key.to_string(), value)),
     );
-    IDEOCODE_base::logging::event(level, "PROVIDER_STREAM_LIFECYCLE", owned);
+    ideocode_base::logging::event(level, "PROVIDER_STREAM_LIFECYCLE", owned);
 }
 
 fn openai_request_model(request: &Value) -> String {
@@ -436,7 +436,7 @@ fn persistent_ws_idle_requires_reconnect(idle_for: Duration) -> bool {
 
 async fn emit_connection_phase(
     tx: &mpsc::Sender<Result<StreamEvent>>,
-    phase: IDEOCODE_message_types::ConnectionPhase,
+    phase: ideocode_message_types::ConnectionPhase,
 ) {
     let _ = tx.send(Ok(StreamEvent::ConnectionPhase { phase })).await;
 }
@@ -470,7 +470,7 @@ async fn ensure_persistent_ws_is_healthy(
 ) -> Result<PersistentWsHealth, String> {
     let response_idle_for = state.last_response_completed_at.elapsed();
     if persistent_ws_idle_requires_reconnect(response_idle_for) {
-        IDEOCODE_base::logging::info(&format!(
+        ideocode_base::logging::info(&format!(
             "Persistent WS idle for {}s; reconnecting before reuse",
             response_idle_for.as_secs()
         ));
@@ -486,7 +486,7 @@ async fn ensure_persistent_ws_is_healthy(
     }
 
     if verbose {
-        IDEOCODE_base::logging::info(&format!(
+        ideocode_base::logging::info(&format!(
             "Persistent WS idle for {}ms; sending healthcheck ping before reuse",
             idle_for.as_millis()
         ));
@@ -517,7 +517,7 @@ async fn ensure_persistent_ws_is_healthy(
             Some(Ok(WsMessage::Pong(payload))) if payload == ping_payload => {
                 state.last_activity_at = Instant::now();
                 if verbose {
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "Persistent WS healthcheck pong after {}ms",
                         started_at.elapsed().as_millis()
                     ));
@@ -612,7 +612,7 @@ fn spawn_persistent_ws_keepalive_with_interval(
                 >= Duration::from_secs(WEBSOCKET_PERSISTENT_MAX_AGE_SECS)
             {
                 log_openai_stream_lifecycle(
-                    IDEOCODE_base::logging::LogLevel::Info,
+                    ideocode_base::logging::LogLevel::Info,
                     "persistent_state_reset",
                     vec![
                         ("model", model.clone()),
@@ -626,12 +626,12 @@ fn spawn_persistent_ws_keepalive_with_interval(
 
             let response_idle_for = state.last_response_completed_at.elapsed();
             if persistent_ws_idle_requires_reconnect(response_idle_for) {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Persistent WS idle for {}s; stopping background keepalive",
                     response_idle_for.as_secs()
                 ));
                 log_openai_stream_lifecycle(
-                    IDEOCODE_base::logging::LogLevel::Info,
+                    ideocode_base::logging::LogLevel::Info,
                     "persistent_state_reset",
                     vec![
                         ("model", model.clone()),
@@ -656,12 +656,12 @@ fn spawn_persistent_ws_keepalive_with_interval(
                     reset_reason,
                     detail,
                 }) => {
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "Persistent WS background keepalive requested reconnect: {}",
                         detail
                     ));
                     log_openai_stream_lifecycle(
-                        IDEOCODE_base::logging::LogLevel::Info,
+                        ideocode_base::logging::LogLevel::Info,
                         "persistent_state_reset",
                         vec![
                             ("model", model.clone()),
@@ -674,12 +674,12 @@ fn spawn_persistent_ws_keepalive_with_interval(
                     return;
                 }
                 Err(error) => {
-                    IDEOCODE_base::logging::warn(&format!(
+                    ideocode_base::logging::warn(&format!(
                         "Persistent WS background keepalive failed: {}",
                         error
                     ));
                     log_openai_stream_lifecycle(
-                        IDEOCODE_base::logging::LogLevel::Warn,
+                        ideocode_base::logging::LogLevel::Warn,
                         "persistent_state_reset",
                         vec![
                             ("model", model.clone()),
@@ -723,7 +723,7 @@ pub struct OpenAIProvider {
 
 impl OpenAIProvider {
     pub(crate) fn supports_extended_prompt_cache_retention(model_id: &str) -> bool {
-        IDEOCODE_base::provider::openai::supports_extended_prompt_cache_retention(model_id)
+        ideocode_base::provider::openai::supports_extended_prompt_cache_retention(model_id)
     }
 
     fn effective_prompt_cache_retention<'a>(
@@ -758,7 +758,7 @@ impl OpenAIProvider {
         let credential_mode = if browser_only {
             OpenAICredentialMode::Auto
         } else {
-            OpenAICredentialMode::from_runtime_env(IDEOCODE_provider_core::DualAuthProvider::OpenAI)
+            OpenAICredentialMode::from_runtime_env(ideocode_provider_core::DualAuthProvider::OpenAI)
         };
         let credentials = if browser_only {
             credentials
@@ -781,11 +781,11 @@ impl OpenAIProvider {
                 .to_string()
         };
         if !is_chatgpt_web_model(&model)
-            && !IDEOCODE_base::provider::known_openai_model_ids()
+            && !ideocode_base::provider::known_openai_model_ids()
                 .iter()
                 .any(|known| known == &model)
         {
-            IDEOCODE_base::logging::info(&format!(
+            ideocode_base::logging::info(&format!(
                 "Warning: '{}' is not supported; falling back to '{}'",
                 model, DEFAULT_MODEL
             ));
@@ -803,7 +803,7 @@ impl OpenAIProvider {
         let prompt_cache_retention = match prompt_cache_retention.as_deref() {
             Some("in_memory") | Some("24h") => prompt_cache_retention,
             Some(other) => {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Warning: Unsupported IDEOCODE_OPENAI_PROMPT_CACHE_RETENTION '{}'; expected 'in_memory' or '24h'",
                     other
                 ));
@@ -812,37 +812,37 @@ impl OpenAIProvider {
             None => None,
         };
         let max_output_tokens = Self::load_max_output_tokens();
-        let reasoning_effort = IDEOCODE_base::config::config()
+        let reasoning_effort = ideocode_base::config::config()
             .provider
             .openai_reasoning_effort
             .as_deref()
             .and_then(Self::normalize_reasoning_effort);
         let service_tier = Self::load_service_tier(
-            IDEOCODE_base::config::config()
+            ideocode_base::config::config()
                 .provider
                 .openai_service_tier
                 .as_deref(),
         );
         let transport_mode = OpenAITransportMode::from_config(
-            IDEOCODE_base::config::config()
+            ideocode_base::config::config()
                 .provider
                 .openai_transport
                 .as_deref(),
         );
         let native_compaction_mode = OpenAINativeCompactionMode::from_config(
-            &IDEOCODE_base::config::config()
+            &ideocode_base::config::config()
                 .provider
                 .openai_native_compaction_mode,
         );
-        let native_compaction_threshold_tokens = IDEOCODE_base::config::config()
+        let native_compaction_threshold_tokens = ideocode_base::config::config()
             .provider
             .openai_native_compaction_threshold_tokens
             .max(1000);
         let model_reasoning_efforts =
-            IDEOCODE_base::provider::cached_openai_reasoning_efforts().unwrap_or_default();
+            ideocode_base::provider::cached_openai_reasoning_efforts().unwrap_or_default();
 
         let provider = Self {
-            client: IDEOCODE_provider_core::shared_http_client(),
+            client: ideocode_provider_core::shared_http_client(),
             credentials: Arc::new(RwLock::new(credentials)),
             credential_mode: Arc::new(RwLock::new(credential_mode)),
             model: Arc::new(RwLock::new(model)),
@@ -883,7 +883,7 @@ impl OpenAIProvider {
                     self.reload_cached_reasoning_efforts();
                 }
                 Err(_) => {
-                    IDEOCODE_base::logging::info(
+                    ideocode_base::logging::info(
                         "OpenAI credentials were updated on disk, but the in-memory credential lock was busy; async refresh will retry",
                     );
                 }
@@ -921,19 +921,19 @@ impl OpenAIProvider {
         // Keep the runtime provider identity in sync with the explicit credential
         // choice so UI surfaces report the auth method requests will actually use.
         // `Auto` leaves the existing identity untouched.
-        if let Some(route) = mode.auth_route(IDEOCODE_provider_core::DualAuthProvider::OpenAI) {
-            IDEOCODE_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", route.runtime_provider_key());
+        if let Some(route) = mode.auth_route(ideocode_provider_core::DualAuthProvider::OpenAI) {
+            ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", route.runtime_provider_key());
         }
         // Drop any cached auth snapshot so surfaces that still consult the cheap
         // cached probe (auto-mode resolution, usage availability, account labels)
         // re-derive from the new credential choice on their next read instead of
         // lingering on a snapshot taken before the switch.
-        IDEOCODE_base::auth::AuthStatus::invalidate_cached_status();
+        ideocode_base::auth::AuthStatus::invalidate_cached_status();
         Ok(())
     }
 
     fn reload_cached_reasoning_efforts(&self) {
-        let cached = IDEOCODE_base::provider::cached_openai_reasoning_efforts().unwrap_or_default();
+        let cached = ideocode_base::provider::cached_openai_reasoning_efforts().unwrap_or_default();
         match self.model_reasoning_efforts.write() {
             Ok(mut efforts) => *efforts = cached,
             Err(poisoned) => *poisoned.into_inner() = cached,
@@ -951,7 +951,7 @@ impl OpenAIProvider {
     fn clear_persistent_ws_try(&self, reason: &str) {
         if let Ok(mut persistent_ws) = self.persistent_ws.try_lock() {
             if persistent_ws.is_some() {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Clearing persistent OpenAI WS state: {}",
                     reason
                 ));
@@ -963,7 +963,7 @@ impl OpenAIProvider {
     async fn clear_persistent_ws(&self, reason: &str) {
         let mut persistent_ws = self.persistent_ws.lock().await;
         if persistent_ws.is_some() {
-            IDEOCODE_base::logging::info(&format!("Clearing persistent OpenAI WS state: {}", reason));
+            ideocode_base::logging::info(&format!("Clearing persistent OpenAI WS state: {}", reason));
         }
         *persistent_ws = None;
     }
@@ -1001,7 +1001,7 @@ impl OpenAIProvider {
             "none" | "minimal" | "low" | "medium" | "high" | "xhigh" | "max" | "swarm"
             | "swarm-deep" => Some(value),
             other => {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Warning: Ignoring unsupported OpenAI reasoning effort '{}'; expected none|minimal|low|medium|high|xhigh|max.",
                     other
                 ));
@@ -1019,12 +1019,12 @@ impl OpenAIProvider {
         let Some(current) = current else {
             return;
         };
-        if IDEOCODE_base::prompt::is_swarm_effort(&current)
+        if ideocode_base::prompt::is_swarm_effort(&current)
             || self.available_efforts().contains(&current.as_str())
         {
             return;
         }
-        IDEOCODE_base::logging::info(&format!(
+        ideocode_base::logging::info(&format!(
             "Clearing OpenAI reasoning effort '{}' because model '{}' does not advertise it",
             current,
             self.model()
@@ -1040,13 +1040,13 @@ impl OpenAIProvider {
     /// effort, falling back to `max` before catalog metadata is available.
     fn api_reasoning_effort(&self, effort: Option<&str>) -> Option<String> {
         match effort {
-            Some(e) if IDEOCODE_base::prompt::is_swarm_effort(e) => {
+            Some(e) if ideocode_base::prompt::is_swarm_effort(e) => {
                 let available = self.available_efforts();
-                IDEOCODE_provider_core::OPENAI_SELECTABLE_EFFORTS
+                ideocode_provider_core::OPENAI_SELECTABLE_EFFORTS
                     .iter()
                     .rev()
                     .find(|candidate| {
-                        !IDEOCODE_base::prompt::is_swarm_effort(candidate)
+                        !ideocode_base::prompt::is_swarm_effort(candidate)
                             && available.contains(candidate)
                     })
                     .map(|effort| (*effort).to_string())
@@ -1081,7 +1081,7 @@ impl OpenAIProvider {
             Ok(0) => None,
             Ok(value) => Some(value),
             Err(_) => {
-                IDEOCODE_base::logging::warn(&format!(
+                ideocode_base::logging::warn(&format!(
                     "Invalid IDEOCODE_OPENAI_MAX_OUTPUT_TOKENS='{}'; using default {}",
                     raw, DEFAULT_MAX_OUTPUT_TOKENS
                 ));
@@ -1112,7 +1112,7 @@ impl OpenAIProvider {
         match Self::normalize_service_tier(raw) {
             Ok(value) => value,
             Err(err) => {
-                IDEOCODE_base::logging::warn(&format!(
+                ideocode_base::logging::warn(&format!(
                     "{}; ignoring configured service tier override",
                     err
                 ));
@@ -1126,11 +1126,11 @@ impl OpenAIProvider {
         let parsed = Self::parse_max_output_tokens(raw.as_deref());
         if raw.is_some() {
             match parsed {
-                Some(value) => IDEOCODE_base::logging::info(&format!(
+                Some(value) => ideocode_base::logging::info(&format!(
                     "OpenAI max_output_tokens configured to {}",
                     value
                 )),
-                None => IDEOCODE_base::logging::info(
+                None => ideocode_base::logging::info(
                     "OpenAI max_output_tokens disabled (IDEOCODE_OPENAI_MAX_OUTPUT_TOKENS=0)",
                 ),
             }
@@ -1161,7 +1161,7 @@ impl OpenAIProvider {
     /// A `/responses` suffix is not expected here (it is appended by callers),
     /// so a trailing `/responses` is trimmed to avoid `.../responses/responses`.
     pub(crate) fn resolve_api_base() -> String {
-        IDEOCODE_base::provider::openai::resolve_api_base()
+        ideocode_base::provider::openai::resolve_api_base()
     }
 
     fn responses_ws_url(credentials: &CodexCredentials) -> String {
@@ -1248,20 +1248,20 @@ impl OpenAIProvider {
 
     async fn model_id(&self) -> String {
         let current = self.model.read().await.clone();
-        let availability = IDEOCODE_base::provider::model_availability_for_account(&current);
+        let availability = ideocode_base::provider::model_availability_for_account(&current);
 
         match availability.state {
-            IDEOCODE_base::provider::AccountModelAvailabilityState::Unavailable => {
+            ideocode_base::provider::AccountModelAvailabilityState::Unavailable => {
                 if let Some(detail) = availability.reason {
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "Model '{}' currently unavailable ({}); selecting fallback",
                         current, detail
                     ));
                 }
-                if let Some(fallback) = IDEOCODE_base::provider::get_best_available_openai_model()
+                if let Some(fallback) = ideocode_base::provider::get_best_available_openai_model()
                     && fallback != current
                 {
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "Model '{}' not available for account; falling back to '{}'",
                         current, fallback
                     ));
@@ -1276,9 +1276,9 @@ impl OpenAIProvider {
                     return fallback;
                 }
             }
-            IDEOCODE_base::provider::AccountModelAvailabilityState::Unknown => {
-                if IDEOCODE_base::provider::should_refresh_openai_model_catalog()
-                    && IDEOCODE_base::provider::begin_openai_model_catalog_refresh()
+            ideocode_base::provider::AccountModelAvailabilityState::Unknown => {
+                if ideocode_base::provider::should_refresh_openai_model_catalog()
+                    && ideocode_base::provider::begin_openai_model_catalog_refresh()
                 {
                     let is_chatgpt_mode = {
                         let creds = self.credentials.read().await;
@@ -1293,14 +1293,14 @@ impl OpenAIProvider {
                         Ok(token) => token,
                         Err(_) => self.credentials.read().await.access_token.clone(),
                     };
-                    IDEOCODE_base::provider::refresh_openai_model_catalog_in_background(
+                    ideocode_base::provider::refresh_openai_model_catalog_in_background(
                         token,
                         is_chatgpt_mode,
                         "openai-request-setup",
                     );
                 }
             }
-            IDEOCODE_base::provider::AccountModelAvailabilityState::Available => {}
+            ideocode_base::provider::AccountModelAvailabilityState::Available => {}
         }
 
         current.strip_suffix("[1m]").unwrap_or(&current).to_string()

@@ -258,7 +258,7 @@ fn prepare_visible_spawn_session_persists_startup_before_launch() {
         Some(startup),
         |session_id, _cwd: &std::path::Path, _selfdev, provider_key| {
             assert_eq!(provider_key, None);
-            let path = crate::storage::IDEOCODE_dir()
+            let path = crate::storage::ideocode_dir()
                 .expect("IDEOCODE dir")
                 .join(format!("client-input-{}", session_id));
             let data = std::fs::read_to_string(&path).expect("startup file should exist");
@@ -276,7 +276,7 @@ fn prepare_visible_spawn_session_persists_startup_before_launch() {
     .expect("visible spawn preparation should succeed");
 
     assert!(launched);
-    let path = crate::storage::IDEOCODE_dir()
+    let path = crate::storage::ideocode_dir()
         .expect("IDEOCODE dir")
         .join(format!("client-input-{}", session_id));
     assert!(
@@ -308,7 +308,7 @@ fn prepare_visible_spawn_session_cleans_startup_when_launch_not_started() {
     .expect("visible spawn preparation should succeed even when launch is skipped");
 
     assert!(!launched);
-    let path = crate::storage::IDEOCODE_dir()
+    let path = crate::storage::ideocode_dir()
         .expect("IDEOCODE dir")
         .join(format!("client-input-{}", session_id));
     assert!(
@@ -346,7 +346,7 @@ fn prepare_visible_spawn_session_cleans_session_when_launch_errors() {
     .expect_err("visible spawn preparation should surface launch error");
 
     assert!(error.to_string().contains("launch failed"));
-    let sessions_dir = crate::storage::IDEOCODE_dir()
+    let sessions_dir = crate::storage::ideocode_dir()
         .expect("IDEOCODE dir")
         .join("sessions");
     let remaining_sessions = std::fs::read_dir(&sessions_dir)

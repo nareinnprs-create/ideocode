@@ -2,16 +2,16 @@
 //!
 //! This is pure filesystem state keyed by session ID, used to discover which
 //! sessions are currently running (and to map a PID back to its session). It
-//! lives in the storage crate because it only needs [`IDEOCODE_dir`] and is a
+//! lives in the storage crate because it only needs [`ideocode_dir`] and is a
 //! low-level concern shared by session management, dictation, and crash
 //! recovery, none of which should pull the full `session` module into scope.
 
-use crate::IDEOCODE_dir;
+use crate::ideocode_dir;
 use std::path::PathBuf;
 
 /// Directory holding one file per active session ID (`~/.IDEOCODE/active_pids`).
 pub fn active_pids_dir() -> Option<PathBuf> {
-    IDEOCODE_dir().ok().map(|d| d.join("active_pids"))
+    ideocode_dir().ok().map(|d| d.join("active_pids"))
 }
 
 /// Directory holding per-session "currently streaming" markers. A marker file
@@ -19,7 +19,7 @@ pub fn active_pids_dir() -> Option<PathBuf> {
 /// file content is the owning process PID so stale markers (from crashed
 /// processes) can be detected and ignored.
 pub fn streaming_pids_dir() -> Option<std::path::PathBuf> {
-    IDEOCODE_dir().ok().map(|d| d.join("streaming_pids"))
+    ideocode_dir().ok().map(|d| d.join("streaming_pids"))
 }
 
 /// Directory holding markers for internal sessions (debug/test sessions and
@@ -28,7 +28,7 @@ pub fn streaming_pids_dir() -> Option<std::path::PathBuf> {
 /// only want to show top-level sessions the user opened directly, so internal
 /// ones are flagged here and filtered out of user-facing counts (issue #508).
 pub fn internal_pids_dir() -> Option<std::path::PathBuf> {
-    IDEOCODE_dir().ok().map(|d| d.join("internal_pids"))
+    ideocode_dir().ok().map(|d| d.join("internal_pids"))
 }
 
 /// Flag (or unflag) `session_id` as an internal session for presence UIs.
@@ -280,7 +280,7 @@ mod tests {
     fn session_counts_counts_live_and_streaming_only() {
         let _guard = lock_env();
         let temp = tempfile::tempdir().expect("tempdir");
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp.path());
+        ideocode_core::env::set_var("IDEOCODE_HOME", temp.path());
 
         let live = std::process::id();
         // Pick a PID that is almost certainly dead.
@@ -332,14 +332,14 @@ mod tests {
         unregister_active_pid("session_epsilon");
         assert_eq!(session_counts().streaming, 0);
 
-        IDEOCODE_core::env::remove_var("IDEOCODE_HOME");
+        ideocode_core::env::remove_var("IDEOCODE_HOME");
     }
 
     #[test]
     fn streaming_guard_marks_and_clears_on_drop() {
         let _guard = lock_env();
         let temp = tempfile::tempdir().expect("tempdir");
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp.path());
+        ideocode_core::env::set_var("IDEOCODE_HOME", temp.path());
 
         register_active_pid("session_guard", std::process::id());
         assert_eq!(session_counts().streaming, 0);
@@ -349,7 +349,7 @@ mod tests {
         }
         assert_eq!(session_counts().streaming, 0);
 
-        IDEOCODE_core::env::remove_var("IDEOCODE_HOME");
+        ideocode_core::env::remove_var("IDEOCODE_HOME");
     }
 
     /// Issue #508: internal (debug/child) sessions stay in the raw registry
@@ -358,7 +358,7 @@ mod tests {
     fn user_session_counts_exclude_internal_sessions() {
         let _guard = lock_env();
         let temp = tempfile::tempdir().expect("tempdir");
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp.path());
+        ideocode_core::env::set_var("IDEOCODE_HOME", temp.path());
 
         let live = std::process::id();
         register_active_pid("session_user", live);
@@ -388,6 +388,6 @@ mod tests {
         unregister_active_pid("session_worker");
         assert!(!session_is_internal("session_worker"));
 
-        IDEOCODE_core::env::remove_var("IDEOCODE_HOME");
+        ideocode_core::env::remove_var("IDEOCODE_HOME");
     }
 }

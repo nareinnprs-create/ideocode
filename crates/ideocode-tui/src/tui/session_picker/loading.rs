@@ -154,7 +154,7 @@ pub fn invalidate_session_list_cache() {
 }
 
 fn session_list_disk_cache_path() -> Result<PathBuf> {
-    Ok(storage::IDEOCODE_dir()?.join("cache/session-picker-list-v1.json"))
+    Ok(storage::ideocode_dir()?.join("cache/session-picker-list-v1.json"))
 }
 
 fn session_list_disk_cache_is_usable(
@@ -200,7 +200,7 @@ fn write_grouped_session_list_disk_cache(
 }
 
 pub fn load_cached_sessions_grouped() -> Option<(Vec<ServerGroup>, Vec<SessionInfo>)> {
-    let sessions_dir = storage::IDEOCODE_dir().ok()?.join("sessions");
+    let sessions_dir = storage::ideocode_dir().ok()?.join("sessions");
     let scan_limit = session_scan_limit();
     let path = session_list_disk_cache_path().ok()?;
     let cache: GroupedSessionListDiskCache = storage::read_json(&path).ok()?;
@@ -374,7 +374,7 @@ fn session_transcript_contains_query(session: &SessionInfo, query_lower: &str) -
 fn transcript_paths_for_session(session: &SessionInfo) -> Vec<PathBuf> {
     match &session.resume_target {
         ResumeTarget::IDEOCODESession { session_id } => {
-            let Ok(sessions_dir) = storage::IDEOCODE_dir().map(|dir| dir.join("sessions")) else {
+            let Ok(sessions_dir) = storage::ideocode_dir().map(|dir| dir.join("sessions")) else {
                 return Vec::new();
             };
             vec![
@@ -1587,7 +1587,7 @@ pub(super) fn crashed_sessions_from_all_sessions(
 /// Parse a single IDEOCODE session snapshot (+ journal) into a [`SessionInfo`],
 /// returning `None` for empty/imported sessions or read/parse errors. Pulled out
 /// of `load_sessions` so the summary pass can run across a scoped thread pool.
-fn parse_IDEOCODE_session_info(
+fn parse_ideocode_session_info(
     sessions_dir: &Path,
     stem: &str,
     catchup_seen: &crate::catchup::CatchupSeenSnapshot,
@@ -1682,7 +1682,7 @@ fn parse_IDEOCODE_session_info(
 }
 
 pub fn load_sessions() -> Result<Vec<SessionInfo>> {
-    let sessions_dir = storage::IDEOCODE_dir()?.join("sessions");
+    let sessions_dir = storage::ideocode_dir()?.join("sessions");
     let scan_limit = session_scan_limit();
 
     if let Ok(cache) = session_list_cache().lock()
@@ -1752,7 +1752,7 @@ pub fn load_sessions() -> Result<Vec<SessionInfo>> {
             let end = (start + window).min(candidates.len());
             let batch = candidates[start..end].to_vec();
             let parsed = parallel_map(batch, move |stem| {
-                parse_IDEOCODE_session_info(sessions_dir_ref, &stem, catchup_ref)
+                parse_ideocode_session_info(sessions_dir_ref, &stem, catchup_ref)
             });
             for (offset, parsed_session) in parsed.into_iter().enumerate() {
                 if let Some(info) = parsed_session {
@@ -1787,7 +1787,7 @@ pub fn load_sessions() -> Result<Vec<SessionInfo>> {
             .flatten()
             .collect();
             let saved_sessions = parallel_map(gate_passers, move |stem| {
-                parse_IDEOCODE_session_info(sessions_dir_ref, &stem, catchup_ref)
+                parse_ideocode_session_info(sessions_dir_ref, &stem, catchup_ref)
             });
             sessions.extend(saved_sessions.into_iter().flatten());
         }
@@ -1839,7 +1839,7 @@ fn load_external_claude_code_sessions(scan_limit: usize) -> Vec<SessionInfo> {
                 .and_then(|name| name.to_str())
                 .map(|name| name.to_string())
                 .unwrap_or_else(|| {
-                    format!("claude {}", IDEOCODE_core::util::truncate_str(&session_id, 8))
+                    format!("claude {}", ideocode_core::util::truncate_str(&session_id, 8))
                 });
             // Keep /resume startup focused on cheap metadata. Transcript-backed
             // search text is intentionally loaded lazily through preview loading;
@@ -1994,10 +1994,10 @@ fn load_codex_session_stub(path: &Path) -> Result<Option<SessionInfo>> {
         .get("cwd")
         .and_then(|v| v.as_str())
         .map(|s| s.to_string());
-    let short_name = format!("codex {}", IDEOCODE_core::util::truncate_str(&session_id, 8));
+    let short_name = format!("codex {}", ideocode_core::util::truncate_str(&session_id, 8));
     let title = format!(
         "Codex session {}",
-        IDEOCODE_core::util::truncate_str(&session_id, 8)
+        ideocode_core::util::truncate_str(&session_id, 8)
     );
     let search_index = build_search_index(
         &format!("codex:{session_id}"),
@@ -2191,10 +2191,10 @@ fn load_pi_session_stub(path: &Path) -> Result<Option<SessionInfo>> {
         .get("cwd")
         .and_then(|v| v.as_str())
         .map(|s| s.to_string());
-    let short_name = format!("pi {}", IDEOCODE_core::util::truncate_str(&session_id, 8));
+    let short_name = format!("pi {}", ideocode_core::util::truncate_str(&session_id, 8));
     let title = format!(
         "Pi session {}",
-        IDEOCODE_core::util::truncate_str(&session_id, 8)
+        ideocode_core::util::truncate_str(&session_id, 8)
     );
     let search_index = build_search_index(
         &format!("pi:{session_id}"),
@@ -2349,11 +2349,11 @@ fn load_pi_session_info(path: &Path) -> Result<Option<SessionInfo>> {
         return Ok(None);
     }
 
-    let short_name = format!("pi {}", IDEOCODE_core::util::truncate_str(&session_id, 8));
+    let short_name = format!("pi {}", ideocode_core::util::truncate_str(&session_id, 8));
     let title = title.unwrap_or_else(|| {
         format!(
             "Pi session {}",
-            IDEOCODE_core::util::truncate_str(&session_id, 8)
+            ideocode_core::util::truncate_str(&session_id, 8)
         )
     });
     let search_index = build_search_index(
@@ -2457,7 +2457,7 @@ fn load_opencode_session_stub(path: &Path) -> Result<Option<SessionInfo>> {
         .map(|s| s.to_string());
     let short_name = format!(
         "opencode {}",
-        IDEOCODE_core::util::truncate_str(&session_id, 8)
+        ideocode_core::util::truncate_str(&session_id, 8)
     );
     let title = value
         .get("title")
@@ -2466,7 +2466,7 @@ fn load_opencode_session_stub(path: &Path) -> Result<Option<SessionInfo>> {
         .unwrap_or_else(|| {
             format!(
                 "OpenCode session {}",
-                IDEOCODE_core::util::truncate_str(&session_id, 8)
+                ideocode_core::util::truncate_str(&session_id, 8)
             )
         });
     let search_index = build_search_index(
@@ -2548,7 +2548,7 @@ fn load_opencode_session_info(path: &Path) -> Result<Option<SessionInfo>> {
         .unwrap_or_else(|| {
             format!(
                 "OpenCode session {}",
-                IDEOCODE_core::util::truncate_str(&session_id, 8)
+                ideocode_core::util::truncate_str(&session_id, 8)
             )
         });
 
@@ -2613,7 +2613,7 @@ fn load_opencode_session_info(path: &Path) -> Result<Option<SessionInfo>> {
 
     let short_name = format!(
         "opencode {}",
-        IDEOCODE_core::util::truncate_str(&session_id, 8)
+        ideocode_core::util::truncate_str(&session_id, 8)
     );
     let search_index = build_search_index(
         &format!("opencode:{session_id}"),
@@ -2784,14 +2784,14 @@ fn load_cursor_session_stub(path: &Path) -> Result<Option<SessionInfo>> {
         .and_then(|dir| Path::new(dir).file_name())
         .and_then(|name| name.to_str())
         .map(|name| name.to_string())
-        .unwrap_or_else(|| format!("cursor {}", IDEOCODE_core::util::truncate_str(&session_id, 8)));
+        .unwrap_or_else(|| format!("cursor {}", ideocode_core::util::truncate_str(&session_id, 8)));
     let title = first_user_text
         .as_deref()
         .map(|text| truncate_title_text(text, 72))
         .unwrap_or_else(|| {
             format!(
                 "Cursor session {}",
-                IDEOCODE_core::util::truncate_str(&session_id, 8)
+                ideocode_core::util::truncate_str(&session_id, 8)
             )
         });
     let search_index = build_search_index(
@@ -2852,7 +2852,7 @@ pub fn load_servers() -> Vec<ServerInfo> {
 }
 
 pub fn load_sessions_grouped() -> Result<(Vec<ServerGroup>, Vec<SessionInfo>)> {
-    let sessions_dir = storage::IDEOCODE_dir()?.join("sessions");
+    let sessions_dir = storage::ideocode_dir()?.join("sessions");
     let scan_limit = session_scan_limit();
     let all_sessions = load_sessions()?;
     let servers = load_servers();

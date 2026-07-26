@@ -8,7 +8,7 @@ use crate::message::{
     format_background_task_notification_markdown, format_background_task_progress_markdown,
 };
 use crate::protocol::{NotificationType, ServerEvent};
-use IDEOCODE_agent_runtime::SoftInterruptSource;
+use ideocode_agent_runtime::SoftInterruptSource;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::Arc;
 use std::sync::atomic::AtomicU64;

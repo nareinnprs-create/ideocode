@@ -1,6 +1,6 @@
 ﻿use super::{
     MacTerminalKind, SetupHintsState, effective_macos_terminal, escape_applescript_text,
-    escape_shell_single_quotes, launch_command_for_macos_terminal, paused_IDEOCODE_shell_command,
+    escape_shell_single_quotes, launch_command_for_macos_terminal, paused_ideocode_shell_command,
     save_preferred_macos_terminal,
 };
 use anyhow::{Context, Result};
@@ -81,7 +81,7 @@ pub(super) fn install_macos_app_launcher() -> Result<(PathBuf, MacTerminalKind)>
 </dict>
 </plist>
 "#,
-        version = IDEOCODE_build_meta::version(),
+        version = ideocode_build_meta::version(),
         icon_file = MACOS_APP_ICON_FILE_NAME,
     );
     std::fs::write(contents_dir.join("Info.plist"), info_plist)?;
@@ -196,7 +196,7 @@ fn path_exists_with_exact_name(path: &Path) -> bool {
 fn macos_launcher_script(terminal: MacTerminalKind, exe_path: &str, app_dir: &Path) -> String {
     let app_dir_escaped = escape_shell_single_quotes(&app_dir.to_string_lossy());
     let exe_path_escaped = escape_shell_single_quotes(exe_path);
-    let shell_command = paused_IDEOCODE_shell_command(exe_path);
+    let shell_command = paused_ideocode_shell_command(exe_path);
     let launch_command = launch_command_for_macos_terminal(terminal, &shell_command);
     let missing_message = escape_applescript_text(&format!(
         "IDEOCODE could not launch because the executable was not found.\n\nExpected path:\n{}\n\nTry reinstalling IDEOCODE or rerun:\nIDEOCODE setup-launcher",

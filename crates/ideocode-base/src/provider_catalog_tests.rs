@@ -111,17 +111,17 @@ fn resolved_named_profile_suggests_newest_cached_live_release() {
     let _guard = EnvGuard::save(&["IDEOCODE_HOME"]);
     let temp = tempfile::tempdir().expect("tempdir");
     crate::env::set_var("IDEOCODE_HOME", temp.path());
-    IDEOCODE_provider_openrouter::save_disk_cache_with_source_for_namespace(
+    ideocode_provider_openrouter::save_disk_cache_with_source_for_namespace(
         "cerebras",
         &[
-            IDEOCODE_provider_openrouter::ModelInfo {
+            ideocode_provider_openrouter::ModelInfo {
                 id: "older-model".to_string(),
                 name: String::new(),
                 context_length: None,
                 pricing: Default::default(),
                 created: Some(1_700_000_000),
             },
-            IDEOCODE_provider_openrouter::ModelInfo {
+            ideocode_provider_openrouter::ModelInfo {
                 id: "newer-model".to_string(),
                 name: String::new(),
                 context_length: None,
@@ -148,17 +148,17 @@ fn resolved_named_profile_skips_non_chat_models_when_picking_newest_default() {
     let _guard = EnvGuard::save(&["IDEOCODE_HOME"]);
     let temp = tempfile::tempdir().expect("tempdir");
     crate::env::set_var("IDEOCODE_HOME", temp.path());
-    IDEOCODE_provider_openrouter::save_disk_cache_with_source_for_namespace(
+    ideocode_provider_openrouter::save_disk_cache_with_source_for_namespace(
         "cerebras",
         &[
-            IDEOCODE_provider_openrouter::ModelInfo {
+            ideocode_provider_openrouter::ModelInfo {
                 id: "older-chat-model".to_string(),
                 name: String::new(),
                 context_length: None,
                 pricing: Default::default(),
                 created: Some(1_700_000_000),
             },
-            IDEOCODE_provider_openrouter::ModelInfo {
+            ideocode_provider_openrouter::ModelInfo {
                 id: "newer-chat-model".to_string(),
                 name: String::new(),
                 context_length: None,
@@ -166,14 +166,14 @@ fn resolved_named_profile_skips_non_chat_models_when_picking_newest_default() {
                 created: Some(1_800_000_000),
             },
             // Newest of all, but a non-chat (TTS) model that must be skipped.
-            IDEOCODE_provider_openrouter::ModelInfo {
+            ideocode_provider_openrouter::ModelInfo {
                 id: "canopylabs/orpheus-v1-english".to_string(),
                 name: String::new(),
                 context_length: None,
                 pricing: Default::default(),
                 created: Some(1_900_000_000),
             },
-            IDEOCODE_provider_openrouter::ModelInfo {
+            ideocode_provider_openrouter::ModelInfo {
                 id: "whisper-large-v3".to_string(),
                 name: String::new(),
                 context_length: None,
@@ -964,7 +964,7 @@ fn quality_tier_ranks_flagship_above_bare_above_cheap() {
 
 #[test]
 fn newest_release_picker_prefers_strongest_tier_over_newest_cheap() {
-    use IDEOCODE_provider_openrouter::ModelInfo;
+    use ideocode_provider_openrouter::ModelInfo;
     let _lock = crate::storage::lock_test_env();
     let _env = EnvGuard::save(&["IDEOCODE_HOME"]);
     let temp = tempfile::tempdir().expect("tempdir");
@@ -981,7 +981,7 @@ fn newest_release_picker_prefers_strongest_tier_over_newest_cheap() {
     // A heterogeneous proxy catalog (like OpenCode Zen): the NEWEST model is a
     // cheap `*-flash`, but a slightly older flagship-marked model exists. The
     // picker must choose the flagship, not the newest-cheap.
-    IDEOCODE_provider_openrouter::save_disk_cache_with_source_for_namespace(
+    ideocode_provider_openrouter::save_disk_cache_with_source_for_namespace(
         "deepseek",
         &[
             mk("deepseek-v4-flash", 1_900_000_000), // newest, but cheap tier
@@ -1000,7 +1000,7 @@ fn newest_release_picker_prefers_strongest_tier_over_newest_cheap() {
 
 #[test]
 fn newest_release_picker_uses_recency_within_a_tier() {
-    use IDEOCODE_provider_openrouter::ModelInfo;
+    use ideocode_provider_openrouter::ModelInfo;
     let _lock = crate::storage::lock_test_env();
     let _env = EnvGuard::save(&["IDEOCODE_HOME"]);
     let temp = tempfile::tempdir().expect("tempdir");
@@ -1015,7 +1015,7 @@ fn newest_release_picker_uses_recency_within_a_tier() {
     };
 
     // All same (bare frontier) tier: recency decides.
-    IDEOCODE_provider_openrouter::save_disk_cache_with_source_for_namespace(
+    ideocode_provider_openrouter::save_disk_cache_with_source_for_namespace(
         "deepseek",
         &[
             mk("deepseek-v3", 1_700_000_000),
@@ -1040,7 +1040,7 @@ fn newest_release_picker_uses_recency_within_a_tier() {
 /// table) and are exempted.
 #[test]
 fn every_static_profile_model_has_a_known_context_limit() {
-    use IDEOCODE_provider_core::models::context_limit_for_model_with_provider;
+    use ideocode_provider_core::models::context_limit_for_model_with_provider;
 
     // Ids handled by dedicated first-party providers rather than the
     // OpenAI-compatible static table.
@@ -1054,7 +1054,7 @@ fn every_static_profile_model_has_a_known_context_limit() {
     }
 
     let mut missing: Vec<(String, String)> = Vec::new();
-    for profile in IDEOCODE_provider_metadata::openai_compatible_profiles()
+    for profile in ideocode_provider_metadata::openai_compatible_profiles()
         .iter()
         .copied()
     {
@@ -1081,7 +1081,7 @@ fn every_static_profile_model_has_a_known_context_limit() {
 
 #[test]
 fn open_weight_family_context_limits_match_published_windows() {
-    use IDEOCODE_provider_core::models::open_weight_family_context_limit as f;
+    use ideocode_provider_core::models::open_weight_family_context_limit as f;
 
     // GLM family spelling variants across gateways.
     assert_eq!(f("glm-4.5"), Some(128_000));

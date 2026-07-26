@@ -3,7 +3,7 @@
     save_tui_openai_compatible_key,
 };
 
-fn with_temp_IDEOCODE_home<T>(f: impl FnOnce() -> T) -> T {
+fn with_temp_ideocode_home<T>(f: impl FnOnce() -> T) -> T {
     let _env_guard = crate::storage::lock_test_env();
     let temp = tempfile::tempdir().expect("tempdir");
     let saved_env = [
@@ -72,7 +72,7 @@ fn oauth_preflight_mentions_manual_safe_callback_mode() {
 
 #[test]
 fn tui_openai_compatible_api_base_accepts_localhost_override() -> anyhow::Result<()> {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let resolved = save_tui_openai_compatible_api_base("http://localhost:11434/v1")?;
         assert_eq!(resolved.api_base, "http://localhost:11434/v1");
         assert!(!resolved.requires_api_key);
@@ -81,8 +81,8 @@ fn tui_openai_compatible_api_base_accepts_localhost_override() -> anyhow::Result
 }
 
 #[test]
-fn tui_openai_compatible_api_base_keeps_IDEOCODE_docs_and_remote_endpoint() -> anyhow::Result<()> {
-    with_temp_IDEOCODE_home(|| {
+fn tui_openai_compatible_api_base_keeps_ideocode_docs_and_remote_endpoint() -> anyhow::Result<()> {
+    with_temp_ideocode_home(|| {
         let resolved = save_tui_openai_compatible_api_base("https://api.deepseek.com/")?;
         assert_eq!(resolved.api_base, "https://api.deepseek.com");
         assert!(resolved.requires_api_key);
@@ -94,7 +94,7 @@ fn tui_openai_compatible_api_base_keeps_IDEOCODE_docs_and_remote_endpoint() -> a
 
 #[test]
 fn tui_openai_compatible_key_save_persists_key_for_current_session() -> anyhow::Result<()> {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let resolved = save_tui_openai_compatible_api_base("https://api.example.com/v1")?;
         let resolved = save_tui_openai_compatible_key(
             crate::provider_catalog::OPENAI_COMPAT_PROFILE,
@@ -121,7 +121,7 @@ fn tui_openai_compatible_key_save_persists_key_for_current_session() -> anyhow::
 
 #[test]
 fn tui_api_key_logout_clears_saved_key_and_process_env() -> anyhow::Result<()> {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let resolved = save_tui_openai_compatible_api_base("https://api.example.com/v1")?;
         let resolved = save_tui_openai_compatible_key(
             crate::provider_catalog::OPENAI_COMPAT_PROFILE,
@@ -149,8 +149,8 @@ fn tui_api_key_logout_clears_saved_key_and_process_env() -> anyhow::Result<()> {
 }
 
 #[test]
-fn tui_IDEOCODE_subscription_logout_clears_credentials_and_preserves_api_base() -> anyhow::Result<()> {
-    with_temp_IDEOCODE_home(|| {
+fn tui_ideocode_subscription_logout_clears_credentials_and_preserves_api_base() -> anyhow::Result<()> {
+    with_temp_ideocode_home(|| {
         crate::provider_catalog::save_env_value_to_env_file(
             crate::subscription_catalog::IDEOCODE_API_KEY_ENV,
             crate::subscription_catalog::IDEOCODE_ENV_FILE,
@@ -204,7 +204,7 @@ fn tui_IDEOCODE_subscription_logout_clears_credentials_and_preserves_api_base() 
 
 #[test]
 fn tui_openai_compatible_local_key_save_allows_empty_key() -> anyhow::Result<()> {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let resolved = save_tui_openai_compatible_key(crate::provider_catalog::OLLAMA_PROFILE, "")?;
         assert_eq!(resolved.api_base, "http://localhost:11434/v1");
         assert!(

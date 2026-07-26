@@ -1,6 +1,6 @@
 ﻿fn main() -> anyhow::Result<()> {
     let t = std::time::Instant::now();
-    let out = IDEOCODE_productivity_core::generate()?;
+    let out = ideocode_productivity_core::generate()?;
     eprintln!("--- generate() took {:.2}s ---", t.elapsed().as_secs_f64());
     eprintln!("PNG: {} ({} bytes)", out.png_path.display(), out.png.len());
     eprintln!(

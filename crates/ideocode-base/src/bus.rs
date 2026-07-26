@@ -1,11 +1,11 @@
 ﻿use crate::message::ToolCall;
 use crate::side_panel::SidePanelSnapshot;
 use crate::todo::TodoItem;
-pub use IDEOCODE_background_types::{
+pub use ideocode_background_types::{
     BackgroundTaskCompleted, BackgroundTaskProgress, BackgroundTaskProgressEvent,
     BackgroundTaskProgressKind, BackgroundTaskProgressSource, BackgroundTaskStatus,
 };
-pub use IDEOCODE_batch_types::{BatchProgress, BatchSubcallProgress, BatchSubcallState};
+pub use ideocode_batch_types::{BatchProgress, BatchSubcallProgress, BatchSubcallState};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::{Mutex, OnceLock};
@@ -185,7 +185,7 @@ pub struct ClipboardPasteCompleted {
 #[derive(Clone, Debug)]
 pub struct ModelRefreshCompleted {
     pub session_id: String,
-    pub result: std::result::Result<IDEOCODE_provider_core::ModelCatalogRefreshSummary, String>,
+    pub result: std::result::Result<ideocode_provider_core::ModelCatalogRefreshSummary, String>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -395,9 +395,9 @@ pub enum BusEvent {
     /// A backgrounded `swarm await_members` watcher reached a terminal result.
     SwarmAwaitCompleted(SwarmAwaitCompleted),
     /// Usage report fetched from providers
-    UsageReport(Vec<IDEOCODE_usage_types::ProviderUsage>),
+    UsageReport(Vec<ideocode_usage_types::ProviderUsage>),
     /// Progressive usage report update while providers are still loading
-    UsageReportProgress(IDEOCODE_usage_types::ProviderUsageProgress),
+    UsageReportProgress(ideocode_usage_types::ProviderUsageProgress),
     /// OAuth/login flow completed in the background
     LoginCompleted(LoginCompleted),
     /// First-run onboarding finished validating the auto-selected default model.

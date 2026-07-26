@@ -34,31 +34,31 @@ pub(super) fn launch_first_available_terminal(
     )
 }
 
-pub(super) fn terminal_candidates(title: &str, IDEOCODE_args: &[&str]) -> Vec<Command> {
+pub(super) fn terminal_candidates(title: &str, ideocode_args: &[&str]) -> Vec<Command> {
     terminal_candidates_with_working_dir(
         title,
-        IDEOCODE_args,
+        ideocode_args,
         super::default_desktop_working_dir().as_deref(),
     )
 }
 
 pub(super) fn terminal_candidates_in_dir(
     title: &str,
-    IDEOCODE_args: &[&str],
+    ideocode_args: &[&str],
     working_dir: &Path,
 ) -> Vec<Command> {
-    terminal_candidates_with_working_dir(title, IDEOCODE_args, Some(working_dir))
+    terminal_candidates_with_working_dir(title, ideocode_args, Some(working_dir))
 }
 
 fn terminal_candidates_with_working_dir(
     title: &str,
-    IDEOCODE_args: &[&str],
+    ideocode_args: &[&str],
     working_dir: Option<&Path>,
 ) -> Vec<Command> {
     let mut candidates = Vec::new();
 
     if let Ok(raw_terminal) = std::env::var("IDEOCODE_DESKTOP_TERMINAL") {
-        match terminal_env_command(&raw_terminal, IDEOCODE_args) {
+        match terminal_env_command(&raw_terminal, ideocode_args) {
             Ok(mut command) => {
                 apply_working_dir(&mut command, working_dir);
                 candidates.push(command);
@@ -72,44 +72,44 @@ fn terminal_candidates_with_working_dir(
     candidates.push(terminal_command(
         "footclient",
         &["-T", title, "--"],
-        IDEOCODE_args,
+        ideocode_args,
         working_dir,
     ));
     candidates.push(terminal_command(
         "foot",
         &["-T", title, "--"],
-        IDEOCODE_args,
+        ideocode_args,
         working_dir,
     ));
     candidates.push(terminal_command(
         "kitty",
         &["--title", title],
-        IDEOCODE_args,
+        ideocode_args,
         working_dir,
     ));
     candidates.push(terminal_command(
         "alacritty",
         &["-t", title, "-e"],
-        IDEOCODE_args,
+        ideocode_args,
         working_dir,
     ));
     candidates.push(terminal_command(
         "wezterm",
         &["start", "--"],
-        IDEOCODE_args,
+        ideocode_args,
         working_dir,
     ));
     candidates.push(terminal_command(
         "x-terminal-emulator",
         &["-T", title, "-e"],
-        IDEOCODE_args,
+        ideocode_args,
         working_dir,
     ));
 
     candidates
 }
 
-fn terminal_env_command(raw_terminal: &str, IDEOCODE_args: &[&str]) -> Result<Command> {
+fn terminal_env_command(raw_terminal: &str, ideocode_args: &[&str]) -> Result<Command> {
     let parts = parse_terminal_env_command(raw_terminal)?;
     let Some((program, prefix_args)) = parts.split_first() else {
         anyhow::bail!("terminal command is empty");
@@ -117,8 +117,8 @@ fn terminal_env_command(raw_terminal: &str, IDEOCODE_args: &[&str]) -> Result<Co
     let mut command = Command::new(program);
     command
         .args(prefix_args)
-        .arg(IDEOCODE_bin())
-        .args(IDEOCODE_args)
+        .arg(ideocode_bin())
+        .args(ideocode_args)
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null());
@@ -193,14 +193,14 @@ fn parse_terminal_env_command(raw_terminal: &str) -> Result<Vec<String>> {
 fn terminal_command(
     program: impl AsRef<str>,
     prefix_args: &[&str],
-    IDEOCODE_args: &[&str],
+    ideocode_args: &[&str],
     working_dir: Option<&Path>,
 ) -> Command {
     let mut command = Command::new(program.as_ref());
     command
         .args(prefix_args)
-        .arg(IDEOCODE_bin())
-        .args(IDEOCODE_args)
+        .arg(ideocode_bin())
+        .args(ideocode_args)
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null());
@@ -214,7 +214,7 @@ fn apply_working_dir(command: &mut Command, working_dir: Option<&Path>) {
     }
 }
 
-pub(super) fn IDEOCODE_bin() -> String {
+pub(super) fn ideocode_bin() -> String {
     std::env::var("IDEOCODE_BIN").unwrap_or_else(|_| "IDEOCODE".to_string())
 }
 
@@ -280,7 +280,7 @@ mod tests {
     }
 
     #[test]
-    fn terminal_env_command_appends_IDEOCODE_invocation_without_shell() -> Result<()> {
+    fn terminal_env_command_appends_ideocode_invocation_without_shell() -> Result<()> {
         let command = terminal_env_command("kitty --title 'IDEOCODE Desktop'", &["--resume", "abc"])?;
         let args = command
             .get_args()

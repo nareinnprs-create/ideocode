@@ -5,7 +5,7 @@
 };
 use anyhow::Result;
 use chrono::{DateTime, Utc};
-use IDEOCODE_storage as storage;
+use ideocode_storage as storage;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::SystemTime;
@@ -14,7 +14,7 @@ use std::time::SystemTime;
 pub fn get_repo_dir() -> Option<PathBuf> {
     if let Ok(path) = std::env::var("IDEOCODE_REPO_DIR") {
         let path = PathBuf::from(path);
-        if is_IDEOCODE_repo(&path) {
+        if is_ideocode_repo(&path) {
             return Some(path);
         }
     }
@@ -33,7 +33,7 @@ pub fn get_repo_dir() -> Option<PathBuf> {
             .parent()
             .and_then(|p| p.parent())
             .and_then(|p| p.parent())
-            && is_IDEOCODE_repo(repo)
+            && is_ideocode_repo(repo)
         {
             return Some(repo.to_path_buf());
         }
@@ -54,7 +54,7 @@ pub fn get_repo_dir() -> Option<PathBuf> {
 
 pub fn find_repo_in_ancestors(start: &Path) -> Option<PathBuf> {
     for dir in start.ancestors() {
-        if is_IDEOCODE_repo(dir) {
+        if is_ideocode_repo(dir) {
             return Some(dir.to_path_buf());
         }
     }
@@ -562,7 +562,7 @@ pub fn preferred_reload_candidate(is_selfdev_session: bool) -> Option<(PathBuf, 
 }
 
 /// Check if a directory is the IDEOCODE repository
-pub fn is_IDEOCODE_repo(dir: &Path) -> bool {
+pub fn is_ideocode_repo(dir: &Path) -> bool {
     // Check for Cargo.toml with name = "IDEOCODE"
     let cargo_toml = dir.join("Cargo.toml");
     if !cargo_toml.exists() {
@@ -617,9 +617,9 @@ mod tests {
     }
 
     #[test]
-    fn is_IDEOCODE_repo_accepts_git_file_for_worktree() {
+    fn is_ideocode_repo_accepts_git_file_for_worktree() {
         let repo = repo_fixture(true);
-        assert!(is_IDEOCODE_repo(repo.path()));
+        assert!(is_ideocode_repo(repo.path()));
     }
 
     /// Build a release-style install dir: `IDEOCODE` wrapper script + payload.

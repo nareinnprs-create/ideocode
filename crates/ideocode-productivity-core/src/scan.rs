@@ -35,7 +35,7 @@ struct Cache {
 const CACHE_VERSION: u32 = 1;
 
 fn cache_path() -> Result<PathBuf> {
-    let dir = IDEOCODE_storage::IDEOCODE_dir()?
+    let dir = ideocode_storage::ideocode_dir()?
         .join("cache")
         .join("productivity");
     std::fs::create_dir_all(&dir).ok();
@@ -43,7 +43,7 @@ fn cache_path() -> Result<PathBuf> {
 }
 
 fn sessions_dir() -> Result<PathBuf> {
-    Ok(IDEOCODE_storage::IDEOCODE_dir()?.join("sessions"))
+    Ok(ideocode_storage::ideocode_dir()?.join("sessions"))
 }
 
 /// Result of a full scan: every session summary plus scan diagnostics.

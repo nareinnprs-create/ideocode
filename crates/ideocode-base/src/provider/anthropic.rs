@@ -17,8 +17,8 @@ use anyhow::{Context, Result};
 use std::sync::atomic::{AtomicBool, Ordering};
 use uuid::Uuid;
 
-pub use IDEOCODE_provider_core::CredentialMode as AnthropicCredentialMode;
-use IDEOCODE_provider_core::{
+pub use ideocode_provider_core::CredentialMode as AnthropicCredentialMode;
+use ideocode_provider_core::{
     ANTHROPIC_OAUTH_BETA_HEADERS, anthropic_effectively_1m,
     anthropic_stainless_arch as stainless_arch, anthropic_stainless_os as stainless_os,
 };

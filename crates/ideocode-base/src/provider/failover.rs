@@ -1,5 +1,5 @@
 ﻿use super::*;
-use IDEOCODE_provider_core::{FailoverDecision, ProviderFailoverPrompt};
+use ideocode_provider_core::{FailoverDecision, ProviderFailoverPrompt};
 
 impl MultiProvider {
     pub(super) fn provider_is_configured(&self, provider: ActiveProvider) -> bool {
@@ -38,7 +38,7 @@ impl MultiProvider {
     }
 
     pub(super) fn fallback_sequence(active: ActiveProvider) -> Vec<ActiveProvider> {
-        IDEOCODE_provider_core::fallback_sequence(active)
+        ideocode_provider_core::fallback_sequence(active)
     }
 
     pub(super) fn summarize_error(err: &anyhow::Error) -> String {
@@ -51,7 +51,7 @@ impl MultiProvider {
     }
 
     pub(super) fn classify_failover_error(err: &anyhow::Error) -> FailoverDecision {
-        IDEOCODE_provider_core::classify_failover_error_message(&err.to_string())
+        ideocode_provider_core::classify_failover_error_message(&err.to_string())
     }
 
     pub(super) fn additional_no_provider_guidance(&self) -> Vec<String> {

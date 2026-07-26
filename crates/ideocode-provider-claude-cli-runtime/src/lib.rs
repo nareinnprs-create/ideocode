@@ -2,14 +2,14 @@
 //! of `IDEOCODE-base` so provider edits compile only this crate plus a binary
 //! relink instead of rebuilding the base -> app-core -> tui spine. The
 //! binary's composition root registers [`ClaudeProvider`] with
-//! `IDEOCODE_base::provider::external` at startup.
+//! `ideocode_base::provider::external` at startup.
 
 use anyhow::{Context, Result};
 use async_trait::async_trait;
-use IDEOCODE_base::auth::{claude as claude_auth, oauth};
-use IDEOCODE_message_types::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
-use IDEOCODE_provider_core::NativeToolResultSender;
-use IDEOCODE_provider_core::{EventStream, Provider};
+use ideocode_base::auth::{claude as claude_auth, oauth};
+use ideocode_message_types::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
+use ideocode_provider_core::NativeToolResultSender;
+use ideocode_provider_core::{EventStream, Provider};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use std::collections::HashSet;
@@ -138,7 +138,7 @@ impl ClaudeCliConfig {
             .filter(|value| !value.trim().is_empty())
             .unwrap_or_else(|| DEFAULT_MODEL.to_string());
         if !AVAILABLE_MODELS.contains(&model.as_str()) {
-            IDEOCODE_base::logging::info(&format!(
+            ideocode_base::logging::info(&format!(
                 "Warning: '{}' is not supported; falling back to '{}'",
                 model, DEFAULT_MODEL
             ));
@@ -664,7 +664,7 @@ impl Provider for ClaudeProvider {
             "tool_names": &tool_names,
             "resume_present": resume.is_some(),
         });
-        IDEOCODE_provider_core::fingerprint::log_provider_canonical_input(
+        ideocode_provider_core::fingerprint::log_provider_canonical_input(
             "claude-cli",
             &current_model,
             "claude_cli_prompt",
@@ -679,7 +679,7 @@ impl Provider for ClaudeProvider {
             ],
         );
 
-        IDEOCODE_base::logging::warn(
+        ideocode_base::logging::warn(
             "Claude transport: deprecated CLI subprocess; prefer `--provider claude` native Anthropic OAuth/API transport.",
         );
 
@@ -700,7 +700,7 @@ impl Provider for ClaudeProvider {
             for attempt in 0..MAX_RETRIES {
                 if attempt > 0 {
                     // Exponential backoff with jitter: ~1s, ~2s, ~4s, ~8s, ~16s
-                    let base_delay = IDEOCODE_provider_core::attempt_tracker::retry_backoff_delay(
+                    let base_delay = ideocode_provider_core::attempt_tracker::retry_backoff_delay(
                         attempt,
                         RETRY_BASE_DELAY_MS,
                     );
@@ -717,7 +717,7 @@ impl Provider for ClaudeProvider {
                     };
                     let delay = base_delay + std::time::Duration::from_millis(extra_delay);
                     tokio::time::sleep(delay).await;
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "Retrying Claude CLI request (attempt {}/{}, delay {}ms)",
                         attempt + 1,
                         MAX_RETRIES,
@@ -750,7 +750,7 @@ impl Provider for ClaudeProvider {
                         let error_str = format!("{e:#}").to_lowercase();
                         // Check if this is a transient/retryable error
                         if is_retryable_error(&error_str) && attempt + 1 < MAX_RETRIES {
-                            IDEOCODE_base::logging::info(&format!(
+                            ideocode_base::logging::info(&format!(
                                 "Transient error, will retry: {}",
                                 e
                             ));
@@ -787,7 +787,7 @@ impl Provider for ClaudeProvider {
     }
 
     fn set_model(&self, model: &str) -> Result<()> {
-        if !IDEOCODE_base::provider::known_anthropic_model_ids()
+        if !ideocode_base::provider::known_anthropic_model_ids()
             .iter()
             .any(|known| known == model)
         {
@@ -808,8 +808,8 @@ impl Provider for ClaudeProvider {
     }
 
     fn available_models_for_switching(&self) -> Vec<String> {
-        IDEOCODE_base::provider::cached_anthropic_model_ids()
-            .unwrap_or_else(IDEOCODE_base::provider::known_anthropic_model_ids)
+        ideocode_base::provider::cached_anthropic_model_ids()
+            .unwrap_or_else(ideocode_base::provider::known_anthropic_model_ids)
     }
 
     fn available_models_display(&self) -> Vec<String> {
@@ -828,7 +828,7 @@ impl Provider for ClaudeProvider {
             {
                 Ok(refreshed) => refreshed.access_token,
                 Err(err) => {
-                    IDEOCODE_base::logging::warn(&format!(
+                    ideocode_base::logging::warn(&format!(
                         "Claude OAuth token refresh failed during model prefetch; using fallback list: {}",
                         err
                     ));
@@ -839,18 +839,18 @@ impl Provider for ClaudeProvider {
             creds.access_token
         };
 
-        match IDEOCODE_base::provider::fetch_anthropic_model_catalog_oauth(&access_token).await {
+        match ideocode_base::provider::fetch_anthropic_model_catalog_oauth(&access_token).await {
             Ok(catalog) => {
-                IDEOCODE_base::provider::persist_anthropic_model_catalog(&catalog);
+                ideocode_base::provider::persist_anthropic_model_catalog(&catalog);
                 if !catalog.context_limits.is_empty() {
-                    IDEOCODE_base::provider::populate_context_limits(catalog.context_limits);
+                    ideocode_base::provider::populate_context_limits(catalog.context_limits);
                 }
                 if !catalog.available_models.is_empty() {
-                    IDEOCODE_base::provider::populate_anthropic_models(catalog.available_models);
+                    ideocode_base::provider::populate_anthropic_models(catalog.available_models);
                 }
             }
             Err(err) => {
-                IDEOCODE_base::logging::warn(&format!(
+                ideocode_base::logging::warn(&format!(
                     "Claude OAuth model catalog refresh failed; keeping fallback list: {}",
                     err
                 ));
@@ -983,7 +983,7 @@ async fn run_claude_cli(
     tokio::spawn(async move {
         let mut reader = BufReader::new(stderr).lines();
         while let Ok(Some(line)) = reader.next_line().await {
-            IDEOCODE_base::logging::debug(&format!("[claude-cli] {}", line));
+            ideocode_base::logging::debug(&format!("[claude-cli] {}", line));
         }
         drop(tx_stderr);
     });
@@ -1069,7 +1069,7 @@ async fn run_claude_cli(
 
 /// Check if an error is transient and should be retried
 fn is_retryable_error(error_str: &str) -> bool {
-    IDEOCODE_provider_core::is_transient_transport_error(error_str)
+    ideocode_provider_core::is_transient_transport_error(error_str)
         // Claude CLI specific errors
         || error_str.contains("processtransport")
         || error_str.contains("not ready for writing")

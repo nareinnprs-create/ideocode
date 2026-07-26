@@ -566,7 +566,7 @@ fn config_save_invalidates_global_config_cache() {
 }
 
 #[test]
-fn config_env_fingerprint_ignores_runtime_only_IDEOCODE_vars() {
+fn config_env_fingerprint_ignores_runtime_only_ideocode_vars() {
     let _guard = crate::storage::lock_test_env();
     let prev_runtime_provider = std::env::var_os("IDEOCODE_RUNTIME_PROVIDER");
     let prev_active_provider = std::env::var_os("IDEOCODE_ACTIVE_PROVIDER");

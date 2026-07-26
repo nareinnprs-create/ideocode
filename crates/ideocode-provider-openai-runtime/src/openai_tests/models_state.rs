@@ -1,10 +1,10 @@
 ﻿#[test]
 fn test_openai_supports_codex_models() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
-    IDEOCODE_base::auth::codex::set_active_account_override(Some(
+    let _guard = ideocode_base::storage::lock_test_env();
+    ideocode_base::auth::codex::set_active_account_override(Some(
         "openai-supports-codex-models".to_string(),
     ));
-    IDEOCODE_base::provider::populate_account_models(vec![
+    ideocode_base::provider::populate_account_models(vec![
         "gpt-5.6-sol".to_string(),
         "gpt-5.1-codex".to_string(),
         "gpt-5.1-codex-mini".to_string(),
@@ -33,15 +33,15 @@ fn test_openai_supports_codex_models() {
     provider.set_model("gpt-5.1-codex-mini").unwrap();
     assert_eq!(provider.model(), "gpt-5.1-codex-mini");
 
-    IDEOCODE_base::auth::codex::set_active_account_override(None);
+    ideocode_base::auth::codex::set_active_account_override(None);
 }
 
 #[test]
 fn test_openai_switching_models_include_dynamic_catalog_entries() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let dynamic_model = "gpt-5.9-switching-test";
-    IDEOCODE_base::auth::codex::set_active_account_override(Some("switching-test".to_string()));
-    IDEOCODE_base::provider::populate_account_models(vec![
+    ideocode_base::auth::codex::set_active_account_override(Some("switching-test".to_string()));
+    ideocode_base::provider::populate_account_models(vec![
         "gpt-5.4".to_string(),
         dynamic_model.to_string(),
     ]);
@@ -58,14 +58,14 @@ fn test_openai_switching_models_include_dynamic_catalog_entries() {
     assert!(models.contains(&"gpt-5.4".to_string()));
     assert!(models.contains(&dynamic_model.to_string()));
 
-    IDEOCODE_base::auth::codex::set_active_account_override(None);
+    ideocode_base::auth::codex::set_active_account_override(None);
 }
 
 #[test]
 fn test_chatgpt_web_model_bypasses_live_api_catalog() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
-    IDEOCODE_base::auth::codex::set_active_account_override(Some("web-model-test".to_string()));
-    IDEOCODE_base::provider::populate_account_models(vec!["gpt-5.6-sol".to_string()]);
+    let _guard = ideocode_base::storage::lock_test_env();
+    ideocode_base::auth::codex::set_active_account_override(Some("web-model-test".to_string()));
+    ideocode_base::provider::populate_account_models(vec!["gpt-5.6-sol".to_string()]);
     let _model = EnvVarGuard::set("IDEOCODE_OPENAI_MODEL", CHATGPT_WEB_MODEL);
 
     let provider = OpenAIProvider::new(CodexCredentials {
@@ -87,12 +87,12 @@ fn test_chatgpt_web_model_bypasses_live_api_catalog() {
     provider.set_model(CHATGPT_WEB_MODEL).unwrap();
     assert_eq!(provider.model(), CHATGPT_WEB_MODEL);
 
-    IDEOCODE_base::auth::codex::set_active_account_override(None);
+    ideocode_base::auth::codex::set_active_account_override(None);
 }
 
 #[test]
 fn test_chatgpt_browser_only_runtime_rejects_api_models_and_uses_local_compaction() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let provider = OpenAIProvider::new_browser_only();
 
     assert_eq!(provider.model(), CHATGPT_WEB_MODEL);
@@ -102,7 +102,7 @@ fn test_chatgpt_browser_only_runtime_rejects_api_models_and_uses_local_compactio
         vec![CHATGPT_WEB_MODEL.to_string()]
     );
     assert!(provider.supports_compaction());
-    assert!(provider.uses_IDEOCODE_compaction());
+    assert!(provider.uses_ideocode_compaction());
     assert_eq!(provider.available_transports(), vec!["browser"]);
     provider.set_transport("browser").unwrap();
     assert!(provider.set_transport("auto").is_err());
@@ -114,7 +114,7 @@ fn test_chatgpt_browser_only_runtime_rejects_api_models_and_uses_local_compactio
 
 #[test]
 fn test_chatgpt_web_model_environment_override_is_trimmed() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let _model = EnvVarGuard::set("IDEOCODE_OPENAI_MODEL", "  gpt-5.6-pro[web]  ");
     let provider = OpenAIProvider::new(CodexCredentials {
         access_token: "test".to_string(),
@@ -249,11 +249,11 @@ async fn persistent_ws_background_keepalive_round_trips_and_answers_server_ping(
     reason = "test intentionally serializes process-wide active OpenAI account model cache across async websocket state setup"
 )]
 async fn test_set_model_clears_persistent_ws_state() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
-    IDEOCODE_base::auth::codex::set_active_account_override(Some(
+    let _guard = ideocode_base::storage::lock_test_env();
+    ideocode_base::auth::codex::set_active_account_override(Some(
         "openai-set-model-clears-ws".to_string(),
     ));
-    IDEOCODE_base::provider::populate_account_models(vec!["gpt-5.3-codex".to_string()]);
+    ideocode_base::provider::populate_account_models(vec!["gpt-5.3-codex".to_string()]);
 
     let provider = OpenAIProvider::new(CodexCredentials {
         access_token: "test".to_string(),
@@ -272,7 +272,7 @@ async fn test_set_model_clears_persistent_ws_state() {
         "changing models should reset the persistent websocket chain"
     );
     server.abort();
-    IDEOCODE_base::auth::codex::set_active_account_override(None);
+    ideocode_base::auth::codex::set_active_account_override(None);
 }
 
 #[tokio::test]
@@ -281,7 +281,7 @@ async fn test_switching_to_https_clears_persistent_ws_state() {
     // provider construction reads that process-global env var, so an
     // unsynchronized overlap can construct this provider pinned to the
     // browser-only web model and fail the HTTPS transport switch below.
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let provider = OpenAIProvider::new(CodexCredentials {
         access_token: "test".to_string(),
         refresh_token: String::new(),
@@ -402,7 +402,7 @@ fn openai_catalog_and_chat_endpoints_agree_on_credential_shape() {
 /// while ChatGPT/Codex OAuth mode stays pinned to the Codex backend.
 #[test]
 fn responses_url_honors_api_base_override_in_api_key_mode() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let _b = EnvVarGuard::remove("IDEOCODE_OPENAI_API_BASE");
     let _c = EnvVarGuard::remove("OPENAI_BASE_URL");
     let _d = EnvVarGuard::remove("OPENAI_API_BASE");
@@ -441,7 +441,7 @@ fn responses_url_honors_api_base_override_in_api_key_mode() {
 
 #[test]
 fn responses_url_ignores_override_in_chatgpt_mode() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let _override = EnvVarGuard::set("IDEOCODE_OPENAI_API_BASE", "http://127.0.0.1:8317/v1");
 
     let oauth_creds = CodexCredentials {
@@ -460,7 +460,7 @@ fn responses_url_ignores_override_in_chatgpt_mode() {
 
 #[test]
 fn resolve_api_base_precedence_and_validation() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let _a = EnvVarGuard::remove("IDEOCODE_OPENAI_API_BASE");
     let _b = EnvVarGuard::remove("OPENAI_BASE_URL");
     let _c = EnvVarGuard::remove("OPENAI_API_BASE");

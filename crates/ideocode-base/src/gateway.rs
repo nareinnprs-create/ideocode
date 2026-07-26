@@ -30,7 +30,7 @@ use auth::{
 };
 #[cfg(test)]
 pub(crate) use auth::{is_valid_hex_token, parse_bearer_token, parse_query_token};
-pub use IDEOCODE_gateway_types::{PairedDevice, PairingCode};
+pub use ideocode_gateway_types::{PairedDevice, PairingCode};
 pub use registry::DeviceRegistry;
 
 /// Default gateway port ("jc" on phone keypad = 52, but we use 7643)
@@ -413,7 +413,7 @@ async fn handle_http(
         ("GET", "/health") => {
             let body = serde_json::json!({
                 "status": "ok",
-                "version": IDEOCODE_build_meta::version(),
+                "version": ideocode_build_meta::version(),
                 "gateway": true,
             });
             http_response(200, "OK", &body.to_string())
@@ -506,7 +506,7 @@ async fn handle_pair_request(
     let body = serde_json::json!({
         "token": token,
         "server_name": "IDEOCODE",
-        "server_version": IDEOCODE_build_meta::version(),
+        "server_version": ideocode_build_meta::version(),
     });
     http_response(200, "OK", &body.to_string())
 }

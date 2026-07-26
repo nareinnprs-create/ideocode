@@ -15,7 +15,7 @@ pub use catalog::{
     fetch_openai_api_key_model_catalog, fetch_openai_context_limits, fetch_openai_model_catalog,
 };
 use catalog_service::{ModelCatalogService, RuntimeModelUnavailability};
-use IDEOCODE_provider_core::{
+use ideocode_provider_core::{
     ALL_CLAUDE_MODELS, ALL_OPENAI_MODELS, CHATGPT_WEB_MODEL, ModelCapabilities,
     OPENAI_API_ONLY_PRO_MODELS, context_limit_for_model_with_provider_and_cache,
     core_provider_for_model_with_hint, is_openai_api_only_pro_model, provider_key_from_hint,
@@ -174,7 +174,7 @@ pub fn format_account_model_availability_detail(
 }
 
 pub(crate) fn normalize_model_id(model: &str) -> String {
-    IDEOCODE_provider_core::model_id::canonical(model)
+    ideocode_provider_core::model_id::canonical(model)
 }
 
 fn normalize_provider_id(provider: &str) -> String {
@@ -299,11 +299,11 @@ fn model_ids_with_context_aliases(models: Vec<String>) -> Vec<String> {
 /// the prior behavior: alias when the cached catalog limit is >= 1M.
 fn model_exposes_1m_alias(normalized_model: &str) -> bool {
     if normalized_model.starts_with("claude-") {
-        let mode = IDEOCODE_provider_core::anthropic_context_mode(normalized_model);
+        let mode = ideocode_provider_core::anthropic_context_mode(normalized_model);
         // Only trust the classifier for models it actually recognizes; for
         // anything it maps to `Standard` we can't tell a genuine 200K model from
         // an unrecognized future one, so fall back to the catalog heuristic.
-        if mode != IDEOCODE_provider_core::AnthropicContextMode::Standard {
+        if mode != ideocode_provider_core::AnthropicContextMode::Standard {
             return mode.exposes_1m_alias();
         }
     }
@@ -546,7 +546,7 @@ pub(crate) fn config_context_limit_cache_keys(profile_id: &str, model_id: &str) 
         return Vec::new();
     }
     let mut keys = vec![id.clone()];
-    let slash_base = IDEOCODE_provider_core::model_id::slash_base(&id).to_string();
+    let slash_base = ideocode_provider_core::model_id::slash_base(&id).to_string();
     if slash_base != id && !slash_base.is_empty() {
         keys.push(slash_base);
     }
@@ -1137,9 +1137,9 @@ pub fn provider_for_model_with_hint(
     let model = model.trim();
     if model.contains('@') {
         Some("openrouter")
-    } else if IDEOCODE_provider_core::model_id::matches_known_model(model, ALL_CLAUDE_MODELS) {
+    } else if ideocode_provider_core::model_id::matches_known_model(model, ALL_CLAUDE_MODELS) {
         Some("claude")
-    } else if IDEOCODE_provider_core::model_id::matches_known_model(model, ALL_OPENAI_MODELS) {
+    } else if ideocode_provider_core::model_id::matches_known_model(model, ALL_OPENAI_MODELS) {
         Some("openai")
     } else if crate::provider::bedrock::BedrockProvider::is_bedrock_model_id(model) {
         Some("bedrock")

@@ -148,7 +148,7 @@ pub(super) fn present_swarm_notification(
         if !tldr.is_empty() && !presentation.message.trim().is_empty() {
             presentation.status_notice = format!("{} · {}", presentation.status_notice, tldr);
             presentation.message =
-                IDEOCODE_tui_messages::encode_collapsible_swarm_content(tldr, &presentation.message);
+                ideocode_tui_messages::encode_collapsible_swarm_content(tldr, &presentation.message);
         }
     }
     presentation
@@ -299,7 +299,7 @@ fn present_swarm_notification_inner(
                     sender
                 ),
                 message: if has_details {
-                    IDEOCODE_tui_messages::encode_collapsible_swarm_content(
+                    ideocode_tui_messages::encode_collapsible_swarm_content(
                         &summary_line,
                         &detail_body,
                     )
@@ -344,7 +344,7 @@ mod tests {
             false,
         );
 
-        let parsed = IDEOCODE_tui_messages::parse_collapsible_swarm_content(&presentation.message)
+        let parsed = ideocode_tui_messages::parse_collapsible_swarm_content(&presentation.message)
             .expect("tldr message should encode collapsible content");
         assert!(!parsed.expanded);
         assert_eq!(parsed.tldr, "fixed the flaky test");
@@ -369,7 +369,7 @@ mod tests {
             false,
         );
         assert!(
-            IDEOCODE_tui_messages::parse_collapsible_swarm_content(&presentation.message).is_none()
+            ideocode_tui_messages::parse_collapsible_swarm_content(&presentation.message).is_none()
         );
         assert_eq!(presentation.message, "short note");
     }
@@ -508,7 +508,7 @@ mod tests {
         );
 
         assert_eq!(presentation.title, "File activity · moss");
-        let parsed = IDEOCODE_tui_messages::parse_collapsible_swarm_content(&presentation.message)
+        let parsed = ideocode_tui_messages::parse_collapsible_swarm_content(&presentation.message)
             .expect("file activity with details should be collapsible");
         assert_eq!(
             parsed.tldr,
@@ -542,7 +542,7 @@ mod tests {
         );
 
         assert_eq!(presentation.title, "File activity · moss");
-        let parsed = IDEOCODE_tui_messages::parse_collapsible_swarm_content(&presentation.message)
+        let parsed = ideocode_tui_messages::parse_collapsible_swarm_content(&presentation.message)
             .expect("compact mode should retain collapsible details");
         assert_eq!(
             parsed.tldr,

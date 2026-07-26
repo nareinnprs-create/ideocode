@@ -12,7 +12,7 @@ const IDLE_VARIANTS: &[&str] = &["donut", "orbit_rings"];
 // all profiles so these trig-heavy loops stay optimized even in debug/selfdev
 // builds. They are imported under their original names so the call sites and
 // tests below are unchanged.
-use IDEOCODE_tui_anim::{
+use ideocode_tui_anim::{
     hsv_to_rgb, sample_black_hole, sample_donut, sample_gyroscope, sample_orbit_rings,
     shape_char_3x3,
 };

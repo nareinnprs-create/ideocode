@@ -83,7 +83,7 @@ fn test_fast_status_shows_saved_default() {
 
 #[test]
 fn test_alignment_command_persists_and_applies_immediately() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.set_centered(false);
         app.input = "/alignment centered".to_string();
@@ -106,7 +106,7 @@ fn test_alignment_command_persists_and_applies_immediately() {
 
 #[test]
 fn test_alignment_status_shows_current_and_saved_defaults() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         crate::config::Config::set_display_centered(false).expect("save alignment default");
 
         let mut app = create_test_app();
@@ -141,7 +141,7 @@ fn test_alignment_invalid_usage_shows_error() {
 
 #[test]
 fn test_compact_notifications_command_persists_and_applies_immediately() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         crate::config::Config::set_compact_notifications(false).expect("save default");
 
         let mut app = create_test_app();
@@ -164,7 +164,7 @@ fn test_compact_notifications_command_persists_and_applies_immediately() {
 
 #[test]
 fn test_compact_notifications_status_reports_current_value() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         crate::config::Config::set_compact_notifications(true).expect("save default");
 
         let mut app = create_test_app();
@@ -213,7 +213,7 @@ fn test_mask_email_censors_local_part() {
 }
 
 #[test]
-fn test_subscription_command_shows_IDEOCODE_status_scaffold() {
+fn test_subscription_command_shows_ideocode_status_scaffold() {
     let _guard = crate::storage::lock_test_env();
     crate::subscription_catalog::clear_runtime_env();
     crate::env::remove_var(crate::subscription_catalog::IDEOCODE_API_KEY_ENV);

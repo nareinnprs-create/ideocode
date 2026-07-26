@@ -107,7 +107,7 @@ fn has_cursor_api_key_from_env() {
 }
 
 #[test]
-fn cursor_auth_file_path_respects_IDEOCODE_home() {
+fn cursor_auth_file_path_respects_ideocode_home() {
     // Regression: on Linux the auth.json path previously used
     // `dirs::config_dir()` directly, ignoring IDEOCODE_HOME. That leaked the real
     // `~/.config/cursor/auth.json` into the onboarding sandbox, so a
@@ -133,7 +133,7 @@ fn cursor_auth_file_path_respects_IDEOCODE_home() {
 }
 
 #[test]
-fn cursor_vscdb_paths_respect_IDEOCODE_home() {
+fn cursor_vscdb_paths_respect_ideocode_home() {
     let _guard = crate::storage::lock_test_env();
     let prev_home = std::env::var_os("IDEOCODE_HOME");
     let temp = TempDir::new().unwrap();

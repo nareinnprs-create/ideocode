@@ -544,7 +544,7 @@ impl MemoryInfo {
     }
 }
 
-pub use IDEOCODE_tui_mermaid::DiagramInfo;
+pub use ideocode_tui_mermaid::DiagramInfo;
 
 /// Git repository status for the info widget
 #[derive(Debug, Clone)]

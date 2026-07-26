@@ -12,7 +12,7 @@
 //! Run with:
 //!   cargo test -p IDEOCODE-tui-markdown --test highlight_backend_probe -- --ignored --nocapture
 
-use IDEOCODE_tui_markdown::highlight_line;
+use ideocode_tui_markdown::highlight_line;
 
 fn vm_rss_bytes() -> u64 {
     let status = std::fs::read_to_string("/proc/self/status").unwrap_or_default();

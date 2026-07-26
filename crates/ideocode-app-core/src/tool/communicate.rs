@@ -15,7 +15,7 @@ use crate::protocol::{
 };
 use anyhow::Result;
 use async_trait::async_trait;
-use IDEOCODE_swarm_core::validate_swarm_tldr;
+use ideocode_swarm_core::validate_swarm_tldr;
 use serde::Deserialize;
 use serde_json::{Value, json};
 use std::collections::{HashMap, HashSet};
@@ -1629,7 +1629,7 @@ fn plan_status_budget_line(summary: &PlanGraphStatus, deep_cap: usize) -> Option
     }
     let budget = resolve_run_plan_concurrency(None, true, deep_cap);
     let budget_label = if budget == usize::MAX {
-        format!("{} (member cap)", IDEOCODE_swarm_core::MAX_SWARM_MEMBERS)
+        format!("{} (member cap)", ideocode_swarm_core::MAX_SWARM_MEMBERS)
     } else {
         budget.to_string()
     };
@@ -1640,7 +1640,7 @@ fn plan_status_budget_line(summary: &PlanGraphStatus, deep_cap: usize) -> Option
         budget_label, ready_width, active_width
     );
     let effective_budget = if budget == usize::MAX {
-        IDEOCODE_swarm_core::MAX_SWARM_MEMBERS
+        ideocode_swarm_core::MAX_SWARM_MEMBERS
     } else {
         budget
     };
@@ -1734,7 +1734,7 @@ fn format_channels(channels: &[SwarmChannelInfo]) -> ToolOutput {
 fn format_swarm_model_list(
     current_model: Option<&str>,
     configured_swarm_model: Option<&str>,
-    model_routes: &[IDEOCODE_provider_core::ModelRoute],
+    model_routes: &[ideocode_provider_core::ModelRoute],
 ) -> String {
     let mut out = String::new();
     out.push_str(&format!(

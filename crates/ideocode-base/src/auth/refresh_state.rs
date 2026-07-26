@@ -5,10 +5,10 @@ use std::path::PathBuf;
 const REFRESH_STATUS_FILE: &str = "auth-refresh-state.json";
 const MAX_ERROR_CHARS: usize = 240;
 
-pub use IDEOCODE_auth_types::ProviderRefreshRecord;
+pub use ideocode_auth_types::ProviderRefreshRecord;
 
 pub fn status_path() -> Result<PathBuf> {
-    Ok(crate::storage::IDEOCODE_dir()?.join(REFRESH_STATUS_FILE))
+    Ok(crate::storage::ideocode_dir()?.join(REFRESH_STATUS_FILE))
 }
 
 pub fn load_all() -> BTreeMap<String, ProviderRefreshRecord> {

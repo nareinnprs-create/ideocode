@@ -263,12 +263,12 @@ impl McpConfig {
         reason = "Import logic keeps source-specific MCP config handling explicit"
     )]
     fn import_from_external() {
-        let IDEOCODE_mcp = match crate::storage::IDEOCODE_dir() {
+        let ideocode_mcp = match crate::storage::ideocode_dir() {
             Ok(dir) => dir.join("mcp.json"),
             Err(_) => return,
         };
 
-        if IDEOCODE_mcp.exists() {
+        if ideocode_mcp.exists() {
             return; // Not first run
         }
 
@@ -315,7 +315,7 @@ impl McpConfig {
         }
 
         if !imported.servers.is_empty() {
-            if let Err(e) = imported.save_to_file(&IDEOCODE_mcp) {
+            if let Err(e) = imported.save_to_file(&ideocode_mcp) {
                 crate::logging::error(&format!("Failed to save imported MCP config: {}", e));
                 return;
             }
@@ -471,10 +471,10 @@ impl McpConfig {
         let mut merged = Self::default();
 
         // Load IDEOCODE's own global config (~/.IDEOCODE/mcp.json)
-        if let Ok(IDEOCODE_dir) = crate::storage::IDEOCODE_dir() {
-            let IDEOCODE_mcp = IDEOCODE_dir.join("mcp.json");
-            if IDEOCODE_mcp.exists() {
-                if let Ok(config) = Self::load_from_file(&IDEOCODE_mcp) {
+        if let Ok(ideocode_dir) = crate::storage::ideocode_dir() {
+            let ideocode_mcp = ideocode_dir.join("mcp.json");
+            if ideocode_mcp.exists() {
+                if let Ok(config) = Self::load_from_file(&ideocode_mcp) {
                     merged.servers.extend(config.servers);
                 }
             }

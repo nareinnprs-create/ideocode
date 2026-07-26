@@ -13,7 +13,7 @@
     let mut total = 0usize;
     for q in queries {
         for n in &names {
-            if IDEOCODE_fuzzy::fuzzy_score_tokens(q, n).is_some() {
+            if ideocode_fuzzy::fuzzy_score_tokens(q, n).is_some() {
                 total += 1;
             }
         }

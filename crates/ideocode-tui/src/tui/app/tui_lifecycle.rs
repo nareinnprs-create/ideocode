@@ -1186,7 +1186,7 @@ impl App {
             let (rendered_messages, rendered_images) =
                 crate::session::render_messages_and_images(&session);
             let display_messages =
-                IDEOCODE_tui_messages::display_messages_from_rendered_messages(rendered_messages);
+                ideocode_tui_messages::display_messages_from_rendered_messages(rendered_messages);
             self.replace_display_messages(display_messages);
             self.remote_side_pane_images = rendered_images;
             self.invalidate_side_pane_images_signature();

@@ -1,6 +1,6 @@
 ﻿use std::sync::{LazyLock, RwLock};
 
-use IDEOCODE_provider_metadata::{is_safe_env_file_name, is_safe_env_key_name};
+use ideocode_provider_metadata::{is_safe_env_file_name, is_safe_env_key_name};
 
 /// Fallback resolvers consulted by [`load_api_key_from_env_or_config`] after the
 /// environment and config-file lookups fail. Higher-level crates register
@@ -74,7 +74,7 @@ fn clean_loaded_value(raw: &str, env_key: &str) -> Option<String> {
     // result than the Unicode-aware sanitize, hidden characters were stripped.
     let ascii_only = raw.trim().trim_matches('"').trim_matches('\'').trim();
     if ascii_only != cleaned {
-        IDEOCODE_logging::warn(&format!(
+        ideocode_logging::warn(&format!(
             "Stripped Unicode invisible or non-ASCII whitespace characters from '{}' while loading credentials; verify the value contains no hidden characters",
             env_key
         ));
@@ -84,14 +84,14 @@ fn clean_loaded_value(raw: &str, env_key: &str) -> Option<String> {
 
 pub fn load_api_key_from_env_or_config(env_key: &str, file_name: &str) -> Option<String> {
     if !is_safe_env_key_name(env_key) {
-        IDEOCODE_logging::warn(&format!(
+        ideocode_logging::warn(&format!(
             "Ignoring invalid API key variable name '{}' while loading credentials",
             env_key
         ));
         return None;
     }
     if !is_safe_env_file_name(file_name) {
-        IDEOCODE_logging::warn(&format!(
+        ideocode_logging::warn(&format!(
             "Ignoring invalid env file name '{}' while loading credentials",
             file_name
         ));
@@ -104,8 +104,8 @@ pub fn load_api_key_from_env_or_config(env_key: &str, file_name: &str) -> Option
         return Some(key);
     }
 
-    let config_path = IDEOCODE_storage::app_config_dir().ok()?.join(file_name);
-    IDEOCODE_storage::harden_secret_file_permissions(&config_path);
+    let config_path = ideocode_storage::app_config_dir().ok()?.join(file_name);
+    ideocode_storage::harden_secret_file_permissions(&config_path);
     let content = std::fs::read_to_string(config_path).ok()?;
     let prefix = format!("{}=", env_key);
 
@@ -143,14 +143,14 @@ pub fn load_api_key_from_env_or_config(env_key: &str, file_name: &str) -> Option
 
 pub fn load_env_value_from_env_or_config(env_key: &str, file_name: &str) -> Option<String> {
     if !is_safe_env_key_name(env_key) {
-        IDEOCODE_logging::warn(&format!(
+        ideocode_logging::warn(&format!(
             "Ignoring invalid variable name '{}' while loading config value",
             env_key
         ));
         return None;
     }
     if !is_safe_env_file_name(file_name) {
-        IDEOCODE_logging::warn(&format!(
+        ideocode_logging::warn(&format!(
             "Ignoring invalid env file name '{}' while loading config value",
             file_name
         ));
@@ -176,22 +176,22 @@ pub fn load_env_value_from_env_or_config(env_key: &str, file_name: &str) -> Opti
 /// reader lets the auth-change path resolve what the file actually contains.
 pub fn load_env_value_from_config_file(env_key: &str, file_name: &str) -> Option<String> {
     if !is_safe_env_key_name(env_key) {
-        IDEOCODE_logging::warn(&format!(
+        ideocode_logging::warn(&format!(
             "Ignoring invalid variable name '{}' while loading config value",
             env_key
         ));
         return None;
     }
     if !is_safe_env_file_name(file_name) {
-        IDEOCODE_logging::warn(&format!(
+        ideocode_logging::warn(&format!(
             "Ignoring invalid env file name '{}' while loading config value",
             file_name
         ));
         return None;
     }
 
-    let config_path = IDEOCODE_storage::app_config_dir().ok()?.join(file_name);
-    IDEOCODE_storage::harden_secret_file_permissions(&config_path);
+    let config_path = ideocode_storage::app_config_dir().ok()?.join(file_name);
+    ideocode_storage::harden_secret_file_permissions(&config_path);
     let content = std::fs::read_to_string(config_path).ok()?;
     let prefix = format!("{}=", env_key);
 
@@ -218,14 +218,14 @@ pub fn save_env_value_to_env_file(
         anyhow::bail!("Invalid env file name: {}", file_name);
     }
 
-    let config_dir = IDEOCODE_storage::app_config_dir()?;
+    let config_dir = ideocode_storage::app_config_dir()?;
     let file_path = config_dir.join(file_name);
-    IDEOCODE_storage::upsert_env_file_value(&file_path, env_key, value)?;
+    ideocode_storage::upsert_env_file_value(&file_path, env_key, value)?;
 
     if let Some(value) = value {
-        IDEOCODE_core::env::set_var(env_key, value);
+        ideocode_core::env::set_var(env_key, value);
     } else {
-        IDEOCODE_core::env::remove_var(env_key);
+        ideocode_core::env::remove_var(env_key);
     }
 
     Ok(())
@@ -254,7 +254,7 @@ mod tests {
                 .map(|key| (*key, std::env::var_os(key)))
                 .collect::<Vec<_>>();
             for key in keys {
-                IDEOCODE_core::env::remove_var(key);
+                ideocode_core::env::remove_var(key);
             }
             Self { _lock: lock, saved }
         }
@@ -264,8 +264,8 @@ mod tests {
         fn drop(&mut self) {
             for (key, value) in self.saved.drain(..) {
                 match value {
-                    Some(value) => IDEOCODE_core::env::set_var(key, value),
-                    None => IDEOCODE_core::env::remove_var(key),
+                    Some(value) => ideocode_core::env::set_var(key, value),
+                    None => ideocode_core::env::remove_var(key),
                 }
             }
         }
@@ -275,7 +275,7 @@ mod tests {
     fn loads_api_key_from_env_before_config_file() {
         let temp = tempfile::tempdir().expect("tempdir");
         let _guard = EnvGuard::new(&["IDEOCODE_HOME", "IDEOCODE_PROVIDER_ENV_TEST_KEY"]);
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp.path());
+        ideocode_core::env::set_var("IDEOCODE_HOME", temp.path());
 
         save_env_value_to_env_file(
             "IDEOCODE_PROVIDER_ENV_TEST_KEY",
@@ -283,7 +283,7 @@ mod tests {
             Some("file-key"),
         )
         .expect("save file key");
-        IDEOCODE_core::env::set_var("IDEOCODE_PROVIDER_ENV_TEST_KEY", "env-key");
+        ideocode_core::env::set_var("IDEOCODE_PROVIDER_ENV_TEST_KEY", "env-key");
 
         assert_eq!(
             load_api_key_from_env_or_config("IDEOCODE_PROVIDER_ENV_TEST_KEY", "provider-env-test.env")
@@ -296,7 +296,7 @@ mod tests {
     fn loads_and_removes_values_from_sandboxed_config_file() {
         let temp = tempfile::tempdir().expect("tempdir");
         let _guard = EnvGuard::new(&["IDEOCODE_HOME", "IDEOCODE_PROVIDER_ENV_TEST_VALUE"]);
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp.path());
+        ideocode_core::env::set_var("IDEOCODE_HOME", temp.path());
 
         save_env_value_to_env_file(
             "IDEOCODE_PROVIDER_ENV_TEST_VALUE",
@@ -305,7 +305,7 @@ mod tests {
         )
         .expect("save file value");
 
-        IDEOCODE_core::env::remove_var("IDEOCODE_PROVIDER_ENV_TEST_VALUE");
+        ideocode_core::env::remove_var("IDEOCODE_PROVIDER_ENV_TEST_VALUE");
         assert_eq!(
             load_env_value_from_env_or_config(
                 "IDEOCODE_PROVIDER_ENV_TEST_VALUE",
@@ -334,11 +334,11 @@ mod tests {
     fn accepts_legacy_zai_key_for_zhipu() {
         let temp = tempfile::tempdir().expect("tempdir");
         let _guard = EnvGuard::new(&["IDEOCODE_HOME", "ZHIPU_API_KEY", "ZAI_API_KEY"]);
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp.path());
+        ideocode_core::env::set_var("IDEOCODE_HOME", temp.path());
 
         save_env_value_to_env_file("ZAI_API_KEY", "zai.env", Some("legacy-zai-key"))
             .expect("save legacy key");
-        IDEOCODE_core::env::remove_var("ZAI_API_KEY");
+        ideocode_core::env::remove_var("ZAI_API_KEY");
 
         assert_eq!(
             load_api_key_from_env_or_config("ZHIPU_API_KEY", "zai.env").as_deref(),
@@ -372,11 +372,11 @@ mod tests {
     fn loads_api_key_with_zero_width_space_from_config_file() {
         let temp = tempfile::tempdir().expect("tempdir");
         let _guard = EnvGuard::new(&["IDEOCODE_HOME", "IDEOCODE_PROVIDER_FOO_API_KEY"]);
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp.path());
+        ideocode_core::env::set_var("IDEOCODE_HOME", temp.path());
 
         // Write an env file with a U+200B zero-width space prefixed onto the key,
         // mirroring issue #376's reproduction.
-        let config_dir = IDEOCODE_storage::app_config_dir().expect("config dir");
+        let config_dir = ideocode_storage::app_config_dir().expect("config dir");
         std::fs::create_dir_all(&config_dir).expect("create config dir");
         std::fs::write(
             config_dir.join("provider-foo.env"),
@@ -395,9 +395,9 @@ mod tests {
     fn loads_api_key_with_invisible_chars_from_env_var() {
         let temp = tempfile::tempdir().expect("tempdir");
         let _guard = EnvGuard::new(&["IDEOCODE_HOME", "IDEOCODE_PROVIDER_BAR_API_KEY"]);
-        IDEOCODE_core::env::set_var("IDEOCODE_HOME", temp.path());
+        ideocode_core::env::set_var("IDEOCODE_HOME", temp.path());
         // NBSP + BOM padding around the env-provided key.
-        IDEOCODE_core::env::set_var("IDEOCODE_PROVIDER_BAR_API_KEY", "\u{00A0}sk-env-key\u{FEFF}");
+        ideocode_core::env::set_var("IDEOCODE_PROVIDER_BAR_API_KEY", "\u{00A0}sk-env-key\u{FEFF}");
 
         assert_eq!(
             load_api_key_from_env_or_config("IDEOCODE_PROVIDER_BAR_API_KEY", "provider-bar.env")

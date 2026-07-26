@@ -122,7 +122,7 @@ fn sponsored_discovery_is_not_injected_into_the_system_prompt() {
 }
 
 #[test]
-fn test_prompt_overlay_files_are_loaded_from_project_and_global_IDEOCODE_dirs() {
+fn test_prompt_overlay_files_are_loaded_from_project_and_global_ideocode_dirs() {
     let _guard = crate::storage::lock_test_env();
     let prev_home = std::env::var_os("IDEOCODE_HOME");
     let temp = tempfile::TempDir::new().unwrap();
@@ -168,7 +168,7 @@ fn test_prompt_overlay_files_are_loaded_from_project_and_global_IDEOCODE_dirs() 
 }
 
 #[test]
-fn test_preferred_tools_files_are_loaded_from_project_and_global_IDEOCODE_dirs() {
+fn test_preferred_tools_files_are_loaded_from_project_and_global_ideocode_dirs() {
     let _guard = crate::storage::lock_test_env();
     let prev_home = std::env::var_os("IDEOCODE_HOME");
     let temp = tempfile::TempDir::new().unwrap();

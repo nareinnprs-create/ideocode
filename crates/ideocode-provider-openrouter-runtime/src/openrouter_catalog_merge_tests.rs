@@ -35,12 +35,12 @@ fn named_profile_static_models_survive_live_catalog_refresh() {
     let _namespace = EnvVarGuard::remove("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
     let _key = EnvVarGuard::set("TEST_NAMED_MERGE_KEY", "test-key");
 
-    let profile = IDEOCODE_base::config::NamedProviderConfig {
+    let profile = ideocode_base::config::NamedProviderConfig {
         base_url: "https://llm.example.test/v1".to_string(),
         api_key_env: Some("TEST_NAMED_MERGE_KEY".to_string()),
         model_catalog: true,
         default_model: Some("my-custom-model".to_string()),
-        models: vec![IDEOCODE_base::config::NamedProviderModelConfig {
+        models: vec![ideocode_base::config::NamedProviderModelConfig {
             id: "my-custom-model".to_string(),
             ..Default::default()
         }],
@@ -56,7 +56,7 @@ fn named_profile_static_models_survive_live_catalog_refresh() {
     // include the user's config-declared model.
     {
         let mut cache = provider.models_cache.blocking_write();
-        cache.models = vec![IDEOCODE_provider_openrouter::ModelInfo {
+        cache.models = vec![ideocode_provider_openrouter::ModelInfo {
             id: "vendor-live-model".to_string(),
             name: "vendor live model".to_string(),
             context_length: Some(128_000),
@@ -83,7 +83,7 @@ fn builtin_profile_is_not_treated_as_user_named() {
     let _namespace = EnvVarGuard::remove("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
     let _key = EnvVarGuard::set("CEREBRAS_API_KEY", "test-key");
 
-    let profile = IDEOCODE_base::config::NamedProviderConfig {
+    let profile = ideocode_base::config::NamedProviderConfig {
         base_url: "https://api.cerebras.ai/v1".to_string(),
         api_key_env: Some("CEREBRAS_API_KEY".to_string()),
         model_catalog: true,
@@ -104,11 +104,11 @@ fn profile_shadowing_builtin_name_with_other_base_is_user_named() {
     let _namespace = EnvVarGuard::remove("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
     let _key = EnvVarGuard::set("TEST_SHADOW_KEY", "test-key");
 
-    let profile = IDEOCODE_base::config::NamedProviderConfig {
+    let profile = ideocode_base::config::NamedProviderConfig {
         base_url: "https://proxy.internal.test/v1".to_string(),
         api_key_env: Some("TEST_SHADOW_KEY".to_string()),
         model_catalog: true,
-        models: vec![IDEOCODE_base::config::NamedProviderModelConfig {
+        models: vec![ideocode_base::config::NamedProviderModelConfig {
             id: "shadowed-model".to_string(),
             ..Default::default()
         }],
@@ -151,7 +151,7 @@ id = "my-custom-model"
 context_window = 128000
 "#
     );
-    let profile: IDEOCODE_base::config::NamedProviderConfig =
+    let profile: ideocode_base::config::NamedProviderConfig =
         toml::from_str(&toml_src).expect("config.toml profile should parse");
 
     let provider = OpenRouterProvider::new_named_openai_compatible("mylocal", &profile)

@@ -1,6 +1,6 @@
 ﻿#[test]
 fn test_remote_poke_queues_when_turn_is_in_progress() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         let rt = tokio::runtime::Runtime::new().unwrap();
         let _guard = rt.enter();
@@ -93,7 +93,7 @@ fn test_remote_poke_queues_when_turn_is_in_progress() {
 
 #[test]
 fn test_remote_ctrl_p_toggles_auto_poke() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         let rt = tokio::runtime::Runtime::new().unwrap();
         let _guard = rt.enter();
@@ -120,7 +120,7 @@ fn test_remote_ctrl_p_toggles_auto_poke() {
 
 #[test]
 fn test_remote_transfer_queues_pause_when_processing() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         let rt = tokio::runtime::Runtime::new().unwrap();
         let _guard = rt.enter();
@@ -145,7 +145,7 @@ fn test_remote_transfer_queues_pause_when_processing() {
 
 #[test]
 fn test_remote_interrupted_auto_poke_requeues_after_deferred_poke() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         let rt = tokio::runtime::Runtime::new().unwrap();
         let _guard = rt.enter();

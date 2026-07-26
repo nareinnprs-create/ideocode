@@ -3,7 +3,7 @@
 //! Config is loaded from `~/.IDEOCODE/config.toml` (or `$IDEOCODE_HOME/config.toml`)
 //! Environment variables override config file settings.
 
-pub use IDEOCODE_config_types::{
+pub use ideocode_config_types::{
     AgentsConfig, AmbientConfig, AuthConfig, AutoJudgeConfig, AutoReviewConfig, CompactionConfig,
     CompactionMode, CrossProviderFailoverMode, DiagramDisplayMode, DiagramPanePosition,
     DiffDisplayMode, DisplayConfig, FeatureConfig, GatewayConfig, HooksConfig, KeybindingsConfig,
@@ -665,7 +665,7 @@ impl ToolConfig {
 
 fn normalize_tool_name(name: &str) -> String {
     let trimmed = name.trim().trim_matches('"');
-    IDEOCODE_tool_types::resolve_tool_name(trimmed).to_string()
+    ideocode_tool_types::resolve_tool_name(trimmed).to_string()
 }
 
 /// External dictation / speech-to-text integration.

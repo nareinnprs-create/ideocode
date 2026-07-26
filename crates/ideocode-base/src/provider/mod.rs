@@ -14,7 +14,7 @@ mod failover;
 mod fingerprint;
 pub mod gemini;
 mod image_clamp;
-pub mod IDEOCODE;
+pub mod ideocode;
 pub mod models;
 mod multi_provider;
 pub mod openai;
@@ -39,7 +39,7 @@ use account_failover::{
 use anyhow::{Result, anyhow};
 use async_trait::async_trait;
 #[cfg(test)]
-use IDEOCODE_provider_core::FailoverDecision;
+use ideocode_provider_core::FailoverDecision;
 use registry::ProviderRegistry;
 use std::collections::HashMap;
 use std::sync::{Arc, LazyLock, Mutex, RwLock};
@@ -50,9 +50,9 @@ pub use catalog_routes::{
     remote_model_routes_lightweight_fallback, remote_model_should_offer_copilot_route,
     remote_openai_compatible_route_for_model, simplified_model_routes_for_picker,
 };
-pub use IDEOCODE_provider_core::attempt_tracker;
-pub use IDEOCODE_provider_core::cli_provider_arg_for_session_key;
-pub use IDEOCODE_provider_core::{
+pub use ideocode_provider_core::attempt_tracker;
+pub use ideocode_provider_core::cli_provider_arg_for_session_key;
+pub use ideocode_provider_core::{
     ALL_CLAUDE_MODELS, ALL_OPENAI_MODELS, CHATGPT_WEB_MODEL, CHEAPNESS_REFERENCE_INPUT_TOKENS,
     CHEAPNESS_REFERENCE_OUTPUT_TOKENS, CredentialMode, DEFAULT_CONTEXT_LIMIT, EventStream,
     IDEOCODE_USER_AGENT, ModelCapabilities, ModelCatalogRefreshSummary, ModelRoute,
@@ -63,12 +63,12 @@ pub use IDEOCODE_provider_core::{
     normalize_copilot_model_name, provider_from_model_key, shared_http_client,
     summarize_model_catalog_refresh,
 };
-pub use IDEOCODE_provider_core::{
+pub use ideocode_provider_core::{
     FallbackPickOptions, error_looks_like_credential_failure, model_route_provider_labels_match,
     normalize_model_route_provider_label, pick_next_fallback_route,
     pick_next_fallback_route_with_options,
 };
-pub use IDEOCODE_provider_core::{ProviderFailoverPrompt, parse_failover_prompt_message};
+pub use ideocode_provider_core::{ProviderFailoverPrompt, parse_failover_prompt_message};
 pub use route_builders::{
     build_anthropic_oauth_route, build_chatgpt_web_route, build_copilot_route,
     build_openai_api_key_route, build_openai_oauth_route, build_openrouter_auto_route,
@@ -148,8 +148,8 @@ fn openai_compatible_profile_catalog_cache_is_stale(cached_at: u64, now: u64) ->
 fn cached_live_models_for_openai_compatible_profile(
     resolved: &crate::provider_catalog::ResolvedOpenAiCompatibleProfile,
 ) -> Option<(Vec<String>, bool)> {
-    let cache = IDEOCODE_provider_openrouter::load_disk_cache_entry_for_namespace(&resolved.id)?;
-    let cache_is_stale = IDEOCODE_provider_openrouter::current_unix_secs()
+    let cache = ideocode_provider_openrouter::load_disk_cache_entry_for_namespace(&resolved.id)?;
+    let cache_is_stale = ideocode_provider_openrouter::current_unix_secs()
         .map(|now| openai_compatible_profile_catalog_cache_is_stale(cache.cached_at, now))
         .unwrap_or(false);
     let source_api_base = cache
@@ -251,7 +251,7 @@ fn standard_openrouter_profile_configured() -> bool {
 }
 
 fn configured_standard_openrouter_profile_routes() -> Vec<ModelRoute> {
-    let Some(cache) = IDEOCODE_provider_openrouter::load_disk_cache_entry_for_namespace("openrouter")
+    let Some(cache) = ideocode_provider_openrouter::load_disk_cache_entry_for_namespace("openrouter")
     else {
         return Vec::new();
     };
@@ -1402,17 +1402,17 @@ impl MultiProvider {
             // do NOT pin a credential: they keep Auto mode (so an API-only user
             // with `default_provider = "claude"` still resolves their key
             // instead of failing to load absent OAuth credentials).
-            let pinned = IDEOCODE_provider_core::AuthRoute::parse_explicit_credential_prefix(pref);
+            let pinned = ideocode_provider_core::AuthRoute::parse_explicit_credential_prefix(pref);
             let anthropic_credential_mode = pinned.and_then(|route| {
                 matches!(
                     route.provider,
-                    IDEOCODE_provider_core::DualAuthProvider::Anthropic
+                    ideocode_provider_core::DualAuthProvider::Anthropic
                 )
                 .then(|| match route.mode {
-                    IDEOCODE_provider_core::AuthMode::ApiKey => {
+                    ideocode_provider_core::AuthMode::ApiKey => {
                         anthropic::AnthropicCredentialMode::ApiKey
                     }
-                    IDEOCODE_provider_core::AuthMode::Oauth => {
+                    ideocode_provider_core::AuthMode::Oauth => {
                         anthropic::AnthropicCredentialMode::OAuth
                     }
                 })
@@ -1420,11 +1420,11 @@ impl MultiProvider {
             let openai_credential_mode = pinned.and_then(|route| {
                 matches!(
                     route.provider,
-                    IDEOCODE_provider_core::DualAuthProvider::OpenAI
+                    ideocode_provider_core::DualAuthProvider::OpenAI
                 )
                 .then(|| match route.mode {
-                    IDEOCODE_provider_core::AuthMode::ApiKey => openai::OpenAICredentialMode::ApiKey,
-                    IDEOCODE_provider_core::AuthMode::Oauth => openai::OpenAICredentialMode::OAuth,
+                    ideocode_provider_core::AuthMode::ApiKey => openai::OpenAICredentialMode::ApiKey,
+                    ideocode_provider_core::AuthMode::Oauth => openai::OpenAICredentialMode::OAuth,
                 })
             });
             return self.set_model_on_provider_with_credential_modes(
@@ -1446,7 +1446,7 @@ impl MultiProvider {
                     // the bare provider key (route without pinning a credential).
                     anthropic
                         .credential_mode()
-                        .auth_route(IDEOCODE_provider_core::DualAuthProvider::Anthropic)
+                        .auth_route(ideocode_provider_core::DualAuthProvider::Anthropic)
                         .map(|route| route.model_prefix())
                         .unwrap_or("claude")
                 } else {
@@ -1457,7 +1457,7 @@ impl MultiProvider {
                 if let Some(openai) = self.openai_provider() {
                     openai
                         .credential_mode()
-                        .auth_route(IDEOCODE_provider_core::DualAuthProvider::OpenAI)
+                        .auth_route(ideocode_provider_core::DualAuthProvider::OpenAI)
                         .map(|route| route.model_prefix())
                         .unwrap_or("openai")
                 } else {
@@ -1572,13 +1572,13 @@ impl Provider for MultiProvider {
                 } else if let Some(claude) = self.claude_provider() {
                     claude.model()
                 } else {
-                    IDEOCODE_provider_core::DEFAULT_CLAUDE_MODEL.to_string()
+                    ideocode_provider_core::DEFAULT_CLAUDE_MODEL.to_string()
                 }
             }
             ActiveProvider::OpenAI => self
                 .openai_provider()
                 .map(|o| o.model())
-                .unwrap_or_else(|| IDEOCODE_provider_core::DEFAULT_OPENAI_MODEL.to_string()),
+                .unwrap_or_else(|| ideocode_provider_core::DEFAULT_OPENAI_MODEL.to_string()),
             ActiveProvider::Copilot => self
                 .copilot_provider()
                 .map(|o| o.model())
@@ -1606,8 +1606,8 @@ impl Provider for MultiProvider {
         }
     }
 
-    fn active_resolved_credential(&self) -> Option<IDEOCODE_provider_core::ResolvedCredential> {
-        use IDEOCODE_provider_core::ResolvedCredential;
+    fn active_resolved_credential(&self) -> Option<ideocode_provider_core::ResolvedCredential> {
+        use ideocode_provider_core::ResolvedCredential;
         match self.active_provider() {
             ActiveProvider::Claude => {
                 let anthropic = self.anthropic_provider()?;
@@ -1680,8 +1680,8 @@ impl Provider for MultiProvider {
         Ok(())
     }
 
-    fn active_explicit_credential(&self) -> Option<IDEOCODE_provider_core::ResolvedCredential> {
-        use IDEOCODE_provider_core::ResolvedCredential;
+    fn active_explicit_credential(&self) -> Option<ideocode_provider_core::ResolvedCredential> {
+        use ideocode_provider_core::ResolvedCredential;
         // Only report an *explicit* in-memory pin. Auto mode returns `None` so
         // callers fall back to their cheaper cached heuristic without forcing
         // a disk read on every frame. This stays in lockstep with
@@ -1778,27 +1778,27 @@ impl Provider for MultiProvider {
             // The single canonical parser decides whether this prefix pins a
             // dual-auth credential (and which provider/mode). Bare `claude:` /
             // `openai:` prefixes route without pinning a credential.
-            let pinned = IDEOCODE_provider_core::AuthRoute::parse_explicit_credential_prefix(prefix);
+            let pinned = ideocode_provider_core::AuthRoute::parse_explicit_credential_prefix(prefix);
             let openai_credential_mode = pinned.and_then(|route| {
                 matches!(
                     route.provider,
-                    IDEOCODE_provider_core::DualAuthProvider::OpenAI
+                    ideocode_provider_core::DualAuthProvider::OpenAI
                 )
                 .then(|| match route.mode {
-                    IDEOCODE_provider_core::AuthMode::ApiKey => openai::OpenAICredentialMode::ApiKey,
-                    IDEOCODE_provider_core::AuthMode::Oauth => openai::OpenAICredentialMode::OAuth,
+                    ideocode_provider_core::AuthMode::ApiKey => openai::OpenAICredentialMode::ApiKey,
+                    ideocode_provider_core::AuthMode::Oauth => openai::OpenAICredentialMode::OAuth,
                 })
             });
             let anthropic_credential_mode = pinned.and_then(|route| {
                 matches!(
                     route.provider,
-                    IDEOCODE_provider_core::DualAuthProvider::Anthropic
+                    ideocode_provider_core::DualAuthProvider::Anthropic
                 )
                 .then(|| match route.mode {
-                    IDEOCODE_provider_core::AuthMode::ApiKey => {
+                    ideocode_provider_core::AuthMode::ApiKey => {
                         anthropic::AnthropicCredentialMode::ApiKey
                     }
-                    IDEOCODE_provider_core::AuthMode::Oauth => {
+                    ideocode_provider_core::AuthMode::Oauth => {
                         anthropic::AnthropicCredentialMode::OAuth
                     }
                 })
@@ -2326,7 +2326,7 @@ impl Provider for MultiProvider {
                 .unwrap_or(false),
             ActiveProvider::Bedrock => self
                 .bedrock_provider()
-                .map(|o| o.uses_IDEOCODE_compaction())
+                .map(|o| o.uses_ideocode_compaction())
                 .unwrap_or(false),
             ActiveProvider::OpenRouter => self
                 .active_openrouter_execution_provider()
@@ -2335,41 +2335,41 @@ impl Provider for MultiProvider {
         }
     }
 
-    fn uses_IDEOCODE_compaction(&self) -> bool {
+    fn uses_ideocode_compaction(&self) -> bool {
         match self.active_provider() {
             ActiveProvider::Claude => {
                 if self.anthropic_provider().is_some() {
                     true
                 } else {
                     self.claude_provider()
-                        .map(|c| c.uses_IDEOCODE_compaction())
+                        .map(|c| c.uses_ideocode_compaction())
                         .unwrap_or(false)
                 }
             }
             ActiveProvider::OpenAI => self
                 .openai_provider()
-                .map(|o| o.uses_IDEOCODE_compaction())
+                .map(|o| o.uses_ideocode_compaction())
                 .unwrap_or(false),
             ActiveProvider::Copilot => self
                 .copilot_provider()
-                .map(|o| o.uses_IDEOCODE_compaction())
+                .map(|o| o.uses_ideocode_compaction())
                 .unwrap_or(false),
             ActiveProvider::Antigravity => self
                 .antigravity_provider()
-                .map(|o| o.uses_IDEOCODE_compaction())
+                .map(|o| o.uses_ideocode_compaction())
                 .unwrap_or(false),
             ActiveProvider::Gemini => self
                 .gemini_provider()
-                .map(|o| o.uses_IDEOCODE_compaction())
+                .map(|o| o.uses_ideocode_compaction())
                 .unwrap_or(false),
             ActiveProvider::Cursor => self
                 .cursor_provider()
-                .map(|o| o.uses_IDEOCODE_compaction())
+                .map(|o| o.uses_ideocode_compaction())
                 .unwrap_or(false),
             ActiveProvider::Bedrock => false,
             ActiveProvider::OpenRouter => self
                 .active_openrouter_execution_provider()
-                .map(|o| o.uses_IDEOCODE_compaction())
+                .map(|o| o.uses_ideocode_compaction())
                 .unwrap_or(false),
         }
     }

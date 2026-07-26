@@ -12,7 +12,7 @@
 //! exercise the client against an in-process scripted server:
 //!   cargo run -p IDEOCODE-harness-api --example harness_repl -- --demo
 
-use IDEOCODE_harness_api::{
+use ideocode_harness_api::{
     API_VERSION_MAJOR, ApiEvent, ApiRequest, HarnessClient, ServerFrame, write_frame,
 };
 use std::io::{BufRead, BufReader, Write};
@@ -114,7 +114,7 @@ fn run_demo() {
                 "create_session" => reply(&ServerFrame::reply(
                     id,
                     ApiEvent::Attached {
-                        session: IDEOCODE_harness_api::SessionInfo {
+                        session: ideocode_harness_api::SessionInfo {
                             session_id: "demo-1".into(),
                             working_dir: None,
                             title: Some("demo".into()),

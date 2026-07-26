@@ -780,7 +780,7 @@ fn test_prepare_body_anchors_tool_image_after_tool_message() {
         "anchored image should produce exactly one Fit region in the body"
     );
     let region = &prepared.image_regions[0];
-    assert_eq!(region.render, IDEOCODE_tui_messages::ImageRegionRender::Fit);
+    assert_eq!(region.render, ideocode_tui_messages::ImageRegionRender::Fit);
     assert!(region.width > 2);
 
     // The region must sit between the tool message and the assistant reply.
@@ -836,7 +836,7 @@ fn test_prepare_body_incremental_anchors_image_on_new_tool_message() {
     );
     assert_eq!(
         incremented.image_regions[0].render,
-        IDEOCODE_tui_messages::ImageRegionRender::Fit
+        ideocode_tui_messages::ImageRegionRender::Fit
     );
 
     // Incremental output must match a full rebuild.

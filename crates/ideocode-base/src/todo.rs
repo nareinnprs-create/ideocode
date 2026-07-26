@@ -2,7 +2,7 @@
 use anyhow::Result;
 use std::path::PathBuf;
 
-pub use IDEOCODE_task_types::{
+pub use ideocode_task_types::{
     TodoGoal, TodoGoalChange, TodoGoalField, TodoItem, TodoPlan, TodoPlanChange, TodoPlanField,
 };
 
@@ -176,7 +176,7 @@ pub fn save_todos(session_id: &str, todos: &[TodoItem]) -> Result<()> {
 }
 
 fn todo_path(session_id: &str) -> Result<PathBuf> {
-    let base = storage::IDEOCODE_dir()?;
+    let base = storage::ideocode_dir()?;
     Ok(base.join("todos").join(format!("{}.json", session_id)))
 }
 
@@ -244,7 +244,7 @@ pub fn save_goals(session_id: &str, goals: &[TodoGoal]) -> Result<()> {
 }
 
 fn goals_path(session_id: &str) -> Result<PathBuf> {
-    let base = storage::IDEOCODE_dir()?;
+    let base = storage::ideocode_dir()?;
     Ok(base
         .join("todos")
         .join(format!("{}-goals.json", session_id)))
@@ -266,7 +266,7 @@ pub fn save_plan(session_id: &str, plan: &TodoPlan) -> Result<()> {
 }
 
 fn plan_path(session_id: &str) -> Result<PathBuf> {
-    let base = storage::IDEOCODE_dir()?;
+    let base = storage::ideocode_dir()?;
     Ok(base.join("todos").join(format!("{}-plan.json", session_id)))
 }
 

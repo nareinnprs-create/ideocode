@@ -1,4 +1,4 @@
-﻿use IDEOCODE_render_core::{
+﻿use ideocode_render_core::{
     BlockKind, StyleRole, normalize_latex_math, parse_markdown, render_display_latex,
     render_inline_latex,
 };

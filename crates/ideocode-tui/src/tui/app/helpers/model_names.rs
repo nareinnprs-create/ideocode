@@ -296,9 +296,9 @@ mod tests {
     fn dump_pretty_model_names_for_manual_audit() {
         let mut names: Vec<String> = Vec::new();
         for list in [
-            IDEOCODE_provider_core::ALL_CLAUDE_MODELS,
-            IDEOCODE_provider_core::ALL_OPENAI_MODELS,
-            IDEOCODE_provider_core::OPENAI_API_ONLY_PRO_MODELS,
+            ideocode_provider_core::ALL_CLAUDE_MODELS,
+            ideocode_provider_core::ALL_OPENAI_MODELS,
+            ideocode_provider_core::OPENAI_API_ONLY_PRO_MODELS,
         ] {
             names.extend(list.iter().map(|m| m.to_string()));
         }

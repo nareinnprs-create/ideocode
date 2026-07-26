@@ -2,11 +2,11 @@
 //!
 //! Run with: `cargo run --profile selfdev -p IDEOCODE-tui-render --example swarm_gallery_preview`
 
-use IDEOCODE_tui_render::swarm_gallery::{
+use ideocode_tui_render::swarm_gallery::{
     GalleryMember, SwarmStripHint, render_swarm_compact, render_swarm_dock, render_swarm_panel,
     render_swarm_strip, render_swarm_strip_vertical,
 };
-use IDEOCODE_tui_render::swarm_tiles::{SwarmGalleryConfig, SwarmTile, render_swarm_gallery};
+use ideocode_tui_render::swarm_tiles::{SwarmGalleryConfig, SwarmTile, render_swarm_gallery};
 use ratatui::prelude::*;
 
 fn accent(status: &str) -> Color {

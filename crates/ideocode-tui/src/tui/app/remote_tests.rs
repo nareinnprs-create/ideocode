@@ -38,7 +38,7 @@ impl Provider for MockProvider {
 }
 
 fn create_test_app() -> crate::tui::app::App {
-    ensure_test_IDEOCODE_home_if_unset();
+    ensure_test_ideocode_home_if_unset();
     // `has_notification()` (via `unfocused_redraw_warranted`) consults a
     // process-wide ambient-info cache that another test may have populated
     // from its own IDEOCODE_HOME (scheduled reminders read as a notification).
@@ -58,7 +58,7 @@ fn create_test_app() -> crate::tui::app::App {
 /// state (e.g. a populated ambient queue turns `has_notification()` on and
 /// breaks the unfocused-redraw assertions). Mirrors the helper of the same
 /// name used by the main app test suite.
-fn ensure_test_IDEOCODE_home_if_unset() {
+fn ensure_test_ideocode_home_if_unset() {
     use std::sync::OnceLock;
 
     static TEST_HOME: OnceLock<std::path::PathBuf> = OnceLock::new();

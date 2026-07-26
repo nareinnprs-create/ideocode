@@ -2885,7 +2885,7 @@ fn file_has_nonblank_content(path: &std::path::Path) -> bool {
 
 fn ensure_swarm_prompt_edit_path(
     working_dir: Option<&str>,
-    IDEOCODE_dir: &std::path::Path,
+    ideocode_dir: &std::path::Path,
 ) -> std::io::Result<PathBuf> {
     let project_dir = match working_dir {
         Some(path) => PathBuf::from(path),
@@ -2896,12 +2896,12 @@ fn ensure_swarm_prompt_edit_path(
         return Ok(project_path);
     }
 
-    let global_path = IDEOCODE_dir.join("swarm-prompt.md");
+    let global_path = ideocode_dir.join("swarm-prompt.md");
     if file_has_nonblank_content(&global_path) {
         return Ok(global_path);
     }
 
-    std::fs::create_dir_all(IDEOCODE_dir)?;
+    std::fs::create_dir_all(ideocode_dir)?;
     let contents = format!("{}\n", crate::prompt::DEFAULT_SWARM_PROMPT.trim());
     std::fs::write(&global_path, contents)?;
     Ok(global_path)
@@ -2919,7 +2919,7 @@ pub(super) fn handle_swarm_prompt_command(app: &mut App, trimmed: &str) -> bool 
         return false;
     }
 
-    let IDEOCODE_dir = match crate::storage::IDEOCODE_dir() {
+    let ideocode_dir = match crate::storage::ideocode_dir() {
         Ok(path) => path,
         Err(error) => {
             app.push_display_message(DisplayMessage::error(format!(
@@ -2929,7 +2929,7 @@ pub(super) fn handle_swarm_prompt_command(app: &mut App, trimmed: &str) -> bool 
             return true;
         }
     };
-    let path = match ensure_swarm_prompt_edit_path(app.session.working_dir.as_deref(), &IDEOCODE_dir) {
+    let path = match ensure_swarm_prompt_edit_path(app.session.working_dir.as_deref(), &ideocode_dir) {
         Ok(path) => path,
         Err(error) => {
             app.push_display_message(DisplayMessage::error(format!(
@@ -3260,7 +3260,7 @@ pub(super) fn handle_config_command(app: &mut App, trimmed: &str) -> bool {
     }
 
     if trimmed == "/subscription" || trimmed == "/subscription status" {
-        app.show_IDEOCODE_subscription_status();
+        app.show_ideocode_subscription_status();
         return true;
     }
 

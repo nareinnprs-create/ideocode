@@ -1,5 +1,5 @@
 ﻿use super::*;
-use IDEOCODE_provider_openrouter::stream::OpenRouterStream;
+use ideocode_provider_openrouter::stream::OpenRouterStream;
 
 fn local_endpoint_troubleshooting_hint(api_base: &str, model: &str) -> &'static str {
     let lower = api_base.to_ascii_lowercase();
@@ -42,13 +42,13 @@ pub(super) async fn run_stream_with_retries(
 
     for attempt in 0..MAX_RETRIES {
         if attempt > 0 {
-            let delay = IDEOCODE_provider_core::retry_after::retry_delay(
+            let delay = ideocode_provider_core::retry_after::retry_delay(
                 attempt,
                 RETRY_BASE_DELAY_MS,
                 next_retry_delay.take(),
             );
             tokio::time::sleep(delay).await;
-            IDEOCODE_base::logging::info(&format!(
+            ideocode_base::logging::info(&format!(
                 "Retrying API request using {} (attempt {}/{})",
                 auth.label(),
                 attempt + 1,
@@ -56,7 +56,7 @@ pub(super) async fn run_stream_with_retries(
             ));
         }
 
-        IDEOCODE_base::logging::info(&format!(
+        ideocode_base::logging::info(&format!(
             "API stream attempt {}/{} over HTTPS transport (model: {}, endpoint: {}, auth: {})",
             attempt + 1,
             MAX_RETRIES,
@@ -69,7 +69,7 @@ pub(super) async fn run_stream_with_retries(
         // mid-stream transport fault can roll the partial output back on the
         // consumer before the retry replays the response from the top.
         let (attempt_tx, attempt_guard) =
-            IDEOCODE_provider_core::attempt_tracker::track_attempt_output(tx.clone());
+            ideocode_provider_core::attempt_tracker::track_attempt_output(tx.clone());
 
         // Retries use a fresh unpooled client: the fault that broke attempt N
         // (e.g. TLS BadRecordMac from a corrupting middlebox) may also have
@@ -79,7 +79,7 @@ pub(super) async fn run_stream_with_retries(
         let attempt_client = if attempt == 0 {
             client.clone()
         } else {
-            IDEOCODE_provider_core::fresh_transport_client()
+            ideocode_provider_core::fresh_transport_client()
         };
 
         match stream_response(
@@ -108,7 +108,7 @@ pub(super) async fn run_stream_with_retries(
                         // Partial output already reached the consumer; tell it
                         // to discard the partial attempt so the retried
                         // response replays cleanly instead of duplicating.
-                        IDEOCODE_base::logging::warn(&format!(
+                        ideocode_base::logging::warn(&format!(
                             "Transient API error after partial output; rolling back partial attempt and retrying: {}",
                             e
                         ));
@@ -119,12 +119,12 @@ pub(super) async fn run_stream_with_retries(
                             }))
                             .await;
                     } else {
-                        IDEOCODE_base::logging::info(&format!(
+                        ideocode_base::logging::info(&format!(
                             "Transient API error, will retry: {}",
                             e
                         ));
                     }
-                    next_retry_delay = IDEOCODE_provider_core::retry_after::retry_after_from_error(&e);
+                    next_retry_delay = ideocode_provider_core::retry_after::retry_after_from_error(&e);
                     last_error = Some(e);
                     continue;
                 }
@@ -160,7 +160,7 @@ async fn stream_response(
     provider_pin: Arc<Mutex<Option<ProviderPin>>>,
     model: String,
 ) -> Result<()> {
-    use IDEOCODE_message_types::ConnectionPhase;
+    use ideocode_message_types::ConnectionPhase;
     let _ = tx
         .send(Ok(StreamEvent::ConnectionPhase {
             phase: ConnectionPhase::SendingRequest,
@@ -203,7 +203,7 @@ async fn stream_response(
         })?;
 
     let connect_ms = connect_start.elapsed().as_millis();
-    IDEOCODE_base::logging::info(&format!(
+    ideocode_base::logging::info(&format!(
         "HTTP connection established in {}ms (status={})",
         connect_ms,
         response.status()
@@ -211,10 +211,10 @@ async fn stream_response(
 
     if !response.status().is_success() {
         let status = response.status();
-        let retry_after = IDEOCODE_provider_core::retry_after::retry_after(response.headers());
-        let body = IDEOCODE_base::util::http_error_body(response, "HTTP error").await;
+        let retry_after = ideocode_provider_core::retry_after::retry_after(response.headers());
+        let body = ideocode_base::util::http_error_body(response, "HTTP error").await;
         let hint = local_endpoint_troubleshooting_hint(&api_base, &model);
-        return Err(IDEOCODE_provider_core::retry_after::error_with_retry_after(
+        return Err(ideocode_provider_core::retry_after::error_with_retry_after(
             format!(
                 "OpenAI-compatible chat request failed\n  endpoint: {}\n  model: {}\n  auth: {}\n  status: {}\n  response: {}\n{}",
                 url,
@@ -241,7 +241,7 @@ async fn stream_response(
     // tokens don't trip a premature timeout (issue #196). Resolved from
     // `[provider] stream_idle_timeout_secs` / `IDEOCODE_STREAM_IDLE_TIMEOUT_SECS`,
     // defaulting to 180s. Shared with the native provider paths (issue #434).
-    let sse_chunk_timeout = IDEOCODE_base::provider::stream_idle_timeout();
+    let sse_chunk_timeout = ideocode_base::provider::stream_idle_timeout();
     let idle_timeout_secs = sse_chunk_timeout.as_secs();
 
     loop {
@@ -256,7 +256,7 @@ async fn stream_response(
             ),
             Ok(None) => break, // stream ended normally
             Err(_) => {
-                IDEOCODE_base::logging::warn(&format!(
+                ideocode_base::logging::warn(&format!(
                     "OpenRouter SSE stream timed out (no data for {}s)",
                     idle_timeout_secs
                 ));
@@ -307,7 +307,7 @@ fn is_retryable_error(error_str: &str) -> bool {
         _ => {}
     }
 
-    IDEOCODE_provider_core::is_transient_transport_error(error_str)
+    ideocode_provider_core::is_transient_transport_error(error_str)
         || error_str.contains("stream error")
         || error_str.contains("eof")
         || error_str.contains("5")

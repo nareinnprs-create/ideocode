@@ -1,9 +1,9 @@
 ﻿use super::{SetupHintsState, StartupHints, read_choice};
 use crate::windows_hotkeys::{self, WindowsHotkey};
 use anyhow::{Context, Result};
-use IDEOCODE_config_types::{LaunchHotkeyEntry, LaunchHotkeysConfig};
-use IDEOCODE_core::{terminal_eprint as eprint, terminal_eprintln as eprintln};
-use IDEOCODE_storage as storage;
+use ideocode_config_types::{LaunchHotkeyEntry, LaunchHotkeysConfig};
+use ideocode_core::{terminal_eprint as eprint, terminal_eprintln as eprintln};
+use ideocode_storage as storage;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 
@@ -145,13 +145,13 @@ fn startup_shortcut_path() -> PathBuf {
 }
 
 fn hotkey_vbs_path() -> Result<PathBuf> {
-    Ok(storage::IDEOCODE_dir()?
+    Ok(storage::ideocode_dir()?
         .join("hotkey")
         .join("IDEOCODE-hotkey-launcher.vbs"))
 }
 
 fn legacy_hotkey_ps1_path() -> Result<PathBuf> {
-    Ok(storage::IDEOCODE_dir()?
+    Ok(storage::ideocode_dir()?
         .join("hotkey")
         .join("IDEOCODE-hotkey.ps1"))
 }
@@ -268,7 +268,7 @@ fn create_hotkey_shortcut(_use_alacritty: bool) -> Result<()> {
     }
 
     let exe = std::env::current_exe()?;
-    let hotkey_dir = storage::IDEOCODE_dir()?.join("hotkey");
+    let hotkey_dir = storage::ideocode_dir()?.join("hotkey");
     std::fs::create_dir_all(&hotkey_dir)?;
     stop_windows_hotkey_listeners();
 
@@ -312,13 +312,13 @@ fn launch_windows_hotkey(entry: &WindowsHotkey) -> Result<()> {
     if entry.self_dev {
         args.push("self-dev".to_string());
     }
-    let command = IDEOCODE_terminal_launch::TerminalCommand::new(exe, args)
+    let command = ideocode_terminal_launch::TerminalCommand::new(exe, args)
         .title("IDEOCODE")
         .fresh_spawn()
         .kind("launch-hotkey");
 
     let launched =
-        IDEOCODE_terminal_launch::spawn_command_in_new_terminal_with(&command, &cwd, |cmd| {
+        ideocode_terminal_launch::spawn_command_in_new_terminal_with(&command, &cwd, |cmd| {
             cmd.spawn().map(|_| ())
         })?;
     if !launched {
@@ -460,7 +460,7 @@ fn windows_native_hotkey_loop(entries: Vec<WindowsHotkey>) -> Result<()> {
             CloseHandle(mutex);
         }
         if retry_count >= 40 {
-            IDEOCODE_logging::warn("previous Windows launch-hotkey listener is still exiting");
+            ideocode_logging::warn("previous Windows launch-hotkey listener is still exiting");
             return Ok(());
         }
         retry_count += 1;
@@ -482,7 +482,7 @@ fn windows_native_hotkey_loop(entries: Vec<WindowsHotkey>) -> Result<()> {
         if ok {
             registered.push((id, entry));
         } else {
-            IDEOCODE_logging::warn(&format!(
+            ideocode_logging::warn(&format!(
                 "failed to register Windows launch hotkey {}",
                 windows_hotkeys::display_windows_hotkey(&entry)
             ));
@@ -511,7 +511,7 @@ fn windows_native_hotkey_loop(entries: Vec<WindowsHotkey>) -> Result<()> {
             )
         };
         if copilot_hook.is_null() {
-            IDEOCODE_logging::warn(&format!(
+            ideocode_logging::warn(&format!(
                 "failed to install Windows Copilot-key hook: {}",
                 std::io::Error::last_os_error()
             ));
@@ -551,7 +551,7 @@ fn windows_native_hotkey_loop(entries: Vec<WindowsHotkey>) -> Result<()> {
             if let Some(entry) = entry.cloned() {
                 std::thread::spawn(move || {
                     if let Err(err) = launch_windows_hotkey(&entry) {
-                        IDEOCODE_logging::warn(&format!(
+                        ideocode_logging::warn(&format!(
                             "failed to launch IDEOCODE from Windows hotkey: {err}"
                         ));
                     }
@@ -641,8 +641,8 @@ pub(super) fn reinstall_windows_launch_hotkeys() {
         return;
     }
     match refresh_windows_launch_hotkeys() {
-        Ok(()) => IDEOCODE_logging::info("Reinstalled Windows launch hotkeys after config change"),
-        Err(err) => IDEOCODE_logging::warn(&format!(
+        Ok(()) => ideocode_logging::info("Reinstalled Windows launch hotkeys after config change"),
+        Err(err) => ideocode_logging::warn(&format!(
             "failed to reinstall Windows launch hotkeys: {err}"
         )),
     }
@@ -910,7 +910,7 @@ mod tests {
     }
 
     #[test]
-    fn listener_stop_sweep_excludes_IDEOCODE_and_powershell_processes_running_it() {
+    fn listener_stop_sweep_excludes_ideocode_and_powershell_processes_running_it() {
         let script = render_stop_windows_hotkey_listeners_script(4242);
         assert!(script.contains("($_.ProcessId -ne $current)"));
         assert!(script.contains("($_.ProcessId -ne $PID)"));
@@ -1115,7 +1115,7 @@ Write-Output "OK"
         if stdout.contains("OK") {
             state.desktop_shortcut_created = true;
             let _ = state.save();
-            IDEOCODE_logging::info(&format!("Created desktop shortcut: {}", shortcut_path));
+            ideocode_logging::info(&format!("Created desktop shortcut: {}", shortcut_path));
         }
     }
 

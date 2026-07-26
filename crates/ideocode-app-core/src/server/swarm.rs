@@ -7,7 +7,7 @@ use crate::protocol::{NotificationType, ServerEvent};
 use crate::session::Session;
 use anyhow::Result;
 use futures::future::try_join_all;
-use IDEOCODE_swarm_core::{
+use ideocode_swarm_core::{
     completion_notification_message, normalize_completion_report, truncate_detail,
 };
 use serde::Deserialize;
@@ -24,12 +24,12 @@ fn status_age_secs(last_status_change: Instant) -> u64 {
 }
 
 /// Maximum number of live members (agents) in a single swarm. Re-exported from
-/// `IDEOCODE_swarm_core` so the server, tools, and prompts all agree on the one
+/// `ideocode_swarm_core` so the server, tools, and prompts all agree on the one
 /// runaway-prevention cap for the task-graph model. Normal and light swarms are
 /// root-only, one-level fan-out. Deep-swarm roots may create recursive trees with
 /// no depth limit, but both the configurable live-worker budget and this absolute
 /// cap still apply.
-pub(super) use IDEOCODE_swarm_core::MAX_SWARM_MEMBERS;
+pub(super) use ideocode_swarm_core::MAX_SWARM_MEMBERS;
 
 /// Walk the `report_back_to_session_id` chain upward from `session_id`,
 /// returning the list of ancestor session ids (parent first, root last).
@@ -1221,7 +1221,7 @@ pub(super) async fn set_member_task_label(
     task_text: &str,
     swarm_members: &Arc<RwLock<HashMap<String, SwarmMember>>>,
 ) {
-    let Some(label) = IDEOCODE_swarm_core::derive_swarm_task_label(task_text) else {
+    let Some(label) = ideocode_swarm_core::derive_swarm_task_label(task_text) else {
         return;
     };
     let mut members = swarm_members.write().await;
@@ -1736,7 +1736,7 @@ mod tests {
     use crate::plan::PlanItem;
     use crate::protocol::{NotificationType, ServerEvent};
     use crate::server::{SwarmMember, VersionedPlan};
-    use IDEOCODE_swarm_core::{
+    use ideocode_swarm_core::{
         append_swarm_completion_report_instructions, summarize_plan_items, truncate_detail,
     };
     use std::collections::{HashMap, HashSet};

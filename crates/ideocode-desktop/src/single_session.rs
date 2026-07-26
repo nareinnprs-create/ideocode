@@ -5,7 +5,7 @@
     },
     workspace,
 };
-use IDEOCODE_tui_messages::DisplayMessage;
+use ideocode_tui_messages::DisplayMessage;
 use pulldown_cmark::{
     Alignment, BlockQuoteKind, CodeBlockKind, Event, HeadingLevel, Options, Parser, Tag, TagEnd,
 };

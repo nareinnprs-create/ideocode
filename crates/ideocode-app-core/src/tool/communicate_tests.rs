@@ -1112,7 +1112,7 @@ fn description_includes_swarm_prompt_guidance() {
 #[test]
 fn format_swarm_model_list_renders_routes_and_pin() {
     let routes = vec![
-        IDEOCODE_provider_core::ModelRoute {
+        ideocode_provider_core::ModelRoute {
             model: "gpt-5.5".to_string(),
             provider: "OpenAI".to_string(),
             api_method: "openai-api-key".to_string(),
@@ -1120,7 +1120,7 @@ fn format_swarm_model_list_renders_routes_and_pin() {
             detail: "API key".to_string(),
             cheapness: None,
         },
-        IDEOCODE_provider_core::ModelRoute {
+        ideocode_provider_core::ModelRoute {
             model: "claude-fable-5".to_string(),
             provider: "Anthropic".to_string(),
             api_method: "anthropic-api-key".to_string(),

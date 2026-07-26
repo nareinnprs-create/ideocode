@@ -9,7 +9,7 @@
 
 use ratatui::prelude::*;
 
-use IDEOCODE_tui_style::color::rgb;
+use ideocode_tui_style::color::rgb;
 
 use crate::swarm_tiles::{SwarmGalleryConfig, SwarmTile, render_swarm_gallery};
 

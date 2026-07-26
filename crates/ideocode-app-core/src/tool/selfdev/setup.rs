@@ -198,8 +198,8 @@ impl SelfDevTool {
     /// logs, build channels, sockets, and repo checkout) so the agent can locate
     /// configuration without guessing platform-specific locations.
     pub(super) async fn do_find_config(&self, ctx: &ToolContext) -> Result<ToolOutput> {
-        let IDEOCODE_home = storage::IDEOCODE_dir().ok();
-        let config_path = IDEOCODE_home.as_ref().map(|home| home.join("config.toml"));
+        let ideocode_home = storage::ideocode_dir().ok();
+        let config_path = ideocode_home.as_ref().map(|home| home.join("config.toml"));
         let logs_dir = storage::logs_dir().ok();
         let repo_dir = SelfDevTool::resolve_repo_dir(ctx.working_dir.as_deref());
 
@@ -222,7 +222,7 @@ impl SelfDevTool {
         ));
         output.push_str(&format!(
             "**IDEOCODE home:** {}\n",
-            format_path(IDEOCODE_home.as_deref())
+            format_path(ideocode_home.as_deref())
         ));
         output.push_str(&format!(
             "**Logs dir:** {}\n",
@@ -266,7 +266,7 @@ impl SelfDevTool {
 
         let metadata = json!({
             "config_path": config_path.as_ref().map(|p| p.display().to_string()),
-            "IDEOCODE_home": IDEOCODE_home.as_ref().map(|p| p.display().to_string()),
+            "IDEOCODE_home": ideocode_home.as_ref().map(|p| p.display().to_string()),
             "logs_dir": logs_dir.as_ref().map(|p| p.display().to_string()),
             "repo_dir": repo_dir.as_ref().map(|p| p.display().to_string()),
             "config_exists": config_path.as_ref().map(|p| p.exists()).unwrap_or(false),
@@ -290,7 +290,7 @@ impl SelfDevTool {
             ));
         }
 
-        let hash = IDEOCODE_build_meta::git_hash().to_string();
+        let hash = ideocode_build_meta::git_hash().to_string();
         let request_id = server::send_reload_signal(hash.clone(), None, false);
         let timeout = std::time::Duration::from_secs(SelfDevTool::reload_timeout_secs());
 
@@ -314,14 +314,14 @@ impl SelfDevTool {
 
     /// Resolve the default location for a cloned self-dev source checkout.
     fn selfdev_clone_dir() -> Result<std::path::PathBuf> {
-        Ok(storage::IDEOCODE_dir()?.join("source").join("IDEOCODE"))
+        Ok(storage::ideocode_dir()?.join("source").join("IDEOCODE"))
     }
 
     /// Clone the IDEOCODE source into the default self-dev source directory.
     fn clone_selfdev_source() -> Result<std::path::PathBuf> {
         let repo_dir = Self::selfdev_clone_dir()?;
         if repo_dir.exists() {
-            if build::is_IDEOCODE_repo(&repo_dir) {
+            if build::is_ideocode_repo(&repo_dir) {
                 return Ok(repo_dir);
             }
             anyhow::bail!(
@@ -343,7 +343,7 @@ impl SelfDevTool {
         if !status.success() {
             anyhow::bail!("git clone exited with {status}");
         }
-        if !build::is_IDEOCODE_repo(&repo_dir) {
+        if !build::is_ideocode_repo(&repo_dir) {
             anyhow::bail!(
                 "cloned source at {} is not a valid IDEOCODE repository",
                 repo_dir.display()

@@ -1,6 +1,6 @@
 ﻿use chrono::{DateTime, Utc};
-use IDEOCODE_message_types::ToolCall;
-use IDEOCODE_session_types::SessionStatus;
+use ideocode_message_types::ToolCall;
+use ideocode_session_types::SessionStatus;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -28,9 +28,9 @@ impl SessionSource {
 
 // `ResumeTarget` is pure data and now lives in `IDEOCODE-session-types` so the
 // foundation/import layer can use it without depending on this UI crate. It is
-// re-exported here so existing `IDEOCODE_tui_session_picker::ResumeTarget` paths
+// re-exported here so existing `ideocode_tui_session_picker::ResumeTarget` paths
 // keep working.
-pub use IDEOCODE_session_types::ResumeTarget;
+pub use ideocode_session_types::ResumeTarget;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]

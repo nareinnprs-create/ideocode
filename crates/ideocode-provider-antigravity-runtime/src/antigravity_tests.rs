@@ -1,9 +1,9 @@
 ﻿use super::*;
 use chrono::Utc;
-use IDEOCODE_provider_antigravity::{
+use ideocode_provider_antigravity::{
     FetchAvailableModelsResponse, parse_fetch_available_models_response,
 };
-use IDEOCODE_provider_core::Provider;
+use ideocode_provider_core::Provider;
 use tokio_stream::StreamExt;
 
 #[test]
@@ -101,13 +101,13 @@ fn available_models_display_includes_dynamic_cache_and_current_override() {
 
 #[test]
 fn available_models_display_seeds_from_persisted_catalog() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let temp = tempfile::TempDir::new().expect("temp dir");
     let previous = std::env::var_os("IDEOCODE_HOME");
-    IDEOCODE_base::env::set_var("IDEOCODE_HOME", temp.path());
+    ideocode_base::env::set_var("IDEOCODE_HOME", temp.path());
 
-    let path = IDEOCODE_base::provider::antigravity::persisted_catalog_path().expect("catalog path");
-    IDEOCODE_base::storage::write_json(
+    let path = ideocode_base::provider::antigravity::persisted_catalog_path().expect("catalog path");
+    ideocode_base::storage::write_json(
         &path,
         &PersistedCatalog {
             models: vec![CatalogModel {
@@ -140,9 +140,9 @@ fn available_models_display_seeds_from_persisted_catalog() {
     );
 
     if let Some(previous) = previous {
-        IDEOCODE_base::env::set_var("IDEOCODE_HOME", previous);
+        ideocode_base::env::set_var("IDEOCODE_HOME", previous);
     } else {
-        IDEOCODE_base::env::remove_var("IDEOCODE_HOME");
+        ideocode_base::env::remove_var("IDEOCODE_HOME");
     }
 }
 

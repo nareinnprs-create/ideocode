@@ -12,7 +12,7 @@
 //! debug commands `smoothness` and `smoothness:reset`, so live sessions and
 //! offscreen replays (`IDEOCODE replay`) can both be benchmarked.
 
-use IDEOCODE_tui_core::anchor_stability::{AnchorFrame, AnchorStabilityRecorder, BLANK_ROW_HASH};
+use ideocode_tui_core::anchor_stability::{AnchorFrame, AnchorStabilityRecorder, BLANK_ROW_HASH};
 use ratatui::buffer::Buffer;
 use ratatui::layout::Rect;
 use std::sync::{Mutex, OnceLock};

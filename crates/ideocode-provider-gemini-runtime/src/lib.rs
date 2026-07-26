@@ -2,15 +2,15 @@
 //! key), moved out of `IDEOCODE-base` so provider edits compile only this crate
 //! plus a binary relink instead of rebuilding the base -> app-core -> tui
 //! spine. The binary's composition root registers [`GeminiProvider`] with
-//! `IDEOCODE_base::provider::external` at startup.
+//! `ideocode_base::provider::external` at startup.
 
 use anyhow::{Context, Result};
 use async_trait::async_trait;
 use chrono::Utc;
-use IDEOCODE_base::auth::gemini as gemini_auth;
-use IDEOCODE_message_types::{ConnectionPhase, Message, StreamEvent, ToolDefinition};
-use IDEOCODE_provider_core::{EventStream, Provider};
-pub use IDEOCODE_provider_gemini::{
+use ideocode_base::auth::gemini as gemini_auth;
+use ideocode_message_types::{ConnectionPhase, Message, StreamEvent, ToolDefinition};
+use ideocode_provider_core::{EventStream, Provider};
+pub use ideocode_provider_gemini::{
     AVAILABLE_MODELS, CODE_ASSIST_API_VERSION, CODE_ASSIST_ENDPOINT, ClientMetadata,
     CodeAssistGenerateRequest, CodeAssistGenerateResponse, DEFAULT_MODEL, GEMINI_API_ENDPOINT,
     GEMINI_API_VERSION, GeminiCandidate, GeminiContent, GeminiFunctionCall,
@@ -59,12 +59,12 @@ enum GeminiAuthMode {
 
 impl GeminiProvider {
     fn persisted_catalog_path() -> Result<std::path::PathBuf> {
-        Ok(IDEOCODE_base::storage::app_config_dir()?.join("gemini_models_cache.json"))
+        Ok(ideocode_base::storage::app_config_dir()?.join("gemini_models_cache.json"))
     }
 
     fn load_persisted_catalog() -> Option<PersistedCatalog> {
         let path = Self::persisted_catalog_path().ok()?;
-        IDEOCODE_base::storage::read_json(&path)
+        ideocode_base::storage::read_json(&path)
             .ok()
             .filter(|catalog: &PersistedCatalog| !catalog.models.is_empty())
     }
@@ -80,8 +80,8 @@ impl GeminiProvider {
             models: models.to_vec(),
             fetched_at_rfc3339: Utc::now().to_rfc3339(),
         };
-        if let Err(error) = IDEOCODE_base::storage::write_json(&path, &payload) {
-            IDEOCODE_base::logging::warn(&format!(
+        if let Err(error) = ideocode_base::storage::write_json(&path, &payload) {
+            ideocode_base::logging::warn(&format!(
                 "Failed to persist Gemini model catalog {}: {}",
                 path.display(),
                 error
@@ -283,7 +283,7 @@ impl GeminiProvider {
 
         let models = extract_gemini_model_ids(&response);
         if !models.is_empty() {
-            IDEOCODE_base::logging::info(&format!(
+            ideocode_base::logging::info(&format!(
                 "Discovered Gemini Code Assist models: {}",
                 models.join(", ")
             ));
@@ -303,7 +303,7 @@ impl GeminiProvider {
         let response: Value = match self.get_json_api_key(&url, api_key, "ListModels").await {
             Ok(response) => response,
             Err(err) => {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Gemini Developer API model discovery failed: {err:#}"
                 ));
                 return Ok(Vec::new());
@@ -324,7 +324,7 @@ impl GeminiProvider {
 
         let models = merge_gemini_model_lists(raw);
         if !models.is_empty() {
-            IDEOCODE_base::logging::info(&format!(
+            ideocode_base::logging::info(&format!(
                 "Discovered Gemini Developer API models: {}",
                 models.join(", ")
             ));
@@ -389,7 +389,7 @@ impl GeminiProvider {
 
         if !resp.status().is_success() {
             let status = resp.status();
-            let body = IDEOCODE_base::util::http_error_body(resp, "HTTP error").await;
+            let body = ideocode_base::util::http_error_body(resp, "HTTP error").await;
             anyhow::bail!(
                 "Gemini request {} failed (HTTP {}): {}",
                 method,
@@ -429,7 +429,7 @@ impl GeminiProvider {
 
         if !resp.status().is_success() {
             let status = resp.status();
-            let body = IDEOCODE_base::util::http_error_body(resp, "HTTP error").await;
+            let body = ideocode_base::util::http_error_body(resp, "HTTP error").await;
             anyhow::bail!(
                 "Gemini request {} failed (HTTP {}): {}",
                 label,
@@ -465,7 +465,7 @@ impl GeminiProvider {
 
         if !resp.status().is_success() {
             let status = resp.status();
-            let body = IDEOCODE_base::util::http_error_body(resp, "HTTP error").await;
+            let body = ideocode_base::util::http_error_body(resp, "HTTP error").await;
             anyhow::bail!("Gemini {} failed (HTTP {}): {}", label, status, body.trim());
         }
 
@@ -491,7 +491,7 @@ impl GeminiProvider {
 
         if !resp.status().is_success() {
             let status = resp.status();
-            let body = IDEOCODE_base::util::http_error_body(resp, "HTTP error").await;
+            let body = ideocode_base::util::http_error_body(resp, "HTTP error").await;
             anyhow::bail!(
                 "Gemini operation lookup failed (HTTP {}): {}",
                 status,
@@ -559,7 +559,7 @@ impl GeminiProvider {
             "tools": tools_value.as_ref(),
             "tool_config": &request.request.tool_config,
         });
-        IDEOCODE_provider_core::fingerprint::log_provider_canonical_input(
+        ideocode_provider_core::fingerprint::log_provider_canonical_input(
             "gemini",
             model,
             "gemini_generate_content",
@@ -692,7 +692,7 @@ impl Provider for GeminiProvider {
                     let mut fallback_response = None;
                     let mut last_err = err;
                     for fallback_model in gemini_fallback_models(&model) {
-                        IDEOCODE_base::logging::warn(&format!(
+                        ideocode_base::logging::warn(&format!(
                             "Gemini model '{}' was not found; retrying with fallback '{}'",
                             model, fallback_model
                         ));
@@ -853,7 +853,7 @@ impl Provider for GeminiProvider {
                                 .id
                                 .clone()
                                 .unwrap_or_else(|| Uuid::new_v4().to_string());
-                            let call_id = IDEOCODE_message_types::sanitize_tool_id(&raw_call_id);
+                            let call_id = ideocode_message_types::sanitize_tool_id(&raw_call_id);
                             let _ = tx
                                 .send(Ok(StreamEvent::ToolUseStart {
                                     id: call_id,
@@ -908,7 +908,7 @@ impl Provider for GeminiProvider {
                             .as_deref()
                             .filter(|msg| !msg.trim().is_empty())
                             .map(|msg| {
-                                format!(": {}", IDEOCODE_base::util::truncate_str(msg.trim(), 300))
+                                format!(": {}", ideocode_base::util::truncate_str(msg.trim(), 300))
                             })
                             .unwrap_or_default();
                         let _ = tx
@@ -980,10 +980,10 @@ impl Provider for GeminiProvider {
         self.available_models_display()
     }
 
-    fn model_routes(&self) -> Vec<IDEOCODE_provider_core::ModelRoute> {
+    fn model_routes(&self) -> Vec<ideocode_provider_core::ModelRoute> {
         self.available_models_display()
             .into_iter()
-            .map(|model| IDEOCODE_provider_core::ModelRoute {
+            .map(|model| ideocode_provider_core::ModelRoute {
                 model,
                 provider: "Gemini".to_string(),
                 api_method: "code-assist-oauth".to_string(),
@@ -1042,7 +1042,7 @@ fn gemini_http_client() -> reqwest::Client {
         .pool_max_idle_per_host(0)
         .tcp_keepalive(Some(Duration::from_secs(30)))
         .build()
-        .unwrap_or_else(|_| IDEOCODE_provider_core::shared_http_client())
+        .unwrap_or_else(|_| ideocode_provider_core::shared_http_client())
 }
 
 fn is_transient_gemini_transport_error(err: &reqwest::Error) -> bool {
@@ -1052,7 +1052,7 @@ fn is_transient_gemini_transport_error(err: &reqwest::Error) -> bool {
     // connect/timeout flags which don't always surface in the message text.
     err.is_connect()
         || err.is_timeout()
-        || IDEOCODE_provider_core::is_transient_transport_error(&err.to_string())
+        || ideocode_provider_core::is_transient_transport_error(&err.to_string())
 }
 
 fn is_gemini_model_not_found_error(err: &anyhow::Error) -> bool {

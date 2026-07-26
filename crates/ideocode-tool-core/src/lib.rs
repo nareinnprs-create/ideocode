@@ -1,8 +1,8 @@
 ﻿use anyhow::Result;
 use async_trait::async_trait;
-use IDEOCODE_agent_runtime::InterruptSignal;
-use IDEOCODE_message_types::ToolDefinition;
-use IDEOCODE_tool_types::ToolOutput;
+use ideocode_agent_runtime::InterruptSignal;
+use ideocode_message_types::ToolDefinition;
+use ideocode_tool_types::ToolOutput;
 use serde_json::Value;
 use std::path::{Path, PathBuf};
 

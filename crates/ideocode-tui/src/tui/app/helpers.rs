@@ -163,7 +163,7 @@ pub(super) fn extract_bracketed_system_message(message: &str) -> Option<String> 
 }
 
 pub(super) fn launch_client_executable() -> PathBuf {
-    crate::build::client_update_candidate(IDEOCODE_selfdev_types::client_selfdev_requested())
+    crate::build::client_update_candidate(ideocode_selfdev_types::client_selfdev_requested())
         .map(|(path, _label)| path)
         .or_else(|| std::env::current_exe().ok())
         .unwrap_or_else(|| PathBuf::from("IDEOCODE"))
@@ -453,7 +453,7 @@ pub(super) fn inferred_reasoning_efforts(
     provider_name: Option<&str>,
     model_name: Option<&str>,
 ) -> Vec<&'static str> {
-    IDEOCODE_provider_core::inferred_reasoning_efforts(provider_name, model_name)
+    ideocode_provider_core::inferred_reasoning_efforts(provider_name, model_name)
 }
 
 pub(super) fn effort_bar(index: usize, total: usize) -> String {
@@ -589,7 +589,7 @@ pub(super) fn build_resume_command(
             let args = resume_invocation_args(&imported_id, socket);
             let title = format!(
                 "🧵 Claude Code {}",
-                IDEOCODE_core::util::truncate_str(session_id, 8)
+                ideocode_core::util::truncate_str(session_id, 8)
             );
             (exe, args, title)
         }
@@ -597,7 +597,7 @@ pub(super) fn build_resume_command(
             let exe = launch_client_executable();
             let imported_id = crate::import::imported_codex_session_id(session_id);
             let args = resume_invocation_args(&imported_id, socket);
-            let title = format!("🧠 Codex {}", IDEOCODE_core::util::truncate_str(session_id, 8));
+            let title = format!("🧠 Codex {}", ideocode_core::util::truncate_str(session_id, 8));
             (exe, args, title)
         }
         ResumeTarget::PiSession { session_path } => {
@@ -619,7 +619,7 @@ pub(super) fn build_resume_command(
             let args = resume_invocation_args(&imported_id, socket);
             let title = format!(
                 "◌ OpenCode {}",
-                IDEOCODE_core::util::truncate_str(session_id, 8)
+                ideocode_core::util::truncate_str(session_id, 8)
             );
             (exe, args, title)
         }
@@ -627,7 +627,7 @@ pub(super) fn build_resume_command(
             let exe = launch_client_executable();
             let imported_id = crate::import::imported_cursor_session_id(session_id);
             let args = resume_invocation_args(&imported_id, socket);
-            let title = format!("▮ Cursor {}", IDEOCODE_core::util::truncate_str(session_id, 8));
+            let title = format!("▮ Cursor {}", ideocode_core::util::truncate_str(session_id, 8));
             (exe, args, title)
         }
     }
@@ -796,7 +796,7 @@ pub(super) fn clipboard_image() -> Option<(String, String)> {
             if let Some(url) = extract_image_url(&html) {
                 crate::logging::info(&format!(
                     "clipboard_image: found image URL in HTML: {}",
-                    IDEOCODE_core::util::truncate_str(&url, 80)
+                    ideocode_core::util::truncate_str(&url, 80)
                 ));
                 if let Some(result) = download_image_url(&url) {
                     return Some(result);

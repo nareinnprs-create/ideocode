@@ -8,7 +8,7 @@ struct EnvVarGuard {
 impl EnvVarGuard {
     fn set(key: &'static str, value: impl AsRef<std::ffi::OsStr>) -> Self {
         let previous = std::env::var_os(key);
-        IDEOCODE_base::env::set_var(key, value);
+        ideocode_base::env::set_var(key, value);
         Self { key, previous }
     }
 
@@ -23,9 +23,9 @@ impl EnvVarGuard {
 impl Drop for EnvVarGuard {
     fn drop(&mut self) {
         if let Some(previous) = self.previous.take() {
-            IDEOCODE_base::env::set_var(self.key, previous);
+            ideocode_base::env::set_var(self.key, previous);
         } else {
-            IDEOCODE_base::env::remove_var(self.key);
+            ideocode_base::env::remove_var(self.key);
         }
     }
 }
@@ -678,7 +678,7 @@ fn test_anthropic_signed_thinking_replayed_in_request_blocks() {
 #[tokio::test]
 #[ignore = "live smoke: requires ANTHROPIC_API_KEY, or set IDEOCODE_LIVE_ANTHROPIC_ALLOW_OAUTH=1 to use Claude OAuth credentials"]
 async fn live_anthropic_reasoning_smoke() -> Result<()> {
-    let _env_lock = IDEOCODE_base::storage::lock_test_env();
+    let _env_lock = ideocode_base::storage::lock_test_env();
     let using_api_key = std::env::var_os("ANTHROPIC_API_KEY").is_some();
     let allow_oauth = std::env::var_os("IDEOCODE_LIVE_ANTHROPIC_ALLOW_OAUTH").is_some();
     if !using_api_key && !allow_oauth {
@@ -1550,38 +1550,38 @@ async fn test_sanitize_dangling_tool_ids_with_dots() {
 /// mapping here would surface an inaccurate auth method to the user.
 #[test]
 fn credential_mode_runtime_provider_identity_round_trips() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let previous = std::env::var_os("IDEOCODE_RUNTIME_PROVIDER");
 
-    IDEOCODE_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "claude");
+    ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "claude");
     assert_eq!(
-        AnthropicCredentialMode::from_runtime_env(IDEOCODE_provider_core::DualAuthProvider::Anthropic),
+        AnthropicCredentialMode::from_runtime_env(ideocode_provider_core::DualAuthProvider::Anthropic),
         AnthropicCredentialMode::OAuth,
         "OAuth selection must surface as the OAuth runtime identity"
     );
 
-    IDEOCODE_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "claude-api");
+    ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "claude-api");
     assert_eq!(
-        AnthropicCredentialMode::from_runtime_env(IDEOCODE_provider_core::DualAuthProvider::Anthropic),
+        AnthropicCredentialMode::from_runtime_env(ideocode_provider_core::DualAuthProvider::Anthropic),
         AnthropicCredentialMode::ApiKey,
         "API-key selection must surface as the API-key runtime identity"
     );
 
     match previous {
-        Some(value) => IDEOCODE_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", value),
-        None => IDEOCODE_base::env::remove_var("IDEOCODE_RUNTIME_PROVIDER"),
+        Some(value) => ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", value),
+        None => ideocode_base::env::remove_var("IDEOCODE_RUNTIME_PROVIDER"),
     }
 }
 
 #[tokio::test]
 async fn auto_mode_falls_back_to_api_key_when_oauth_is_expired() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let temp = tempfile::TempDir::new().unwrap();
     let _home = EnvVarGuard::set("IDEOCODE_HOME", temp.path());
     let _api_key = EnvVarGuard::set("ANTHROPIC_API_KEY", "test-anthropic-api-key");
     let _runtime = EnvVarGuard::set("IDEOCODE_RUNTIME_PROVIDER", "auto");
 
-    IDEOCODE_base::auth::claude::upsert_account(IDEOCODE_base::auth::claude::AnthropicAccount {
+    ideocode_base::auth::claude::upsert_account(ideocode_base::auth::claude::AnthropicAccount {
         label: "claude-1".to_string(),
         access: "expired-oauth-access".to_string(),
         refresh: String::new(),
@@ -1608,13 +1608,13 @@ async fn auto_mode_falls_back_to_api_key_when_oauth_is_expired() {
 
 #[tokio::test]
 async fn explicit_oauth_mode_does_not_silently_fall_back_to_api_key() {
-    let _guard = IDEOCODE_base::storage::lock_test_env();
+    let _guard = ideocode_base::storage::lock_test_env();
     let temp = tempfile::TempDir::new().unwrap();
     let _home = EnvVarGuard::set("IDEOCODE_HOME", temp.path());
     let _api_key = EnvVarGuard::set("ANTHROPIC_API_KEY", "test-anthropic-api-key");
     let _runtime = EnvVarGuard::set("IDEOCODE_RUNTIME_PROVIDER", "claude");
 
-    IDEOCODE_base::auth::claude::upsert_account(IDEOCODE_base::auth::claude::AnthropicAccount {
+    ideocode_base::auth::claude::upsert_account(ideocode_base::auth::claude::AnthropicAccount {
         label: "claude-1".to_string(),
         access: "expired-oauth-access".to_string(),
         refresh: String::new(),
@@ -1721,9 +1721,9 @@ fn detects_anthropic_model_not_found_errors() {
 fn anthropic_fallback_prefers_best_available_and_skips_tried_and_retired() {
     // The fallback logic reads the process-global model catalog; lock and
     // reset it so fixture models hydrated by other tests cannot leak in.
-    let _guard = IDEOCODE_base::storage::lock_test_env();
-    IDEOCODE_base::provider::models::reset_model_catalog_services_for_tests();
-    let known = IDEOCODE_base::provider::known_anthropic_model_ids();
+    let _guard = ideocode_base::storage::lock_test_env();
+    ideocode_base::provider::models::reset_model_catalog_services_for_tests();
+    let known = ideocode_base::provider::known_anthropic_model_ids();
     assert!(
         !known.is_empty(),
         "expected a non-empty Anthropic model catalog"
@@ -1763,8 +1763,8 @@ fn anthropic_fallback_honors_server_recommendation() {
     // The recommendation matcher scores hints against the process-global model
     // catalog; lock and reset it so fixture models hydrated by other tests
     // (e.g. claude-opus-5-preview) cannot outrank the real catalog entries.
-    let _guard = IDEOCODE_base::storage::lock_test_env();
-    IDEOCODE_base::provider::models::reset_model_catalog_services_for_tests();
+    let _guard = ideocode_base::storage::lock_test_env();
+    ideocode_base::provider::models::reset_model_catalog_services_for_tests();
     // The real 404 body recommends a specific replacement model. We must honor
     // it over the generic quality ranking.
     let body = "anthropic api error (404 not found): {\"type\":\"error\",\"error\":{\"type\":\"not_found_error\",\"message\":\"claude fable 5 is not available. please use opus 4.8. learn more: https://anthropic.com\"}}";
@@ -1845,7 +1845,7 @@ fn ping_keepalive_emits_streaming_phase_event() {
         events.iter().any(|e| matches!(
             e,
             StreamEvent::ConnectionPhase {
-                phase: IDEOCODE_message_types::ConnectionPhase::Streaming
+                phase: ideocode_message_types::ConnectionPhase::Streaming
             }
         )),
         "expected ping to emit a Streaming ConnectionPhase event, got {events:?}"

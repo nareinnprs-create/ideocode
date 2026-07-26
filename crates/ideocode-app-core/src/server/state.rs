@@ -1,10 +1,10 @@
 ﻿use crate::bus::FileOp;
 use crate::plan::VersionedPlan;
 use crate::protocol::ServerEvent;
-use IDEOCODE_agent_runtime::{
+use ideocode_agent_runtime::{
     InterruptSignal, SoftInterruptMessage, SoftInterruptQueue, SoftInterruptSource,
 };
-use IDEOCODE_swarm_core::{SwarmLifecycleStatus, SwarmMemberRecord, SwarmRole};
+use ideocode_swarm_core::{SwarmLifecycleStatus, SwarmMemberRecord, SwarmRole};
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;

@@ -24,11 +24,11 @@ use base64::Engine;
 #[cfg(feature = "aws-sdk")]
 use base64::engine::general_purpose::STANDARD as BASE64;
 #[cfg(feature = "aws-sdk")]
-use IDEOCODE_message_types::{ContentBlock as JContentBlock, Role as JRole, StreamEvent};
-use IDEOCODE_message_types::{Message as JMessage, ToolDefinition};
+use ideocode_message_types::{ContentBlock as JContentBlock, Role as JRole, StreamEvent};
+use ideocode_message_types::{Message as JMessage, ToolDefinition};
 #[cfg(feature = "aws-sdk")]
-use IDEOCODE_provider_core::summarize_model_catalog_refresh;
-use IDEOCODE_provider_core::{
+use ideocode_provider_core::summarize_model_catalog_refresh;
+use ideocode_provider_core::{
     DEFAULT_CONTEXT_LIMIT, EventStream, ModelCatalogRefreshSummary, ModelRoute, Provider,
     RouteCheapnessEstimate, RouteCostConfidence, RouteCostSource,
 };
@@ -247,7 +247,7 @@ impl BedrockProvider {
     }
 
     pub fn configured_bearer_token() -> Option<String> {
-        IDEOCODE_provider_env::load_api_key_from_env_or_config(API_KEY_ENV, ENV_FILE)
+        ideocode_provider_env::load_api_key_from_env_or_config(API_KEY_ENV, ENV_FILE)
     }
 
     fn configured_bearer_token_for_runtime() -> Option<String> {
@@ -262,16 +262,16 @@ impl BedrockProvider {
             .ok()
             .map(|v| v.trim().to_string())
             .filter(|v| !v.is_empty())
-            .or_else(|| IDEOCODE_provider_env::load_env_value_from_env_or_config(name, ENV_FILE))
+            .or_else(|| ideocode_provider_env::load_env_value_from_env_or_config(name, ENV_FILE))
     }
 
     fn persisted_catalog_path() -> Result<std::path::PathBuf> {
-        Ok(IDEOCODE_storage::app_config_dir()?.join("bedrock_models_cache.json"))
+        Ok(ideocode_storage::app_config_dir()?.join("bedrock_models_cache.json"))
     }
 
     fn load_persisted_catalog() -> Option<PersistedCatalog> {
         let path = Self::persisted_catalog_path().ok()?;
-        IDEOCODE_storage::read_json(&path).ok()
+        ideocode_storage::read_json(&path).ok()
     }
 
     // Only written from aws-sdk catalog refreshes, but kept ungated so cached
@@ -296,8 +296,8 @@ impl BedrockProvider {
             region: Self::configured_region(),
             fetched_at_rfc3339: chrono::Utc::now().to_rfc3339(),
         };
-        if let Err(err) = IDEOCODE_storage::write_json(&path, &payload) {
-            IDEOCODE_logging::warn(&format!(
+        if let Err(err) = ideocode_storage::write_json(&path, &payload) {
+            ideocode_logging::warn(&format!(
                 "Failed to persist Bedrock model catalog {}: {}",
                 path.display(),
                 err
@@ -309,7 +309,7 @@ impl BedrockProvider {
         if let Some(catalog) = Self::load_persisted_catalog() {
             let configured_region = Self::configured_region();
             if catalog.region.as_deref() != configured_region.as_deref() {
-                IDEOCODE_logging::info(&format!(
+                ideocode_logging::info(&format!(
                     "Ignoring Bedrock model cache for region {:?}; configured region is {:?}",
                     catalog.region, configured_region
                 ));
@@ -1110,7 +1110,7 @@ impl BedrockProvider {
                 );
             }
             Err(err) => {
-                IDEOCODE_logging::info(&format!(
+                ideocode_logging::info(&format!(
                     "Bedrock inference profile discovery skipped: {}",
                     Self::classify_error_message(&Self::sdk_error_message(&err))
                 ));
@@ -1193,7 +1193,7 @@ impl Provider for BedrockProvider {
             "supports_vision": info.supports_vision,
             "inference_config_present": inference_config.is_some(),
         });
-        IDEOCODE_provider_core::log_provider_canonical_input(
+        ideocode_provider_core::log_provider_canonical_input(
             "bedrock",
             &model,
             "bedrock_converse_logical",
@@ -1473,7 +1473,7 @@ impl Provider for BedrockProvider {
         true
     }
 
-    fn uses_IDEOCODE_compaction(&self) -> bool {
+    fn uses_ideocode_compaction(&self) -> bool {
         true
     }
 
@@ -1535,13 +1535,13 @@ mod tests {
     impl EnvVarGuard {
         fn set(key: &'static str, value: impl AsRef<OsStr>) -> Self {
             let previous = std::env::var_os(key);
-            IDEOCODE_core::env::set_var(key, value);
+            ideocode_core::env::set_var(key, value);
             Self { key, previous }
         }
 
         fn remove(key: &'static str) -> Self {
             let previous = std::env::var_os(key);
-            IDEOCODE_core::env::remove_var(key);
+            ideocode_core::env::remove_var(key);
             Self { key, previous }
         }
     }
@@ -1549,9 +1549,9 @@ mod tests {
     impl Drop for EnvVarGuard {
         fn drop(&mut self) {
             if let Some(value) = self.previous.as_ref() {
-                IDEOCODE_core::env::set_var(self.key, value);
+                ideocode_core::env::set_var(self.key, value);
             } else {
-                IDEOCODE_core::env::remove_var(self.key);
+                ideocode_core::env::remove_var(self.key);
             }
         }
     }
@@ -1575,18 +1575,18 @@ mod tests {
             "AWS_CONFIG_FILE",
         ]
         .map(EnvVarGuard::remove);
-        IDEOCODE_core::env::set_var(REGION_ENV, "us-east-1");
+        ideocode_core::env::set_var(REGION_ENV, "us-east-1");
         assert!(!BedrockProvider::has_credentials());
-        IDEOCODE_core::env::set_var("AWS_PROFILE", "test");
+        ideocode_core::env::set_var("AWS_PROFILE", "test");
         assert!(BedrockProvider::has_credentials());
     }
 
     #[test]
     fn explicit_enable_marks_configured_for_instance_metadata_credentials() {
         let _guard = lock_test_env();
-        IDEOCODE_core::env::set_var("IDEOCODE_BEDROCK_ENABLE", "1");
+        ideocode_core::env::set_var("IDEOCODE_BEDROCK_ENABLE", "1");
         assert!(BedrockProvider::has_credentials());
-        IDEOCODE_core::env::remove_var("IDEOCODE_BEDROCK_ENABLE");
+        ideocode_core::env::remove_var("IDEOCODE_BEDROCK_ENABLE");
     }
 
     #[test]
@@ -1604,18 +1604,18 @@ mod tests {
             "IDEOCODE_BEDROCK_PROFILE",
             "AWS_ACCESS_KEY_ID",
         ] {
-            IDEOCODE_core::env::remove_var(key);
+            ideocode_core::env::remove_var(key);
         }
 
         assert!(!BedrockProvider::has_credentials());
-        IDEOCODE_provider_env::save_env_value_to_env_file(API_KEY_ENV, ENV_FILE, Some("test-key"))
+        ideocode_provider_env::save_env_value_to_env_file(API_KEY_ENV, ENV_FILE, Some("test-key"))
             .unwrap();
-        IDEOCODE_core::env::remove_var(API_KEY_ENV);
+        ideocode_core::env::remove_var(API_KEY_ENV);
         assert!(!BedrockProvider::has_credentials());
 
-        IDEOCODE_provider_env::save_env_value_to_env_file(REGION_ENV, ENV_FILE, Some("us-east-2"))
+        ideocode_provider_env::save_env_value_to_env_file(REGION_ENV, ENV_FILE, Some("us-east-2"))
             .unwrap();
-        IDEOCODE_core::env::remove_var(REGION_ENV);
+        ideocode_core::env::remove_var(REGION_ENV);
 
         assert_eq!(
             BedrockProvider::configured_bearer_token().as_deref(),
@@ -1648,15 +1648,15 @@ mod tests {
         ]
         .map(EnvVarGuard::remove);
 
-        IDEOCODE_provider_env::save_env_value_to_env_file(
+        ideocode_provider_env::save_env_value_to_env_file(
             API_KEY_ENV,
             ENV_FILE,
             Some("expired-bearer-token"),
         )
         .unwrap();
-        IDEOCODE_provider_env::save_env_value_to_env_file(REGION_ENV, ENV_FILE, Some("us-east-2"))
+        ideocode_provider_env::save_env_value_to_env_file(REGION_ENV, ENV_FILE, Some("us-east-2"))
             .unwrap();
-        IDEOCODE_provider_env::save_env_value_to_env_file(
+        ideocode_provider_env::save_env_value_to_env_file(
             "IDEOCODE_BEDROCK_PROFILE",
             ENV_FILE,
             Some("IDEOCODE-operator"),

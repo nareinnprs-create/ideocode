@@ -1,11 +1,11 @@
 ﻿use super::*;
-use crate::storage::IDEOCODE_dir;
+use crate::storage::ideocode_dir;
 use std::path::PathBuf;
 
 impl Config {
     /// Get the config file path
     pub fn path() -> Option<PathBuf> {
-        IDEOCODE_dir().ok().map(|d| d.join("config.toml"))
+        ideocode_dir().ok().map(|d| d.join("config.toml"))
     }
 
     /// Load config from file, with environment variable overrides
@@ -213,7 +213,7 @@ impl Config {
     /// inferred. `imported` is set so the bake never runs twice and later manual
     /// edits are not clobbered.
     pub fn set_launch_hotkeys(
-        entries: Vec<IDEOCODE_config_types::LaunchHotkeyEntry>,
+        entries: Vec<ideocode_config_types::LaunchHotkeyEntry>,
         enabled: bool,
     ) -> anyhow::Result<()> {
         let mut cfg = Self::load();
@@ -249,16 +249,16 @@ impl Config {
     /// swallowed.
     #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     pub fn bake_launch_hotkeys_once() -> bool {
-        use IDEOCODE_import_core::repo_ranking;
+        use ideocode_import_core::repo_ranking;
 
         let cfg = Self::load();
         if cfg.launch_hotkeys.imported {
             return false;
         }
-        let Ok(IDEOCODE_dir) = IDEOCODE_dir() else {
+        let Ok(ideocode_dir) = ideocode_dir() else {
             return false;
         };
-        let sessions_dir = IDEOCODE_dir.join("sessions");
+        let sessions_dir = ideocode_dir.join("sessions");
         let Some(home) = dirs::home_dir() else {
             return false;
         };
@@ -303,9 +303,9 @@ impl Config {
             return false;
         }
 
-        let entries: Vec<IDEOCODE_config_types::LaunchHotkeyEntry> = plan
+        let entries: Vec<ideocode_config_types::LaunchHotkeyEntry> = plan
             .into_iter()
-            .map(|p| IDEOCODE_config_types::LaunchHotkeyEntry {
+            .map(|p| ideocode_config_types::LaunchHotkeyEntry {
                 chord: p.chord,
                 // Home keeps the dynamic sentinel so it tracks `$HOME`; repos are
                 // baked to absolute paths.
@@ -351,7 +351,7 @@ impl Config {
     /// Returns `true` when it rewrote the config. Best-effort: errors are
     /// logged and swallowed.
     pub fn migrate_legacy_swarm_spawn_mode_once() -> bool {
-        let Ok(dir) = IDEOCODE_dir() else {
+        let Ok(dir) = ideocode_dir() else {
             return false;
         };
         let marker = dir.join("migrations").join("swarm-spawn-mode-inline");

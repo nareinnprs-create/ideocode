@@ -281,7 +281,7 @@ impl FrameBuffer {
 /// Enable visual debugging
 pub fn enable() {
     VISUAL_DEBUG_ENABLED.store(true, Ordering::SeqCst);
-    IDEOCODE_logging::info("Visual debugging enabled");
+    ideocode_logging::info("Visual debugging enabled");
 }
 
 /// Disable visual debugging
@@ -475,7 +475,7 @@ fn normalize_string(s: &str) -> String {
         match Regex::new(pattern) {
             Ok(regex) => Some(regex),
             Err(err) => {
-                IDEOCODE_logging::warn(&format!(
+                ideocode_logging::warn(&format!(
                     "visual_debug: failed to compile normalization regex: {}",
                     err
                 ));

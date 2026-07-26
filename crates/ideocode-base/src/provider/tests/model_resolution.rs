@@ -963,9 +963,9 @@ fn test_named_config_provider_models_appear_in_picker_and_are_selectable() {
     // profile, and selecting the emitted `<name>:<model>` spec must bind the
     // named profile runtime.
     with_clean_provider_test_env(|| {
-        let IDEOCODE_home = std::env::var_os("IDEOCODE_HOME").expect("test IDEOCODE_HOME should be set");
+        let ideocode_home = std::env::var_os("IDEOCODE_HOME").expect("test IDEOCODE_HOME should be set");
         std::fs::write(
-            std::path::PathBuf::from(IDEOCODE_home).join("config.toml"),
+            std::path::PathBuf::from(ideocode_home).join("config.toml"),
             r#"
 [provider]
 default_provider = "my-gateway"
@@ -1192,7 +1192,7 @@ fn test_openai_auth_mode_prefixed_model_switch_changes_credentials() {
         // covered by IDEOCODE-provider-openai-runtime's tests.
         assert_eq!(
             openai.credential_mode(),
-            IDEOCODE_provider_core::CredentialMode::Auto,
+            ideocode_provider_core::CredentialMode::Auto,
             "default OpenAI credentials stay on the OAuth-first Auto pin"
         );
 
@@ -1201,7 +1201,7 @@ fn test_openai_auth_mode_prefixed_model_switch_changes_credentials() {
             .expect("API-key route should select the OpenAI API credentials");
         assert_eq!(
             openai.credential_mode(),
-            IDEOCODE_provider_core::CredentialMode::ApiKey
+            ideocode_provider_core::CredentialMode::ApiKey
         );
 
         provider
@@ -1209,7 +1209,7 @@ fn test_openai_auth_mode_prefixed_model_switch_changes_credentials() {
             .expect("OAuth route should switch back to Codex OAuth credentials");
         assert_eq!(
             openai.credential_mode(),
-            IDEOCODE_provider_core::CredentialMode::OAuth
+            ideocode_provider_core::CredentialMode::OAuth
         );
 
         if let Some(prev_runtime) = prev_runtime {
@@ -1263,7 +1263,7 @@ fn test_initial_openai_provider_can_switch_to_anthropic_auth_routes() {
         // credential-mode tests.
         assert_eq!(
             anthropic.credential_mode(),
-            IDEOCODE_provider_core::CredentialMode::Auto,
+            ideocode_provider_core::CredentialMode::Auto,
             "default (Auto) leaves the credential pin unset"
         );
 
@@ -1272,7 +1272,7 @@ fn test_initial_openai_provider_can_switch_to_anthropic_auth_routes() {
             .expect("OAuth route should select Claude OAuth credentials");
         assert_eq!(
             anthropic.credential_mode(),
-            IDEOCODE_provider_core::CredentialMode::OAuth
+            ideocode_provider_core::CredentialMode::OAuth
         );
 
         provider
@@ -1280,14 +1280,14 @@ fn test_initial_openai_provider_can_switch_to_anthropic_auth_routes() {
             .expect("API route should select Anthropic API-key credentials");
         assert_eq!(
             anthropic.credential_mode(),
-            IDEOCODE_provider_core::CredentialMode::ApiKey
+            ideocode_provider_core::CredentialMode::ApiKey
         );
     });
 }
 
 #[test]
 fn test_config_default_provider_anthropic_api_pins_api_credential() {
-    use IDEOCODE_provider_core::{Provider, ResolvedCredential};
+    use ideocode_provider_core::{Provider, ResolvedCredential};
     // A config `default_provider = "anthropic-api"` is a routing decision that
     // also pins the OAuth-vs-API credential. Applying the default at startup
     // must leave the provider on the API-key route so the header auth tag and
@@ -1355,9 +1355,9 @@ fn test_config_default_provider_anthropic_api_pins_api_credential() {
                 if expect_oauth {
                     // "claude"/"anthropic" leave Auto (OAuth-first) rather than
                     // pinning OAuth explicitly.
-                    IDEOCODE_provider_core::CredentialMode::Auto
+                    ideocode_provider_core::CredentialMode::Auto
                 } else {
-                    IDEOCODE_provider_core::CredentialMode::ApiKey
+                    ideocode_provider_core::CredentialMode::ApiKey
                 },
                 "default_provider '{default_provider}' should resolve {expected:?}",
             );
@@ -1367,7 +1367,7 @@ fn test_config_default_provider_anthropic_api_pins_api_credential() {
 
 #[test]
 fn test_config_default_model_with_credential_prefix_applies_model_and_pin() {
-    use IDEOCODE_provider_core::{Provider, ResolvedCredential};
+    use ideocode_provider_core::{Provider, ResolvedCredential};
     // The model picker saves default_model as a full spec like
     // `claude-api:claude-opus-4-6`. Startup must parse the prefix (routing +
     // credential pin) instead of handing the raw spec to the Anthropic
@@ -1434,14 +1434,14 @@ fn test_config_default_model_with_credential_prefix_applies_model_and_pin() {
             if expect_oauth {
                 assert_ne!(
                     anthropic.credential_mode(),
-                    IDEOCODE_provider_core::CredentialMode::ApiKey,
+                    ideocode_provider_core::CredentialMode::ApiKey,
                     "default_model '{spec}' must not pin the API key (expected {:?})",
                     ResolvedCredential::Oauth,
                 );
             } else {
                 assert_eq!(
                     anthropic.credential_mode(),
-                    IDEOCODE_provider_core::CredentialMode::ApiKey,
+                    ideocode_provider_core::CredentialMode::ApiKey,
                     "default_model '{spec}' should resolve {:?}",
                     ResolvedCredential::ApiKey,
                 );
@@ -2052,17 +2052,17 @@ fn default_named_openai_compatible_provider_uses_direct_compatible_request_path(
     // factories are registered before startup paths need them.
     register_test_external_runtimes();
     let temp = tempfile::TempDir::new().expect("create temp home");
-    let IDEOCODE_home = temp.path().join("IDEOCODE-home");
-    let _IDEOCODE_home = OrEnvVarGuard::set("IDEOCODE_HOME", &IDEOCODE_home);
+    let ideocode_home = temp.path().join("IDEOCODE-home");
+    let _ideocode_home = OrEnvVarGuard::set("IDEOCODE_HOME", &ideocode_home);
     let _home = OrEnvVarGuard::set("HOME", temp.path());
     let _appdata = OrEnvVarGuard::set("APPDATA", temp.path().join("AppData").join("Roaming"));
     let _env = isolate_openrouter_autodetect_env_or();
     let _key = OrEnvVarGuard::set("TEST_DEFAULT_COMPAT_KEY", "test-key");
     let (api_base, request_rx) = spawn_single_response_chat_server_or();
 
-    std::fs::create_dir_all(&IDEOCODE_home).expect("create test config dir");
+    std::fs::create_dir_all(&ideocode_home).expect("create test config dir");
     std::fs::write(
-        IDEOCODE_home.join("config.toml"),
+        ideocode_home.join("config.toml"),
         format!(
             r#"
 [provider]
@@ -2157,17 +2157,17 @@ fn default_named_openai_compatible_with_catalog_uses_direct_compatible_request_p
     // factories are registered before startup paths need them.
     register_test_external_runtimes();
     let temp = tempfile::TempDir::new().expect("create temp home");
-    let IDEOCODE_home = temp.path().join("IDEOCODE-home");
-    let _IDEOCODE_home = OrEnvVarGuard::set("IDEOCODE_HOME", &IDEOCODE_home);
+    let ideocode_home = temp.path().join("IDEOCODE-home");
+    let _ideocode_home = OrEnvVarGuard::set("IDEOCODE_HOME", &ideocode_home);
     let _home = OrEnvVarGuard::set("HOME", temp.path());
     let _appdata = OrEnvVarGuard::set("APPDATA", temp.path().join("AppData").join("Roaming"));
     let _env = isolate_openrouter_autodetect_env_or();
     let _key = OrEnvVarGuard::set("TEST_DEFAULT_COMPAT_KEY", "test-key");
     let (api_base, request_rx) = spawn_single_response_chat_server_or();
 
-    std::fs::create_dir_all(&IDEOCODE_home).expect("create test config dir");
+    std::fs::create_dir_all(&ideocode_home).expect("create test config dir");
     std::fs::write(
-        IDEOCODE_home.join("config.toml"),
+        ideocode_home.join("config.toml"),
         format!(
             r#"
 [provider]
@@ -2247,8 +2247,8 @@ fn runtime_display_name_tracks_active_openai_compatible_profile() {
     // factories are registered before startup paths need them.
     register_test_external_runtimes();
     let temp = tempfile::TempDir::new().expect("create temp home");
-    let IDEOCODE_home = temp.path().join("IDEOCODE-home");
-    let _IDEOCODE_home = OrEnvVarGuard::set("IDEOCODE_HOME", &IDEOCODE_home);
+    let ideocode_home = temp.path().join("IDEOCODE-home");
+    let _ideocode_home = OrEnvVarGuard::set("IDEOCODE_HOME", &ideocode_home);
     let _home = OrEnvVarGuard::set("HOME", temp.path());
     let _appdata = OrEnvVarGuard::set("APPDATA", temp.path().join("AppData").join("Roaming"));
     let _env = isolate_openrouter_autodetect_env_or();

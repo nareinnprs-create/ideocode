@@ -213,7 +213,7 @@ pub fn ensure_menubar_helper_running() {}
 /// onboarding) override `$IDEOCODE_HOME` with throwaway temp dirs; anchoring to
 /// the real home (`$HOME/.IDEOCODE`) gives every process the same lock inode so
 /// the singleton actually holds across them. For a normal (non-sandboxed)
-/// launch this is exactly `crate::storage::IDEOCODE_dir()`, so behavior for the
+/// launch this is exactly `crate::storage::ideocode_dir()`, so behavior for the
 /// real user is unchanged.
 #[cfg(target_os = "macos")]
 fn global_menubar_dir() -> Option<std::path::PathBuf> {
@@ -258,7 +258,7 @@ fn is_menubar_sandbox(
     test_session: bool,
     temp_server: bool,
     custom_home: Option<&std::ffi::OsStr>,
-    real_IDEOCODE_home: Option<&std::path::Path>,
+    real_ideocode_home: Option<&std::path::Path>,
 ) -> bool {
     if test_session || temp_server {
         return true;
@@ -269,7 +269,7 @@ fn is_menubar_sandbox(
         return false;
     };
     let custom = std::path::Path::new(custom_home);
-    let Some(real) = real_IDEOCODE_home else {
+    let Some(real) = real_ideocode_home else {
         // No real home to compare against: treat any explicit override as a sandbox.
         return true;
     };
@@ -400,13 +400,13 @@ mod macos {
                    let Ok(session_id) = object.downcast::<NSString>() else {
                        return;
                    };
-                   launch_IDEOCODE_window(vec!["--resume".to_string(), session_id.to_string()]);
+                   launch_ideocode_window(vec!["--resume".to_string(), session_id.to_string()]);
                }
 
                /// Launch a brand-new IDEOCODE session in a new terminal window.
                #[unsafe(method(newWindow:))]
                fn new_window(&self, _sender: &NSMenuItem) {
-                   launch_IDEOCODE_window(Vec::new());
+                   launch_ideocode_window(Vec::new());
                }
            }
        );
@@ -420,9 +420,9 @@ mod macos {
 
     /// Launch a IDEOCODE window off the main thread so slow terminal startup
     /// (osascript / `open`) never blocks the menu bar UI.
-    fn launch_IDEOCODE_window(args: Vec<String>) {
+    fn launch_ideocode_window(args: Vec<String>) {
         std::thread::spawn(move || {
-            if let Err(err) = crate::setup_hints::launch_IDEOCODE_in_macos_terminal(&args) {
+            if let Err(err) = crate::setup_hints::launch_ideocode_in_macos_terminal(&args) {
                 crate::logging::warn(&format!(
                     "menubar: failed to launch IDEOCODE window ({args:?}): {err}"
                 ));

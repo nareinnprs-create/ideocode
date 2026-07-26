@@ -33,8 +33,8 @@ impl Agent {
         self.provider.model_routes()
     }
 
-    pub fn model_catalog_snapshot(&self) -> IDEOCODE_provider_core::ModelCatalogSnapshot {
-        IDEOCODE_provider_core::ModelCatalogSnapshot::new(
+    pub fn model_catalog_snapshot(&self) -> ideocode_provider_core::ModelCatalogSnapshot {
+        ideocode_provider_core::ModelCatalogSnapshot::new(
             Some(self.provider_name()),
             Some(self.provider_model()),
             self.available_models_display(),
@@ -199,7 +199,7 @@ impl Agent {
     /// the provider distinguishes OAuth (subscription) from API key (cost).
     /// Resolved authoritatively here so remote clients can render billing/usage
     /// without re-deriving it from the provider name.
-    pub fn active_resolved_credential(&self) -> Option<IDEOCODE_provider_core::ResolvedCredential> {
+    pub fn active_resolved_credential(&self) -> Option<ideocode_provider_core::ResolvedCredential> {
         self.provider.active_resolved_credential()
     }
 

@@ -1,5 +1,5 @@
 ﻿use super::*;
-pub use IDEOCODE_selfdev_types::ReloadRecoveryDirective;
+pub use ideocode_selfdev_types::ReloadRecoveryDirective;
 
 impl ReloadContext {
     fn sanitize_session_id(session_id: &str) -> String {
@@ -17,11 +17,11 @@ impl ReloadContext {
 
     pub fn path_for_session(session_id: &str) -> Result<std::path::PathBuf> {
         let sanitized = Self::sanitize_session_id(session_id);
-        Ok(storage::IDEOCODE_dir()?.join(format!("reload-context-{}.json", sanitized)))
+        Ok(storage::ideocode_dir()?.join(format!("reload-context-{}.json", sanitized)))
     }
 
     fn legacy_path() -> Result<std::path::PathBuf> {
-        Ok(storage::IDEOCODE_dir()?.join("reload-context.json"))
+        Ok(storage::ideocode_dir()?.join("reload-context.json"))
     }
 
     pub fn save(&self) -> Result<()> {
@@ -282,7 +282,7 @@ impl SelfDevTool {
             build::current_source_state(&repo_dir)?
         };
         let hash = source.version_label.clone();
-        let version_before = IDEOCODE_build_meta::version().to_string();
+        let version_before = ideocode_build_meta::version().to_string();
         let published = if SelfDevTool::is_test_session() {
             None
         } else {

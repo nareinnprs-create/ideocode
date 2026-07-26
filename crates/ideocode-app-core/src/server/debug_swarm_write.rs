@@ -394,11 +394,11 @@ pub(super) async fn maybe_handle_swarm_write_command(
                                 .or_insert_with(VersionedPlan::new);
                             let merged_count =
                                 versioned_plan.items.len().saturating_add(items.len());
-                            if merged_count > IDEOCODE_plan::MAX_PLAN_ITEMS {
+                            if merged_count > ideocode_plan::MAX_PLAN_ITEMS {
                                 return Err(anyhow::anyhow!(
                                     "Plan approval would contain {} items, exceeding the per-swarm limit of {}",
                                     merged_count,
-                                    IDEOCODE_plan::MAX_PLAN_ITEMS
+                                    ideocode_plan::MAX_PLAN_ITEMS
                                 ));
                             }
                             versioned_plan.items.extend(items.clone());
@@ -564,13 +564,13 @@ struct DebugNodeSpec {
     priority: u8,
 }
 
-fn debug_specs(specs: Vec<DebugNodeSpec>) -> Vec<IDEOCODE_plan::dag::NodeSpec> {
+fn debug_specs(specs: Vec<DebugNodeSpec>) -> Vec<ideocode_plan::dag::NodeSpec> {
     specs
         .into_iter()
-        .map(|s| IDEOCODE_plan::dag::NodeSpec {
+        .map(|s| ideocode_plan::dag::NodeSpec {
             id: Some(s.id),
             content: s.content,
-            kind: IDEOCODE_plan::bridge::parse_kind(s.kind.as_deref()),
+            kind: ideocode_plan::bridge::parse_kind(s.kind.as_deref()),
             depends_on: s.depends_on,
             priority: s.priority,
         })
@@ -578,8 +578,8 @@ fn debug_specs(specs: Vec<DebugNodeSpec>) -> Vec<IDEOCODE_plan::dag::NodeSpec> {
 }
 
 async fn handle_debug_graph_op(arg: &str, ctx: &DebugSwarmWriteContext<'_>) -> String {
-    use IDEOCODE_plan::bridge::{apply_task_graph, to_task_graph};
-    use IDEOCODE_plan::dag;
+    use ideocode_plan::bridge::{apply_task_graph, to_task_graph};
+    use ideocode_plan::dag;
 
     fn fail(msg: impl std::fmt::Display) -> String {
         serde_json::json!({"ok": false, "error": msg.to_string()}).to_string()

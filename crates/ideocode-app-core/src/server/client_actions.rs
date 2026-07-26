@@ -11,7 +11,7 @@ use crate::agent::Agent;
 use crate::protocol::{FeatureToggle, NotificationType, ServerEvent};
 use crate::session::Session;
 use crate::util::truncate_str;
-use IDEOCODE_agent_runtime::{SoftInterruptSource, StreamError};
+use ideocode_agent_runtime::{SoftInterruptSource, StreamError};
 use std::collections::{HashMap, HashSet};
 use std::process::Stdio;
 use std::sync::Arc;

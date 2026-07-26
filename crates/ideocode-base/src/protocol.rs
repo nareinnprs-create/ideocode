@@ -1,1 +1,1 @@
-﻿pub use IDEOCODE_protocol::*;
+﻿pub use ideocode_protocol::*;

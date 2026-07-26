@@ -11,7 +11,7 @@ use syntect::parsing::SyntaxSet;
 use unicode_width::UnicodeWidthStr;
 
 #[cfg(feature = "mermaid-renderer")]
-use IDEOCODE_tui_mermaid as mermaid;
+use ideocode_tui_mermaid as mermaid;
 
 #[cfg(not(feature = "mermaid-renderer"))]
 #[path = "markdown_mermaid_fallback.rs"]
@@ -139,17 +139,17 @@ pub use render_support::extract_copy_targets_from_rendered_lines;
 /// These pure-string helpers were moved to `IDEOCODE-render-core` so the
 /// foundation/streaming layer can format reasoning without depending on any
 /// `IDEOCODE-tui-*` crate. Re-exported here so existing
-/// `IDEOCODE_tui_markdown::{reasoning_line_markup, reasoning_partial_markup,
+/// `ideocode_tui_markdown::{reasoning_line_markup, reasoning_partial_markup,
 /// REASONING_SENTINEL}` paths keep working.
-pub use IDEOCODE_render_core::{REASONING_SENTINEL, reasoning_line_markup, reasoning_partial_markup};
+pub use ideocode_render_core::{REASONING_SENTINEL, reasoning_line_markup, reasoning_partial_markup};
 
 /// One-line collapsed reasoning summary markup (e.g. `▸ thought (3 lines)`).
 ///
 /// Moved to `IDEOCODE-render-core` (pure/backend-neutral) so the foundation/
 /// streaming layer can format it without depending on any `IDEOCODE-tui-*` crate.
 /// Re-exported here so the existing
-/// `IDEOCODE_tui_markdown::reasoning_summary_line_markup` path keeps working.
-pub use IDEOCODE_render_core::reasoning_summary_line_markup;
+/// `ideocode_tui_markdown::reasoning_summary_line_markup` path keeps working.
+pub use ideocode_render_core::reasoning_summary_line_markup;
 
 use render_support::{
     highlight_code_cached, line_plain_text, placeholder_code_block, ranges_overlap, render_table,
@@ -479,7 +479,7 @@ fn rendered_rule_width(max_width: Option<usize>) -> usize {
 }
 
 // Colors matching ui.rs palette
-use IDEOCODE_tui_workspace::color_support::rgb;
+use ideocode_tui_workspace::color_support::rgb;
 const MATH_FOREGROUND: (u8, u8, u8) = (100, 160, 255);
 
 fn code_bg() -> Color {
@@ -946,7 +946,7 @@ fn count_unescaped_double_dollar(line: &str) -> usize {
 
 fn math_inline_span(math: &str) -> Span<'static> {
     Span::styled(
-        IDEOCODE_render_core::render_inline_latex(math),
+        ideocode_render_core::render_inline_latex(math),
         Style::default().fg(math_fg()),
     )
 }
@@ -959,7 +959,7 @@ fn math_display_lines(math: &str) -> Vec<Line<'static>> {
     let mut out = Vec::new();
     let dim = Style::default().fg(md_dim_color());
     out.push(Line::from(Span::styled("┌─ math ", dim)).left_aligned());
-    for line in IDEOCODE_render_core::render_display_latex(math) {
+    for line in ideocode_render_core::render_display_latex(math) {
         out.push(
             Line::from(vec![
                 Span::styled("│ ", dim),

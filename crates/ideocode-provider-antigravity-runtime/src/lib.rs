@@ -2,25 +2,25 @@
 //! Gemini/Claude/gpt-oss upstreams), moved out of `IDEOCODE-base` so provider
 //! edits compile only this crate plus a binary relink instead of rebuilding
 //! the base -> app-core -> tui spine. The binary's composition root registers
-//! [`AntigravityProvider`] with `IDEOCODE_base::provider::external` at startup.
+//! [`AntigravityProvider`] with `ideocode_base::provider::external` at startup.
 
 use anyhow::{Context, Result};
 use async_trait::async_trait;
-use IDEOCODE_base::auth::antigravity as antigravity_auth;
-use IDEOCODE_message_types::{ConnectionPhase, Message, StreamEvent, ToolDefinition};
-use IDEOCODE_provider_antigravity::{
+use ideocode_base::auth::antigravity as antigravity_auth;
+use ideocode_message_types::{ConnectionPhase, Message, StreamEvent, ToolDefinition};
+use ideocode_provider_antigravity::{
     AVAILABLE_MODELS, CatalogModel, CatalogSnapshot, DEFAULT_FALLBACK_MODEL,
     GENERATE_CONTENT_API_URL, PersistedCatalog, X_GOOG_API_CLIENT, antigravity_compatible_schema,
     antigravity_user_agent, catalog_is_stale, catalog_model_detail, client_metadata_header,
     is_retryable_empty_turn, merge_antigravity_model_ids, remap_unsupported_model,
 };
 #[cfg(test)]
-use IDEOCODE_provider_antigravity::{
+use ideocode_provider_antigravity::{
     flatten_schema_combiners, metadata_platform, model_is_claude, model_is_gemini,
     strip_numeric_schema_bounds,
 };
-use IDEOCODE_provider_core::{EventStream, Provider};
-use IDEOCODE_provider_gemini::{
+use ideocode_provider_core::{EventStream, Provider};
+use ideocode_provider_gemini::{
     CodeAssistGenerateRequest, CodeAssistGenerateResponse, GeminiFunctionCallingConfig,
     GeminiToolConfig, VertexGenerateContentRequest,
 };
@@ -54,17 +54,17 @@ impl Clone for AntigravityProvider {
 
 impl AntigravityProvider {
     fn load_persisted_catalog() -> Option<PersistedCatalog> {
-        IDEOCODE_base::provider::antigravity::load_persisted_catalog()
+        ideocode_base::provider::antigravity::load_persisted_catalog()
     }
 
     fn persist_catalog(snapshot: &CatalogSnapshot) {
-        IDEOCODE_base::provider::antigravity::persist_catalog(snapshot);
+        ideocode_base::provider::antigravity::persist_catalog(snapshot);
     }
 
     fn seed_cached_catalog(&self) {
         if let Some(catalog) = Self::load_persisted_catalog() {
             if catalog_is_stale(&catalog.fetched_at_rfc3339) {
-                IDEOCODE_base::logging::info(
+                ideocode_base::logging::info(
                     "Loaded stale persisted Antigravity model catalog; a refresh will update it on next prefetch",
                 );
             }
@@ -85,7 +85,7 @@ impl AntigravityProvider {
             std::env::var("IDEOCODE_ANTIGRAVITY_MODEL").unwrap_or_else(|_| DEFAULT_MODEL.into());
 
         let provider = Self {
-            client: IDEOCODE_provider_core::shared_http_client(),
+            client: ideocode_provider_core::shared_http_client(),
             model: Arc::new(RwLock::new(model)),
             fetched_catalog: Arc::new(RwLock::new(Vec::new())),
             backend_default_model: Arc::new(RwLock::new(None)),
@@ -228,7 +228,7 @@ impl AntigravityProvider {
     }
 
     async fn fetch_available_models(&self) -> Result<CatalogSnapshot> {
-        IDEOCODE_base::provider::antigravity::fetch_catalog_snapshot(&self.client).await
+        ideocode_base::provider::antigravity::fetch_catalog_snapshot(&self.client).await
     }
 
     #[expect(
@@ -243,7 +243,7 @@ impl AntigravityProvider {
         system: &str,
         resume_session_id: Option<&str>,
         force_function_call: bool,
-        signature_policy: IDEOCODE_provider_gemini::SignaturePolicy,
+        signature_policy: ideocode_provider_gemini::SignaturePolicy,
     ) -> Result<CodeAssistGenerateResponse> {
         let mut tokens = antigravity_auth::load_or_refresh_tokens().await?;
         let project = match tokens
@@ -261,7 +261,7 @@ impl AntigravityProvider {
         };
         let resolved_model = self.resolve_model_for_request(model);
         let tools_is_empty = tools.is_empty();
-        let mut tools = IDEOCODE_provider_gemini::build_tools(tools);
+        let mut tools = ideocode_provider_gemini::build_tools(tools);
         // Normalize each tool's JSON schema for the specific Antigravity backend
         // path the resolved model uses. The Cloud Code backend forwards each
         // model family to a different upstream (Gemini-native, Gemini->Anthropic,
@@ -281,11 +281,11 @@ impl AntigravityProvider {
             project,
             user_prompt_id: Uuid::new_v4().to_string(),
             request: VertexGenerateContentRequest {
-                contents: IDEOCODE_provider_gemini::build_contents_with_signature_policy(
+                contents: ideocode_provider_gemini::build_contents_with_signature_policy(
                     messages,
                     signature_policy,
                 ),
-                system_instruction: IDEOCODE_provider_gemini::build_system_instruction_with_tool_guard(
+                system_instruction: ideocode_provider_gemini::build_system_instruction_with_tool_guard(
                     system,
                     !tools_is_empty,
                 ),
@@ -329,7 +329,7 @@ impl AntigravityProvider {
             "tools": tools_value.as_ref(),
             "tool_config": &request.request.tool_config,
         });
-        IDEOCODE_provider_core::fingerprint::log_provider_canonical_input(
+        ideocode_provider_core::fingerprint::log_provider_canonical_input(
             "antigravity",
             model,
             "gemini_generate_content",
@@ -366,7 +366,7 @@ impl AntigravityProvider {
 
         if !response.status().is_success() {
             let status = response.status();
-            let body = IDEOCODE_base::util::http_error_body(response, "HTTP error").await;
+            let body = ideocode_base::util::http_error_body(response, "HTTP error").await;
             anyhow::bail!(
                 "Antigravity generateContent failed (HTTP {}): {}",
                 status,
@@ -406,7 +406,7 @@ impl Provider for AntigravityProvider {
         let system = system.to_string();
         let resume_session_id = _resume_session_id.map(str::to_string);
         let provider = self.clone();
-        let (tx, rx) = mpsc::channel::<Result<IDEOCODE_message_types::StreamEvent>>(100);
+        let (tx, rx) = mpsc::channel::<Result<ideocode_message_types::StreamEvent>>(100);
 
         tokio::spawn(async move {
             let _ = tx
@@ -434,7 +434,7 @@ impl Provider for AntigravityProvider {
             // fields: on that specific error, retry once with tool calls
             // downgraded to plain text. Content is preserved, the turn completes,
             // and the model re-signs its new calls.
-            let mut signature_policy = IDEOCODE_provider_gemini::SignaturePolicy::ReplayCarriedForward;
+            let mut signature_policy = ideocode_provider_gemini::SignaturePolicy::ReplayCarriedForward;
             let response = match provider
                 .generate_content(
                     &model,
@@ -449,16 +449,16 @@ impl Provider for AntigravityProvider {
             {
                 Ok(response) => response,
                 Err(err) => {
-                    if !IDEOCODE_provider_gemini::is_missing_thought_signature_error(&err.to_string())
+                    if !ideocode_provider_gemini::is_missing_thought_signature_error(&err.to_string())
                     {
                         let _ = tx.send(Err(err)).await;
                         return;
                     }
-                    IDEOCODE_base::logging::warn(
+                    ideocode_base::logging::warn(
                         "Antigravity rejected unsigned function calls; retrying with tool calls downgraded to text",
                     );
                     signature_policy =
-                        IDEOCODE_provider_gemini::SignaturePolicy::DowngradeToolCallsToText;
+                        ideocode_provider_gemini::SignaturePolicy::DowngradeToolCallsToText;
                     match provider
                         .generate_content(
                             &model,
@@ -574,7 +574,7 @@ impl Provider for AntigravityProvider {
                             .id
                             .clone()
                             .unwrap_or_else(|| Uuid::new_v4().to_string());
-                        let call_id = IDEOCODE_message_types::sanitize_tool_id(&raw_call_id);
+                        let call_id = ideocode_message_types::sanitize_tool_id(&raw_call_id);
                         let _ = tx
                             .send(Ok(StreamEvent::ToolUseStart {
                                 id: call_id,
@@ -631,7 +631,7 @@ impl Provider for AntigravityProvider {
                         .finish_message
                         .as_deref()
                         .filter(|msg| !msg.trim().is_empty())
-                        .map(|msg| format!(": {}", IDEOCODE_base::util::truncate_str(msg.trim(), 300)))
+                        .map(|msg| format!(": {}", ideocode_base::util::truncate_str(msg.trim(), 300)))
                         .unwrap_or_default();
                     let _ = tx
                         .send(Err(anyhow::anyhow!(
@@ -693,12 +693,12 @@ impl Provider for AntigravityProvider {
         self.available_models_display()
     }
 
-    fn model_routes(&self) -> Vec<IDEOCODE_provider_core::ModelRoute> {
+    fn model_routes(&self) -> Vec<ideocode_provider_core::ModelRoute> {
         let catalog = self.fetched_catalog();
         if !catalog.is_empty() {
             return catalog
                 .into_iter()
-                .map(|model| IDEOCODE_provider_core::ModelRoute {
+                .map(|model| ideocode_provider_core::ModelRoute {
                     model: model.id.clone(),
                     provider: "Antigravity".to_string(),
                     api_method: "https".to_string(),
@@ -711,7 +711,7 @@ impl Provider for AntigravityProvider {
 
         self.available_models_display()
             .into_iter()
-            .map(|model| IDEOCODE_provider_core::ModelRoute {
+            .map(|model| ideocode_provider_core::ModelRoute {
                 model,
                 provider: "Antigravity".to_string(),
                 api_method: "https".to_string(),
@@ -727,7 +727,7 @@ impl Provider for AntigravityProvider {
         if let Ok(handle) = tokio::runtime::Handle::try_current() {
             handle.spawn(async move {
                 if provider.prefetch_models().await.is_ok() {
-                    IDEOCODE_base::bus::Bus::global().publish_models_updated();
+                    ideocode_base::bus::Bus::global().publish_models_updated();
                 }
             });
         }
@@ -737,7 +737,7 @@ impl Provider for AntigravityProvider {
         match self.fetch_available_models().await {
             Ok(snapshot) => {
                 if !snapshot.models.is_empty() {
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "Discovered Antigravity models: {}{}",
                         snapshot
                             .models
@@ -766,7 +766,7 @@ impl Provider for AntigravityProvider {
                 }
             }
             Err(err) => {
-                IDEOCODE_base::logging::warn(&format!(
+                ideocode_base::logging::warn(&format!(
                     "Antigravity model catalog refresh failed; keeping fallback list: {}",
                     err
                 ));

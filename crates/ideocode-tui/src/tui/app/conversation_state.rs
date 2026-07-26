@@ -205,7 +205,7 @@ impl App {
             self.ensure_provider_messages_hydrated();
             self.messages.push(message.clone());
         }
-        if self.is_remote || !self.provider.uses_IDEOCODE_compaction() {
+        if self.is_remote || !self.provider.uses_ideocode_compaction() {
             return;
         }
         let compaction = self.registry.compaction();
@@ -238,7 +238,7 @@ impl App {
 
     pub(super) fn reseed_compaction_from_provider_messages(&mut self) {
         if self.is_remote
-            || (!self.provider.uses_IDEOCODE_compaction() && self.session.compaction.is_none())
+            || (!self.provider.uses_ideocode_compaction() && self.session.compaction.is_none())
         {
             return;
         }
@@ -333,7 +333,7 @@ impl App {
             Ok(mut manager) => {
                 let discarded_oversized_native =
                     manager.discard_oversized_openai_native_compaction();
-                if self.provider.uses_IDEOCODE_compaction() {
+                if self.provider.uses_ideocode_compaction() {
                     let action = manager.ensure_context_fits(&base_messages, self.provider.clone());
                     match action {
                         crate::compaction::CompactionAction::BackgroundStarted { trigger } => {

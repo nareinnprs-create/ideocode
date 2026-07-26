@@ -35,7 +35,7 @@ pub fn simplified_model_routes_for_picker(
         }
         if !model.contains('/') && provider_for_model(&model) == Some("openai") {
             // Platform-API-only GPT Pro models: never advertise an OAuth route.
-            if IDEOCODE_provider_core::is_openai_api_only_pro_model(&model) {
+            if ideocode_provider_core::is_openai_api_only_pro_model(&model) {
                 routes.push(ModelRoute {
                     model: model.clone(),
                     provider: "OpenAI".to_string(),
@@ -400,7 +400,7 @@ fn append_openai_routes(
         };
         // GPT Pro models are platform-API-only: never offer an OAuth route
         // for them (the Codex backend rejects them for ChatGPT accounts).
-        if IDEOCODE_provider_core::is_openai_api_only_pro_model(&model) {
+        if ideocode_provider_core::is_openai_api_only_pro_model(&model) {
             if openai_auth.openai_has_api_key {
                 routes.push(build_openai_api_key_route(
                     &model,
@@ -954,7 +954,7 @@ pub fn remote_model_routes_fallback(
             }
         }
 
-        if IDEOCODE_provider_core::model_id::matches_known_model(model, ALL_OPENAI_MODELS) {
+        if ideocode_provider_core::model_id::matches_known_model(model, ALL_OPENAI_MODELS) {
             let availability = model_availability_for_account(model);
             let (available, detail) = if auth.openai == AuthState::NotConfigured {
                 (false, "no credentials".to_string())
@@ -1063,7 +1063,7 @@ pub fn remote_model_routes_lightweight_fallback(
     remote_available_entries: &[String],
     current_model: &str,
 ) -> Vec<ModelRoute> {
-    let is_IDEOCODE_subscription = remote_provider_name.is_some_and(|name| {
+    let is_ideocode_subscription = remote_provider_name.is_some_and(|name| {
         name.eq_ignore_ascii_case(crate::subscription_catalog::IDEOCODE_PROVIDER_DISPLAY_NAME)
     });
     let provider = remote_provider_name
@@ -1077,13 +1077,13 @@ pub fn remote_model_routes_lightweight_fallback(
         routes.push(ModelRoute {
             model: model.clone(),
             provider: provider.clone(),
-            api_method: if is_IDEOCODE_subscription {
+            api_method: if is_ideocode_subscription {
                 crate::subscription_catalog::IDEOCODE_ROUTE_API_METHOD.to_string()
             } else {
                 "remote-catalog".to_string()
             },
             available: true,
-            detail: if is_IDEOCODE_subscription {
+            detail: if is_ideocode_subscription {
                 "IDEOCODE subscription routing · managed server-side".to_string()
             } else {
                 "refreshing route details…".to_string()
@@ -1189,7 +1189,7 @@ fn remote_openai_compatible_profile_models(
     };
 
     if let Some(cache) =
-        IDEOCODE_provider_openrouter::load_disk_cache_entry_for_namespace(&resolved.id)
+        ideocode_provider_openrouter::load_disk_cache_entry_for_namespace(&resolved.id)
     {
         let source_matches = cache
             .source_api_base
@@ -1249,20 +1249,20 @@ mod tests {
         }
 
         fn save_opencode_cache(&self, source_api_base: &str, model_ids: &[&str]) {
-            let IDEOCODE_home = std::env::var_os("IDEOCODE_HOME").expect("IDEOCODE_HOME set");
-            let cache_dir = std::path::PathBuf::from(IDEOCODE_home).join("cache");
+            let ideocode_home = std::env::var_os("IDEOCODE_HOME").expect("IDEOCODE_HOME set");
+            let cache_dir = std::path::PathBuf::from(ideocode_home).join("cache");
             std::fs::create_dir_all(&cache_dir).expect("create cache dir");
-            let cache = IDEOCODE_provider_openrouter::DiskCache {
-                cached_at: IDEOCODE_provider_openrouter::current_unix_secs()
+            let cache = ideocode_provider_openrouter::DiskCache {
+                cached_at: ideocode_provider_openrouter::current_unix_secs()
                     .expect("current unix time"),
                 source_api_base: Some(source_api_base.to_string()),
                 models: model_ids
                     .iter()
-                    .map(|id| IDEOCODE_provider_openrouter::ModelInfo {
+                    .map(|id| ideocode_provider_openrouter::ModelInfo {
                         id: (*id).to_string(),
                         name: String::new(),
                         context_length: None,
-                        pricing: IDEOCODE_provider_openrouter::ModelPricing::default(),
+                        pricing: ideocode_provider_openrouter::ModelPricing::default(),
                         created: None,
                     })
                     .collect(),
@@ -1374,19 +1374,19 @@ mod tests {
     }
 
     fn save_openrouter_catalog_cache(model_ids: &[&str]) {
-        let IDEOCODE_home = std::env::var_os("IDEOCODE_HOME").expect("IDEOCODE_HOME set");
-        let cache_dir = std::path::PathBuf::from(IDEOCODE_home).join("cache");
+        let ideocode_home = std::env::var_os("IDEOCODE_HOME").expect("IDEOCODE_HOME set");
+        let cache_dir = std::path::PathBuf::from(ideocode_home).join("cache");
         std::fs::create_dir_all(&cache_dir).expect("create cache dir");
-        let cache = IDEOCODE_provider_openrouter::DiskCache {
-            cached_at: IDEOCODE_provider_openrouter::current_unix_secs().expect("current unix time"),
+        let cache = ideocode_provider_openrouter::DiskCache {
+            cached_at: ideocode_provider_openrouter::current_unix_secs().expect("current unix time"),
             source_api_base: None,
             models: model_ids
                 .iter()
-                .map(|id| IDEOCODE_provider_openrouter::ModelInfo {
+                .map(|id| ideocode_provider_openrouter::ModelInfo {
                     id: (*id).to_string(),
                     name: String::new(),
                     context_length: None,
-                    pricing: IDEOCODE_provider_openrouter::ModelPricing::default(),
+                    pricing: ideocode_provider_openrouter::ModelPricing::default(),
                     created: None,
                 })
                 .collect(),

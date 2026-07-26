@@ -8,10 +8,10 @@ async fn main() -> anyhow::Result<()> {
     let api_socket = args
         .next()
         .map(std::path::PathBuf::from)
-        .unwrap_or_else(IDEOCODE_harness_api_server::api_socket_path);
+        .unwrap_or_else(ideocode_harness_api_server::api_socket_path);
     let legacy_socket = args
         .next()
         .map(std::path::PathBuf::from)
-        .unwrap_or_else(IDEOCODE_harness_api_server::legacy_socket_path);
-    IDEOCODE_harness_api_server::run_bridge(api_socket, legacy_socket).await
+        .unwrap_or_else(ideocode_harness_api_server::legacy_socket_path);
+    ideocode_harness_api_server::run_bridge(api_socket, legacy_socket).await
 }

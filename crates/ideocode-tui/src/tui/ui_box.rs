@@ -1,1 +1,1 @@
-﻿pub(crate) use IDEOCODE_tui_render::*;
+﻿pub(crate) use ideocode_tui_render::*;

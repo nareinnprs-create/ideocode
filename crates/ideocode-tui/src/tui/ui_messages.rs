@@ -2808,7 +2808,7 @@ fn render_compact_agent_notification(
 ) -> Option<Vec<Line<'static>>> {
     let notification = compact_swarm_notification(title)?;
     let icon = crate::id::session_icon(notification.sender);
-    let collapsible = IDEOCODE_tui_messages::parse_collapsible_swarm_content(content);
+    let collapsible = ideocode_tui_messages::parse_collapsible_swarm_content(content);
     let (body, badge) = match collapsible {
         Some(parsed) if parsed.expanded => (
             format!("{}\n{}", parsed.tldr, parsed.body.trim()),
@@ -2988,7 +2988,7 @@ pub(crate) fn render_swarm_message(
     if let Some(lines) = render_compact_plan_update(title, &msg.content, width) {
         return lines;
     }
-    let collapsible = IDEOCODE_tui_messages::parse_collapsible_swarm_content(&msg.content);
+    let collapsible = ideocode_tui_messages::parse_collapsible_swarm_content(&msg.content);
     let (content, tldr_line): (String, Option<(String, bool)>) = match collapsible {
         Some(parsed) if !parsed.expanded => (String::new(), Some((parsed.tldr.to_string(), false))),
         Some(parsed) => (

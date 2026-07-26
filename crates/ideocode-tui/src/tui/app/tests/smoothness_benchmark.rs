@@ -12,7 +12,7 @@
 fn observe_smoothness_frame(
     app: &App,
     terminal: &mut ratatui::Terminal<ratatui::backend::TestBackend>,
-    recorder: &mut IDEOCODE_tui_core::anchor_stability::AnchorStabilityRecorder,
+    recorder: &mut ideocode_tui_core::anchor_stability::AnchorStabilityRecorder,
 ) {
     terminal
         .draw(|f| crate::tui::ui::draw(f, app))
@@ -33,7 +33,7 @@ fn observe_smoothness_frame(
 fn observe_smoothness_frame_text(
     app: &App,
     terminal: &mut ratatui::Terminal<ratatui::backend::TestBackend>,
-    recorder: &mut IDEOCODE_tui_core::anchor_stability::AnchorStabilityRecorder,
+    recorder: &mut ideocode_tui_core::anchor_stability::AnchorStabilityRecorder,
 ) -> String {
     observe_smoothness_frame(app, terminal, recorder);
     let buf = terminal.backend().buffer();
@@ -69,7 +69,7 @@ fn smoothness_benchmark_simulated_streaming_turn_stays_within_budget() {
     // it is actually measuring.
     let backend = ratatui::backend::TestBackend::new(100, 60);
     let mut terminal = ratatui::Terminal::new(backend).expect("terminal");
-    let mut recorder = IDEOCODE_tui_core::anchor_stability::AnchorStabilityRecorder::new();
+    let mut recorder = ideocode_tui_core::anchor_stability::AnchorStabilityRecorder::new();
 
     app.is_processing = true;
     app.status = ProcessingStatus::Streaming;
@@ -221,7 +221,7 @@ fn smoothness_plain_text_commit_preserves_the_live_viewport() {
 
     let backend = ratatui::backend::TestBackend::new(120, 40);
     let mut terminal = ratatui::Terminal::new(backend).expect("terminal");
-    let mut recorder = IDEOCODE_tui_core::anchor_stability::AnchorStabilityRecorder::new();
+    let mut recorder = ideocode_tui_core::anchor_stability::AnchorStabilityRecorder::new();
 
     // Settle the fully revealed live view before isolating the completion
     // transition. The committed assistant message should render identically;
@@ -280,7 +280,7 @@ fn smoothness_benchmark_mid_transcript_growth_settles_quickly() {
 
     let backend = ratatui::backend::TestBackend::new(100, 28);
     let mut terminal = ratatui::Terminal::new(backend).expect("terminal");
-    let mut recorder = IDEOCODE_tui_core::anchor_stability::AnchorStabilityRecorder::new();
+    let mut recorder = ideocode_tui_core::anchor_stability::AnchorStabilityRecorder::new();
 
     // Settle the initial view.
     for _ in 0..3 {

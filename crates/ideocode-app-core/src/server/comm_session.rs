@@ -301,7 +301,7 @@ fn explicit_route_for_configured_model(model: &str) -> Option<SwarmSpawnSelectio
     // explicit credential decision worth pinning. The canonical parser maps the
     // prefix to its stable route id, which `ModelRouteApiMethod::parse` round-
     // trips back to the exact auth method when the spawned session is restored.
-    let route_id = IDEOCODE_provider_core::AuthRoute::parse_explicit_credential_prefix(prefix)?
+    let route_id = ideocode_provider_core::AuthRoute::parse_explicit_credential_prefix(prefix)?
         .route_api_method();
     Some(SwarmSpawnSelection {
         model: Some(bare.to_string()),
@@ -409,8 +409,8 @@ fn persist_headed_startup_message(session_id: &str, message: &str) {
 }
 
 fn clear_headed_startup_message(session_id: &str) {
-    if let Ok(IDEOCODE_dir) = crate::storage::IDEOCODE_dir() {
-        let path = IDEOCODE_dir.join(format!("client-input-{}", session_id));
+    if let Ok(ideocode_dir) = crate::storage::ideocode_dir() {
+        let path = ideocode_dir.join(format!("client-input-{}", session_id));
         let _ = std::fs::remove_file(path);
     }
 }

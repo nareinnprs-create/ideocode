@@ -1,8 +1,8 @@
 ﻿use anyhow::Result;
 use futures::StreamExt;
-use IDEOCODE::message::{ContentBlock, Message, Role, StreamEvent};
-use IDEOCODE::provider::Provider;
-use IDEOCODE_provider_anthropic_runtime::AnthropicProvider;
+use ideocode::message::{ContentBlock, Message, Role, StreamEvent};
+use ideocode::provider::Provider;
+use ideocode_provider_anthropic_runtime::AnthropicProvider;
 use std::time::Instant;
 
 async fn run_one_with_retry(

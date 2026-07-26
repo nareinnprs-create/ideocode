@@ -167,7 +167,7 @@ pub fn hash_token(token: &str) -> u32 {
 /// Tokenize searchable text into sorted unique hashes. Returns `(hashes,
 /// overflowed)`.
 pub fn hash_tokens_for_text(text: &str) -> (Vec<u32>, bool) {
-    let tokens = IDEOCODE_session_types::tokenize_session_search_query(&text.to_lowercase());
+    let tokens = ideocode_session_types::tokenize_session_search_query(&text.to_lowercase());
     let mut hashes: Vec<u32> = tokens
         .iter()
         .filter(|token| token.len() <= MAX_INDEX_TOKEN_LEN)

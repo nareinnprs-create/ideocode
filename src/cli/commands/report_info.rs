@@ -414,16 +414,16 @@ pub(super) async fn run_provider_current_command(
 
 pub(super) fn run_version_command(emit_json: bool) -> Result<()> {
     let report = VersionReport {
-        version: IDEOCODE_build_meta::version().to_string(),
-        semver: IDEOCODE_build_meta::semver().to_string(),
-        base_semver: IDEOCODE_build_meta::base_semver().to_string(),
-        update_semver: IDEOCODE_build_meta::update_semver().to_string(),
-        git_hash: IDEOCODE_build_meta::git_hash().to_string(),
-        git_tag: IDEOCODE_build_meta::git_tag().to_string(),
+        version: ideocode_build_meta::version().to_string(),
+        semver: ideocode_build_meta::semver().to_string(),
+        base_semver: ideocode_build_meta::base_semver().to_string(),
+        update_semver: ideocode_build_meta::update_semver().to_string(),
+        git_hash: ideocode_build_meta::git_hash().to_string(),
+        git_tag: ideocode_build_meta::git_tag().to_string(),
         build_time: crate::build::current_binary_build_time_string()
             .unwrap_or_else(|| "unknown".to_string()),
-        git_date: IDEOCODE_build_meta::git_date().to_string(),
-        release_build: IDEOCODE_build_meta::is_release_build(),
+        git_date: ideocode_build_meta::git_date().to_string(),
+        release_build: ideocode_build_meta::is_release_build(),
     };
 
     if emit_json {

@@ -348,7 +348,7 @@ pub(super) async fn complete_scriptable_claude_login(
             status: "authenticated",
             provider: provider_id.to_string(),
             account_label: Some(account_label.clone()),
-            credentials_path: Some(auth::claude::IDEOCODE_path()?.display().to_string()),
+            credentials_path: Some(auth::claude::ideocode_path()?.display().to_string()),
             email: profile_email.clone(),
         },
     )?;
@@ -357,7 +357,7 @@ pub(super) async fn complete_scriptable_claude_login(
         eprintln!(
             "Account '{}' stored at {}",
             account_label,
-            auth::claude::IDEOCODE_path()?.display()
+            auth::claude::ideocode_path()?.display()
         );
         if let Some(email) = profile_email {
             eprintln!("Profile email: {}", email);
@@ -400,7 +400,7 @@ pub(super) async fn complete_scriptable_openai_login(
     auth::oauth::save_openai_tokens_for_account(&tokens, &account_label)?;
     clear_pending_login(&pending_path);
     crate::telemetry::record_auth_success(provider_id, "oauth");
-    let credentials_path = crate::storage::IDEOCODE_dir()?.join("openai-auth.json");
+    let credentials_path = crate::storage::ideocode_dir()?.join("openai-auth.json");
     emit_scriptable_auth_success(
         options.json,
         ScriptableAuthSuccess {
@@ -617,13 +617,13 @@ pub(super) async fn complete_scriptable_copilot_login(
 }
 
 pub(super) fn pending_login_path(key: &str) -> Result<PathBuf> {
-    Ok(crate::storage::IDEOCODE_dir()?
+    Ok(crate::storage::ideocode_dir()?
         .join("pending-login")
         .join(format!("{key}.json")))
 }
 
 pub(super) fn pending_login_dir() -> Result<PathBuf> {
-    Ok(crate::storage::IDEOCODE_dir()?.join("pending-login"))
+    Ok(crate::storage::ideocode_dir()?.join("pending-login"))
 }
 
 pub(super) fn require_scriptable_input(

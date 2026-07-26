@@ -207,16 +207,16 @@ impl App {
         let provider_name = self.provider.name().to_ascii_lowercase();
         let credential = self.provider.active_resolved_credential();
         match (provider_name.as_str(), credential) {
-            ("claude", Some(IDEOCODE_provider_core::ResolvedCredential::Oauth)) => {
+            ("claude", Some(ideocode_provider_core::ResolvedCredential::Oauth)) => {
                 Some("claude-oauth".to_string())
             }
-            ("claude", Some(IDEOCODE_provider_core::ResolvedCredential::ApiKey)) => {
+            ("claude", Some(ideocode_provider_core::ResolvedCredential::ApiKey)) => {
                 Some("claude-api".to_string())
             }
-            ("openai", Some(IDEOCODE_provider_core::ResolvedCredential::Oauth)) => {
+            ("openai", Some(ideocode_provider_core::ResolvedCredential::Oauth)) => {
                 Some("openai-oauth".to_string())
             }
-            ("openai", Some(IDEOCODE_provider_core::ResolvedCredential::ApiKey)) => {
+            ("openai", Some(ideocode_provider_core::ResolvedCredential::ApiKey)) => {
                 Some("openai-api".to_string())
             }
             _ => None,
@@ -365,8 +365,8 @@ impl App {
     /// Whether `model` already is the guardrail reroute target
     /// (`claude-opus-4-8`), tolerating case, `[1m]` suffixes, and dated ids.
     fn is_guardrail_reroute_model(model: &str) -> bool {
-        let canonical = IDEOCODE_provider_core::model_id::canonical(model);
-        IDEOCODE_provider_core::model_id::strip_date_suffix(&canonical) == GUARDRAIL_REROUTE_MODEL
+        let canonical = ideocode_provider_core::model_id::canonical(model);
+        ideocode_provider_core::model_id::strip_date_suffix(&canonical) == GUARDRAIL_REROUTE_MODEL
     }
 
     /// Pick the best available `claude-opus-4-8` route for a guardrail
@@ -752,7 +752,7 @@ impl App {
     }
 
     pub(super) fn update_compaction_usage_from_stream(&mut self) {
-        if self.is_remote || !self.provider.uses_IDEOCODE_compaction() {
+        if self.is_remote || !self.provider.uses_ideocode_compaction() {
             return;
         }
         let Some(tokens) = self.current_stream_context_tokens() else {

@@ -3,7 +3,7 @@
 //! NVIDIA NIM), moved out of `IDEOCODE-base` so provider edits compile only this
 //! crate plus a binary relink instead of rebuilding the base -> app-core ->
 //! tui spine. The binary's composition root registers a parameterized factory
-//! with `IDEOCODE_base::provider::external::register_openrouter_factory`.
+//! with `ideocode_base::provider::external::register_openrouter_factory`.
 
 //! OpenRouter API provider
 //!
@@ -19,21 +19,21 @@
 use anyhow::{Context, Result};
 use async_trait::async_trait;
 use futures::StreamExt;
-use IDEOCODE_base::provider_catalog::{
+use ideocode_base::provider_catalog::{
     OPENAI_COMPAT_PROFILE, is_safe_env_file_name, is_safe_env_key_name,
     load_api_key_from_env_or_config, load_env_value_from_env_or_config, normalize_api_base,
     openai_compatible_profile_by_id, openai_compatible_profile_id_for_api_base,
     openai_compatible_profile_static_context_limits, openai_compatible_profile_static_models,
     openai_compatible_profiles, resolve_openai_compatible_profile,
 };
-use IDEOCODE_message_types::{CacheControl, ContentBlock, Message, Role, StreamEvent, ToolDefinition};
-use IDEOCODE_provider_core::{EventStream, Provider};
-pub use IDEOCODE_provider_openrouter::{
+use ideocode_message_types::{CacheControl, ContentBlock, Message, Role, StreamEvent, ToolDefinition};
+use ideocode_provider_core::{EventStream, Provider};
+pub use ideocode_provider_openrouter::{
     EndpointInfo, ModelInfo, ModelPricing, ModelTimestampIndex, ProviderRouting,
     all_model_timestamps, load_endpoints_disk_cache_public, load_model_pricing_disk_cache_public,
     load_model_timestamp_index, model_created_timestamp, model_created_timestamp_from_index,
 };
-use IDEOCODE_provider_openrouter::{
+use ideocode_provider_openrouter::{
     KIMI_FALLBACK_PROVIDERS, ModelCatalogRefreshState, ModelsCache, ParsedProvider, PinSource,
     ProviderPin, current_unix_secs, known_providers, load_disk_cache_entry,
     load_endpoints_disk_cache, parse_model_spec, save_disk_cache_with_source,
@@ -93,7 +93,7 @@ fn explicit_openrouter_runtime_configured() -> bool {
 }
 
 fn autodetected_openai_compatible_profile()
--> Option<IDEOCODE_base::provider_catalog::ResolvedOpenAiCompatibleProfile> {
+-> Option<ideocode_base::provider_catalog::ResolvedOpenAiCompatibleProfile> {
     if explicit_openrouter_runtime_configured() {
         return None;
     }
@@ -112,7 +112,7 @@ fn autodetected_openai_compatible_profile()
         .filter(|profile| profile.id != OPENAI_COMPAT_PROFILE.id)
         .filter_map(|profile| {
             let resolved = resolve_openai_compatible_profile(*profile);
-            if IDEOCODE_base::provider_catalog::openai_compatible_profile_is_configured(*profile) {
+            if ideocode_base::provider_catalog::openai_compatible_profile_is_configured(*profile) {
                 Some(resolved)
             } else {
                 None
@@ -135,7 +135,7 @@ fn configured_api_base() -> String {
         .or_else(|| autodetected_openai_compatible_profile().map(|profile| profile.api_base))
         .unwrap_or_else(|| DEFAULT_API_BASE.to_string());
     normalize_api_base(&raw).unwrap_or_else(|| {
-        IDEOCODE_base::logging::warn(&format!(
+        ideocode_base::logging::warn(&format!(
             "Ignoring invalid IDEOCODE_OPENROUTER_API_BASE '{}'; using {}",
             raw, DEFAULT_API_BASE
         ));
@@ -153,7 +153,7 @@ fn configured_api_key_name() -> String {
     if is_safe_env_key_name(&raw) {
         raw
     } else {
-        IDEOCODE_base::logging::warn(&format!(
+        ideocode_base::logging::warn(&format!(
             "Ignoring invalid IDEOCODE_OPENROUTER_API_KEY_NAME '{}'; using {}",
             raw, DEFAULT_API_KEY_NAME
         ));
@@ -171,7 +171,7 @@ fn configured_env_file_name() -> String {
     if is_safe_env_file_name(&raw) {
         raw
     } else {
-        IDEOCODE_base::logging::warn(&format!(
+        ideocode_base::logging::warn(&format!(
             "Ignoring invalid IDEOCODE_OPENROUTER_ENV_FILE '{}'; using {}",
             raw, DEFAULT_ENV_FILE
         ));
@@ -181,7 +181,7 @@ fn configured_env_file_name() -> String {
 
 fn load_named_profile_api_key(
     env_key: &str,
-    profile: &IDEOCODE_base::config::NamedProviderConfig,
+    profile: &ideocode_base::config::NamedProviderConfig,
 ) -> Option<String> {
     if let Some(env_file) = profile
         .env_file
@@ -211,7 +211,7 @@ fn provider_features_enabled(api_base: &str) -> bool {
         if let Some(value) = parse_env_bool(&raw) {
             return value;
         }
-        IDEOCODE_base::logging::warn(&format!(
+        ideocode_base::logging::warn(&format!(
             "Ignoring invalid IDEOCODE_OPENROUTER_PROVIDER_FEATURES '{}'; expected true/false",
             raw
         ));
@@ -224,7 +224,7 @@ fn model_catalog_enabled() -> bool {
         if let Some(value) = parse_env_bool(&raw) {
             return value;
         }
-        IDEOCODE_base::logging::warn(&format!(
+        ideocode_base::logging::warn(&format!(
             "Ignoring invalid IDEOCODE_OPENROUTER_MODEL_CATALOG '{}'; expected true/false",
             raw
         ));
@@ -251,7 +251,7 @@ fn configured_auth_header_mode() -> AuthHeaderMode {
         "authorization" | "authorization-bearer" | "bearer" => AuthHeaderMode::AuthorizationBearer,
         "api-key" | "apikey" => AuthHeaderMode::ApiKey,
         other => {
-            IDEOCODE_base::logging::warn(&format!(
+            ideocode_base::logging::warn(&format!(
                 "Ignoring invalid IDEOCODE_OPENROUTER_AUTH_HEADER '{}'; expected authorization-bearer or api-key",
                 other
             ));
@@ -267,7 +267,7 @@ fn configured_auth_header_name() -> HeaderName {
         .filter(|v| !v.is_empty())
         .unwrap_or_else(|| "api-key".to_string());
     HeaderName::from_bytes(raw.as_bytes()).unwrap_or_else(|_| {
-        IDEOCODE_base::logging::warn(&format!(
+        ideocode_base::logging::warn(&format!(
             "Ignoring invalid IDEOCODE_OPENROUTER_AUTH_HEADER_NAME '{}'; using api-key",
             raw
         ));
@@ -366,7 +366,7 @@ impl OpenRouterTransportState {
             }
             "direct-no-auth" | "no-auth" | "local" => Some(Self::DirectNoAuth),
             other => {
-                IDEOCODE_base::logging::warn(&format!(
+                ideocode_base::logging::warn(&format!(
                     "Ignoring invalid {} '{}'; expected openrouter-api-key, IDEOCODE-subscription, direct-api-key, or direct-no-auth",
                     OPENROUTER_TRANSPORT_STATE_ENV, other
                 ));
@@ -378,7 +378,7 @@ impl OpenRouterTransportState {
     fn runtime_provider_is_direct_compatible(runtime_provider: Option<&str>) -> bool {
         matches!(runtime_provider, Some("openai-compatible" | "azure-openai"))
             || runtime_provider
-                .and_then(IDEOCODE_base::provider_catalog::openai_compatible_profile_by_id)
+                .and_then(ideocode_base::provider_catalog::openai_compatible_profile_by_id)
                 .is_some()
     }
 
@@ -459,7 +459,7 @@ impl ProviderAuth {
                 header_name, value, ..
             } => Ok(req.header(header_name, value)),
             Self::AzureEntra { .. } => {
-                let token = IDEOCODE_base::auth::azure::get_bearer_token().await?;
+                let token = ideocode_base::auth::azure::get_bearer_token().await?;
                 Ok(req.bearer_auth(token))
             }
             Self::None { .. } => Ok(req),
@@ -529,7 +529,7 @@ async fn fetch_models_from_api(
 
     if !response.status().is_success() {
         let status = response.status();
-        let body = IDEOCODE_base::util::http_error_body(response, "HTTP error").await;
+        let body = ideocode_base::util::http_error_body(response, "HTTP error").await;
         anyhow::bail!(
             "OpenAI-compatible model catalog request failed\n  endpoint: {}\n  auth: {}\n  status: {}\n  response: {}\nHint: verify the base URL includes the API version (usually /v1), the key is valid for this endpoint, and the provider supports GET /models.",
             url,
@@ -548,7 +548,7 @@ async fn fetch_models_from_api(
                 "Failed to parse OpenAI-compatible model catalog response\n  endpoint: {}\n  auth: {}\n  expected: JSON object with a `data` or `models` array, or a top-level array, with model objects containing at least `id` or `name`\n  response: {}",
                 url,
                 auth.label(),
-                IDEOCODE_base::util::truncate_str(&raw_body.trim().replace('\n', "\\n"), 1200)
+                ideocode_base::util::truncate_str(&raw_body.trim().replace('\n', "\\n"), 1200)
             )
         })?;
 
@@ -759,10 +759,10 @@ fn finish_profile_catalog_refresh(profile_id: &str) {
 }
 
 pub fn maybe_schedule_openai_compatible_profile_catalog_refresh(
-    profile: IDEOCODE_base::provider_catalog::OpenAiCompatibleProfile,
+    profile: ideocode_base::provider_catalog::OpenAiCompatibleProfile,
     context: &'static str,
 ) -> bool {
-    let resolved = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(profile);
+    let resolved = ideocode_base::provider_catalog::resolve_openai_compatible_profile(profile);
     if !begin_profile_catalog_refresh(&resolved.id) {
         return false;
     }
@@ -795,13 +795,13 @@ pub fn maybe_schedule_openai_compatible_profile_catalog_refresh(
     let profile_id = resolved.id.clone();
     let display_name = resolved.display_name.clone();
     let previous_fingerprint =
-        IDEOCODE_provider_openrouter::load_disk_cache_entry_for_namespace(&profile_id)
+        ideocode_provider_openrouter::load_disk_cache_entry_for_namespace(&profile_id)
             .map(|cache| models_fingerprint(&cache.models))
             .unwrap_or_default();
     handle.spawn(async move {
         let models_cache = Arc::new(RwLock::new(ModelsCache::default()));
         match fetch_models_from_api(
-            IDEOCODE_provider_core::shared_http_client(),
+            ideocode_provider_core::shared_http_client(),
             api_base,
             auth,
             models_cache,
@@ -812,15 +812,15 @@ pub fn maybe_schedule_openai_compatible_profile_catalog_refresh(
             Ok(models) => {
                 let updated = models_fingerprint(&models) != previous_fingerprint;
                 if updated {
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "Refreshed OpenAI-compatible profile model catalog in background ({}): {} via {} models",
                         context,
                         display_name,
                         models.len()
                     ));
-                    IDEOCODE_base::bus::Bus::global().publish_models_updated();
+                    ideocode_base::bus::Bus::global().publish_models_updated();
                 } else {
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "OpenAI-compatible profile model catalog refresh produced no material change ({}): {} via {} models",
                         context,
                         display_name,
@@ -828,7 +828,7 @@ pub fn maybe_schedule_openai_compatible_profile_catalog_refresh(
                     ));
                 }
             }
-            Err(error) => IDEOCODE_base::logging::info(&format!(
+            Err(error) => ideocode_base::logging::info(&format!(
                 "Failed to refresh OpenAI-compatible profile model catalog in background ({}): {} ({})",
                 context, display_name, error
             )),
@@ -873,7 +873,7 @@ pub fn maybe_schedule_standard_openrouter_catalog_refresh(context: &'static str)
     // while a direct profile owns the shared slot. Reuse the shared 24h catalog
     // TTL so we self-heal on the next picker render after an upgrade.
     let cache_is_fresh = current_unix_secs()
-        .zip(IDEOCODE_provider_openrouter::load_disk_cache_entry_for_namespace(namespace))
+        .zip(ideocode_provider_openrouter::load_disk_cache_entry_for_namespace(namespace))
         .map(|(now, cache)| {
             !cache.models.is_empty()
                 && now.saturating_sub(cache.cached_at) < STANDARD_OPENROUTER_CATALOG_TTL_SECS
@@ -902,13 +902,13 @@ pub fn maybe_schedule_standard_openrouter_catalog_refresh(context: &'static str)
         label: DEFAULT_API_KEY_NAME.to_string(),
     };
     let previous_fingerprint =
-        IDEOCODE_provider_openrouter::load_disk_cache_entry_for_namespace(namespace)
+        ideocode_provider_openrouter::load_disk_cache_entry_for_namespace(namespace)
             .map(|cache| models_fingerprint(&cache.models))
             .unwrap_or_default();
     handle.spawn(async move {
         let models_cache = Arc::new(RwLock::new(ModelsCache::default()));
         match fetch_models_from_api(
-            IDEOCODE_provider_core::shared_http_client(),
+            ideocode_provider_core::shared_http_client(),
             api_base,
             auth,
             models_cache,
@@ -919,21 +919,21 @@ pub fn maybe_schedule_standard_openrouter_catalog_refresh(context: &'static str)
             Ok(models) => {
                 let updated = models_fingerprint(&models) != previous_fingerprint;
                 if updated {
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "Refreshed standard OpenRouter model catalog in background ({}): {} models",
                         context,
                         models.len()
                     ));
-                    IDEOCODE_base::bus::Bus::global().publish_models_updated();
+                    ideocode_base::bus::Bus::global().publish_models_updated();
                 } else {
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "Standard OpenRouter model catalog refresh produced no material change ({}): {} models",
                         context,
                         models.len()
                     ));
                 }
             }
-            Err(error) => IDEOCODE_base::logging::info(&format!(
+            Err(error) => ideocode_base::logging::info(&format!(
                 "Failed to refresh standard OpenRouter model catalog in background ({}): {}",
                 context, error
             )),
@@ -1076,7 +1076,7 @@ impl OpenRouterProvider {
         if !supported {
             return None;
         }
-        IDEOCODE_base::config::config()
+        ideocode_base::config::config()
             .provider
             .openai_reasoning_effort
             .as_deref()
@@ -1108,7 +1108,7 @@ impl OpenRouterProvider {
             // Match the existing OpenAI UX: accept unknown non-empty effort values
             // by snapping to the strongest setting instead of rejecting the command.
             other => {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Warning: Ignoring unsupported DeepSeek reasoning effort '{}'; expected none|low|medium|high|max.",
                     other
                 ));
@@ -1126,7 +1126,7 @@ impl OpenRouterProvider {
             "none" | "minimal" | "low" | "medium" | "high" | "xhigh" | "max" | "swarm"
             | "swarm-deep" => Some(value),
             other => {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Warning: Ignoring unsupported OpenAI-compatible reasoning effort '{}'.",
                     other
                 ));
@@ -1146,7 +1146,7 @@ impl OpenRouterProvider {
             }
             "max" => Some("xhigh".to_string()),
             other => {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Warning: Ignoring unsupported OpenRouter reasoning effort '{}'; expected none|minimal|low|medium|high|xhigh|max alias.",
                     other
                 ));
@@ -1164,7 +1164,7 @@ impl OpenRouterProvider {
             match trimmed.parse::<u32>() {
                 Ok(0) => return None,
                 Ok(value) => return Some(value),
-                Err(_) => IDEOCODE_base::logging::warn(&format!(
+                Err(_) => ideocode_base::logging::warn(&format!(
                     "Ignoring invalid IDEOCODE_OPENROUTER_MAX_TOKENS '{}'; expected a positive integer or auto",
                     raw
                 )),
@@ -1210,7 +1210,7 @@ impl OpenRouterProvider {
                         merged.insert(key.clone(), val.clone());
                     }
                 }
-                None => IDEOCODE_base::logging::warn(
+                None => ideocode_base::logging::warn(
                     "Ignoring provider `extra_body`: expected a table/object of top-level request fields",
                 ),
             }
@@ -1223,10 +1223,10 @@ impl OpenRouterProvider {
                         merged.insert(key, val);
                     }
                 }
-                Ok(_) => IDEOCODE_base::logging::warn(
+                Ok(_) => ideocode_base::logging::warn(
                     "Ignoring IDEOCODE_OPENAI_EXTRA_BODY: expected a JSON object string, e.g. {\"chat_template_kwargs\":{\"thinking\":true}}",
                 ),
-                Err(err) => IDEOCODE_base::logging::warn(&format!(
+                Err(err) => ideocode_base::logging::warn(&format!(
                     "Ignoring invalid IDEOCODE_OPENAI_EXTRA_BODY JSON: {err}"
                 )),
             }
@@ -1245,13 +1245,13 @@ impl OpenRouterProvider {
 
     /// Human-facing label for the runtime backing this provider instance.
     ///
-    /// Unlike the env-var based [`IDEOCODE_base::provider_catalog::runtime_provider_display_name`],
+    /// Unlike the env-var based [`ideocode_base::provider_catalog::runtime_provider_display_name`],
     /// this reads the instance's own `profile_id`/`api_base`, so it stays correct
     /// after a runtime `/model` switch to a different OpenAI-compatible profile
     /// (e.g. NVIDIA NIM) even though `name()` is fixed at `"openrouter"`.
     pub fn runtime_display_name(&self) -> String {
-        if self.is_IDEOCODE_subscription_runtime() {
-            return IDEOCODE_base::subscription_catalog::IDEOCODE_PROVIDER_DISPLAY_NAME.to_string();
+        if self.is_ideocode_subscription_runtime() {
+            return ideocode_base::subscription_catalog::IDEOCODE_PROVIDER_DISPLAY_NAME.to_string();
         }
 
         // Direct OpenAI-compatible profile (NVIDIA NIM, DeepSeek, Z.AI, ...).
@@ -1267,7 +1267,7 @@ impl OpenRouterProvider {
         // public OpenRouter aggregator.
         if !self.supports_provider_features {
             if let Some(profile_id) =
-                IDEOCODE_base::provider_catalog::openai_compatible_profile_id_for_api_base(
+                ideocode_base::provider_catalog::openai_compatible_profile_id_for_api_base(
                     &self.api_base,
                 )
                 && let Some(profile) = openai_compatible_profile_by_id(profile_id)
@@ -1293,10 +1293,10 @@ impl OpenRouterProvider {
             return None;
         }
 
-        if self.is_IDEOCODE_subscription_runtime() {
+        if self.is_ideocode_subscription_runtime() {
             return Some((
-                IDEOCODE_base::subscription_catalog::IDEOCODE_PROVIDER_DISPLAY_NAME.to_string(),
-                IDEOCODE_base::subscription_catalog::IDEOCODE_ROUTE_API_METHOD.to_string(),
+                ideocode_base::subscription_catalog::IDEOCODE_PROVIDER_DISPLAY_NAME.to_string(),
+                ideocode_base::subscription_catalog::IDEOCODE_ROUTE_API_METHOD.to_string(),
                 self.api_base.clone(),
             ));
         }
@@ -1324,26 +1324,26 @@ impl OpenRouterProvider {
     /// transport slot. Keep that implementation detail out of model-picker
     /// labels: the captured auth label is per-instance and remains stable even
     /// if another provider changes the process environment later.
-    fn is_IDEOCODE_subscription_runtime(&self) -> bool {
+    fn is_ideocode_subscription_runtime(&self) -> bool {
         !self.supports_provider_features
             && self.api_base.trim_end_matches('/')
-                == IDEOCODE_base::subscription_catalog::DEFAULT_IDEOCODE_API_BASE.trim_end_matches('/')
+                == ideocode_base::subscription_catalog::DEFAULT_IDEOCODE_API_BASE.trim_end_matches('/')
             && self
                 .auth
                 .label()
-                .eq_ignore_ascii_case(IDEOCODE_base::subscription_catalog::IDEOCODE_API_KEY_ENV)
+                .eq_ignore_ascii_case(ideocode_base::subscription_catalog::IDEOCODE_API_KEY_ENV)
     }
 
     pub fn new_named_openai_compatible(
         profile_name: &str,
-        profile: &IDEOCODE_base::config::NamedProviderConfig,
+        profile: &ideocode_base::config::NamedProviderConfig,
     ) -> Result<Self> {
         // The OpenRouter/OpenAI-compatible catalog cache helpers are currently
         // process-env scoped. Named provider profiles are constructed directly
         // in several CLI/TUI paths, so make sure their cache namespace is active
         // before any model-cache reads/writes happen. Without this, a custom
         // endpoint can accidentally display the default OpenRouter catalog.
-        IDEOCODE_base::env::set_var("IDEOCODE_OPENROUTER_CACHE_NAMESPACE", profile_name);
+        ideocode_base::env::set_var("IDEOCODE_OPENROUTER_CACHE_NAMESPACE", profile_name);
         let api_base = normalize_api_base(&profile.base_url).ok_or_else(|| {
             anyhow::anyhow!("Provider profile '{}' has invalid base_url", profile_name)
         })?;
@@ -1357,15 +1357,15 @@ impl OpenRouterProvider {
             .and_then(|name| load_named_profile_api_key(name, profile))
             .or_else(|| profile.api_key.clone());
         let auth = match profile.auth {
-            IDEOCODE_base::config::NamedProviderAuth::None => ProviderAuth::None {
+            ideocode_base::config::NamedProviderAuth::None => ProviderAuth::None {
                 label: "local endpoint (no auth)".to_string(),
             },
-            IDEOCODE_base::config::NamedProviderAuth::Bearer => ProviderAuth::AuthorizationBearer {
+            ideocode_base::config::NamedProviderAuth::Bearer => ProviderAuth::AuthorizationBearer {
                 token: key
                     .ok_or_else(|| anyhow::anyhow!("{} not found in environment", key_label))?,
                 label: key_label,
             },
-            IDEOCODE_base::config::NamedProviderAuth::Header => ProviderAuth::HeaderValue {
+            ideocode_base::config::NamedProviderAuth::Header => ProviderAuth::HeaderValue {
                 header_name: HeaderName::from_bytes(
                     profile
                         .auth_header
@@ -1418,7 +1418,7 @@ impl OpenRouterProvider {
             })
             .collect::<HashMap<_, _>>();
         Ok(Self {
-            client: IDEOCODE_provider_core::shared_http_client(),
+            client: ideocode_provider_core::shared_http_client(),
             model: Arc::new(RwLock::new(model)),
             reasoning_effort: Arc::new(RwLock::new(Self::initial_reasoning_effort(
                 profile.supports_reasoning_effort,
@@ -1428,13 +1428,13 @@ impl OpenRouterProvider {
             auth,
             supports_provider_features: matches!(
                 profile.provider_type,
-                IDEOCODE_base::config::NamedProviderType::OpenRouter
+                ideocode_base::config::NamedProviderType::OpenRouter
             ) || profile.provider_routing
                 || profile.allow_provider_pinning,
             supports_model_catalog: profile.model_catalog
                 || matches!(
                     profile.provider_type,
-                    IDEOCODE_base::config::NamedProviderType::OpenRouter
+                    ideocode_base::config::NamedProviderType::OpenRouter
                 ),
             profile_id: Some(profile_name.to_string()),
             reasoning_effort_support: profile.supports_reasoning_effort,
@@ -1462,7 +1462,7 @@ impl OpenRouterProvider {
 
     /// Return true if this model is a Kimi K2/K2.5 variant (Moonshot).
     fn is_kimi_model(model: &str) -> bool {
-        IDEOCODE_provider_openrouter::is_kimi_model(model)
+        ideocode_provider_openrouter::is_kimi_model(model)
     }
 
     /// Strip a session-routing `<profile>:` prefix from a model spec.
@@ -1485,7 +1485,7 @@ impl OpenRouterProvider {
         let Some((prefix, rest)) = model.split_once(':') else {
             return model;
         };
-        if IDEOCODE_provider_core::explicit_model_provider_prefix(model).is_some() {
+        if ideocode_provider_core::explicit_model_provider_prefix(model).is_some() {
             return model;
         }
         let rest = rest.trim();
@@ -1504,7 +1504,7 @@ impl OpenRouterProvider {
             // provider's `profile_id`, so without this check a `<name>:` prefix
             // (e.g. `cline:`) would leak verbatim to the upstream API and be
             // rejected with a 404 model_not_found.
-            || IDEOCODE_base::config::config()
+            || ideocode_base::config::config()
                 .providers
                 .keys()
                 .any(|id| id.eq_ignore_ascii_case(prefix));
@@ -1535,7 +1535,7 @@ impl OpenRouterProvider {
             "disabled" | "disable" | "off" | "false" | "0" => Some(false),
             "auto" | "" => None,
             other => {
-                IDEOCODE_base::logging::info(&format!(
+                ideocode_base::logging::info(&format!(
                     "Warning: Unsupported IDEOCODE_OPENROUTER_THINKING '{}'; expected enabled/disabled/auto",
                     other
                 ));
@@ -1603,7 +1603,7 @@ impl OpenRouterProvider {
         if std::env::var_os("IDEOCODE_OPENROUTER_CACHE_NAMESPACE").is_none()
             && let Some(profile) = autodetected_profile.as_ref()
         {
-            IDEOCODE_base::env::set_var("IDEOCODE_OPENROUTER_CACHE_NAMESPACE", &profile.id);
+            ideocode_base::env::set_var("IDEOCODE_OPENROUTER_CACHE_NAMESPACE", &profile.id);
         }
 
         let model = std::env::var("IDEOCODE_OPENROUTER_MODEL")
@@ -1627,7 +1627,7 @@ impl OpenRouterProvider {
         let extra_body = Self::resolve_extra_body(None, &configured_env_file_name());
 
         Ok(Self {
-            client: IDEOCODE_provider_core::shared_http_client(),
+            client: ideocode_provider_core::shared_http_client(),
             model: Arc::new(RwLock::new(model)),
             reasoning_effort: Arc::new(RwLock::new(Self::initial_reasoning_effort(
                 None,
@@ -1657,7 +1657,7 @@ impl OpenRouterProvider {
     pub fn new_openrouter_api_key_runtime() -> Result<Self> {
         let api_key = load_api_key_from_env_or_config(DEFAULT_API_KEY_NAME, DEFAULT_ENV_FILE)
             .ok_or_else(|| {
-                let path = IDEOCODE_base::storage::app_config_dir()
+                let path = ideocode_base::storage::app_config_dir()
                     .map(|dir| dir.join(DEFAULT_ENV_FILE).display().to_string())
                     .unwrap_or_else(|_| DEFAULT_ENV_FILE.to_string());
                 anyhow::anyhow!(
@@ -1668,7 +1668,7 @@ impl OpenRouterProvider {
             })?;
 
         Ok(Self {
-            client: IDEOCODE_provider_core::shared_http_client(),
+            client: ideocode_provider_core::shared_http_client(),
             model: Arc::new(RwLock::new(DEFAULT_MODEL.to_string())),
             reasoning_effort: Arc::new(RwLock::new(None)),
             api_base: DEFAULT_API_BASE.to_string(),
@@ -1696,7 +1696,7 @@ impl OpenRouterProvider {
     }
 
     pub fn new_openai_compatible_profile_runtime(
-        profile: IDEOCODE_base::provider_catalog::OpenAiCompatibleProfile,
+        profile: ideocode_base::provider_catalog::OpenAiCompatibleProfile,
     ) -> Result<Self> {
         let resolved = resolve_openai_compatible_profile(profile);
         let api_base = normalize_api_base(&resolved.api_base).ok_or_else(|| {
@@ -1716,7 +1716,7 @@ impl OpenRouterProvider {
                 label: "local endpoint (no auth)".to_string(),
             },
             None => {
-                let path = IDEOCODE_base::storage::app_config_dir()
+                let path = ideocode_base::storage::app_config_dir()
                     .map(|dir| dir.join(&resolved.env_file).display().to_string())
                     .unwrap_or_else(|_| resolved.env_file.clone());
                 anyhow::bail!(
@@ -1737,7 +1737,7 @@ impl OpenRouterProvider {
             .unwrap_or_else(|| DEFAULT_MODEL.to_string());
 
         Ok(Self {
-            client: IDEOCODE_provider_core::shared_http_client(),
+            client: ideocode_provider_core::shared_http_client(),
             model: Arc::new(RwLock::new(model)),
             reasoning_effort: Arc::new(RwLock::new(Self::initial_reasoning_effort(
                 None,
@@ -1795,7 +1795,7 @@ impl OpenRouterProvider {
         models
             .into_iter()
             .filter(|model| {
-                IDEOCODE_base::provider_catalog::openai_compatible_profile_model_supports_chat(
+                ideocode_base::provider_catalog::openai_compatible_profile_model_supports_chat(
                     profile_id, model,
                 )
             })
@@ -1804,7 +1804,7 @@ impl OpenRouterProvider {
 
     fn model_disk_cache_source_matches(
         &self,
-        cache_entry: &IDEOCODE_provider_openrouter::DiskCache,
+        cache_entry: &ideocode_provider_openrouter::DiskCache,
     ) -> bool {
         let Some(source_api_base) = cache_entry
             .source_api_base
@@ -1825,7 +1825,7 @@ impl OpenRouterProvider {
 
     pub(crate) fn load_usable_model_disk_cache_entry(
         &self,
-    ) -> Option<IDEOCODE_provider_openrouter::DiskCache> {
+    ) -> Option<ideocode_provider_openrouter::DiskCache> {
         load_disk_cache_entry().filter(|entry| self.model_disk_cache_source_matches(entry))
     }
 
@@ -1976,28 +1976,28 @@ impl OpenRouterProvider {
                 Ok(endpoints) => {
                     let updated = endpoints_fingerprint(&endpoints) != previous_fingerprint;
                     if notify_models_updated && updated {
-                        IDEOCODE_base::logging::info(&format!(
+                        ideocode_base::logging::info(&format!(
                             "Refreshed OpenRouter endpoint providers in background ({}): {} via {} providers",
                             context,
                             model_name,
                             endpoints.len()
                         ));
-                        IDEOCODE_base::bus::Bus::global().publish_models_updated();
+                        ideocode_base::bus::Bus::global().publish_models_updated();
                     } else if updated {
-                        IDEOCODE_base::logging::info(&format!(
+                        ideocode_base::logging::info(&format!(
                             "Refreshed OpenRouter endpoint providers in background without broadcast ({}): {} via {} providers",
                             context,
                             model_name,
                             endpoints.len()
                         ));
                     } else {
-                        IDEOCODE_base::logging::info(&format!(
+                        ideocode_base::logging::info(&format!(
                             "OpenRouter endpoint refresh produced no material change ({}): {}",
                             context, model_name
                         ));
                     }
                 }
-                Err(error) => IDEOCODE_base::logging::info(&format!(
+                Err(error) => ideocode_base::logging::info(&format!(
                     "Failed to refresh OpenRouter endpoint providers in background ({}): {} ({})",
                     context, model_name, error
                 )),
@@ -2033,21 +2033,21 @@ impl OpenRouterProvider {
                 Ok(models) => {
                     let updated = models_fingerprint(&models) != previous_fingerprint;
                     if updated {
-                        IDEOCODE_base::logging::info(&format!(
+                        ideocode_base::logging::info(&format!(
                             "Refreshed OpenRouter model catalog in background ({}): {} models",
                             context,
                             models.len()
                         ));
-                        IDEOCODE_base::bus::Bus::global().publish_models_updated();
+                        ideocode_base::bus::Bus::global().publish_models_updated();
                     } else {
-                        IDEOCODE_base::logging::info(&format!(
+                        ideocode_base::logging::info(&format!(
                             "OpenRouter model catalog refresh produced no material change ({}): {} models",
                             context,
                             models.len()
                         ));
                     }
                 }
-                Err(e) => IDEOCODE_base::logging::info(&format!(
+                Err(e) => ideocode_base::logging::info(&format!(
                     "Failed to refresh OpenRouter model catalog in background ({}): {}",
                     context, e
                 )),
@@ -2058,7 +2058,7 @@ impl OpenRouterProvider {
 
     /// Parse provider routing configuration from environment variables
     fn parse_provider_routing() -> ProviderRouting {
-        IDEOCODE_provider_openrouter::parse_provider_routing_from_env()
+        ideocode_provider_openrouter::parse_provider_routing_from_env()
     }
 
     fn set_explicit_pin(&self, model: &str, provider: ParsedProvider) {
@@ -2104,7 +2104,7 @@ impl OpenRouterProvider {
     }
 
     fn rank_providers_from_endpoints(endpoints: &[EndpointInfo]) -> Vec<String> {
-        IDEOCODE_provider_openrouter::rank_providers_from_endpoints(endpoints)
+        ideocode_provider_openrouter::rank_providers_from_endpoints(endpoints)
     }
 
     async fn effective_routing(&self, model: &str) -> ProviderRouting {
@@ -2391,7 +2391,7 @@ impl OpenRouterProvider {
             configured_dynamic_bearer_provider().as_deref(),
             Some("azure")
         ) {
-            return IDEOCODE_base::auth::azure::has_configuration();
+            return ideocode_base::auth::azure::has_configuration();
         }
         if configured_allow_no_auth() {
             return true;
@@ -2403,7 +2403,7 @@ impl OpenRouterProvider {
         if let Some(provider) = configured_dynamic_bearer_provider() {
             return match provider.as_str() {
                 "azure" => {
-                    if IDEOCODE_base::auth::azure::has_configuration() {
+                    if ideocode_base::auth::azure::has_configuration() {
                         Ok(ProviderAuth::AzureEntra {
                             label: "Azure OpenAI Entra ID".to_string(),
                         })
@@ -2443,7 +2443,7 @@ impl OpenRouterProvider {
         let key_name = configured_api_key_name();
         let api_key = Self::get_api_key().ok_or_else(|| {
             let env_file = configured_env_file_name();
-            let path = IDEOCODE_base::storage::app_config_dir()
+            let path = ideocode_base::storage::app_config_dir()
                 .map(|dir| dir.join(&env_file).display().to_string())
                 .unwrap_or_else(|_| env_file.clone());
             anyhow::anyhow!("{} not found in environment or {}", key_name, path)
@@ -2566,7 +2566,7 @@ impl OpenRouterProvider {
 
         if !response.status().is_success() {
             let status = response.status();
-            let body = IDEOCODE_base::util::http_error_body(response, "HTTP error").await;
+            let body = ideocode_base::util::http_error_body(response, "HTTP error").await;
             anyhow::bail!("Endpoints API error ({}): {}", status, body);
         }
 
@@ -2621,7 +2621,7 @@ impl OpenRouterProvider {
 
         if !response.status().is_success() {
             let status = response.status();
-            let body = IDEOCODE_base::util::http_error_body(response, "HTTP error").await;
+            let body = ideocode_base::util::http_error_body(response, "HTTP error").await;
             anyhow::bail!("Endpoints API error ({}): {}", status, body);
         }
 

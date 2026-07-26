@@ -18,8 +18,8 @@ pub fn save_startup_submission_for_session(
     if input.trim().is_empty() && pending_images.is_empty() {
         return;
     }
-    if let Ok(IDEOCODE_dir) = crate::storage::IDEOCODE_dir() {
-        let path = IDEOCODE_dir.join(format!("client-input-{}", session_id));
+    if let Ok(ideocode_dir) = crate::storage::ideocode_dir() {
+        let path = ideocode_dir.join(format!("client-input-{}", session_id));
         let data = serde_json::json!({
             "cursor": input.len(),
             "input": input,

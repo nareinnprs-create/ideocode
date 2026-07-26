@@ -1,7 +1,7 @@
 ﻿use super::{SwarmMember, SwarmTaskProgress, VersionedPlan};
 use crate::protocol::ServerEvent;
 use crate::storage;
-use IDEOCODE_swarm_core::{SwarmLifecycleStatus, SwarmMemberRecord};
+use ideocode_swarm_core::{SwarmLifecycleStatus, SwarmMemberRecord};
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 use std::sync::{Arc, LazyLock, Mutex as StdMutex, Weak};
@@ -72,7 +72,7 @@ fn persisted_plan_is_dormant(plan: &PersistedVersionedPlan) -> bool {
         || plan
             .items
             .iter()
-            .all(|item| item.assigned_to.is_none() && !IDEOCODE_plan::is_active_status(&item.status))
+            .all(|item| item.assigned_to.is_none() && !ideocode_plan::is_active_status(&item.status))
 }
 
 fn persisted_plan_is_expired(

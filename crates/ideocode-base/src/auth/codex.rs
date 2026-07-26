@@ -105,8 +105,8 @@ fn relabel_accounts(auth: &mut IDEOCODEOpenAiAuthFile) -> bool {
     outcome.changed
 }
 
-fn IDEOCODE_auth_path() -> Result<PathBuf> {
-    Ok(crate::storage::IDEOCODE_dir()?.join("openai-auth.json"))
+fn ideocode_auth_path() -> Result<PathBuf> {
+    Ok(crate::storage::ideocode_dir()?.join("openai-auth.json"))
 }
 
 fn legacy_auth_path() -> Result<PathBuf> {
@@ -158,7 +158,7 @@ pub fn has_unconsented_legacy_credentials() -> bool {
 }
 
 pub fn load_auth_file() -> Result<IDEOCODEOpenAiAuthFile> {
-    let path = IDEOCODE_auth_path()?;
+    let path = ideocode_auth_path()?;
     let mut auth = if path.exists() {
         crate::storage::harden_secret_file_permissions(&path);
         crate::storage::read_json(&path)
@@ -178,7 +178,7 @@ pub fn load_auth_file() -> Result<IDEOCODEOpenAiAuthFile> {
 }
 
 pub fn save_auth_file(auth: &IDEOCODEOpenAiAuthFile) -> Result<()> {
-    let auth_path = IDEOCODE_auth_path()?;
+    let auth_path = ideocode_auth_path()?;
     let clean = IDEOCODEOpenAiAuthFile {
         openai_accounts: auth.openai_accounts.clone(),
         active_openai_account: auth.active_openai_account.clone(),
@@ -337,7 +337,7 @@ fn load_oauth_credentials_internal(return_expired: bool) -> Result<CodexCredenti
     let mut expired_candidates: Vec<(&str, CodexCredentials)> = Vec::new();
     let legacy_allowed = legacy_auth_allowed();
 
-    if let Ok(creds) = load_IDEOCODE_credentials() {
+    if let Ok(creds) = load_ideocode_credentials() {
         if creds
             .expires_at
             .map(|expires_at| expires_at > now_ms)
@@ -432,7 +432,7 @@ pub fn upsert_account_from_tokens(
     upsert_account(account_from_credentials(label, &creds, email))
 }
 
-fn load_IDEOCODE_credentials() -> Result<CodexCredentials> {
+fn load_ideocode_credentials() -> Result<CodexCredentials> {
     let auth = load_auth_file()?;
     if auth.openai_accounts.is_empty() {
         anyhow::bail!("No OpenAI accounts configured in IDEOCODE auth file")

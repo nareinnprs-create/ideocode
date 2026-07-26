@@ -305,7 +305,7 @@ mod tests {
     }
 
     #[test]
-    fn parses_IDEOCODE_binding_strings() {
+    fn parses_ideocode_binding_strings() {
         assert_eq!(KeyChord::parse("ctrl+k").unwrap().canonical(), "ctrl+k");
         assert_eq!(
             KeyChord::parse("alt+right").unwrap().canonical(),

@@ -14,12 +14,12 @@ use crate::storage;
 use anyhow::Result;
 use async_trait::async_trait;
 use chrono::{DateTime, NaiveDate, Utc};
-use IDEOCODE_import_core::{
+use ideocode_import_core::{
     ExternalMessageRecord, ExternalSessionRecord, ImportCoreResult, collect_recent_files_recursive,
     load_claude_external_messages, load_codex_external_session, load_cursor_external_session,
     load_opencode_external_session, load_pi_external_session,
 };
-use IDEOCODE_session_types::{
+use ideocode_session_types::{
     SessionSearchContextLine as ResultContextLine, SessionSearchQueryProfile as QueryProfile,
     SessionSearchRenderOptions, SessionSearchReport as SearchReport,
     SessionSearchResult as SearchResult, SessionSearchResultKind as SearchResultKind,
@@ -145,13 +145,13 @@ pub fn spawn_recent_index_warmup() {
         remove_legacy_index();
         let empty_query = QueryProfile::new("__IDEOCODE_index_warmup__");
 
-        let IDEOCODE_count = (|| -> Result<usize> {
-            let sessions_dir = storage::IDEOCODE_dir()?.join("sessions");
+        let ideocode_count = (|| -> Result<usize> {
+            let sessions_dir = storage::ideocode_dir()?.join("sessions");
             let collection = collect_session_files(&sessions_dir, DEFAULT_MAX_SCAN_SESSIONS)?;
             if collection.files.is_empty() {
                 return Ok(0);
             }
-            let _ = IDEOCODE_index_candidates(&collection.files, &empty_query)?;
+            let _ = ideocode_index_candidates(&collection.files, &empty_query)?;
             Ok(collection.files.len())
         })()
         .unwrap_or_else(|err| {
@@ -183,7 +183,7 @@ pub fn spawn_recent_index_warmup() {
         }
 
         crate::logging::info(&format!(
-            "Session search index warmup completed for {IDEOCODE_count} IDEOCODE + {external_count} external session(s) in {}ms",
+            "Session search index warmup completed for {ideocode_count} IDEOCODE + {external_count} external session(s) in {}ms",
             start.elapsed().as_millis()
         ));
     });
@@ -486,7 +486,7 @@ impl Tool for SessionSearchTool {
             .with_title("session_search"));
         }
 
-        let sessions_dir = storage::IDEOCODE_dir()?.join("sessions");
+        let sessions_dir = storage::ideocode_dir()?.join("sessions");
 
         let options = SearchOptions {
             current_session_id: ctx.session_id.clone(),
@@ -623,7 +623,7 @@ fn search_sessions_blocking(
         let mut files = collection.files;
         if !files.is_empty() {
             files.sort_unstable_by(|a, b| b.mtime.cmp(&a.mtime));
-            report.scanned_IDEOCODE_sessions = files.len();
+            report.scanned_ideocode_sessions = files.len();
 
             if !options.include_current {
                 files.retain(|candidate| candidate.session_id_hint != options.current_session_id);
@@ -642,7 +642,7 @@ fn search_sessions_blocking(
                         .flat_map(|outcome| outcome.candidates)
                         .collect()
                 } else {
-                    match IDEOCODE_index_candidates(&files, query) {
+                    match ideocode_index_candidates(&files, query) {
                         Ok(candidates) => candidates,
                         Err(err) => {
                             crate::logging::warn(&format!(
@@ -661,7 +661,7 @@ fn search_sessions_blocking(
                     }
                 };
                 candidates.sort_unstable_by(|a, b| b.mtime.cmp(&a.mtime));
-                report.candidate_IDEOCODE_sessions = candidates.len();
+                report.candidate_ideocode_sessions = candidates.len();
                 if using_index {
                     let indexed_budget = indexed_candidate_budget(options);
                     if candidates.len() > indexed_budget {
@@ -792,7 +792,7 @@ fn system_time_from_unix_millis(timestamp_ms: u64) -> SystemTime {
 }
 
 fn index_dir() -> Result<PathBuf> {
-    Ok(storage::IDEOCODE_dir()?.join("cache"))
+    Ok(storage::ideocode_dir()?.join("cache"))
 }
 
 /// How many index candidates are worth fully parsing/scoring for one search.
@@ -814,7 +814,7 @@ fn remove_legacy_index() {
 
 /// Build/update the incremental IDEOCODE session index and return the candidate
 /// subset of `files` that plausibly match `query`.
-fn IDEOCODE_index_candidates(
+fn ideocode_index_candidates(
     files: &[SessionFileCandidate],
     query: &QueryProfile,
 ) -> Result<Vec<SessionFileCandidate>> {
@@ -1186,9 +1186,9 @@ fn load_external_candidates_parallel(
 /// Indexed text includes the session metadata (id, prompt, summary, project)
 /// so metadata-only matches keep working.
 fn claude_index_candidates(
-    sessions: &[IDEOCODE_import_core::ClaudeCodeSessionInfo],
+    sessions: &[ideocode_import_core::ClaudeCodeSessionInfo],
     query: &QueryProfile,
-) -> Vec<IDEOCODE_import_core::ClaudeCodeSessionInfo> {
+) -> Vec<ideocode_import_core::ClaudeCodeSessionInfo> {
     let index = index_dir()
         .map(|dir| dir.join("session_search_claude_index_v2.bin"))
         .and_then(|index_path| {
@@ -1245,7 +1245,7 @@ fn claude_index_candidates(
 /// Pre-filter and load Claude Code session files in parallel, mirroring the
 /// JSONL source scan above.
 fn load_claude_candidates_parallel(
-    sessions: &[IDEOCODE_import_core::ClaudeCodeSessionInfo],
+    sessions: &[ideocode_import_core::ClaudeCodeSessionInfo],
     query: &QueryProfile,
     options: &SearchOptions,
 ) -> Vec<ExternalSessionRecord> {
@@ -1289,7 +1289,7 @@ fn load_claude_candidates_parallel(
                         session_id: session.session_id.clone(),
                         short_name: Some(format!(
                             "claude {}",
-                            IDEOCODE_core::util::truncate_str(&session.session_id, 8)
+                            ideocode_core::util::truncate_str(&session.session_id, 8)
                         )),
                         title: Some(title),
                         working_dir: session.project_path.clone(),
@@ -1329,7 +1329,7 @@ fn external_path_or_raw_matches_query(path: &Path, query: &QueryProfile) -> bool
 }
 
 fn external_text_matches_query(text: &str, query: &QueryProfile) -> bool {
-    IDEOCODE_session_types::normalized_session_search_text_matches(&text.to_lowercase(), query)
+    ideocode_session_types::normalized_session_search_text_matches(&text.to_lowercase(), query)
 }
 
 fn collect_opencode_external_sessions(
@@ -1507,7 +1507,7 @@ fn append_session_results(
     if !options.include_current && session.id == options.current_session_id {
         return;
     }
-    if !IDEOCODE_session_matches_filters(session, options) {
+    if !ideocode_session_matches_filters(session, options) {
         return;
     }
 
@@ -1596,7 +1596,7 @@ fn append_session_results(
             score,
             matched_terms: match_score.matched_terms,
             exact_match: match_score.exact_match,
-            context: build_IDEOCODE_context(&session.messages, message_index, options),
+            context: build_ideocode_context(&session.messages, message_index, options),
         });
     }
 }
@@ -1644,7 +1644,7 @@ fn source_matches_filter(source: &str, options: &SearchOptions) -> bool {
         .unwrap_or(true)
 }
 
-fn IDEOCODE_session_matches_filters(session: &Session, options: &SearchOptions) -> bool {
+fn ideocode_session_matches_filters(session: &Session, options: &SearchOptions) -> bool {
     if !source_matches_filter("IDEOCODE", options) {
         return false;
     }
@@ -1733,7 +1733,7 @@ fn role_filter_allows_external_message(role: &str, options: &SearchOptions) -> b
     }
 }
 
-fn build_IDEOCODE_context(
+fn build_ideocode_context(
     messages: &[StoredMessage],
     hit_index: usize,
     options: &SearchOptions,

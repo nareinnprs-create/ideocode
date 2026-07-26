@@ -117,7 +117,7 @@ pub struct ComposioConnection {
 
 impl ComposioConnection {
     pub fn path() -> Result<std::path::PathBuf> {
-        Ok(crate::storage::IDEOCODE_dir()?.join("composio_gmail.json"))
+        Ok(crate::storage::ideocode_dir()?.join("composio_gmail.json"))
     }
 
     pub fn load() -> Result<Option<Self>> {

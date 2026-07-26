@@ -222,11 +222,11 @@ impl App {
         if message.role != "swarm" {
             return false;
         }
-        let Some(toggled) = IDEOCODE_tui_messages::toggle_collapsible_swarm_content(&message.content)
+        let Some(toggled) = ideocode_tui_messages::toggle_collapsible_swarm_content(&message.content)
         else {
             return false;
         };
-        let expanded = IDEOCODE_tui_messages::parse_collapsible_swarm_content(&toggled)
+        let expanded = ideocode_tui_messages::parse_collapsible_swarm_content(&toggled)
             .map(|parsed| parsed.expanded)
             .unwrap_or(false);
         if !self.replace_display_message_content(msg_idx, toggled) {

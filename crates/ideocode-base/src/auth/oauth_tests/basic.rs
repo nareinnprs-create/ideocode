@@ -84,7 +84,7 @@ fn oauth_tokens_without_id_token() -> Result<()> {
 }
 
 #[test]
-fn save_openai_tokens_uses_IDEOCODE_home_sandbox() -> Result<()> {
+fn save_openai_tokens_uses_ideocode_home_sandbox() -> Result<()> {
     let _lock = crate::storage::lock_test_env();
     let temp = tempfile::TempDir::new().map_err(|e| anyhow!(e))?;
     let _home = EnvVarGuard::set("IDEOCODE_HOME", temp.path());

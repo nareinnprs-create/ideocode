@@ -376,7 +376,7 @@ fn dir_label(path: &str) -> String {
 /// the recency timestamp, and skips anything it cannot parse. Returns an empty
 /// vec if the directory is missing. The function is filesystem-facing but kept
 /// here so callers get session collection + ranking from one module.
-pub fn collect_IDEOCODE_session_locations(sessions_dir: &Path) -> Vec<SessionLocation> {
+pub fn collect_ideocode_session_locations(sessions_dir: &Path) -> Vec<SessionLocation> {
     use std::fs;
 
     let Ok(entries) = fs::read_dir(sessions_dir) else {
@@ -423,7 +423,7 @@ pub fn plan_launch_hotkeys_from_sessions(
     home: &Path,
     now: DateTime<Utc>,
 ) -> Vec<PlannedHotkey> {
-    let locations = collect_IDEOCODE_session_locations(sessions_dir);
+    let locations = collect_ideocode_session_locations(sessions_dir);
     let opts = RankOptions {
         excluded_paths: vec![home.to_path_buf()],
         ..RankOptions::default()
@@ -757,7 +757,7 @@ mod tests {
         // Not JSON -> skipped.
         write("notes.json", "this is not json");
 
-        let mut locs = collect_IDEOCODE_session_locations(dir.path());
+        let mut locs = collect_ideocode_session_locations(dir.path());
         locs.sort_by(|a, b| a.working_dir.cmp(&b.working_dir));
         let dirs: Vec<&str> = locs.iter().map(|l| l.working_dir.as_str()).collect();
         assert_eq!(
@@ -770,7 +770,7 @@ mod tests {
 
     #[test]
     fn collect_missing_dir_is_empty() {
-        let locs = collect_IDEOCODE_session_locations(Path::new("/nonexistent/IDEOCODE/sessions"));
+        let locs = collect_ideocode_session_locations(Path::new("/nonexistent/IDEOCODE/sessions"));
         assert!(locs.is_empty());
     }
 }

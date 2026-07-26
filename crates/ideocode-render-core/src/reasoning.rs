@@ -84,7 +84,7 @@ pub fn reasoning_partial_markup(line: &str) -> String {
 /// Lives here (a backend-neutral, pure crate) rather than in `IDEOCODE-tui-markdown`
 /// so the foundation/streaming layer can format the summary without depending on
 /// any `IDEOCODE-tui-*` crate. Re-exported from `IDEOCODE-tui-markdown` for the
-/// existing `IDEOCODE_tui_markdown::reasoning_summary_line_markup` path.
+/// existing `ideocode_tui_markdown::reasoning_summary_line_markup` path.
 pub fn reasoning_summary_line_markup(line_count: usize) -> String {
     let label = match line_count {
         0 | 1 => "▸ thought".to_string(),

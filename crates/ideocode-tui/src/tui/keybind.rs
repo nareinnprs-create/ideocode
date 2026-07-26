@@ -1,11 +1,11 @@
 ﻿use crate::config::config;
 use crossterm::event::{KeyCode, KeyModifiers};
 
-pub use IDEOCODE_tui_core::keybind::{
+pub use ideocode_tui_core::keybind::{
     CenteredToggleKeys, EffortSwitchKeys, KeyBinding, ModelSwitchKeys, OptionalBinding, ScrollKeys,
     WorkspaceNavigationDirection, WorkspaceNavigationKeys,
 };
-use IDEOCODE_tui_core::keybind::{
+use ideocode_tui_core::keybind::{
     format_binding, is_disabled, macos_option_char_to_ascii_key, parse_bindings_or_default,
     parse_keybinding, parse_optional, parse_or_default,
 };
@@ -13,7 +13,7 @@ use IDEOCODE_tui_core::keybind::{
 // Re-export the per-platform keybinding registry + provenance + validation API
 // so the rest of the TUI can reach it via `crate::tui::keybind::*`.
 #[allow(unused_imports)]
-pub use IDEOCODE_config_types::keybindings::{
+pub use ideocode_config_types::keybindings::{
     KEYBINDING_DEFAULTS, KeybindingDefault, KeybindingIssue, KeybindingIssueKind,
     KeybindingPlatform, KeybindingProvenance, PlatformDefault, default_binding,
     keybinding_defaults_report, validate_keybinding_defaults,

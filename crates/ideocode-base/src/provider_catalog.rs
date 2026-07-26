@@ -1,9 +1,9 @@
-﻿pub use IDEOCODE_provider_env::{
+﻿pub use ideocode_provider_env::{
     load_api_key_from_env_or_config, load_env_value_from_config_file,
     load_env_value_from_env_or_config, register_api_key_fallback_resolver,
     save_env_value_to_env_file,
 };
-pub use IDEOCODE_provider_metadata::*;
+pub use ideocode_provider_metadata::*;
 use std::collections::{HashMap, HashSet};
 
 pub const OPENAI_COMPAT_LOCAL_ENABLED_ENV: &str = "IDEOCODE_OPENAI_COMPAT_LOCAL_ENABLED";
@@ -115,7 +115,7 @@ fn newest_released_model_for_resolved_openai_compatible_profile(
     resolved: &ResolvedOpenAiCompatibleProfile,
 ) -> Option<String> {
     openai_compatible_profile_by_id(profile_id)?;
-    let cache = IDEOCODE_provider_openrouter::load_disk_cache_entry_for_namespace(&resolved.id)?;
+    let cache = ideocode_provider_openrouter::load_disk_cache_entry_for_namespace(&resolved.id)?;
 
     let source_matches = cache
         .source_api_base
@@ -560,7 +560,7 @@ pub fn openai_compatible_profile_context_limit(profile_id: &str, model: &str) ->
         // etc.) serve `/v1/models` entries without a `context_length`, so this
         // static table is the only reliable source before a live catalog (or an
         // explicit user `context_window` override) is available.
-        _ => IDEOCODE_provider_core::models::open_weight_family_context_limit(&model),
+        _ => ideocode_provider_core::models::open_weight_family_context_limit(&model),
     }
 }
 

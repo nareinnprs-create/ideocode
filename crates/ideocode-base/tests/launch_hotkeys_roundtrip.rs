@@ -1,6 +1,6 @@
 ﻿#[test]
 fn launch_hotkeys_config_round_trips_toml() {
-    use IDEOCODE_config_types::{LaunchHotkeyEntry, LaunchHotkeysConfig};
+    use ideocode_config_types::{LaunchHotkeyEntry, LaunchHotkeysConfig};
     #[derive(serde::Serialize, serde::Deserialize, Default)]
     #[serde(default)]
     struct W {

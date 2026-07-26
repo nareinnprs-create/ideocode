@@ -1,1 +1,1 @@
-﻿pub use IDEOCODE_core::id::*;
+﻿pub use ideocode_core::id::*;

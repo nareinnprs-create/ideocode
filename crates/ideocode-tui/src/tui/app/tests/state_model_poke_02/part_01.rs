@@ -931,7 +931,7 @@ fn test_top_level_command_suggestions_include_all_non_hidden_commands() {
 
 #[test]
 fn test_logout_clear_anthropic_accounts_removes_all_accounts_once() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         for index in 1..=3 {
             crate::auth::claude::upsert_account(crate::auth::claude::AnthropicAccount {
                 label: format!("requested-{index}"),
@@ -991,7 +991,7 @@ fn test_help_topic_suggestions_include_catchup_topics() {
 
 #[test]
 fn test_context_command_reports_session_context_snapshot() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.memory_enabled = true;
         app.swarm_enabled = true;
@@ -1313,7 +1313,7 @@ fn test_swarm_prompt_command_is_discoverable_in_suggestions_and_help() {
 
 #[test]
 fn test_agents_picker_uses_provider_default_when_inherited_model_is_unknown() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         app.open_agents_picker();
 
@@ -1338,7 +1338,7 @@ fn test_agents_picker_uses_provider_default_when_inherited_model_is_unknown() {
 
 #[test]
 fn test_agent_model_picker_inherit_row_uses_provider_default_when_inherited_model_is_unknown() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         configure_test_remote_models(&mut app);
         app.open_agent_model_picker(crate::tui::AgentModelTarget::Swarm);

@@ -35,7 +35,7 @@
 //! within budget.
 
 use base64::Engine as _;
-use IDEOCODE_message_types::{ContentBlock, Message};
+use ideocode_message_types::{ContentBlock, Message};
 
 /// Max edge (px) allowed when a request carries more than this many images.
 const MANY_IMAGE_THRESHOLD: usize = 20;
@@ -352,7 +352,7 @@ fn probe_dimensions(data: &[u8]) -> Option<(u32, u32)> {
 mod tests {
     use super::*;
     use image::{ImageFormat, RgbImage};
-    use IDEOCODE_message_types::Role;
+    use ideocode_message_types::Role;
 
     fn encode_png(w: u32, h: u32) -> String {
         let img = RgbImage::from_pixel(w, h, image::Rgb([10, 20, 30]));

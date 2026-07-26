@@ -290,8 +290,8 @@ pub fn init_tui_runtime() -> Result<(ratatui::DefaultTerminal, TuiRuntimeGuard)>
         crate::tui::theme_detect::init_theme_mode();
     }
     let terminal = init_tui_terminal(inherited_terminal)?;
-    crate::tui::mermaid::install_IDEOCODE_mermaid_hooks();
-    crate::tui::markdown::install_IDEOCODE_markdown_hooks();
+    crate::tui::mermaid::install_ideocode_mermaid_hooks();
+    crate::tui::markdown::install_ideocode_markdown_hooks();
     crate::tui::mermaid::init_picker();
 
     let perf_policy = crate::perf::tui_policy();

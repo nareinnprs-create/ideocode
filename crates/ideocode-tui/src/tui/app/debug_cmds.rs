@@ -206,7 +206,7 @@ impl App {
                 "diagram_pane_position": format!("{:?}", self.diagram_pane_position),
                 "diagram_zoom": self.diagram_zoom,
                 "diagram_count": crate::tui::mermaid::get_active_diagrams().len(),
-                "version": IDEOCODE_build_meta::version(),
+                "version": ideocode_build_meta::version(),
             })
             .to_string()
         } else if cmd.starts_with("mouse:") {
@@ -959,7 +959,7 @@ impl App {
                 Err(e) => format!("script error: {}", e),
             }
         } else if cmd == "version" {
-            format!("version: {}", IDEOCODE_build_meta::version())
+            format!("version: {}", ideocode_build_meta::version())
         } else if cmd == "help" {
             "Debug commands:\n\
                  - message:<text> - inject and submit a message\n\

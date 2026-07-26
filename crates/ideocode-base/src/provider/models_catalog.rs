@@ -130,7 +130,7 @@ pub(crate) fn parse_openai_model_catalog(data: &serde_json::Value) -> OpenAIMode
                         .or_else(|| value.get("value"))
                         .and_then(|value| value.as_str())
                 });
-                let Some(effort) = raw.and_then(IDEOCODE_provider_core::canonical_reasoning_effort)
+                let Some(effort) = raw.and_then(ideocode_provider_core::canonical_reasoning_effort)
                 else {
                     continue;
                 };

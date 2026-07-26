@@ -32,7 +32,7 @@
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
-use IDEOCODE_tui_mermaid::{RenderResult, debug_stats, render_mermaid_untracked};
+use ideocode_tui_mermaid::{RenderResult, debug_stats, render_mermaid_untracked};
 
 /// Deterministic ~40-node / 45-edge flowchart. There is no `infra` fixture in
 /// this crate (checked `crates/IDEOCODE-tui-mermaid/` for fixtures/), so this is

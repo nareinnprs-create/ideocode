@@ -826,7 +826,7 @@ fn test_selfdev_command_spawns_session_in_test_mode() {
     crate::env::set_var("IDEOCODE_HOME", temp_home.path());
     crate::env::set_var("IDEOCODE_TEST_SESSION", "1");
 
-    let repo = create_IDEOCODE_repo_fixture();
+    let repo = create_ideocode_repo_fixture();
     let mut app = create_test_app();
     app.session.working_dir = Some(repo.path().display().to_string());
 
@@ -841,7 +841,7 @@ fn test_selfdev_command_spawns_session_in_test_mode() {
     );
     assert_eq!(app.status_notice(), Some("Self-dev".to_string()));
 
-    let sessions_dir = crate::storage::IDEOCODE_dir().unwrap().join("sessions");
+    let sessions_dir = crate::storage::ideocode_dir().unwrap().join("sessions");
     let entries: Vec<_> = std::fs::read_dir(&sessions_dir)
         .expect("sessions dir")
         .flatten()
@@ -912,7 +912,7 @@ fn test_new_for_remote_restored_queued_messages_stay_queued_until_remote_idle() 
 
 #[test]
 fn test_save_and_restore_startup_submission_preserves_pending_images() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let session_id = "session_startup_prompt";
         App::save_startup_submission_for_session(
             session_id,
@@ -1069,7 +1069,7 @@ fn test_new_for_remote_restores_observe_mode_from_reload_state() {
 
 #[test]
 fn test_new_for_remote_restores_split_view_from_reload_state() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         let session_id = "test-remote-splitview";
 
@@ -1090,8 +1090,8 @@ fn test_new_for_remote_restores_split_view_from_reload_state() {
 #[test]
 fn test_restore_reload_state_supports_legacy_input_format() {
     let session_id = format!("test-reload-legacy-{}", std::process::id());
-    let IDEOCODE_dir = crate::storage::IDEOCODE_dir().unwrap();
-    let path = IDEOCODE_dir.join(format!("client-input-{}", session_id));
+    let ideocode_dir = crate::storage::ideocode_dir().unwrap();
+    let path = ideocode_dir.join(format!("client-input-{}", session_id));
     std::fs::write(&path, "2\nhello").unwrap();
 
     let restored =
@@ -1103,7 +1103,7 @@ fn test_restore_reload_state_supports_legacy_input_format() {
 
 #[test]
 fn test_new_for_remote_requeues_restored_pending_soft_interrupts() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         let session_id = "test-remote-restore";
 
@@ -1125,7 +1125,7 @@ fn test_new_for_remote_requeues_restored_pending_soft_interrupts() {
 
 #[test]
 fn test_new_for_remote_restored_interleave_triggers_dispatch_state() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         let mut app = create_test_app();
         let session_id = "test-remote-interleave-dispatch";
 

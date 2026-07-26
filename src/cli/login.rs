@@ -11,7 +11,7 @@ use crate::provider_catalog::{
 
 use super::provider_init::{ProviderChoice, login_provider_for_choice, save_named_api_key};
 
-mod IDEOCODE_device;
+mod ideocode_device;
 mod scriptable;
 use scriptable::*;
 
@@ -278,7 +278,7 @@ pub async fn run_login_provider(
                 eprintln!("Imported {} existing auth source(s).", imported);
                 Ok(LoginFlowOutcome::Completed)
             }
-            LoginProviderTarget::IDEOCODE => login_IDEOCODE_flow(options.no_browser)
+            LoginProviderTarget::IDEOCODE => login_ideocode_flow(options.no_browser)
                 .await
                 .map(|_| LoginFlowOutcome::Completed),
             LoginProviderTarget::Claude => login_claude_flow(account_label, options.no_browser)
@@ -465,14 +465,14 @@ async fn notify_running_server_auth_changed_best_effort(provider: Option<&str>) 
     }
 }
 
-async fn login_IDEOCODE_flow(no_browser: bool) -> Result<()> {
+async fn login_ideocode_flow(no_browser: bool) -> Result<()> {
     eprintln!("Starting IDEOCODE subscription sign-in...");
-    let _ = IDEOCODE_device::login_IDEOCODE_device_flow(no_browser).await?;
+    let _ = ideocode_device::login_ideocode_device_flow(no_browser).await?;
     Ok(())
 }
 
-pub(crate) async fn run_IDEOCODE_account_login(no_browser: bool) -> Result<()> {
-    login_IDEOCODE_flow(no_browser).await
+pub(crate) async fn run_ideocode_account_login(no_browser: bool) -> Result<()> {
+    login_ideocode_flow(no_browser).await
 }
 
 fn login_openai_api_key_flow() -> Result<()> {
@@ -522,7 +522,7 @@ async fn login_claude_flow(requested_label: Option<&str>, no_browser: bool) -> R
     eprintln!(
         "Account '{}' stored at {}",
         label,
-        auth::claude::IDEOCODE_path()?.display()
+        auth::claude::ideocode_path()?.display()
     );
     if let Some(email) = profile_email {
         eprintln!("Profile email: {}", email);
@@ -568,7 +568,7 @@ async fn login_openai_flow(requested_label: Option<&str>, no_browser: bool) -> R
     eprintln!(
         "Successfully logged in to OpenAI! Account '{}' saved to {}",
         label,
-        crate::storage::IDEOCODE_dir()?
+        crate::storage::ideocode_dir()?
             .join("openai-auth.json")
             .display()
     );

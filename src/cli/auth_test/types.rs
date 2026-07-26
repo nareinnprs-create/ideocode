@@ -69,7 +69,7 @@ impl AuthTestTarget {
     fn credential_paths(self) -> Result<Vec<String>> {
         match self {
             Self::Claude => Ok(vec![
-                crate::auth::claude::IDEOCODE_path()?.display().to_string(),
+                crate::auth::claude::ideocode_path()?.display().to_string(),
                 crate::storage::user_home_path(".claude/.credentials.json")?
                     .display()
                     .to_string(),
@@ -81,7 +81,7 @@ impl AuthTestTarget {
                     .to_string(),
             ]),
             Self::Openai => Ok(vec![
-                crate::storage::IDEOCODE_dir()?
+                crate::storage::ideocode_dir()?
                     .join("openai-auth.json")
                     .display()
                     .to_string(),

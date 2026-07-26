@@ -13,7 +13,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
 
-pub use IDEOCODE_overnight_core::{
+pub use ideocode_overnight_core::{
     GitSnapshot, OVERNIGHT_VERSION, OvernightCommand, OvernightDuration, OvernightEvent,
     OvernightManifest, OvernightPreflight, OvernightProgressCard, OvernightRunStatus,
     OvernightTaskCard, OvernightTaskCardAfter, OvernightTaskCardBefore, OvernightTaskCardSummary,
@@ -716,7 +716,7 @@ fn run_git(dir: &Path, args: &[&str]) -> std::result::Result<String, String> {
 }
 
 pub fn overnight_root_dir() -> Result<PathBuf> {
-    Ok(storage::IDEOCODE_dir()?.join("overnight"))
+    Ok(storage::ideocode_dir()?.join("overnight"))
 }
 
 pub fn runs_dir() -> Result<PathBuf> {

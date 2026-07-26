@@ -16,7 +16,7 @@
 //! Keeping the resolver pure means the chord/dir layout the user sees is exactly
 //! what we can assert in tests, and the listener stays a thin dispatcher.
 
-use IDEOCODE_config_types::{LaunchHotkeyEntry, LaunchHotkeysConfig};
+use ideocode_config_types::{LaunchHotkeyEntry, LaunchHotkeysConfig};
 #[cfg(any(test, target_os = "macos"))]
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -34,7 +34,7 @@ fn escape_shell_single_quotes(input: &str) -> String {
 /// read the error before the terminal closes. Mirrors the macOS launcher's
 /// behavior; kept local so the resolver is platform-independent.
 #[cfg(any(test, target_os = "macos"))]
-fn paused_IDEOCODE_shell_command_with_args(exe_path: &str, args: &[String]) -> String {
+fn paused_ideocode_shell_command_with_args(exe_path: &str, args: &[String]) -> String {
     let escaped_exe = escape_shell_single_quotes(exe_path);
     let mut arg_str = String::new();
     for arg in args {
@@ -107,7 +107,7 @@ fn cd_prefix_for_dir(dir: &str, last_dir_file: &str, last_repo_file: &str) -> St
 }
 
 /// A filesystem-safe, stable script name for a chord, e.g. `cmd+[` ->
-/// `launch_IDEOCODE_cmd_bracketleft.sh`. Collisions are avoided by appending the
+/// `launch_ideocode_cmd_bracketleft.sh`. Collisions are avoided by appending the
 /// slot index, since two distinct entries could in theory normalize the same.
 fn script_name_for(chord: &str, index: usize) -> String {
     let mut slug = String::new();
@@ -242,7 +242,7 @@ pub(crate) fn shell_command_for(entry: &ResolvedLaunchHotkey, exe_path: &str) ->
     format!(
         "{}{}",
         entry.cd_prefix,
-        paused_IDEOCODE_shell_command_with_args(exe_path, &entry.args)
+        paused_ideocode_shell_command_with_args(exe_path, &entry.args)
     )
 }
 

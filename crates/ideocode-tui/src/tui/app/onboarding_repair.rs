@@ -142,7 +142,7 @@ pub(crate) fn build_repair_brief(
     provider_hint: Option<&str>,
 ) -> String {
     let provider = provider_hint.unwrap_or("<provider>");
-    let log_line = IDEOCODE_logging::log_path()
+    let log_line = ideocode_logging::log_path()
         .map(|p| format!("Logs:    {}", p.display()))
         .unwrap_or_else(|| "Logs:    ~/.IDEOCODE/logs/IDEOCODE-<date>.log".to_string());
 
@@ -201,7 +201,7 @@ the onboarding screen to choose the provider you just fixed).\n",
 /// agent launched in this directory can simply `cat` it without the user having
 /// to paste anything. Lives under the IDEOCODE home so it honors `IDEOCODE_HOME`.
 pub(crate) fn repair_brief_path() -> Option<PathBuf> {
-    crate::storage::IDEOCODE_dir()
+    crate::storage::ideocode_dir()
         .ok()
         .map(|dir| dir.join("onboarding-repair-brief.txt"))
 }

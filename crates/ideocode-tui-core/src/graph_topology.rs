@@ -55,7 +55,7 @@ fn truncate_smart(s: &str, max_len: usize) -> String {
     format!("{}...", prefix)
 }
 
-use IDEOCODE_memory_types::{EdgeKind, MemoryGraph};
+use ideocode_memory_types::{EdgeKind, MemoryGraph};
 use std::collections::{HashMap, HashSet};
 
 /// Build graph topology (nodes + edges) from a MemoryGraph for visualization.
@@ -299,7 +299,7 @@ pub fn graph_node_score(node: &GraphNode) -> f32 {
 #[cfg(test)]
 mod tests {
     use super::build_graph_topology;
-    use IDEOCODE_memory_types::{Edge, EdgeKind, MemoryCategory, MemoryEntry, MemoryGraph};
+    use ideocode_memory_types::{Edge, EdgeKind, MemoryCategory, MemoryEntry, MemoryGraph};
 
     #[test]
     fn build_graph_topology_deduplicates_nodes_across_project_and_global_graphs() {

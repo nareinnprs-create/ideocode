@@ -13,7 +13,7 @@ struct SpawnedWindowsServer {
 }
 
 impl SpawnedWindowsServer {
-    fn IDEOCODE_binary() -> std::path::PathBuf {
+    fn ideocode_binary() -> std::path::PathBuf {
         let manifest_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
         let release_binary = manifest_dir
             .join("target")
@@ -42,7 +42,7 @@ impl SpawnedWindowsServer {
 
         let stdout_file = std::fs::File::create(&stdout_path)?;
         let stderr_file = std::fs::File::create(&stderr_path)?;
-        let mut command = Command::new(Self::IDEOCODE_binary());
+        let mut command = Command::new(Self::ideocode_binary());
         command
             .arg("--no-update")
             .arg("--socket")
@@ -102,8 +102,8 @@ impl SpawnedWindowsServer {
             .env("RUST_BACKTRACE", "1")
     }
 
-    fn IDEOCODE_command(&self) -> Command {
-        let mut command = Command::new(Self::IDEOCODE_binary());
+    fn ideocode_command(&self) -> Command {
+        let mut command = Command::new(Self::ideocode_binary());
         self.apply_env(&mut command);
         command
     }
@@ -116,7 +116,7 @@ impl SpawnedWindowsServer {
         let stderr_path = self._temp_root.path().join(format!("{label}-stderr.log"));
         let stdout_file = std::fs::File::create(&stdout_path)?;
         let stderr_file = std::fs::File::create(&stderr_path)?;
-        let mut command = Command::new(Self::IDEOCODE_binary());
+        let mut command = Command::new(Self::ideocode_binary());
         self.apply_env(&mut command)
             .arg("--no-update")
             .arg("--socket")
@@ -260,7 +260,7 @@ async fn windows_binary_server_accepts_clients_and_debug_cli() -> Result<()> {
         );
 
         let output = server
-            .IDEOCODE_command()
+            .ideocode_command()
             .arg("--no-update")
             .arg("--socket")
             .arg(&server.socket_path)

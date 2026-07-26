@@ -1,6 +1,6 @@
 ﻿use super::openrouter_sse_stream::run_stream_with_retries;
 use super::*;
-use IDEOCODE_base::provider::{ModelCatalogRefreshSummary, summarize_model_catalog_refresh};
+use ideocode_base::provider::{ModelCatalogRefreshSummary, summarize_model_catalog_refresh};
 
 #[async_trait]
 impl Provider for OpenRouterProvider {
@@ -85,7 +85,7 @@ impl Provider for OpenRouterProvider {
             false
         };
 
-        let api_messages = IDEOCODE_provider_openrouter::request::build_chat_messages(
+        let api_messages = ideocode_provider_openrouter::request::build_chat_messages(
             &effective_messages,
             system,
             allow_reasoning,
@@ -106,7 +106,7 @@ impl Provider for OpenRouterProvider {
                         "description": t.description,
                         // Sanitized so bare `{"type":"object"}` MCP tool
                         // schemas do not 400 on strict endpoints (issue #446).
-                        "parameters": IDEOCODE_provider_openrouter::request::sanitize_tool_parameters_schema(&t.input_schema),
+                        "parameters": ideocode_provider_openrouter::request::sanitize_tool_parameters_schema(&t.input_schema),
                     }
                 })
             })
@@ -127,7 +127,7 @@ impl Provider for OpenRouterProvider {
         if let Some(effort) = reasoning_effort.as_deref() {
             if self.supports_deepseek_reasoning_effort() {
                 // The `swarm` sentinel maps to the strongest real effort.
-                let effort = if IDEOCODE_base::prompt::is_swarm_effort(effort) {
+                let effort = if ideocode_base::prompt::is_swarm_effort(effort) {
                     "max"
                 } else {
                     effort
@@ -140,7 +140,7 @@ impl Provider for OpenRouterProvider {
                 // GPT-family models on direct compat gateways (e.g. OpenCode
                 // Zen serving gpt-5.3-codex-spark) take the standard OpenAI
                 // `reasoning_effort` field with OpenAI's effort vocabulary.
-                let effort = if IDEOCODE_base::prompt::is_swarm_effort(effort) {
+                let effort = if ideocode_base::prompt::is_swarm_effort(effort) {
                     "max"
                 } else {
                     effort
@@ -153,7 +153,7 @@ impl Provider for OpenRouterProvider {
                 self.profile_id.as_deref(),
                 self.send_openrouter_headers,
             ) {
-                let effort = if IDEOCODE_base::prompt::is_swarm_effort(effort) {
+                let effort = if ideocode_base::prompt::is_swarm_effort(effort) {
                     "xhigh"
                 } else {
                     effort
@@ -253,7 +253,7 @@ impl Provider for OpenRouterProvider {
             .and_then(|value| value.as_array())
             .map(|tools| tools.len())
             .unwrap_or(0);
-        IDEOCODE_provider_core::fingerprint::log_provider_canonical_input(
+        ideocode_provider_core::fingerprint::log_provider_canonical_input(
             if self.supports_provider_features {
                 "openrouter"
             } else {
@@ -278,7 +278,7 @@ impl Provider for OpenRouterProvider {
         );
 
         // OpenRouter uses HTTPS/SSE transport only
-        IDEOCODE_base::logging::info("OpenRouter transport: HTTPS (SSE)");
+        ideocode_base::logging::info("OpenRouter transport: HTTPS (SSE)");
 
         let (tx, rx) = mpsc::channel::<Result<StreamEvent>>(100);
         let client = self.client.clone();
@@ -374,7 +374,7 @@ impl Provider for OpenRouterProvider {
         let (model_id, provider) = if self.supports_provider_features {
             let (model_id, provider) = parse_model_spec(trimmed);
             let model_id = if provider.is_some() {
-                IDEOCODE_base::provider::openrouter_catalog_model_id(&model_id).unwrap_or(model_id)
+                ideocode_base::provider::openrouter_catalog_model_id(&model_id).unwrap_or(model_id)
             } else {
                 model_id
             };
@@ -386,7 +386,7 @@ impl Provider for OpenRouterProvider {
             (trimmed.to_string(), None)
         };
         if let Some(profile_id) = self.profile_id.as_deref()
-            && !IDEOCODE_base::provider_catalog::openai_compatible_profile_model_supports_chat(
+            && !ideocode_base::provider_catalog::openai_compatible_profile_model_supports_chat(
                 profile_id, &model_id,
             )
         {
@@ -419,7 +419,7 @@ impl Provider for OpenRouterProvider {
             .ok()
             .and_then(|effort| effort.clone());
         if let Some(stored_effort) = stored_effort
-            && !IDEOCODE_base::prompt::is_swarm_effort(&stored_effort)
+            && !ideocode_base::prompt::is_swarm_effort(&stored_effort)
             && !self.available_efforts().contains(&stored_effort.as_str())
             && let Ok(mut effort) = self.reasoning_effort.try_write()
         {
@@ -470,14 +470,14 @@ impl Provider for OpenRouterProvider {
 
     fn available_efforts(&self) -> Vec<&'static str> {
         if self.supports_deepseek_reasoning_effort() {
-            IDEOCODE_provider_core::DEEPSEEK_SELECTABLE_EFFORTS.to_vec()
+            ideocode_provider_core::DEEPSEEK_SELECTABLE_EFFORTS.to_vec()
         } else if self.supports_openai_reasoning_effort() {
-            IDEOCODE_provider_core::OPENAI_SELECTABLE_EFFORTS.to_vec()
+            ideocode_provider_core::OPENAI_SELECTABLE_EFFORTS.to_vec()
         } else if Self::profile_supports_unified_reasoning(
             self.profile_id.as_deref(),
             self.send_openrouter_headers,
         ) {
-            IDEOCODE_provider_core::OPENROUTER_SELECTABLE_EFFORTS.to_vec()
+            ideocode_provider_core::OPENROUTER_SELECTABLE_EFFORTS.to_vec()
         } else {
             vec![]
         }
@@ -579,7 +579,7 @@ impl Provider for OpenRouterProvider {
         self.available_models_display()
     }
 
-    fn model_routes(&self) -> Vec<IDEOCODE_provider_core::ModelRoute> {
+    fn model_routes(&self) -> Vec<ideocode_provider_core::ModelRoute> {
         let (provider_label, api_method, detail) = self
             .direct_openai_compatible_route_parts()
             .unwrap_or_else(|| {
@@ -595,7 +595,7 @@ impl Provider for OpenRouterProvider {
 
         self.available_models_display()
             .into_iter()
-            .filter(|model| IDEOCODE_base::provider::is_listable_model_name(model))
+            .filter(|model| ideocode_base::provider::is_listable_model_name(model))
             .map(|model| {
                 let fallback_not_live = is_direct_profile
                     && live_model_ids
@@ -611,7 +611,7 @@ impl Provider for OpenRouterProvider {
                 } else {
                     detail.clone()
                 };
-                IDEOCODE_provider_core::ModelRoute {
+                ideocode_provider_core::ModelRoute {
                     model,
                     provider: provider_label.clone(),
                     api_method: api_method.clone(),
@@ -727,14 +727,14 @@ impl Provider for OpenRouterProvider {
         }
         if let Some(profile_id) = self.profile_id.as_deref()
             && let Some(limit) =
-                IDEOCODE_base::provider_catalog::openai_compatible_profile_context_limit(
+                ideocode_base::provider_catalog::openai_compatible_profile_context_limit(
                     profile_id, &model_id,
                 )
         {
             return limit;
         }
-        IDEOCODE_provider_core::context_limit_for_model_with_provider(&model_id, Some(self.name()))
-            .unwrap_or(IDEOCODE_provider_core::DEFAULT_CONTEXT_LIMIT)
+        ideocode_provider_core::context_limit_for_model_with_provider(&model_id, Some(self.name()))
+            .unwrap_or(ideocode_provider_core::DEFAULT_CONTEXT_LIMIT)
     }
 
     fn fork(&self) -> Arc<dyn Provider> {
@@ -779,7 +779,7 @@ impl OpenRouterProvider {
         let Some(id) = self.profile_id.as_deref() else {
             return false;
         };
-        match IDEOCODE_base::provider_catalog::openai_compatible_profile_by_id(id) {
+        match ideocode_base::provider_catalog::openai_compatible_profile_by_id(id) {
             // A `[providers.<name>]` block that shadows a built-in profile name
             // but points somewhere else is still a user-declared endpoint, so
             // its explicit model list must be preserved.

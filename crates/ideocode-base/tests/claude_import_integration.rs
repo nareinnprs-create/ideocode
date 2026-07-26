@@ -1,6 +1,6 @@
 ﻿//! End-to-end Claude Code import integration tests (swarm Worker C / dolphin).
 //!
-//! These drive the real `IDEOCODE_base::import` pipeline against synthetic
+//! These drive the real `ideocode_base::import` pipeline against synthetic
 //! `.jsonl` fixtures written into a sandboxed `IDEOCODE_HOME`, so they never touch
 //! the developer's real `~/.claude`. They assert the *target* behavior agreed
 //! with the swarm coordinator:
@@ -16,13 +16,13 @@
 //! All tests serialize on `lock_test_env()` because they mutate the process
 //! environment (`IDEOCODE_HOME`).
 
-use IDEOCODE_base::import::{
+use ideocode_base::import::{
     import_session, import_session_from_file, list_claude_code_sessions,
     list_claude_code_sessions_lazy,
 };
-use IDEOCODE_base::message::ContentBlock;
-use IDEOCODE_base::session::Session;
-use IDEOCODE_import_core::imported_claude_code_session_id;
+use ideocode_base::message::ContentBlock;
+use ideocode_base::session::Session;
+use ideocode_import_core::imported_claude_code_session_id;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
@@ -40,7 +40,7 @@ struct EnvVarGuard {
 impl EnvVarGuard {
     fn set_path(key: &'static str, value: &Path) -> Self {
         let prev = std::env::var_os(key);
-        IDEOCODE_base::env::set_var(key, value);
+        ideocode_base::env::set_var(key, value);
         Self { key, prev }
     }
 }
@@ -48,9 +48,9 @@ impl EnvVarGuard {
 impl Drop for EnvVarGuard {
     fn drop(&mut self) {
         if let Some(prev) = self.prev.take() {
-            IDEOCODE_base::env::set_var(self.key, prev);
+            ideocode_base::env::set_var(self.key, prev);
         } else {
-            IDEOCODE_base::env::remove_var(self.key);
+            ideocode_base::env::remove_var(self.key);
         }
     }
 }
@@ -124,7 +124,7 @@ fn import_array_tool_result_with_image_uses_placeholder_not_base64() {
     );
 
     // The persisted on-disk session must also be free of base64 bloat.
-    let saved = std::fs::read_to_string(IDEOCODE_session_file(temp.path(), "img-session")).unwrap();
+    let saved = std::fs::read_to_string(ideocode_session_file(temp.path(), "img-session")).unwrap();
     assert!(
         !saved.contains(&big),
         "persisted session JSON must not contain base64 image data"
@@ -132,9 +132,9 @@ fn import_array_tool_result_with_image_uses_placeholder_not_base64() {
 }
 
 /// Path to where IDEOCODE persists imported sessions under the sandbox.
-/// With `IDEOCODE_HOME` set, `storage::IDEOCODE_dir()` returns it directly, and
+/// With `IDEOCODE_HOME` set, `storage::ideocode_dir()` returns it directly, and
 /// sessions live at `<IDEOCODE_HOME>/sessions/<id>.json`.
-fn IDEOCODE_session_file(home: &Path, claude_id: &str) -> PathBuf {
+fn ideocode_session_file(home: &Path, claude_id: &str) -> PathBuf {
     let id = imported_claude_code_session_id(claude_id);
     home.join(format!("sessions/{id}.json"))
 }

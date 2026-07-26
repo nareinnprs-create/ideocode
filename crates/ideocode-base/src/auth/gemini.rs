@@ -163,7 +163,7 @@ pub fn has_cached_auth() -> bool {
 }
 
 pub fn tokens_path() -> Result<std::path::PathBuf> {
-    Ok(crate::storage::IDEOCODE_dir()?.join("gemini_oauth.json"))
+    Ok(crate::storage::ideocode_dir()?.join("gemini_oauth.json"))
 }
 
 pub fn gemini_cli_oauth_path() -> Result<std::path::PathBuf> {

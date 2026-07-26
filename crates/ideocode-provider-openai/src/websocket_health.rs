@@ -1,4 +1,4 @@
-﻿use IDEOCODE_message_types::StreamEvent;
+﻿use ideocode_message_types::StreamEvent;
 
 pub const WEBSOCKET_FALLBACK_NOTICE: &str = "falling back from websockets to https transport";
 pub const WEBSOCKET_FIRST_EVENT_TIMEOUT_SECS: u64 = 8;
@@ -299,7 +299,7 @@ pub async fn record_websocket_success(
         guard.remove(&key).unwrap_or(0)
     };
     if streak > 0 {
-        IDEOCODE_logging::info(&format!(
+        ideocode_logging::info(&format!(
             "OpenAI websocket health reset for model='{}' after successful stream (previous streak={})",
             model, streak
         ));

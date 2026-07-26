@@ -1,9 +1,9 @@
 ﻿use anyhow::Result;
 use chrono::Utc;
 use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};
-use IDEOCODE_base::safety::{self, PermissionRequest, Urgency};
-use IDEOCODE_core::util::truncate_str;
-use IDEOCODE_tui_style::rgb;
+use ideocode_base::safety::{self, PermissionRequest, Urgency};
+use ideocode_core::util::truncate_str;
+use ideocode_tui_style::rgb;
 use ratatui::{
     Frame,
     layout::{Constraint, Direction, Layout, Rect},

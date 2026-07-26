@@ -1,4 +1,4 @@
-﻿pub use IDEOCODE_auth_types::{
+﻿pub use ideocode_auth_types::{
     AuthCredentialSource, AuthExpiryConfidence, AuthReadinessLevel, AuthRefreshSupport, AuthState,
     AuthValidationMethod,
 };

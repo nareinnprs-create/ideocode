@@ -1,4 +1,4 @@
-﻿use IDEOCODE_swarm_core::ChannelIndex;
+﻿use ideocode_swarm_core::ChannelIndex;
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use tokio::sync::RwLock;

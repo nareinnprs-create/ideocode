@@ -1,4 +1,4 @@
-﻿pub use IDEOCODE_tui_account_picker::{
+﻿pub use ideocode_tui_account_picker::{
     AccountPicker, AccountPickerCommand, AccountPickerItem, AccountPickerSummary,
     AccountProviderKind, OverlayAction,
 };

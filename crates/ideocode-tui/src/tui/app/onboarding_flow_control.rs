@@ -143,7 +143,7 @@ impl App {
     /// Loads via [`crate::setup_hints::SetupHintsState`] so the `.bak`
     /// fallback applies when `setup_hints.json` is missing or corrupt.
     pub(super) fn is_new_user_install() -> bool {
-        let Ok(dir) = crate::storage::IDEOCODE_dir() else {
+        let Ok(dir) = crate::storage::ideocode_dir() else {
             return true;
         };
         if crate::setup_hints::SetupHintsState::load().launch_count > 5 {
@@ -155,9 +155,9 @@ impl App {
     /// Independent "experienced user" evidence: enough persisted native
     /// sessions on disk. Imported transcripts (`imported_*.json`) don't count;
     /// they exist on fresh installs that imported Codex/Claude history.
-    fn has_established_native_session_history(IDEOCODE_dir: &std::path::Path) -> bool {
+    fn has_established_native_session_history(ideocode_dir: &std::path::Path) -> bool {
         const ESTABLISHED_SESSION_THRESHOLD: usize = 10;
-        let Ok(entries) = std::fs::read_dir(IDEOCODE_dir.join("sessions")) else {
+        let Ok(entries) = std::fs::read_dir(ideocode_dir.join("sessions")) else {
             return false;
         };
         let mut native_sessions = 0usize;

@@ -17,7 +17,7 @@
 //!   fraction of the viewport so a tall screenshot never buries the transcript.
 
 use crate::tui::mermaid;
-use IDEOCODE_tui_messages::{ImageRegion, ImageRegionRender, PreparedMessages};
+use ideocode_tui_messages::{ImageRegion, ImageRegionRender, PreparedMessages};
 use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
 use std::collections::{HashMap, HashSet};
@@ -696,7 +696,7 @@ impl AnchoredInlineImages {
     /// image ever silently disappears.
     pub(crate) fn unplaced_items(
         &self,
-        messages: &[IDEOCODE_tui_messages::DisplayMessage],
+        messages: &[ideocode_tui_messages::DisplayMessage],
     ) -> Vec<InlineImageItem> {
         let mut items: Vec<InlineImageItem> = self.unanchored.clone();
         if self.by_tool.is_empty() && self.by_prompt.is_empty() {
@@ -884,7 +884,7 @@ pub(crate) fn image_label_line(
             Style::default().add_modifier(Modifier::DIM | Modifier::ITALIC),
         ));
     }
-    IDEOCODE_tui_render::truncate_line_preserving_suffix_to_width(
+    ideocode_tui_render::truncate_line_preserving_suffix_to_width(
         &prefix,
         &Line::from(suffix),
         width as usize,
@@ -892,7 +892,7 @@ pub(crate) fn image_label_line(
 }
 
 fn image_fallback_note_line(width: u16) -> Line<'static> {
-    IDEOCODE_tui_render::truncate_line_with_ellipsis_to_width(
+    ideocode_tui_render::truncate_line_with_ellipsis_to_width(
         &mermaid::text_image_fallback_note_line(),
         width as usize,
     )
@@ -991,7 +991,7 @@ pub(crate) fn build_section(
     let line_count = lines.len();
     let plain: Vec<String> = lines
         .iter()
-        .map(IDEOCODE_tui_render::line_plain_text)
+        .map(ideocode_tui_render::line_plain_text)
         .collect();
 
     PreparedMessages {
@@ -1168,7 +1168,7 @@ mod tests {
             // The region must point at blank placeholder lines, never the label.
             let first = &section.wrapped_lines[region.abs_line_idx];
             assert!(
-                IDEOCODE_tui_render::line_plain_text(first).trim().is_empty(),
+                ideocode_tui_render::line_plain_text(first).trim().is_empty(),
                 "region should start on a blank placeholder line"
             );
             // Region height must match its line span.
@@ -1178,7 +1178,7 @@ mod tests {
             );
         }
         // A dim label line precedes the first region.
-        let label_line = IDEOCODE_tui_render::line_plain_text(&section.wrapped_lines[1]);
+        let label_line = ideocode_tui_render::line_plain_text(&section.wrapped_lines[1]);
         assert!(
             label_line.contains("test.png"),
             "label missing: {label_line:?}"
@@ -1203,7 +1203,7 @@ mod tests {
         let text: String = section
             .wrapped_lines
             .iter()
-            .map(IDEOCODE_tui_render::line_plain_text)
+            .map(ideocode_tui_render::line_plain_text)
             .collect::<Vec<_>>()
             .join("\n");
         assert!(text.contains("test.png"), "label should remain: {text:?}");
@@ -1216,7 +1216,7 @@ mod tests {
     #[test]
     fn visible_label_line_advertises_hide_badge() {
         let line = image_label_line(&item(600, 400), 80, true, ImageExpandLevel::Fit);
-        let text = IDEOCODE_tui_render::line_plain_text(&line);
+        let text = ideocode_tui_render::line_plain_text(&line);
         assert!(text.contains("[⇧] [I]"), "badge keys missing: {text:?}");
         assert!(text.contains("hide"), "hide hint missing: {text:?}");
     }
@@ -1229,7 +1229,7 @@ mod tests {
         let text = section
             .wrapped_lines
             .iter()
-            .map(IDEOCODE_tui_render::line_plain_text)
+            .map(ideocode_tui_render::line_plain_text)
             .collect::<Vec<_>>()
             .join("\n");
         assert!(text.contains(mermaid::TERMINAL_IMAGE_FALLBACK_NOTE));
@@ -1238,7 +1238,7 @@ mod tests {
         assert!(
             section.wrapped_lines[region.end_line..]
                 .iter()
-                .map(IDEOCODE_tui_render::line_plain_text)
+                .map(ideocode_tui_render::line_plain_text)
                 .any(|line| line.contains(mermaid::TERMINAL_IMAGE_FALLBACK_NOTE)),
             "fallback note should be attached immediately after the image body"
         );
@@ -1250,7 +1250,7 @@ mod tests {
         let text = section
             .wrapped_lines
             .iter()
-            .map(IDEOCODE_tui_render::line_plain_text)
+            .map(ideocode_tui_render::line_plain_text)
             .collect::<Vec<_>>()
             .join("\n");
         assert!(!text.contains(mermaid::TERMINAL_IMAGE_FALLBACK_NOTE));
@@ -1263,7 +1263,7 @@ mod tests {
         generated.label = "/home/jeremy/IDEOCODE/.IDEOCODE/generated-images/1783707839145-ig_0c5e377de871aba5016a51388779588196944d98eff2c7aa30.png".to_string();
 
         let line = image_label_line(&generated, 52, true, ImageExpandLevel::Fit);
-        let text = IDEOCODE_tui_render::line_plain_text(&line);
+        let text = ideocode_tui_render::line_plain_text(&line);
 
         assert!(line.width() <= 52, "label exceeded chat width: {text:?}");
         assert!(
@@ -1305,7 +1305,7 @@ mod tests {
     fn visible_label_line_stays_single_purpose_without_expand_badge() {
         // The label must stay a short single line: no expand badge, no dots.
         let line = image_label_line(&item(600, 400), 80, true, ImageExpandLevel::Fit);
-        let text = IDEOCODE_tui_render::line_plain_text(&line);
+        let text = ideocode_tui_render::line_plain_text(&line);
         assert!(
             !text.contains("expand") && !text.contains('○') && !text.contains('●'),
             "label line must not carry an expand badge: {text:?}"
@@ -1315,7 +1315,7 @@ mod tests {
     #[test]
     fn hidden_label_line_omits_expand_badge() {
         let line = image_label_line(&item(600, 400), 80, false, ImageExpandLevel::Fit);
-        let text = IDEOCODE_tui_render::line_plain_text(&line);
+        let text = ideocode_tui_render::line_plain_text(&line);
         assert!(text.contains("show image"), "show badge missing: {text:?}");
         assert!(
             !text.contains("expand"),
@@ -1346,7 +1346,7 @@ mod tests {
         );
         let text: String = lines
             .iter()
-            .map(IDEOCODE_tui_render::line_plain_text)
+            .map(ideocode_tui_render::line_plain_text)
             .collect::<Vec<_>>()
             .join("\n");
         assert!(text.contains("show image"), "show badge missing: {text:?}");
@@ -1640,7 +1640,7 @@ mod tests {
 
     #[test]
     fn unplaced_items_falls_back_for_missing_anchor_targets() {
-        use IDEOCODE_tui_messages::DisplayMessage;
+        use ideocode_tui_messages::DisplayMessage;
 
         let images = vec![
             rendered_image(Some(crate::session::RenderedImageAnchor::ToolCall {
@@ -1701,7 +1701,7 @@ mod tests {
         for offset in 1..rows as usize {
             let line = &lines[marker_idx + offset];
             assert!(
-                IDEOCODE_tui_render::line_plain_text(line).trim().is_empty(),
+                ideocode_tui_render::line_plain_text(line).trim().is_empty(),
                 "placeholder row {offset} should be blank"
             );
         }

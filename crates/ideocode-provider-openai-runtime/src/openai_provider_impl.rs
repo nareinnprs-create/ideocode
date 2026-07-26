@@ -6,7 +6,7 @@ use super::*;
 /// Whether a model catalog fetch error is an auth rejection (401/403) that a
 /// token force-refresh may fix, as opposed to a network/server failure.
 fn catalog_error_is_auth_rejection(err: &anyhow::Error) -> bool {
-    err.downcast_ref::<IDEOCODE_base::provider::ModelCatalogHttpStatus>()
+    err.downcast_ref::<ideocode_base::provider::ModelCatalogHttpStatus>()
         .is_some_and(|status| status.0 == 401 || status.0 == 403)
 }
 
@@ -16,11 +16,11 @@ impl Provider for OpenAIProvider {
         self.reload_credentials_now();
     }
 
-    fn credential_mode(&self) -> IDEOCODE_provider_core::CredentialMode {
+    fn credential_mode(&self) -> ideocode_provider_core::CredentialMode {
         self.credential_mode_snapshot()
     }
 
-    fn set_credential_mode(&self, mode: IDEOCODE_provider_core::CredentialMode) -> anyhow::Result<()> {
+    fn set_credential_mode(&self, mode: ideocode_provider_core::CredentialMode) -> anyhow::Result<()> {
         OpenAIProvider::set_credential_mode(self, mode)
     }
 
@@ -114,8 +114,8 @@ impl Provider for OpenAIProvider {
         });
         let prompt_cache_key_hash = request
             .get("prompt_cache_key")
-            .map(IDEOCODE_provider_core::fingerprint::stable_hash_json);
-        IDEOCODE_provider_core::fingerprint::log_provider_canonical_input(
+            .map(ideocode_provider_core::fingerprint::stable_hash_json);
+        ideocode_provider_core::fingerprint::log_provider_canonical_input(
             "openai",
             &model_id,
             "openai_responses_full",
@@ -158,9 +158,9 @@ impl Provider for OpenAIProvider {
                 ),
             ],
         );
-        let usage_snapshot = IDEOCODE_base::usage::get_openai_usage_sync();
+        let usage_snapshot = ideocode_base::usage::get_openai_usage_sync();
         log_openai_stream_lifecycle(
-            IDEOCODE_base::logging::LogLevel::Info,
+            ideocode_base::logging::LogLevel::Info,
             "request_start",
             vec![
                 ("model", model_id.clone()),
@@ -197,7 +197,7 @@ impl Provider for OpenAIProvider {
                 ),
             ],
         );
-        IDEOCODE_base::logging::info(&format!(
+        ideocode_base::logging::info(&format!(
             "OpenAI limit diag: request start model={} transport_mode={} websocket_preferred={} usage=({}) provider=({})",
             model_id,
             transport_mode_snapshot.as_str(),
@@ -224,7 +224,7 @@ impl Provider for OpenAIProvider {
                     // and then fails falls through to a fresh-connection replay
                     // from the top, which must roll the partial output back.
                     let (attempt_tx, attempt_guard) =
-                        IDEOCODE_provider_core::attempt_tracker::track_attempt_output(tx.clone());
+                        ideocode_provider_core::attempt_tracker::track_attempt_output(tx.clone());
                     let continuation_result = try_persistent_ws_continuation(
                         &persistent_ws,
                         &request,
@@ -239,7 +239,7 @@ impl Provider for OpenAIProvider {
                     match continuation_result {
                         PersistentWsResult::Success => {
                             log_openai_stream_lifecycle(
-                                IDEOCODE_base::logging::LogLevel::Info,
+                                ideocode_base::logging::LogLevel::Info,
                                 "persistent_reuse_success",
                                 vec![
                                     ("model", model_for_transport.clone()),
@@ -256,20 +256,20 @@ impl Provider for OpenAIProvider {
                         }
                         PersistentWsResult::NotAvailable => {
                             log_openai_stream_lifecycle(
-                                IDEOCODE_base::logging::LogLevel::Info,
+                                ideocode_base::logging::LogLevel::Info,
                                 "persistent_reuse_unavailable",
                                 vec![
                                     ("model", model_for_transport.clone()),
                                     ("transport", "websocket".to_string()),
                                 ],
                             );
-                            IDEOCODE_base::logging::info(
+                            ideocode_base::logging::info(
                                 "No persistent WS connection available; using fresh connection",
                             );
                         }
                         PersistentWsResult::Failed(err) => {
                             log_openai_stream_lifecycle(
-                                IDEOCODE_base::logging::LogLevel::Warn,
+                                ideocode_base::logging::LogLevel::Warn,
                                 "persistent_reuse_failed",
                                 vec![
                                     ("model", model_for_transport.clone()),
@@ -277,7 +277,7 @@ impl Provider for OpenAIProvider {
                                     ("error", err.clone()),
                                 ],
                             );
-                            IDEOCODE_base::logging::warn(&format!(
+                            ideocode_base::logging::warn(&format!(
                                 "Persistent WS continuation failed: {}; using fresh connection",
                                 err
                             ));
@@ -296,7 +296,7 @@ impl Provider for OpenAIProvider {
                             let mut guard = persistent_ws.lock().await;
                             *guard = None;
                             log_openai_stream_lifecycle(
-                                IDEOCODE_base::logging::LogLevel::Warn,
+                                ideocode_base::logging::LogLevel::Warn,
                                 "persistent_state_reset",
                                 vec![
                                     ("model", model_for_transport.clone()),
@@ -317,7 +317,7 @@ impl Provider for OpenAIProvider {
                     if attempt > 0 {
                         emit_connection_phase(
                             &tx,
-                            IDEOCODE_message_types::ConnectionPhase::Retrying {
+                            ideocode_message_types::ConnectionPhase::Retrying {
                                 attempt: attempt + 1,
                                 max: MAX_RETRIES,
                             },
@@ -325,13 +325,13 @@ impl Provider for OpenAIProvider {
                         .await;
                     }
                     if attempt > 0 && !skip_backoff_once {
-                        let delay = IDEOCODE_provider_core::retry_after::retry_delay(
+                        let delay = ideocode_provider_core::retry_after::retry_delay(
                             attempt,
                             RETRY_BASE_DELAY_MS,
                             next_retry_delay.take(),
                         );
                         tokio::time::sleep(delay).await;
-                        IDEOCODE_base::logging::info(&format!(
+                        ideocode_base::logging::info(&format!(
                             "Retrying OpenAI API request (attempt {}/{})",
                             attempt + 1,
                             MAX_RETRIES
@@ -354,7 +354,7 @@ impl Provider for OpenAIProvider {
                                 )
                                 .await
                                 {
-                                    IDEOCODE_base::logging::info(&format!(
+                                    ideocode_base::logging::info(&format!(
                                         "OpenAI websocket cooldown active for model='{}' ({}s remaining); using HTTPS",
                                         model_for_transport,
                                         remaining.as_secs()
@@ -378,7 +378,7 @@ impl Provider for OpenAIProvider {
                     let transport_label = transport.as_str();
                     let attempt_started = Instant::now();
                     log_openai_stream_lifecycle(
-                        IDEOCODE_base::logging::LogLevel::Info,
+                        ideocode_base::logging::LogLevel::Info,
                         "attempt_start",
                         vec![
                             ("model", model_for_transport.clone()),
@@ -389,7 +389,7 @@ impl Provider for OpenAIProvider {
                             ("forced_https", force_https_for_request.to_string()),
                         ],
                     );
-                    IDEOCODE_base::logging::info(&format!(
+                    ideocode_base::logging::info(&format!(
                         "OpenAI stream attempt {}/{} using transport '{}'; model='{}'; mode='{}'",
                         attempt + 1,
                         MAX_RETRIES,
@@ -404,7 +404,7 @@ impl Provider for OpenAIProvider {
                     // output back on the consumer before the retry (or HTTPS
                     // fallback) replays the response from the top.
                     let (attempt_tx, attempt_guard) =
-                        IDEOCODE_provider_core::attempt_tracker::track_attempt_output(tx.clone());
+                        ideocode_provider_core::attempt_tracker::track_attempt_output(tx.clone());
                     let result = if use_websocket {
                         stream_response_websocket_persistent(
                             Arc::clone(&credentials),
@@ -426,7 +426,7 @@ impl Provider for OpenAIProvider {
                         let attempt_client = if attempt == 0 {
                             client.clone()
                         } else {
-                            IDEOCODE_provider_core::fresh_transport_client()
+                            ideocode_provider_core::fresh_transport_client()
                         };
                         stream_response(
                             attempt_client,
@@ -459,7 +459,7 @@ impl Provider for OpenAIProvider {
                     match result {
                         Ok(()) => {
                             log_openai_stream_lifecycle(
-                                IDEOCODE_base::logging::LogLevel::Info,
+                                ideocode_base::logging::LogLevel::Info,
                                 "attempt_success",
                                 vec![
                                     ("model", model_for_transport.clone()),
@@ -487,7 +487,7 @@ impl Provider for OpenAIProvider {
                             let fallback_reason =
                                 classify_websocket_fallback_reason(&error.to_string());
                             log_openai_stream_lifecycle(
-                                IDEOCODE_base::logging::LogLevel::Warn,
+                                ideocode_base::logging::LogLevel::Warn,
                                 "fallback_to_https",
                                 vec![
                                     ("model", model_for_transport.clone()),
@@ -498,7 +498,7 @@ impl Provider for OpenAIProvider {
                                     ("elapsed_ms", elapsed_ms.to_string()),
                                 ],
                             );
-                            IDEOCODE_base::logging::warn(&format!(
+                            ideocode_base::logging::warn(&format!(
                                 "WebSocket fallback after {}ms: {}",
                                 elapsed_ms, error
                             ));
@@ -525,7 +525,7 @@ impl Provider for OpenAIProvider {
                                     fallback_reason,
                                 )
                                 .await;
-                                IDEOCODE_base::logging::warn(&format!(
+                                ideocode_base::logging::warn(&format!(
                                     "OpenAI websocket backoff for model='{}': reason='{}' streak={} cooldown={}s",
                                     model_for_transport,
                                     fallback_reason.summary(),
@@ -539,7 +539,7 @@ impl Provider for OpenAIProvider {
                                 *guard = None;
                             }
                             log_openai_stream_lifecycle(
-                                IDEOCODE_base::logging::LogLevel::Warn,
+                                ideocode_base::logging::LogLevel::Warn,
                                 "persistent_state_reset",
                                 vec![
                                     ("model", model_for_transport.clone()),
@@ -571,7 +571,7 @@ impl Provider for OpenAIProvider {
                                         .await;
                                 }
                                 log_openai_stream_lifecycle(
-                                    IDEOCODE_base::logging::LogLevel::Warn,
+                                    ideocode_base::logging::LogLevel::Warn,
                                     "retry_scheduled",
                                     vec![
                                         ("model", model_for_transport.clone()),
@@ -582,19 +582,19 @@ impl Provider for OpenAIProvider {
                                         ("elapsed_ms", elapsed_ms.to_string()),
                                     ],
                                 );
-                                IDEOCODE_base::logging::info(&format!(
+                                ideocode_base::logging::info(&format!(
                                     "Transient error after {}ms, will retry: {}",
                                     elapsed_ms, error
                                 ));
                                 next_retry_delay =
-                                    IDEOCODE_provider_core::retry_after::retry_after_from_error(
+                                    ideocode_provider_core::retry_after::retry_after_from_error(
                                         &error,
                                     );
                                 last_error = Some(error);
                                 continue;
                             }
                             log_openai_stream_lifecycle(
-                                IDEOCODE_base::logging::LogLevel::Error,
+                                ideocode_base::logging::LogLevel::Error,
                                 "attempt_failed",
                                 vec![
                                     ("model", model_for_transport.clone()),
@@ -614,7 +614,7 @@ impl Provider for OpenAIProvider {
                 // All retries exhausted
                 if let Some(e) = last_error {
                     log_openai_stream_lifecycle(
-                        IDEOCODE_base::logging::LogLevel::Error,
+                        ideocode_base::logging::LogLevel::Error,
                         "retries_exhausted",
                         vec![
                             ("model", model_for_transport.clone()),
@@ -642,7 +642,7 @@ impl Provider for OpenAIProvider {
                 } else {
                     "unknown panic".to_string()
                 };
-                IDEOCODE_base::logging::error(&format!(
+                ideocode_base::logging::error(&format!(
                     "OpenAI provider stream task panicked: {}",
                     msg
                 ));
@@ -688,7 +688,7 @@ impl Provider for OpenAIProvider {
             );
         }
         if !is_chatgpt_web_model(model)
-            && !IDEOCODE_base::provider::known_openai_model_ids()
+            && !ideocode_base::provider::known_openai_model_ids()
                 .iter()
                 .any(|known| known == model)
         {
@@ -697,13 +697,13 @@ impl Provider for OpenAIProvider {
                 model,
             );
         }
-        let availability = IDEOCODE_base::provider::model_availability_for_account(model);
+        let availability = ideocode_base::provider::model_availability_for_account(model);
         if !is_chatgpt_web_model(model)
             && availability.state
-                == IDEOCODE_base::provider::AccountModelAvailabilityState::Unavailable
+                == ideocode_base::provider::AccountModelAvailabilityState::Unavailable
         {
             let detail =
-                IDEOCODE_base::provider::format_account_model_availability_detail(&availability)
+                ideocode_base::provider::format_account_model_availability_detail(&availability)
                     .unwrap_or_else(|| "not available for your account".to_string());
             anyhow::bail!(
                 "The '{}' model is not available for your account right now ({}). \
@@ -716,7 +716,7 @@ impl Provider for OpenAIProvider {
         // tokens. If the loaded credential is OAuth-shaped, switch to the
         // platform API key now so selecting the model from the picker just
         // works instead of failing at request time with a backend rejection.
-        if IDEOCODE_provider_core::is_openai_api_only_pro_model(model) {
+        if ideocode_provider_core::is_openai_api_only_pro_model(model) {
             let is_chatgpt_shaped = self
                 .credentials
                 .try_read()
@@ -737,7 +737,7 @@ impl Provider for OpenAIProvider {
         if let Ok(mut current) = self.model.try_write() {
             let changed = current.as_str() != model;
             *current = model.to_string();
-            IDEOCODE_base::provider::clear_model_unavailable_for_account(model);
+            ideocode_base::provider::clear_model_unavailable_for_account(model);
             drop(current);
             if changed {
                 self.clear_persistent_ws_try("manual OpenAI model change reset the response chain");
@@ -755,7 +755,7 @@ impl Provider for OpenAIProvider {
         if self.is_browser_only() {
             return vec![CHATGPT_WEB_MODEL];
         }
-        IDEOCODE_provider_core::ALL_OPENAI_MODELS.to_vec()
+        ideocode_provider_core::ALL_OPENAI_MODELS.to_vec()
     }
 
     fn available_models_for_switching(&self) -> Vec<String> {
@@ -763,14 +763,14 @@ impl Provider for OpenAIProvider {
             return vec![CHATGPT_WEB_MODEL.to_string()];
         }
         let mut models =
-            IDEOCODE_base::provider::cached_openai_model_ids().unwrap_or_else(|| vec![self.model()]);
+            ideocode_base::provider::cached_openai_model_ids().unwrap_or_else(|| vec![self.model()]);
         if !models.iter().any(|model| model == CHATGPT_WEB_MODEL) {
             models.insert(0, CHATGPT_WEB_MODEL.to_string());
         }
         // Platform-API-only GPT Pro models are absent from the Codex OAuth
         // catalog by design; surface them whenever an OPENAI_API_KEY exists.
-        if IDEOCODE_base::provider::openai_platform_api_key_configured() {
-            for pro in IDEOCODE_provider_core::OPENAI_API_ONLY_PRO_MODELS {
+        if ideocode_base::provider::openai_platform_api_key_configured() {
+            for pro in ideocode_provider_core::OPENAI_API_ONLY_PRO_MODELS {
                 if !models.iter().any(|model| model == pro) {
                     models.push((*pro).to_string());
                 }
@@ -792,7 +792,7 @@ impl Provider for OpenAIProvider {
         // user with only an OPENAI_API_KEY loads an API-key-shaped credential
         // while the mode stays Auto; routing by mode would send that platform
         // key to the ChatGPT/Codex endpoint and get a 401.
-        let account_label = IDEOCODE_base::auth::codex::active_account_label();
+        let account_label = ideocode_base::auth::codex::active_account_label();
         let (access_token, is_chatgpt_mode, credential_identity) = {
             let creds = self.credentials.read().await;
             (
@@ -803,7 +803,7 @@ impl Provider for OpenAIProvider {
         };
         let catalog = if is_chatgpt_mode {
             let access_token = openai_access_token(&self.credentials).await?;
-            match IDEOCODE_base::provider::fetch_openai_model_catalog(&access_token).await {
+            match ideocode_base::provider::fetch_openai_model_catalog(&access_token).await {
                 Ok(catalog) => catalog,
                 // The server can reject a token that still looks fresh by its
                 // local expiry (revoked/rotated). The chat path recovers by
@@ -819,7 +819,7 @@ impl Provider for OpenAIProvider {
                     if refresh_token.is_empty() {
                         return Err(err);
                     }
-                    IDEOCODE_base::logging::info(
+                    ideocode_base::logging::info(
                         "OpenAI model catalog fetch rejected the access token; force-refreshing and retrying",
                     );
                     let refreshed = super::openai_stream_runtime::force_refresh_openai_token(
@@ -832,21 +832,21 @@ impl Provider for OpenAIProvider {
                             "token force-refresh after catalog 401/403 also failed: {refresh_err:#}"
                         ))
                     })?;
-                    IDEOCODE_base::provider::fetch_openai_model_catalog(&refreshed).await?
+                    ideocode_base::provider::fetch_openai_model_catalog(&refreshed).await?
                 }
                 Err(err) => return Err(err),
             }
         } else {
-            IDEOCODE_base::provider::fetch_openai_api_key_model_catalog(&access_token).await?
+            ideocode_base::provider::fetch_openai_api_key_model_catalog(&access_token).await?
         };
         let current_credential_identity = {
             let credentials = self.credentials.read().await;
             Self::catalog_credential_identity(&credentials)
         };
         if current_credential_identity != credential_identity
-            || IDEOCODE_base::auth::codex::active_account_label() != account_label
+            || ideocode_base::auth::codex::active_account_label() != account_label
         {
-            IDEOCODE_base::logging::info(
+            ideocode_base::logging::info(
                 "Discarding OpenAI model catalog fetched for credentials that are no longer active",
             );
             return Ok(());
@@ -856,12 +856,12 @@ impl Provider for OpenAIProvider {
             Err(poisoned) => *poisoned.into_inner() = catalog.reasoning_efforts.clone(),
         }
         self.revalidate_reasoning_effort();
-        IDEOCODE_base::provider::persist_openai_model_catalog(&catalog);
+        ideocode_base::provider::persist_openai_model_catalog(&catalog);
         if !catalog.context_limits.is_empty() {
-            IDEOCODE_base::provider::populate_context_limits(catalog.context_limits);
+            ideocode_base::provider::populate_context_limits(catalog.context_limits);
         }
         if !catalog.available_models.is_empty() {
-            IDEOCODE_base::provider::populate_account_models(catalog.available_models);
+            ideocode_base::provider::populate_account_models(catalog.available_models);
         }
         Ok(())
     }
@@ -876,8 +876,8 @@ impl Provider for OpenAIProvider {
     fn set_reasoning_effort(&self, effort: &str) -> Result<()> {
         let requested = effort.trim().to_ascii_lowercase();
         if !requested.is_empty()
-            && IDEOCODE_provider_core::canonical_reasoning_effort(&requested).is_none()
-            && !IDEOCODE_base::prompt::is_swarm_effort(&requested)
+            && ideocode_provider_core::canonical_reasoning_effort(&requested).is_none()
+            && !ideocode_base::prompt::is_swarm_effort(&requested)
         {
             anyhow::bail!(
                 "Unsupported OpenAI reasoning effort '{}'; expected none|minimal|low|medium|high|xhigh|max|swarm|swarm-deep",
@@ -886,7 +886,7 @@ impl Provider for OpenAIProvider {
         }
         let normalized = Self::normalize_reasoning_effort(effort);
         if let Some(requested) = normalized.as_deref()
-            && !IDEOCODE_base::prompt::is_swarm_effort(requested)
+            && !ideocode_base::prompt::is_swarm_effort(requested)
         {
             let available = self.available_efforts();
             if !available.contains(&requested) {
@@ -896,7 +896,7 @@ impl Provider for OpenAIProvider {
                     self.model(),
                     available
                         .into_iter()
-                        .filter(|effort| !IDEOCODE_base::prompt::is_swarm_effort(effort))
+                        .filter(|effort| !ideocode_base::prompt::is_swarm_effort(effort))
                         .collect::<Vec<_>>()
                         .join(", ")
                 );
@@ -915,12 +915,12 @@ impl Provider for OpenAIProvider {
     }
 
     fn available_efforts(&self) -> Vec<&'static str> {
-        let model = IDEOCODE_provider_core::model_id::canonical(&self.model());
+        let model = ideocode_provider_core::model_id::canonical(&self.model());
         // Platform-API-only GPT Pro models never appear in the Codex catalog,
         // so their ladders are pinned from live Responses API behavior:
         // gpt-5-pro accepts only `high`; newer pro generations accept
         // medium/high/xhigh.
-        if IDEOCODE_provider_core::is_openai_api_only_pro_model(&model) {
+        if ideocode_provider_core::is_openai_api_only_pro_model(&model) {
             return if model.starts_with("gpt-5-pro") {
                 vec!["high", "swarm", "swarm-deep"]
             } else {
@@ -935,12 +935,12 @@ impl Provider for OpenAIProvider {
         if let Some(advertised) = advertised {
             let mut efforts: Vec<&'static str> = advertised
                 .iter()
-                .filter_map(|effort| IDEOCODE_provider_core::canonical_reasoning_effort(effort))
+                .filter_map(|effort| ideocode_provider_core::canonical_reasoning_effort(effort))
                 .collect();
             efforts.extend(["swarm", "swarm-deep"]);
             return efforts;
         }
-        IDEOCODE_provider_core::OPENAI_SELECTABLE_EFFORTS.to_vec()
+        ideocode_provider_core::OPENAI_SELECTABLE_EFFORTS.to_vec()
     }
 
     fn service_tier(&self) -> Option<String> {
@@ -1031,7 +1031,7 @@ impl Provider for OpenAIProvider {
         true
     }
 
-    fn uses_IDEOCODE_compaction(&self) -> bool {
+    fn uses_ideocode_compaction(&self) -> bool {
         is_chatgpt_web_model(&self.model())
             || self.native_compaction_mode != OpenAINativeCompactionMode::Auto
     }
@@ -1041,7 +1041,7 @@ impl Provider for OpenAIProvider {
         messages: &[ChatMessage],
         existing_summary_text: Option<&str>,
         existing_openai_encrypted_content: Option<&str>,
-    ) -> Result<IDEOCODE_provider_core::NativeCompactionResult> {
+    ) -> Result<ideocode_provider_core::NativeCompactionResult> {
         if self.native_compaction_mode != OpenAINativeCompactionMode::Explicit {
             anyhow::bail!(
                 "OpenAI native explicit compaction is disabled (mode={})",
@@ -1058,13 +1058,13 @@ impl Provider for OpenAIProvider {
 
         let mut input = Vec::new();
         if let Some(encrypted_content) = existing_openai_encrypted_content {
-            if !IDEOCODE_base::provider::openai_request::openai_encrypted_content_is_sendable(
+            if !ideocode_base::provider::openai_request::openai_encrypted_content_is_sendable(
                 encrypted_content,
             ) {
                 anyhow::bail!(
                     "OpenAI native compaction payload is too large to replay ({} chars > safe limit {} chars)",
                     encrypted_content.len(),
-                    IDEOCODE_base::provider::openai_request::OPENAI_ENCRYPTED_CONTENT_SAFE_MAX_CHARS,
+                    ideocode_base::provider::openai_request::OPENAI_ENCRYPTED_CONTENT_SAFE_MAX_CHARS,
                 );
             }
             input.push(serde_json::json!({
@@ -1108,7 +1108,7 @@ impl Provider for OpenAIProvider {
 
         if !response.status().is_success() {
             let status = response.status();
-            let body = IDEOCODE_base::util::http_error_body(response, "HTTP error").await;
+            let body = ideocode_base::util::http_error_body(response, "HTTP error").await;
             anyhow::bail!("OpenAI compact error {}: {}", status, body);
         }
 
@@ -1132,17 +1132,17 @@ impl Provider for OpenAIProvider {
             })
             .ok_or_else(|| anyhow::anyhow!("OpenAI compact response missing compaction item"))?;
 
-        if !IDEOCODE_base::provider::openai_request::openai_encrypted_content_is_sendable(
+        if !ideocode_base::provider::openai_request::openai_encrypted_content_is_sendable(
             &encrypted_content,
         ) {
             anyhow::bail!(
                 "OpenAI compact response returned oversized encrypted_content ({} chars > safe limit {} chars)",
                 encrypted_content.len(),
-                IDEOCODE_base::provider::openai_request::OPENAI_ENCRYPTED_CONTENT_SAFE_MAX_CHARS,
+                ideocode_base::provider::openai_request::OPENAI_ENCRYPTED_CONTENT_SAFE_MAX_CHARS,
             );
         }
 
-        Ok(IDEOCODE_provider_core::NativeCompactionResult {
+        Ok(ideocode_provider_core::NativeCompactionResult {
             summary_text: None,
             openai_encrypted_content: Some(encrypted_content),
         })
@@ -1150,8 +1150,8 @@ impl Provider for OpenAIProvider {
 
     fn context_window(&self) -> usize {
         let model = self.model();
-        IDEOCODE_provider_core::context_limit_for_model_with_provider(&model, Some(self.name()))
-            .unwrap_or(IDEOCODE_provider_core::DEFAULT_CONTEXT_LIMIT)
+        ideocode_provider_core::context_limit_for_model_with_provider(&model, Some(self.name()))
+            .unwrap_or(ideocode_provider_core::DEFAULT_CONTEXT_LIMIT)
     }
 
     fn fork(&self) -> Arc<dyn Provider> {

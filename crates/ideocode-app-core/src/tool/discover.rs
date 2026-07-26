@@ -964,7 +964,7 @@ impl Tool for DiscoverToolsTool {
 
         // Remember MCP setups from this listing so a later `mcp connect`
         // matching one of them is tagged with discovery provenance (and
-        // metered coarsely; see IDEOCODE_base::sponsors::provenance).
+        // metered coarsely; see ideocode_base::sponsors::provenance).
         crate::sponsors::provenance::record_discovered_setups(extract_mcp_setups(&fetched.listing));
         record_discovery_telemetry(
             &request_id,

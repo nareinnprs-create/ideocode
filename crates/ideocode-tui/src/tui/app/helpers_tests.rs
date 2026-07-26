@@ -88,7 +88,7 @@ fn inferred_reasoning_efforts_use_provider_specific_order_and_max_semantics() {
     );
     assert_eq!(
         inferred_reasoning_efforts(Some("openai-compatible:custom"), Some("o5-mini")),
-        IDEOCODE_provider_core::OPENAI_SELECTABLE_EFFORTS,
+        ideocode_provider_core::OPENAI_SELECTABLE_EFFORTS,
         "direct compatible routes must preserve OpenAI max instead of aliasing it to xhigh"
     );
     assert_eq!(
@@ -242,7 +242,7 @@ fn pinned_resume_test_home() -> (
 }
 
 #[test]
-fn build_resume_command_uses_imported_IDEOCODE_session_for_claude_code() {
+fn build_resume_command_uses_imported_ideocode_session_for_claude_code() {
     let _pinned = pinned_resume_test_home();
     let (program, args, title) = build_resume_command(
         &ResumeTarget::ClaudeCodeSession {
@@ -269,7 +269,7 @@ fn build_resume_command_uses_imported_IDEOCODE_session_for_claude_code() {
 }
 
 #[test]
-fn build_resume_command_uses_imported_IDEOCODE_session_for_codex() {
+fn build_resume_command_uses_imported_ideocode_session_for_codex() {
     let _pinned = pinned_resume_test_home();
     let (program, args, title) = build_resume_command(
         &ResumeTarget::CodexSession {

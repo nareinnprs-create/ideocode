@@ -37,7 +37,7 @@ use tokio::sync::mpsc;
 use tokio::time::{Instant, interval_at};
 use uuid::Uuid;
 
-use IDEOCODE_message_types::StreamEvent;
+use ideocode_message_types::StreamEvent;
 
 const AGENT_HOST: &str = "agentn.global.api5.cursor.sh";
 const AGENT_PATH: &str = "/agent.v1.AgentService/Run";

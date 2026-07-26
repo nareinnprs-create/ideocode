@@ -7,13 +7,13 @@ pub(crate) use crate::mock_provider::MockProvider;
 pub(crate) use anyhow::{Context, Result};
 pub(crate) use async_trait::async_trait;
 pub(crate) use futures::{SinkExt, StreamExt, stream};
-pub(crate) use IDEOCODE::agent::Agent;
-pub(crate) use IDEOCODE::message::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
-pub(crate) use IDEOCODE::protocol::{Request, ServerEvent};
-pub(crate) use IDEOCODE::provider::{EventStream, Provider};
-pub(crate) use IDEOCODE::server;
-pub(crate) use IDEOCODE::session::{Session, StoredCompactionState};
-pub(crate) use IDEOCODE::tool::Registry;
+pub(crate) use ideocode::agent::Agent;
+pub(crate) use ideocode::message::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
+pub(crate) use ideocode::protocol::{Request, ServerEvent};
+pub(crate) use ideocode::provider::{EventStream, Provider};
+pub(crate) use ideocode::server;
+pub(crate) use ideocode::session::{Session, StoredCompactionState};
+pub(crate) use ideocode::tool::Registry;
 pub(crate) use std::ffi::OsString;
 pub(crate) use std::io::Read;
 pub(crate) use std::net::TcpListener as StdTcpListener;
@@ -44,7 +44,7 @@ pub(crate) fn short_runtime_dir(name: String) -> std::path::PathBuf {
     }
 }
 
-fn lock_IDEOCODE_home() -> std::sync::MutexGuard<'static, ()> {
+fn lock_ideocode_home() -> std::sync::MutexGuard<'static, ()> {
     let mutex = IDEOCODE_HOME_LOCK.get_or_init(|| Mutex::new(()));
     // Recover from poisoned state if a previous test panicked
     match mutex.lock() {
@@ -67,7 +67,7 @@ pub(crate) struct TestEnvGuard {
 
 impl TestEnvGuard {
     pub(crate) fn new() -> Result<Self> {
-        let lock = lock_IDEOCODE_home();
+        let lock = lock_ideocode_home();
         let temp_home = tempfile::Builder::new()
             .prefix("IDEOCODE-e2e-home-")
             .tempdir()?;
@@ -81,19 +81,19 @@ impl TestEnvGuard {
         let runtime_dir = temp_home.path().join("runtime");
         std::fs::create_dir_all(&runtime_dir)?;
 
-        IDEOCODE::env::set_var("IDEOCODE_HOME", temp_home.path());
-        IDEOCODE::env::set_var("IDEOCODE_RUNTIME_DIR", &runtime_dir);
-        IDEOCODE::env::set_var("IDEOCODE_TEST_SESSION", "1");
-        IDEOCODE::env::set_var("IDEOCODE_DEBUG_CONTROL", "1");
-        IDEOCODE::env::remove_var("IDEOCODE_RUNTIME_PROVIDER");
-        IDEOCODE::env::remove_var("IDEOCODE_ACTIVE_PROVIDER");
-        IDEOCODE::env::remove_var("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
+        ideocode::env::set_var("IDEOCODE_HOME", temp_home.path());
+        ideocode::env::set_var("IDEOCODE_RUNTIME_DIR", &runtime_dir);
+        ideocode::env::set_var("IDEOCODE_TEST_SESSION", "1");
+        ideocode::env::set_var("IDEOCODE_DEBUG_CONTROL", "1");
+        ideocode::env::remove_var("IDEOCODE_RUNTIME_PROVIDER");
+        ideocode::env::remove_var("IDEOCODE_ACTIVE_PROVIDER");
+        ideocode::env::remove_var("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
         // Disable the memory sidecar/extraction in e2e runs. Its background
         // extraction makes its own provider `complete()` call, which would steal
         // a queued mock response from the scenario under test and make turn
         // outcomes nondeterministic across transports.
-        IDEOCODE::env::set_var("IDEOCODE_MEMORY_ENABLED", "0");
-        IDEOCODE::env::set_var("IDEOCODE_MEMORY_SIDECAR_ENABLED", "0");
+        ideocode::env::set_var("IDEOCODE_MEMORY_ENABLED", "0");
+        ideocode::env::set_var("IDEOCODE_MEMORY_SIDECAR_ENABLED", "0");
 
         Ok(Self {
             _lock: lock,
@@ -112,48 +112,48 @@ impl TestEnvGuard {
 impl Drop for TestEnvGuard {
     fn drop(&mut self) {
         if let Some(prev_home) = &self.prev_home {
-            IDEOCODE::env::set_var("IDEOCODE_HOME", prev_home);
+            ideocode::env::set_var("IDEOCODE_HOME", prev_home);
         } else {
-            IDEOCODE::env::remove_var("IDEOCODE_HOME");
+            ideocode::env::remove_var("IDEOCODE_HOME");
         }
 
         if let Some(prev_runtime_dir) = &self.prev_runtime_dir {
-            IDEOCODE::env::set_var("IDEOCODE_RUNTIME_DIR", prev_runtime_dir);
+            ideocode::env::set_var("IDEOCODE_RUNTIME_DIR", prev_runtime_dir);
         } else {
-            IDEOCODE::env::remove_var("IDEOCODE_RUNTIME_DIR");
+            ideocode::env::remove_var("IDEOCODE_RUNTIME_DIR");
         }
 
         if let Some(prev_test_session) = &self.prev_test_session {
-            IDEOCODE::env::set_var("IDEOCODE_TEST_SESSION", prev_test_session);
+            ideocode::env::set_var("IDEOCODE_TEST_SESSION", prev_test_session);
         } else {
-            IDEOCODE::env::remove_var("IDEOCODE_TEST_SESSION");
+            ideocode::env::remove_var("IDEOCODE_TEST_SESSION");
         }
 
         if let Some(prev_debug_control) = &self.prev_debug_control {
-            IDEOCODE::env::set_var("IDEOCODE_DEBUG_CONTROL", prev_debug_control);
+            ideocode::env::set_var("IDEOCODE_DEBUG_CONTROL", prev_debug_control);
         } else {
-            IDEOCODE::env::remove_var("IDEOCODE_DEBUG_CONTROL");
+            ideocode::env::remove_var("IDEOCODE_DEBUG_CONTROL");
         }
 
         if let Some(prev_runtime_provider) = &self.prev_runtime_provider {
-            IDEOCODE::env::set_var("IDEOCODE_RUNTIME_PROVIDER", prev_runtime_provider);
+            ideocode::env::set_var("IDEOCODE_RUNTIME_PROVIDER", prev_runtime_provider);
         } else {
-            IDEOCODE::env::remove_var("IDEOCODE_RUNTIME_PROVIDER");
+            ideocode::env::remove_var("IDEOCODE_RUNTIME_PROVIDER");
         }
 
         if let Some(prev_active_provider) = &self.prev_active_provider {
-            IDEOCODE::env::set_var("IDEOCODE_ACTIVE_PROVIDER", prev_active_provider);
+            ideocode::env::set_var("IDEOCODE_ACTIVE_PROVIDER", prev_active_provider);
         } else {
-            IDEOCODE::env::remove_var("IDEOCODE_ACTIVE_PROVIDER");
+            ideocode::env::remove_var("IDEOCODE_ACTIVE_PROVIDER");
         }
 
         if let Some(prev_openrouter_cache_namespace) = &self.prev_openrouter_cache_namespace {
-            IDEOCODE::env::set_var(
+            ideocode::env::set_var(
                 "IDEOCODE_OPENROUTER_CACHE_NAMESPACE",
                 prev_openrouter_cache_namespace,
             );
         } else {
-            IDEOCODE::env::remove_var("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
+            ideocode::env::remove_var("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
         }
     }
 }
@@ -170,7 +170,7 @@ pub(crate) struct EnvVarGuard {
 impl EnvVarGuard {
     pub(crate) fn set(name: &'static str, value: impl AsRef<std::ffi::OsStr>) -> Self {
         let prev = std::env::var_os(name);
-        IDEOCODE::env::set_var(name, value);
+        ideocode::env::set_var(name, value);
         Self { name, prev }
     }
 }
@@ -178,9 +178,9 @@ impl EnvVarGuard {
 impl Drop for EnvVarGuard {
     fn drop(&mut self) {
         if let Some(prev) = &self.prev {
-            IDEOCODE::env::set_var(self.name, prev);
+            ideocode::env::set_var(self.name, prev);
         } else {
-            IDEOCODE::env::remove_var(self.name);
+            ideocode::env::remove_var(self.name);
         }
     }
 }
@@ -250,14 +250,14 @@ pub(crate) async fn wait_for_tcp_port(port: u16) -> Result<()> {
 }
 
 fn pair_test_device(token: &str) -> Result<()> {
-    let mut registry = IDEOCODE::gateway::DeviceRegistry::load();
+    let mut registry = ideocode::gateway::DeviceRegistry::load();
     let now = chrono::Utc::now().to_rfc3339();
     let mut hasher = sha2::Sha256::new();
     use sha2::Digest;
     hasher.update(token.as_bytes());
     let token_hash = format!("sha256:{}", hex::encode(hasher.finalize()));
     registry.devices.retain(|d| d.id != "test-device-ws");
-    registry.devices.push(IDEOCODE::gateway::PairedDevice {
+    registry.devices.push(ideocode::gateway::PairedDevice {
         id: "test-device-ws".to_string(),
         name: "WS Test Device".to_string(),
         token_hash,
@@ -561,7 +561,7 @@ pub(crate) async fn run_unix_transport_scenario() -> Result<TransportScenarioRes
         StreamEvent::SessionId("provider-session-1".to_string()),
     ]);
 
-    let provider: Arc<dyn IDEOCODE::provider::Provider> = Arc::new(provider);
+    let provider: Arc<dyn ideocode::provider::Provider> = Arc::new(provider);
     let server_instance =
         server::Server::new_with_paths(provider, socket_path.clone(), debug_socket_path.clone());
     let server_handle = tokio::spawn(async move { server_instance.run().await });
@@ -681,10 +681,10 @@ pub(crate) async fn run_websocket_transport_scenario() -> Result<TransportScenar
         StreamEvent::SessionId("provider-session-1".to_string()),
     ]);
 
-    let provider: Arc<dyn IDEOCODE::provider::Provider> = Arc::new(provider);
+    let provider: Arc<dyn ideocode::provider::Provider> = Arc::new(provider);
     let server_instance =
         server::Server::new_with_paths(provider, socket_path.clone(), debug_socket_path.clone())
-            .with_gateway_config(IDEOCODE::gateway::GatewayConfig {
+            .with_gateway_config(ideocode::gateway::GatewayConfig {
                 port: gateway_port,
                 bind_addr: "127.0.0.1".to_string(),
                 enabled: true,
@@ -1161,7 +1161,7 @@ pub(crate) async fn wait_for_selfdev_reload_cycle(
     let mut stable_since: Option<Instant> = None;
 
     while Instant::now() < deadline {
-        let marker_active = IDEOCODE::server::reload_marker_active(Duration::from_secs(30));
+        let marker_active = ideocode::server::reload_marker_active(Duration::from_secs(30));
         let server_info = match tokio::time::timeout(
             Duration::from_millis(750),
             debug_run_command(debug_socket_path.to_path_buf(), "server:info", None),

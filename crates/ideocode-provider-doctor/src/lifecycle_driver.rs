@@ -1,15 +1,15 @@
 ﻿use anyhow::{Context, ensure};
 
-use IDEOCODE_base::auth::lifecycle::{
+use ideocode_base::auth::lifecycle::{
     AuthActivationRequest, AuthActivationResult, AuthCatalogInvariantReport, activate_auth_change,
     provider_model_to_select_after_auth, validate_catalog_invariants,
 };
-use IDEOCODE_base::auth::test_sandbox::AuthTestSandbox;
-use IDEOCODE_base::protocol::{
+use ideocode_base::auth::test_sandbox::AuthTestSandbox;
+use ideocode_base::protocol::{
     AuthChanged, AuthCredentialSource, AuthMethod, CatalogNamespace, RuntimeProviderKey,
 };
-use IDEOCODE_base::provider::ModelRoute;
-use IDEOCODE_base::provider_catalog::OpenAiCompatibleProfile;
+use ideocode_base::provider::ModelRoute;
+use ideocode_base::provider_catalog::OpenAiCompatibleProfile;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum AuthLifecycleAuthPath {
@@ -61,7 +61,7 @@ pub(crate) struct AuthLifecycleSpec {
 impl AuthLifecycleSpec {
     pub(crate) fn cerebras_fixture(auth_path: AuthLifecycleAuthPath) -> Self {
         let mut spec = Self::openai_compatible_fixture(
-            IDEOCODE_base::provider_catalog::CEREBRAS_PROFILE,
+            ideocode_base::provider_catalog::CEREBRAS_PROFILE,
             auth_path,
         );
         spec.catalog_models_after_auth = vec![
@@ -379,7 +379,7 @@ impl AuthLifecycleDriver {
         spec: &AuthLifecycleSpec,
     ) -> anyhow::Result<AuthLifecycleResult> {
         let resolved =
-            IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(spec.profile);
+            ideocode_base::provider_catalog::resolve_openai_compatible_profile(spec.profile);
         ensure!(
             resolved.id == spec.provider_id,
             "spec provider id {} did not match profile {}",
@@ -389,7 +389,7 @@ impl AuthLifecycleDriver {
 
         let credential_location = self.apply_credentials(spec, &resolved)?;
         let auth = AuthChanged {
-            provider: IDEOCODE_base::protocol::AuthProviderId::new(spec.provider_id),
+            provider: ideocode_base::protocol::AuthProviderId::new(spec.provider_id),
             credential_source: Some(spec.auth_path.credential_source()),
             auth_method: Some(spec.auth_path.auth_method()),
             expected_runtime: Some(RuntimeProviderKey::new("openai-compatible")),
@@ -443,7 +443,7 @@ impl AuthLifecycleDriver {
     fn apply_credentials(
         &self,
         spec: &AuthLifecycleSpec,
-        resolved: &IDEOCODE_base::provider_catalog::ResolvedOpenAiCompatibleProfile,
+        resolved: &ideocode_base::provider_catalog::ResolvedOpenAiCompatibleProfile,
     ) -> anyhow::Result<Option<String>> {
         match spec.auth_path {
             AuthLifecycleAuthPath::TuiPasteApiKey
@@ -457,8 +457,8 @@ impl AuthLifecycleDriver {
                 Ok(Some(path.display().to_string()))
             }
             AuthLifecycleAuthPath::ProcessEnvPreseeded => {
-                IDEOCODE_base::env::set_var(&resolved.api_key_env, &spec.api_key);
-                IDEOCODE_base::auth::AuthStatus::invalidate_cache();
+                ideocode_base::env::set_var(&resolved.api_key_env, &spec.api_key);
+                ideocode_base::auth::AuthStatus::invalidate_cache();
                 Ok(Some(format!("process env {}", resolved.api_key_env)))
             }
         }
@@ -481,7 +481,7 @@ impl AuthLifecycleDriver {
     fn user_visible_transcript(
         &self,
         spec: &AuthLifecycleSpec,
-        resolved: &IDEOCODE_base::provider_catalog::ResolvedOpenAiCompatibleProfile,
+        resolved: &ideocode_base::provider_catalog::ResolvedOpenAiCompatibleProfile,
         selected_model: Option<&str>,
         warning: Option<&str>,
     ) -> Vec<String> {
@@ -550,9 +550,9 @@ mod tests {
     /// but they fail the generic openai-compatible lifecycle contracts by design,
     /// so the generic matrices skip them.
     fn is_native_routed_compat_profile(
-        profile: &IDEOCODE_base::provider_catalog::OpenAiCompatibleProfile,
+        profile: &ideocode_base::provider_catalog::OpenAiCompatibleProfile,
     ) -> bool {
-        IDEOCODE_base::auth::lifecycle::normalized_auth_provider_id(Some(profile.id))
+        ideocode_base::auth::lifecycle::normalized_auth_provider_id(Some(profile.id))
             .is_some_and(|canonical| canonical != profile.id)
     }
 
@@ -568,7 +568,7 @@ mod tests {
 
     struct LiveTestApiKey {
         secret: String,
-        auth: IDEOCODE_base::live_tests::LiveVerificationAuth,
+        auth: ideocode_base::live_tests::LiveVerificationAuth,
     }
 
     fn live_cerebras_api_key() -> Option<LiveTestApiKey> {
@@ -577,7 +577,7 @@ mod tests {
             .map(|value| value.trim().to_string())
             .filter(|value| !value.is_empty())
             .map(|secret| LiveTestApiKey {
-                auth: IDEOCODE_base::live_tests::LiveVerificationAuth::from_secret(
+                auth: ideocode_base::live_tests::LiveVerificationAuth::from_secret(
                     "env:IDEOCODE_AUTH_LIFECYCLE_CEREBRAS_API_KEY",
                     Some("IDEOCODE_AUTH_LIFECYCLE_CEREBRAS_API_KEY"),
                     &secret,
@@ -593,7 +593,7 @@ mod tests {
             .filter(|value| !value.is_empty())
         {
             return Some(LiveTestApiKey {
-                auth: IDEOCODE_base::live_tests::LiveVerificationAuth::from_secret(
+                auth: ideocode_base::live_tests::LiveVerificationAuth::from_secret(
                     "env:IDEOCODE_AUTH_LIFECYCLE_OPENCODE_API_KEY",
                     Some("IDEOCODE_AUTH_LIFECYCLE_OPENCODE_API_KEY"),
                     &secret,
@@ -602,15 +602,15 @@ mod tests {
             });
         }
 
-        let resolved = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(
-            IDEOCODE_base::provider_catalog::OPENCODE_PROFILE,
+        let resolved = ideocode_base::provider_catalog::resolve_openai_compatible_profile(
+            ideocode_base::provider_catalog::OPENCODE_PROFILE,
         );
-        IDEOCODE_base::provider_catalog::load_api_key_from_env_or_config(
+        ideocode_base::provider_catalog::load_api_key_from_env_or_config(
             &resolved.api_key_env,
             &resolved.env_file,
         )
         .map(|secret| LiveTestApiKey {
-            auth: IDEOCODE_base::live_tests::LiveVerificationAuth::from_secret(
+            auth: ideocode_base::live_tests::LiveVerificationAuth::from_secret(
                 format!("{} via {}", resolved.api_key_env, resolved.env_file),
                 Some(resolved.api_key_env.clone()),
                 &secret,
@@ -620,13 +620,13 @@ mod tests {
     }
 
     fn live_openai_compatible_api_key(profile: OpenAiCompatibleProfile) -> Option<LiveTestApiKey> {
-        let resolved = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(profile);
-        IDEOCODE_base::provider_catalog::load_api_key_from_env_or_config(
+        let resolved = ideocode_base::provider_catalog::resolve_openai_compatible_profile(profile);
+        ideocode_base::provider_catalog::load_api_key_from_env_or_config(
             &resolved.api_key_env,
             &resolved.env_file,
         )
         .map(|secret| LiveTestApiKey {
-            auth: IDEOCODE_base::live_tests::LiveVerificationAuth::from_secret(
+            auth: ideocode_base::live_tests::LiveVerificationAuth::from_secret(
                 format!("{} via {}", resolved.api_key_env, resolved.env_file),
                 Some(resolved.api_key_env.clone()),
                 &secret,
@@ -638,17 +638,17 @@ mod tests {
     fn live_event<I, S>(
         test_name: &str,
         profile: OpenAiCompatibleProfile,
-        auth: IDEOCODE_base::live_tests::LiveVerificationAuth,
+        auth: ideocode_base::live_tests::LiveVerificationAuth,
         model: Option<&str>,
         capabilities: I,
-        result: IDEOCODE_base::live_tests::LiveVerificationResult,
-    ) -> IDEOCODE_base::live_tests::LiveVerificationEvent
+        result: ideocode_base::live_tests::LiveVerificationResult,
+    ) -> ideocode_base::live_tests::LiveVerificationEvent
     where
         I: IntoIterator<Item = S>,
         S: Into<String>,
     {
-        let resolved = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(profile);
-        let mut event = IDEOCODE_base::live_tests::LiveVerificationEvent::new(
+        let resolved = ideocode_base::provider_catalog::resolve_openai_compatible_profile(profile);
+        let mut event = ideocode_base::live_tests::LiveVerificationEvent::new(
             test_name,
             resolved.id,
             resolved.display_name,
@@ -668,11 +668,11 @@ mod tests {
         event
     }
 
-    fn append_live_event(event: &IDEOCODE_base::live_tests::LiveVerificationEvent) {
+    fn append_live_event(event: &ideocode_base::live_tests::LiveVerificationEvent) {
         let event = event.clone().with_not_run_for_missing_expected_checkpoints(
             "checkpoint not exercised by this live test invocation",
         );
-        let paths = IDEOCODE_base::live_tests::append_event(&event)
+        let paths = ideocode_base::live_tests::append_event(&event)
             .expect("append live verification evidence ledger");
         eprintln!(
             "live verification recorded: events={} coverage={} user_ready={} gaps={:?}",
@@ -685,9 +685,9 @@ mod tests {
 
     fn cost_quota_safety_stage(
         spend_enabled: bool,
-    ) -> IDEOCODE_base::live_tests::LiveVerificationStage {
-        IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-            IDEOCODE_base::live_tests::checkpoints::COST_QUOTA_SAFETY,
+    ) -> ideocode_base::live_tests::LiveVerificationStage {
+        ideocode_base::live_tests::LiveVerificationStage::passed(
+            ideocode_base::live_tests::checkpoints::COST_QUOTA_SAFETY,
         )
         .with_evidence("live_tests_env_gated", serde_json::json!(true))
         .with_evidence("spend_enabled", serde_json::json!(spend_enabled))
@@ -699,12 +699,12 @@ mod tests {
     }
 
     fn covered_stage_names(
-        stages: &[IDEOCODE_base::live_tests::LiveVerificationStage],
+        stages: &[ideocode_base::live_tests::LiveVerificationStage],
     ) -> Vec<String> {
         stages
             .iter()
             .filter(|stage| {
-                stage.status != IDEOCODE_base::live_tests::LiveVerificationStageStatus::NotRun
+                stage.status != ideocode_base::live_tests::LiveVerificationStageStatus::NotRun
             })
             .map(|stage| stage.name.clone())
             .collect()
@@ -923,7 +923,7 @@ mod tests {
             AuthLifecycleAuthPath::ProcessEnvPreseeded,
         ];
 
-        for profile in IDEOCODE_base::provider_catalog::openai_compatible_profiles()
+        for profile in ideocode_base::provider_catalog::openai_compatible_profiles()
             .iter()
             .copied()
             .filter(|profile| !is_native_routed_compat_profile(profile))
@@ -965,7 +965,7 @@ mod tests {
         // Native-routed profiles (Anthropic/OpenAI API-key) deliberately use a
         // native runtime route, not the generic `openai-compatible:<id>` one, so
         // exclude them from this generic switch/reauth contract.
-        let profiles: Vec<_> = IDEOCODE_base::provider_catalog::openai_compatible_profiles()
+        let profiles: Vec<_> = ideocode_base::provider_catalog::openai_compatible_profiles()
             .iter()
             .copied()
             .filter(|profile| !is_native_routed_compat_profile(profile))
@@ -1071,7 +1071,7 @@ mod tests {
     fn picker_switch_target_uses_profile_route_not_matching_label_only_route() {
         let spec = AuthLifecycleSpec::cerebras_fixture(AuthLifecycleAuthPath::RemoteTuiPasteApiKey);
         let auth = AuthChanged {
-            provider: IDEOCODE_base::protocol::AuthProviderId::new(spec.provider_id),
+            provider: ideocode_base::protocol::AuthProviderId::new(spec.provider_id),
             credential_source: Some(spec.auth_path.credential_source()),
             auth_method: Some(spec.auth_path.auth_method()),
             expected_runtime: Some(RuntimeProviderKey::new("openai-compatible")),
@@ -1260,8 +1260,8 @@ mod tests {
         let spend_smoke = env_truthy("IDEOCODE_AUTH_LIFECYCLE_SMOKE");
         let stream_smoke = env_truthy("IDEOCODE_AUTH_LIFECYCLE_STREAM_SMOKE");
         let mut stages = vec![
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::AUTH_CREDENTIAL_LOADED,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::AUTH_CREDENTIAL_LOADED,
             )
             .with_evidence(
                 "auth_source",
@@ -1271,25 +1271,25 @@ mod tests {
             cost_quota_safety_stage(spend_smoke || stream_smoke),
         ];
         let models_result = fetch_live_openai_compatible_models(
-            IDEOCODE_base::provider_catalog::CEREBRAS_PROFILE,
+            ideocode_base::provider_catalog::CEREBRAS_PROFILE,
             &api_key.secret,
         )
         .await;
         let models = match models_result {
             Ok(models) => models,
             Err(error) => {
-                stages.push(IDEOCODE_base::live_tests::LiveVerificationStage::failed(
-                    IDEOCODE_base::live_tests::checkpoints::MODEL_CATALOG_LIVE_ENDPOINT,
+                stages.push(ideocode_base::live_tests::LiveVerificationStage::failed(
+                    ideocode_base::live_tests::checkpoints::MODEL_CATALOG_LIVE_ENDPOINT,
                     error.to_string(),
                 ));
                 let capabilities = covered_stage_names(&stages);
                 let event = live_event(
                     "cerebras_live_opt_in_catalog_lifecycle_uses_isolated_sandbox",
-                    IDEOCODE_base::provider_catalog::CEREBRAS_PROFILE,
+                    ideocode_base::provider_catalog::CEREBRAS_PROFILE,
                     api_key.auth.clone(),
                     None,
                     capabilities,
-                    IDEOCODE_base::live_tests::LiveVerificationResult::Failed,
+                    ideocode_base::live_tests::LiveVerificationResult::Failed,
                 )
                 .with_stages(stages);
                 append_live_event(&event);
@@ -1297,15 +1297,15 @@ mod tests {
             }
         };
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::MODEL_CATALOG_LIVE_ENDPOINT,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::MODEL_CATALOG_LIVE_ENDPOINT,
             )
             .with_evidence(
                 "models",
-                IDEOCODE_base::live_tests::concise_model_sample(&models, 12),
+                ideocode_base::live_tests::concise_model_sample(&models, 12),
             ),
         );
-        let default_model = IDEOCODE_base::provider_catalog::CEREBRAS_PROFILE.default_model;
+        let default_model = ideocode_base::provider_catalog::CEREBRAS_PROFILE.default_model;
         let selected = default_model
             .filter(|default| models.iter().any(|model| model == default))
             .map(ToString::to_string)
@@ -1333,16 +1333,16 @@ mod tests {
             result.failure_report(&spec)
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::AUTH_UX_KEY_ENTRY,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::AUTH_UX_KEY_ENTRY,
             )
             .with_evidence("auth_path", serde_json::json!("remote_tui_paste_api_key"))
             .with_evidence("simulated_in_sandbox", serde_json::json!(true))
             .with_evidence("transcript_order_verified", serde_json::json!(true)),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::CREDENTIAL_PERSISTENCE,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::CREDENTIAL_PERSISTENCE,
             )
             .with_evidence(
                 "credential_location",
@@ -1351,8 +1351,8 @@ mod tests {
             .with_evidence("sandboxed", serde_json::json!(true)),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::CATALOG_HOT_RELOAD_CURRENT_SESSION,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::CATALOG_HOT_RELOAD_CURRENT_SESSION,
             )
             .with_evidence("transcript_markers_verified", serde_json::json!(true))
             .with_evidence(
@@ -1361,8 +1361,8 @@ mod tests {
             ),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::PICKER_LIVE_MODELS,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::PICKER_LIVE_MODELS,
             )
             .with_evidence("selected_model", serde_json::json!(selected.clone()))
             .with_evidence(
@@ -1371,8 +1371,8 @@ mod tests {
             ),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::PICKER_FALLBACK_LABELING,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::PICKER_FALLBACK_LABELING,
             )
             .with_evidence("fallback_routes_present", serde_json::json!(false))
             .with_evidence(
@@ -1381,8 +1381,8 @@ mod tests {
             ),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::MODEL_SWITCH_ROUTE,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::MODEL_SWITCH_ROUTE,
             )
             .with_evidence(
                 "switch_request",
@@ -1396,7 +1396,7 @@ mod tests {
 
         if spend_smoke {
             match run_live_openai_compatible_smoke(
-                IDEOCODE_base::provider_catalog::CEREBRAS_PROFILE,
+                ideocode_base::provider_catalog::CEREBRAS_PROFILE,
                 &api_key.secret,
                 &selected,
             )
@@ -1404,18 +1404,18 @@ mod tests {
             {
                 Ok(stage) => stages.push(stage),
                 Err(error) => {
-                    stages.push(IDEOCODE_base::live_tests::LiveVerificationStage::failed(
-                        IDEOCODE_base::live_tests::checkpoints::NON_STREAMING_CHAT_COMPLETION,
+                    stages.push(ideocode_base::live_tests::LiveVerificationStage::failed(
+                        ideocode_base::live_tests::checkpoints::NON_STREAMING_CHAT_COMPLETION,
                         error.to_string(),
                     ));
                     let capabilities = covered_stage_names(&stages);
                     let event = live_event(
                         "cerebras_live_opt_in_catalog_lifecycle_uses_isolated_sandbox",
-                        IDEOCODE_base::provider_catalog::CEREBRAS_PROFILE,
+                        ideocode_base::provider_catalog::CEREBRAS_PROFILE,
                         api_key.auth.clone(),
                         Some(&selected),
                         capabilities,
-                        IDEOCODE_base::live_tests::LiveVerificationResult::Failed,
+                        ideocode_base::live_tests::LiveVerificationResult::Failed,
                     )
                     .with_stages(stages);
                     append_live_event(&event);
@@ -1426,7 +1426,7 @@ mod tests {
 
         if stream_smoke {
             match run_live_openai_compatible_stream_smoke(
-                IDEOCODE_base::provider_catalog::CEREBRAS_PROFILE,
+                ideocode_base::provider_catalog::CEREBRAS_PROFILE,
                 &api_key.secret,
                 &selected,
             )
@@ -1434,18 +1434,18 @@ mod tests {
             {
                 Ok(stage) => stages.push(stage),
                 Err(error) => {
-                    stages.push(IDEOCODE_base::live_tests::LiveVerificationStage::failed(
-                        IDEOCODE_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
+                    stages.push(ideocode_base::live_tests::LiveVerificationStage::failed(
+                        ideocode_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
                         error.to_string(),
                     ));
                     let capabilities = covered_stage_names(&stages);
                     let event = live_event(
                         "cerebras_live_opt_in_catalog_lifecycle_uses_isolated_sandbox",
-                        IDEOCODE_base::provider_catalog::CEREBRAS_PROFILE,
+                        ideocode_base::provider_catalog::CEREBRAS_PROFILE,
                         api_key.auth.clone(),
                         Some(&selected),
                         capabilities,
-                        IDEOCODE_base::live_tests::LiveVerificationResult::Failed,
+                        ideocode_base::live_tests::LiveVerificationResult::Failed,
                     )
                     .with_stages(stages);
                     append_live_event(&event);
@@ -1457,11 +1457,11 @@ mod tests {
         let capabilities = covered_stage_names(&stages);
         let event = live_event(
             "cerebras_live_opt_in_catalog_lifecycle_uses_isolated_sandbox",
-            IDEOCODE_base::provider_catalog::CEREBRAS_PROFILE,
+            ideocode_base::provider_catalog::CEREBRAS_PROFILE,
             api_key.auth.clone(),
             Some(&selected),
             capabilities,
-            IDEOCODE_base::live_tests::LiveVerificationResult::Passed,
+            ideocode_base::live_tests::LiveVerificationResult::Passed,
         )
         .with_stages(stages);
         append_live_event(&event);
@@ -1487,8 +1487,8 @@ mod tests {
         let stream_smoke = env_truthy("IDEOCODE_OPENCODE_ZEN_LIVE_STREAM_TEST")
             || env_truthy("IDEOCODE_AUTH_LIFECYCLE_STREAM_SMOKE");
         let mut stages = vec![
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::AUTH_CREDENTIAL_LOADED,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::AUTH_CREDENTIAL_LOADED,
             )
             .with_evidence(
                 "auth_source",
@@ -1498,25 +1498,25 @@ mod tests {
             cost_quota_safety_stage(true),
         ];
         let models_result = fetch_live_openai_compatible_models(
-            IDEOCODE_base::provider_catalog::OPENCODE_PROFILE,
+            ideocode_base::provider_catalog::OPENCODE_PROFILE,
             &api_key.secret,
         )
         .await;
         let models = match models_result {
             Ok(models) => models,
             Err(error) => {
-                stages.push(IDEOCODE_base::live_tests::LiveVerificationStage::failed(
-                    IDEOCODE_base::live_tests::checkpoints::MODEL_CATALOG_LIVE_ENDPOINT,
+                stages.push(ideocode_base::live_tests::LiveVerificationStage::failed(
+                    ideocode_base::live_tests::checkpoints::MODEL_CATALOG_LIVE_ENDPOINT,
                     error.to_string(),
                 ));
                 let capabilities = covered_stage_names(&stages);
                 let event = live_event(
                     "opencode_zen_live_opt_in_tool_call_smoke",
-                    IDEOCODE_base::provider_catalog::OPENCODE_PROFILE,
+                    ideocode_base::provider_catalog::OPENCODE_PROFILE,
                     api_key.auth.clone(),
                     Some(&model),
                     capabilities,
-                    IDEOCODE_base::live_tests::LiveVerificationResult::Failed,
+                    ideocode_base::live_tests::LiveVerificationResult::Failed,
                 )
                 .with_stages(stages);
                 append_live_event(&event);
@@ -1524,12 +1524,12 @@ mod tests {
             }
         };
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::MODEL_CATALOG_LIVE_ENDPOINT,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::MODEL_CATALOG_LIVE_ENDPOINT,
             )
             .with_evidence(
                 "models",
-                IDEOCODE_base::live_tests::concise_model_sample(&models, 16),
+                ideocode_base::live_tests::concise_model_sample(&models, 16),
             )
             .with_evidence(
                 "requested_model_present",
@@ -1543,7 +1543,7 @@ mod tests {
 
         let driver = AuthLifecycleDriver::new().expect("driver");
         let mut spec = AuthLifecycleSpec::openai_compatible_fixture(
-            IDEOCODE_base::provider_catalog::OPENCODE_PROFILE,
+            ideocode_base::provider_catalog::OPENCODE_PROFILE,
             AuthLifecycleAuthPath::RemoteTuiPasteApiKey,
         );
         spec.api_key = api_key.secret.clone();
@@ -1554,16 +1554,16 @@ mod tests {
             .expect("live OpenCode Zen auth lifecycle fixture");
         result.assert_success(&spec);
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::AUTH_UX_KEY_ENTRY,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::AUTH_UX_KEY_ENTRY,
             )
             .with_evidence("auth_path", serde_json::json!("remote_tui_paste_api_key"))
             .with_evidence("simulated_in_sandbox", serde_json::json!(true))
             .with_evidence("transcript_order_verified", serde_json::json!(true)),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::CREDENTIAL_PERSISTENCE,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::CREDENTIAL_PERSISTENCE,
             )
             .with_evidence(
                 "credential_location",
@@ -1572,8 +1572,8 @@ mod tests {
             .with_evidence("sandboxed", serde_json::json!(true)),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::CATALOG_HOT_RELOAD_CURRENT_SESSION,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::CATALOG_HOT_RELOAD_CURRENT_SESSION,
             )
             .with_evidence("transcript_markers_verified", serde_json::json!(true))
             .with_evidence(
@@ -1582,8 +1582,8 @@ mod tests {
             ),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::PICKER_LIVE_MODELS,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::PICKER_LIVE_MODELS,
             )
             .with_evidence("selected_model", serde_json::json!(model.clone()))
             .with_evidence(
@@ -1592,8 +1592,8 @@ mod tests {
             ),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::PICKER_FALLBACK_LABELING,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::PICKER_FALLBACK_LABELING,
             )
             .with_evidence("fallback_routes_present", serde_json::json!(false))
             .with_evidence(
@@ -1602,8 +1602,8 @@ mod tests {
             ),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::MODEL_SWITCH_ROUTE,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::MODEL_SWITCH_ROUTE,
             )
             .with_evidence(
                 "switch_request",
@@ -1617,7 +1617,7 @@ mod tests {
 
         if stream_smoke {
             match run_live_openai_compatible_stream_smoke(
-                IDEOCODE_base::provider_catalog::OPENCODE_PROFILE,
+                ideocode_base::provider_catalog::OPENCODE_PROFILE,
                 &api_key.secret,
                 &model,
             )
@@ -1625,18 +1625,18 @@ mod tests {
             {
                 Ok(stage) => stages.push(stage),
                 Err(error) => {
-                    stages.push(IDEOCODE_base::live_tests::LiveVerificationStage::failed(
-                        IDEOCODE_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
+                    stages.push(ideocode_base::live_tests::LiveVerificationStage::failed(
+                        ideocode_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
                         error.to_string(),
                     ));
                     let capabilities = covered_stage_names(&stages);
                     let event = live_event(
                         "opencode_zen_live_opt_in_tool_call_smoke",
-                        IDEOCODE_base::provider_catalog::OPENCODE_PROFILE,
+                        ideocode_base::provider_catalog::OPENCODE_PROFILE,
                         api_key.auth.clone(),
                         Some(&model),
                         capabilities,
-                        IDEOCODE_base::live_tests::LiveVerificationResult::Failed,
+                        ideocode_base::live_tests::LiveVerificationResult::Failed,
                     )
                     .with_stages(stages);
                     append_live_event(&event);
@@ -1646,7 +1646,7 @@ mod tests {
         }
 
         match run_live_openai_compatible_tool_smoke(
-            IDEOCODE_base::provider_catalog::OPENCODE_PROFILE,
+            ideocode_base::provider_catalog::OPENCODE_PROFILE,
             &api_key.secret,
             &model,
         )
@@ -1654,18 +1654,18 @@ mod tests {
         {
             Ok(stage) => stages.push(stage),
             Err(error) => {
-                stages.push(IDEOCODE_base::live_tests::LiveVerificationStage::failed(
-                    IDEOCODE_base::live_tests::checkpoints::TOOL_CALL_PARSE,
+                stages.push(ideocode_base::live_tests::LiveVerificationStage::failed(
+                    ideocode_base::live_tests::checkpoints::TOOL_CALL_PARSE,
                     error.to_string(),
                 ));
                 let capabilities = covered_stage_names(&stages);
                 let event = live_event(
                     "opencode_zen_live_opt_in_tool_call_smoke",
-                    IDEOCODE_base::provider_catalog::OPENCODE_PROFILE,
+                    ideocode_base::provider_catalog::OPENCODE_PROFILE,
                     api_key.auth.clone(),
                     Some(&model),
                     capabilities,
-                    IDEOCODE_base::live_tests::LiveVerificationResult::Failed,
+                    ideocode_base::live_tests::LiveVerificationResult::Failed,
                 )
                 .with_stages(stages);
                 append_live_event(&event);
@@ -1676,11 +1676,11 @@ mod tests {
         let capabilities = covered_stage_names(&stages);
         let event = live_event(
             "opencode_zen_live_opt_in_tool_call_smoke",
-            IDEOCODE_base::provider_catalog::OPENCODE_PROFILE,
+            ideocode_base::provider_catalog::OPENCODE_PROFILE,
             api_key.auth.clone(),
             Some(&model),
             capabilities,
-            IDEOCODE_base::live_tests::LiveVerificationResult::Passed,
+            ideocode_base::live_tests::LiveVerificationResult::Passed,
         )
         .with_stages(stages)
         .with_metadata("default_model", serde_json::json!("kimi-k2.6"));
@@ -1699,9 +1699,9 @@ mod tests {
             );
             return;
         };
-        let profile = IDEOCODE_base::provider_catalog::openai_compatible_profile_by_id(&provider_id)
+        let profile = ideocode_base::provider_catalog::openai_compatible_profile_by_id(&provider_id)
             .unwrap_or_else(|| panic!("unknown OpenAI-compatible profile id: {provider_id}"));
-        let resolved = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(profile);
+        let resolved = ideocode_base::provider_catalog::resolve_openai_compatible_profile(profile);
         let api_key = live_openai_compatible_api_key(profile).unwrap_or_else(|| {
             panic!(
                 "IDEOCODE_ISSUE_DRIVEN_LIVE_PROVIDER={} requires {} or {}",
@@ -1717,8 +1717,8 @@ mod tests {
         let stream_smoke = env_truthy("IDEOCODE_ISSUE_DRIVEN_LIVE_STREAM_SMOKE");
 
         let mut stages = vec![
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::AUTH_CREDENTIAL_LOADED,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::AUTH_CREDENTIAL_LOADED,
             )
             .with_evidence(
                 "auth_source",
@@ -1732,8 +1732,8 @@ mod tests {
         let models = match models_result {
             Ok(models) => models,
             Err(error) => {
-                stages.push(IDEOCODE_base::live_tests::LiveVerificationStage::failed(
-                    IDEOCODE_base::live_tests::checkpoints::MODEL_CATALOG_LIVE_ENDPOINT,
+                stages.push(ideocode_base::live_tests::LiveVerificationStage::failed(
+                    ideocode_base::live_tests::checkpoints::MODEL_CATALOG_LIVE_ENDPOINT,
                     error.to_string(),
                 ));
                 let capabilities = covered_stage_names(&stages);
@@ -1743,7 +1743,7 @@ mod tests {
                     api_key.auth.clone(),
                     requested_model.as_deref(),
                     capabilities,
-                    IDEOCODE_base::live_tests::LiveVerificationResult::Failed,
+                    ideocode_base::live_tests::LiveVerificationResult::Failed,
                 )
                 .with_stages(stages);
                 append_live_event(&event);
@@ -1751,12 +1751,12 @@ mod tests {
             }
         };
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::MODEL_CATALOG_LIVE_ENDPOINT,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::MODEL_CATALOG_LIVE_ENDPOINT,
             )
             .with_evidence(
                 "models",
-                IDEOCODE_base::live_tests::concise_model_sample(&models, 16),
+                ideocode_base::live_tests::concise_model_sample(&models, 16),
             ),
         );
 
@@ -1784,16 +1784,16 @@ mod tests {
         result.assert_success(&spec);
 
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::AUTH_UX_KEY_ENTRY,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::AUTH_UX_KEY_ENTRY,
             )
             .with_evidence("auth_path", serde_json::json!("remote_tui_paste_api_key"))
             .with_evidence("simulated_in_sandbox", serde_json::json!(true))
             .with_evidence("transcript_order_verified", serde_json::json!(true)),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::CREDENTIAL_PERSISTENCE,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::CREDENTIAL_PERSISTENCE,
             )
             .with_evidence(
                 "credential_location",
@@ -1802,8 +1802,8 @@ mod tests {
             .with_evidence("sandboxed", serde_json::json!(true)),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::CATALOG_HOT_RELOAD_CURRENT_SESSION,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::CATALOG_HOT_RELOAD_CURRENT_SESSION,
             )
             .with_evidence("transcript_markers_verified", serde_json::json!(true))
             .with_evidence(
@@ -1812,8 +1812,8 @@ mod tests {
             ),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::PICKER_LIVE_MODELS,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::PICKER_LIVE_MODELS,
             )
             .with_evidence("selected_model", serde_json::json!(selected.clone()))
             .with_evidence(
@@ -1822,8 +1822,8 @@ mod tests {
             ),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::PICKER_FALLBACK_LABELING,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::PICKER_FALLBACK_LABELING,
             )
             .with_evidence("fallback_routes_present", serde_json::json!(false))
             .with_evidence(
@@ -1832,8 +1832,8 @@ mod tests {
             ),
         );
         stages.push(
-            IDEOCODE_base::live_tests::LiveVerificationStage::passed(
-                IDEOCODE_base::live_tests::checkpoints::MODEL_SWITCH_ROUTE,
+            ideocode_base::live_tests::LiveVerificationStage::passed(
+                ideocode_base::live_tests::checkpoints::MODEL_SWITCH_ROUTE,
             )
             .with_evidence(
                 "switch_request",
@@ -1849,8 +1849,8 @@ mod tests {
             match run_live_openai_compatible_smoke(profile, &api_key.secret, &selected).await {
                 Ok(stage) => stages.push(stage),
                 Err(error) => {
-                    stages.push(IDEOCODE_base::live_tests::LiveVerificationStage::failed(
-                        IDEOCODE_base::live_tests::checkpoints::NON_STREAMING_CHAT_COMPLETION,
+                    stages.push(ideocode_base::live_tests::LiveVerificationStage::failed(
+                        ideocode_base::live_tests::checkpoints::NON_STREAMING_CHAT_COMPLETION,
                         error.to_string(),
                     ));
                     let capabilities = covered_stage_names(&stages);
@@ -1860,7 +1860,7 @@ mod tests {
                         api_key.auth.clone(),
                         Some(&selected),
                         capabilities,
-                        IDEOCODE_base::live_tests::LiveVerificationResult::Failed,
+                        ideocode_base::live_tests::LiveVerificationResult::Failed,
                     )
                     .with_stages(stages);
                     append_live_event(&event);
@@ -1874,8 +1874,8 @@ mod tests {
             {
                 Ok(stage) => stages.push(stage),
                 Err(error) => {
-                    stages.push(IDEOCODE_base::live_tests::LiveVerificationStage::failed(
-                        IDEOCODE_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
+                    stages.push(ideocode_base::live_tests::LiveVerificationStage::failed(
+                        ideocode_base::live_tests::checkpoints::STREAMING_CHAT_COMPLETION,
                         error.to_string(),
                     ));
                     let capabilities = covered_stage_names(&stages);
@@ -1885,7 +1885,7 @@ mod tests {
                         api_key.auth.clone(),
                         Some(&selected),
                         capabilities,
-                        IDEOCODE_base::live_tests::LiveVerificationResult::Failed,
+                        ideocode_base::live_tests::LiveVerificationResult::Failed,
                     )
                     .with_stages(stages);
                     append_live_event(&event);
@@ -1901,7 +1901,7 @@ mod tests {
             api_key.auth.clone(),
             Some(&selected),
             capabilities,
-            IDEOCODE_base::live_tests::LiveVerificationResult::Passed,
+            ideocode_base::live_tests::LiveVerificationResult::Passed,
         )
         .with_stages(stages)
         .with_metadata("issue_driven_provider", serde_json::json!(provider_id));
@@ -1913,9 +1913,9 @@ mod tests {
         let driver = AuthLifecycleDriver::new().expect("driver");
         let spec = AuthLifecycleSpec::cerebras_fixture(AuthLifecycleAuthPath::TuiPasteApiKey);
         let resolved =
-            IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(spec.profile);
+            ideocode_base::provider_catalog::resolve_openai_compatible_profile(spec.profile);
         let env_file = driver.sandbox.env_file_path(&resolved.env_file);
-        let provider = IDEOCODE_base::provider_catalog::resolve_login_provider(spec.provider_id)
+        let provider = ideocode_base::provider_catalog::resolve_login_provider(spec.provider_id)
             .expect("Cerebras login provider descriptor");
 
         assert!(
@@ -1924,7 +1924,7 @@ mod tests {
             env_file.display()
         );
         assert_eq!(
-            IDEOCODE_base::provider_catalog::load_api_key_from_env_or_config(
+            ideocode_base::provider_catalog::load_api_key_from_env_or_config(
                 &resolved.api_key_env,
                 &resolved.env_file,
             ),
@@ -1932,13 +1932,13 @@ mod tests {
             "fresh sandbox should not inherit credentials from the developer machine"
         );
         assert!(
-            !IDEOCODE_base::provider_catalog::openai_compatible_profile_is_configured(spec.profile),
+            !ideocode_base::provider_catalog::openai_compatible_profile_is_configured(spec.profile),
             "fresh sandbox should report the provider as unconfigured before setup"
         );
-        IDEOCODE_base::auth::AuthStatus::invalidate_cache();
+        ideocode_base::auth::AuthStatus::invalidate_cache();
         assert_eq!(
-            IDEOCODE_base::auth::AuthStatus::check_fast().state_for_provider(provider),
-            IDEOCODE_base::auth::AuthState::NotConfigured
+            ideocode_base::auth::AuthStatus::check_fast().state_for_provider(provider),
+            ideocode_base::auth::AuthState::NotConfigured
         );
 
         let result = driver
@@ -1951,7 +1951,7 @@ mod tests {
             "TUI paste-key lifecycle should create env file"
         );
         assert_eq!(
-            IDEOCODE_base::provider_catalog::load_api_key_from_env_or_config(
+            ideocode_base::provider_catalog::load_api_key_from_env_or_config(
                 &resolved.api_key_env,
                 &resolved.env_file,
             )
@@ -1965,10 +1965,10 @@ mod tests {
             "fresh-start lifecycle should show the user that the key was saved: {}",
             result.transcript_text()
         );
-        IDEOCODE_base::auth::AuthStatus::invalidate_cache();
+        ideocode_base::auth::AuthStatus::invalidate_cache();
         assert_eq!(
-            IDEOCODE_base::auth::AuthStatus::check_fast().state_for_provider(provider),
-            IDEOCODE_base::auth::AuthState::Available
+            ideocode_base::auth::AuthStatus::check_fast().state_for_provider(provider),
+            ideocode_base::auth::AuthState::Available
         );
     }
 }

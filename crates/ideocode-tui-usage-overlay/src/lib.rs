@@ -158,7 +158,7 @@ impl UsageOverlay {
         )
     }
 
-    pub fn from_progress(progress: &IDEOCODE_usage_types::ProviderUsageProgress) -> Self {
+    pub fn from_progress(progress: &ideocode_usage_types::ProviderUsageProgress) -> Self {
         Self::from_provider_reports(
             &progress.results,
             !progress.done,
@@ -169,7 +169,7 @@ impl UsageOverlay {
     }
 
     pub fn from_provider_reports(
-        reports: &[IDEOCODE_usage_types::ProviderUsage],
+        reports: &[ideocode_usage_types::ProviderUsage],
         refreshing: bool,
         completed: usize,
         total: usize,
@@ -660,7 +660,7 @@ fn metric_span(label: &'static str, value: usize, color: Color) -> Span<'static>
     )
 }
 
-fn provider_item(report: &IDEOCODE_usage_types::ProviderUsage) -> UsageOverlayItem {
+fn provider_item(report: &ideocode_usage_types::ProviderUsage) -> UsageOverlayItem {
     let status = provider_status(report);
     let subtitle = provider_subtitle(report);
     UsageOverlayItem::new(
@@ -672,7 +672,7 @@ fn provider_item(report: &IDEOCODE_usage_types::ProviderUsage) -> UsageOverlayIt
     )
 }
 
-fn provider_status(report: &IDEOCODE_usage_types::ProviderUsage) -> UsageOverlayStatus {
+fn provider_status(report: &ideocode_usage_types::ProviderUsage) -> UsageOverlayStatus {
     if report.error.is_some() {
         return UsageOverlayStatus::Error;
     }
@@ -695,7 +695,7 @@ fn provider_status(report: &IDEOCODE_usage_types::ProviderUsage) -> UsageOverlay
     }
 }
 
-fn provider_subtitle(report: &IDEOCODE_usage_types::ProviderUsage) -> String {
+fn provider_subtitle(report: &ideocode_usage_types::ProviderUsage) -> String {
     if let Some(error) = &report.error {
         return truncate_with_ellipsis(error, 72);
     }
@@ -778,7 +778,7 @@ pub fn format_usage_bar(percent: f32, width: usize) -> String {
     format!("{} {:.0}%", bar, percent)
 }
 
-fn provider_detail_lines(report: &IDEOCODE_usage_types::ProviderUsage) -> Vec<String> {
+fn provider_detail_lines(report: &ideocode_usage_types::ProviderUsage) -> Vec<String> {
     let mut lines = Vec::new();
     lines.push("## Status".to_string());
     if let Some(error) = &report.error {
@@ -899,9 +899,9 @@ mod tests {
     #[test]
     fn provider_reports_build_searchable_overlay_items() {
         let overlay = UsageOverlay::from_provider_reports(
-            &[IDEOCODE_usage_types::ProviderUsage {
+            &[ideocode_usage_types::ProviderUsage {
                 provider_name: "Claude".to_string(),
-                limits: vec![IDEOCODE_usage_types::UsageLimit {
+                limits: vec![ideocode_usage_types::UsageLimit {
                     name: "5h".to_string(),
                     usage_percent: 92.0,
                     resets_at: Some("2020-01-01T00:00:00Z".to_string()),

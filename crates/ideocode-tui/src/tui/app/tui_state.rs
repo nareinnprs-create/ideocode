@@ -243,7 +243,7 @@ impl App {
     fn dual_credential_active(
         &self,
         route: WidgetRouteInfo,
-        provider: IDEOCODE_provider_core::ActiveProvider,
+        provider: ideocode_provider_core::ActiveProvider,
     ) -> Option<crate::auth::ActiveCredential> {
         if route.is_remote {
             if let Some(resolved) = self.remote_resolved_credential {
@@ -259,7 +259,7 @@ impl App {
                 .session
                 .route_api_method
                 .as_deref()
-                .and_then(IDEOCODE_provider_core::AuthRoute::parse)
+                .and_then(ideocode_provider_core::AuthRoute::parse)
                 .filter(|auth_route| auth_route.active_provider() == provider)
                 .map(|auth_route| auth_route.resolved_credential().into());
         }
@@ -294,7 +294,7 @@ impl App {
         match route.provider {
             WidgetProviderKind::Anthropic => {
                 match self
-                    .dual_credential_active(route, IDEOCODE_provider_core::ActiveProvider::Claude)
+                    .dual_credential_active(route, ideocode_provider_core::ActiveProvider::Claude)
                 {
                     Some(ActiveCredential::OAuth) => AuthMethod::AnthropicOAuth,
                     Some(ActiveCredential::ApiKey) => AuthMethod::AnthropicApiKey,
@@ -303,7 +303,7 @@ impl App {
             }
             WidgetProviderKind::OpenAI => {
                 match self
-                    .dual_credential_active(route, IDEOCODE_provider_core::ActiveProvider::OpenAI)
+                    .dual_credential_active(route, ideocode_provider_core::ActiveProvider::OpenAI)
                 {
                     Some(ActiveCredential::OAuth) => AuthMethod::OpenAIOAuth,
                     Some(ActiveCredential::ApiKey) => AuthMethod::OpenAIApiKey,
@@ -801,7 +801,7 @@ impl crate::tui::TuiState for App {
     }
 
     fn session_compaction_count(&self) -> usize {
-        if self.is_remote || !self.provider.uses_IDEOCODE_compaction() {
+        if self.is_remote || !self.provider.uses_ideocode_compaction() {
             return 0;
         }
         self.registry
@@ -897,7 +897,7 @@ impl crate::tui::TuiState for App {
 
     fn status_notice(&self) -> Option<String> {
         if !self.is_remote
-            && self.provider.uses_IDEOCODE_compaction()
+            && self.provider.uses_ideocode_compaction()
             && let Ok(manager) = self.registry.compaction().try_read()
             && manager.is_compacting()
         {
@@ -999,7 +999,7 @@ impl crate::tui::TuiState for App {
         let (compaction_count, compaction_summary_chars, is_compacting, compaction_fresh) =
             if self.is_remote {
                 (0, 0, false, true)
-            } else if self.provider.uses_IDEOCODE_compaction() {
+            } else if self.provider.uses_ideocode_compaction() {
                 match self.registry.compaction().try_read() {
                     Ok(manager) => (
                         manager.compacted_count(),
@@ -1072,7 +1072,7 @@ impl crate::tui::TuiState for App {
                 }
             }
         } else {
-            let skip = if self.provider.uses_IDEOCODE_compaction() {
+            let skip = if self.provider.uses_ideocode_compaction() {
                 let compaction = self.registry.compaction();
                 let result = compaction
                     .try_read()
@@ -1426,7 +1426,7 @@ impl crate::tui::TuiState for App {
                     focused: self.swarm_panel_focused,
                     plan_progress,
                     spinner_frame: (self.animation_elapsed()
-                        * IDEOCODE_tui_render::swarm_gallery::STRIP_SPINNER_FPS)
+                        * ideocode_tui_render::swarm_gallery::STRIP_SPINNER_FPS)
                         as usize,
                     managed_members,
                 })
@@ -1520,7 +1520,7 @@ impl crate::tui::TuiState for App {
 
         let workspace_animation_tick = self.app_started.elapsed().as_millis() as u64 / 180;
 
-        let compaction_info = if !self.is_remote && self.provider.uses_IDEOCODE_compaction() {
+        let compaction_info = if !self.is_remote && self.provider.uses_ideocode_compaction() {
             let compaction = self.registry.compaction();
             compaction.try_read().ok().and_then(|manager| {
                 let compacted_messages = manager.compacted_count();
@@ -1579,7 +1579,7 @@ impl crate::tui::TuiState for App {
             observed_context_tokens: self.current_stream_context_tokens(),
             cache_hit_info,
             compaction_info,
-            is_compacting: if !self.is_remote && self.provider.uses_IDEOCODE_compaction() {
+            is_compacting: if !self.is_remote && self.provider.uses_ideocode_compaction() {
                 let compaction = self.registry.compaction();
                 compaction
                     .try_read()
@@ -2070,7 +2070,7 @@ impl App {
 
         let exe = std::env::current_exe().unwrap_or_else(|_| std::path::PathBuf::from("IDEOCODE"));
         let cwd = std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
-        match IDEOCODE_app_core::session_launch::spawn_resume_in_new_terminal(&exe, &session_id, &cwd)
+        match ideocode_app_core::session_launch::spawn_resume_in_new_terminal(&exe, &session_id, &cwd)
         {
             Ok(true) => self.set_status_notice(format!("Opened {label} in a new window")),
             Ok(false) => self.set_status_notice(format!(

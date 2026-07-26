@@ -1,4 +1,4 @@
-﻿pub use IDEOCODE_tui_mermaid::{
+﻿pub use ideocode_tui_mermaid::{
     DiagramBlock, DiagramCacheKey, DiagramId, DiagramInfo, DiagramOrigin, DiagramRenderProfile,
     DiagramRenderRequest, ImageStateInfo, InlineFitReadiness, MermaidCacheEntry, MermaidContent,
     MermaidDebugStats, MermaidDebugStatsDelta, MermaidFlickerBenchmark, MermaidMemoryBenchmark,
@@ -32,19 +32,19 @@
     transcript_preferred_aspect_ratio_with_font, uses_text_image_fallback,
     with_image_protocol_override, with_preferred_aspect_ratio, write_video_export_marker,
 };
-pub use IDEOCODE_tui_mermaid::{ImageScrollBenchmark, cache_stat_syscalls};
+pub use ideocode_tui_mermaid::{ImageScrollBenchmark, cache_stat_syscalls};
 
 #[cfg(feature = "mmdr-size-api")]
-pub use IDEOCODE_tui_mermaid::terminal_theme;
+pub use ideocode_tui_mermaid::terminal_theme;
 
-pub fn install_IDEOCODE_mermaid_hooks() {
-    IDEOCODE_tui_mermaid::set_log_hooks(crate::logging::info, crate::logging::warn);
-    IDEOCODE_tui_mermaid::set_render_completed_hook(|| {
+pub fn install_ideocode_mermaid_hooks() {
+    ideocode_tui_mermaid::set_log_hooks(crate::logging::info, crate::logging::warn);
+    ideocode_tui_mermaid::set_render_completed_hook(|| {
         crate::bus::Bus::global().publish(crate::bus::BusEvent::MermaidRenderCompleted);
     });
-    IDEOCODE_tui_mermaid::set_memory_snapshot_hook(|| {
+    ideocode_tui_mermaid::set_memory_snapshot_hook(|| {
         let snapshot = crate::process_memory::snapshot_with_source("client:mermaid:memory");
-        IDEOCODE_tui_mermaid::ProcessMemorySnapshot {
+        ideocode_tui_mermaid::ProcessMemorySnapshot {
             rss_bytes: snapshot.rss_bytes,
             peak_rss_bytes: snapshot.peak_rss_bytes,
             virtual_bytes: snapshot.virtual_bytes,

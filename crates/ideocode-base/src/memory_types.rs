@@ -1,1 +1,1 @@
-﻿pub use IDEOCODE_memory_types::*;
+﻿pub use ideocode_memory_types::*;

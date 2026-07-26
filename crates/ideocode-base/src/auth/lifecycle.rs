@@ -1,7 +1,7 @@
 ﻿use crate::protocol::{AuthChanged, CatalogNamespace, RuntimeProviderKey};
 use crate::provider::ModelRoute;
 use crate::provider::activation::{ProviderActivation, RuntimeProviderId};
-use IDEOCODE_provider_core::ActiveProvider;
+use ideocode_provider_core::ActiveProvider;
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct AuthActivationRequest {
@@ -237,8 +237,8 @@ pub fn globally_preferred_default_route(routes: &[ModelRoute]) -> Option<ModelRo
 
 fn globally_preferred_model_rank(model: &str) -> (u8, usize) {
     let normalized = normalize_model_for_preference(model);
-    let openai_default = normalize_model_for_preference(IDEOCODE_provider_core::DEFAULT_OPENAI_MODEL);
-    let claude_default = normalize_model_for_preference(IDEOCODE_provider_core::DEFAULT_CLAUDE_MODEL);
+    let openai_default = normalize_model_for_preference(ideocode_provider_core::DEFAULT_OPENAI_MODEL);
+    let claude_default = normalize_model_for_preference(ideocode_provider_core::DEFAULT_CLAUDE_MODEL);
 
     if normalized == openai_default {
         return (0, 0);
@@ -362,7 +362,7 @@ fn preferred_model_rank(orders: &[&[&str]], model: &str) -> usize {
 ///   `accounts/fireworks/models/qwen3-coder` -> `qwen3-coder`
 ///   `models/gemini-3-pro-preview` -> `gemini-3-pro`
 fn normalize_model_for_preference(model: &str) -> String {
-    let mut id = IDEOCODE_provider_core::model_id::canonical(model);
+    let mut id = ideocode_provider_core::model_id::canonical(model);
 
     // Drop a `/`-qualified path prefix (`accounts/x/models/y`, `models/gemini`).
     if let Some(idx) = id.rfind('/') {
@@ -378,7 +378,7 @@ fn normalize_model_for_preference(model: &str) -> String {
     }
 
     // Drop a trailing release-date suffix.
-    id = IDEOCODE_provider_core::model_id::strip_date_suffix(&id).to_string();
+    id = ideocode_provider_core::model_id::strip_date_suffix(&id).to_string();
 
     // Drop a trailing `-preview`/`-exp`/`-latest` marketing suffix so Gemini
     // preview ids match their canonical family entry.
@@ -825,7 +825,7 @@ pub fn normalized_auth_provider_id(provider_hint: Option<&str>) -> Option<&'stat
 
 /// Pick the preferred first-run provider when the machine already has working
 /// OpenAI and/or Anthropic credentials. Keep this aligned with
-/// `IDEOCODE_provider_core::auto_default_provider`: Claude wins when both families
+/// `ideocode_provider_core::auto_default_provider`: Claude wins when both families
 /// are available, and OAuth wins over an API key within the same family.
 ///
 /// Returning the auth-specific provider id (`openai` vs `openai-api`, `claude`
@@ -1613,7 +1613,7 @@ mod tests {
     }
 
     #[test]
-    fn IDEOCODE_auth_lifecycle_matches_only_managed_subscription_routes() {
+    fn ideocode_auth_lifecycle_matches_only_managed_subscription_routes() {
         let activation = AuthActivationResult {
             provider_id: Some("IDEOCODE".to_string()),
             provider_label: Some("IDEOCODE Subscription".to_string()),
@@ -1997,17 +1997,17 @@ mod tests {
         let _env = EnvGuard::new(&["IDEOCODE_HOME"]);
         let temp = tempfile::tempdir().expect("tempdir");
         crate::env::set_var("IDEOCODE_HOME", temp.path());
-        IDEOCODE_provider_openrouter::save_disk_cache_with_source_for_namespace(
+        ideocode_provider_openrouter::save_disk_cache_with_source_for_namespace(
             "cerebras",
             &[
-                IDEOCODE_provider_openrouter::ModelInfo {
+                ideocode_provider_openrouter::ModelInfo {
                     id: "llama3.1-8b".to_string(),
                     name: String::new(),
                     context_length: None,
                     pricing: Default::default(),
                     created: Some(1_700_000_000),
                 },
-                IDEOCODE_provider_openrouter::ModelInfo {
+                ideocode_provider_openrouter::ModelInfo {
                     id: "qwen-3-235b-a22b-instruct-2507".to_string(),
                     name: String::new(),
                     context_length: None,

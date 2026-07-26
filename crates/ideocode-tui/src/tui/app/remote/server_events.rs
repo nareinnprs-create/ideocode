@@ -112,7 +112,7 @@ fn client_release_version() -> String {
     {
         return v.to_string_lossy().into_owned();
     }
-    IDEOCODE_build_meta::version().to_string()
+    ideocode_build_meta::version().to_string()
 }
 
 fn should_defer_history_for_runtime_identity(
@@ -1587,7 +1587,7 @@ pub(in crate::tui::app) fn handle_server_event(
                     app.push_display_message(DisplayMessage::system(format!(
                         "ℹ Connected server is running an older release ({}) than this client ({}). Reloading it before applying session state. If reload does not take, run `IDEOCODE server stop` and relaunch. Set IDEOCODE_ALLOW_SERVER_VERSION_MISMATCH=1 only for intentional compatibility testing.",
                         app.remote_server_version.as_deref().unwrap_or("unknown"),
-                        IDEOCODE_build_meta::version(),
+                        ideocode_build_meta::version(),
                     )));
                 } else {
                     app.set_status_notice(
@@ -1664,7 +1664,7 @@ pub(in crate::tui::app) fn handle_server_event(
                 app.swarm_plan_swarm_id = None;
                 remote.reset_call_output_tokens_seen();
             }
-            let model_catalog_snapshot = IDEOCODE_provider_core::ModelCatalogSnapshot::new(
+            let model_catalog_snapshot = ideocode_provider_core::ModelCatalogSnapshot::new(
                 provider_name,
                 provider_model,
                 available_models,
@@ -2259,7 +2259,7 @@ pub(in crate::tui::app) fn handle_server_event(
             available_models,
             available_model_routes,
         } => {
-            let model_catalog_snapshot = IDEOCODE_provider_core::ModelCatalogSnapshot::new(
+            let model_catalog_snapshot = ideocode_provider_core::ModelCatalogSnapshot::new(
                 provider_name,
                 provider_model,
                 available_models,

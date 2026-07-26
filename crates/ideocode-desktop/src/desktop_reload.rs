@@ -920,11 +920,11 @@ pub(crate) fn find_desktop_repo_dir() -> Option<PathBuf> {
 pub(crate) fn find_desktop_repo_in_ancestors(start: &Path) -> Option<PathBuf> {
     start
         .ancestors()
-        .find(|candidate| is_IDEOCODE_desktop_repo(candidate))
+        .find(|candidate| is_ideocode_desktop_repo(candidate))
         .map(Path::to_path_buf)
 }
 
-pub(crate) fn is_IDEOCODE_desktop_repo(candidate: &Path) -> bool {
+pub(crate) fn is_ideocode_desktop_repo(candidate: &Path) -> bool {
     if !candidate.join("crates/IDEOCODE-desktop/Cargo.toml").is_file() {
         return false;
     }

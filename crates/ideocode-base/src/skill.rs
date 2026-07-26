@@ -98,12 +98,12 @@ impl SkillRegistry {
     /// Import skills from Claude Code and Codex CLI on first run.
     /// Only runs if ~/.IDEOCODE/skills/ doesn't exist yet.
     fn import_from_external() {
-        let IDEOCODE_skills = match crate::storage::IDEOCODE_dir() {
+        let ideocode_skills = match crate::storage::ideocode_dir() {
             Ok(dir) => dir.join("skills"),
             Err(_) => return,
         };
 
-        if IDEOCODE_skills.exists() {
+        if ideocode_skills.exists() {
             return; // Not first run
         }
 
@@ -114,10 +114,10 @@ impl SkillRegistry {
         if let Ok(claude_skills) = crate::storage::user_home_path(".claude/skills")
             && claude_skills.is_dir()
         {
-            let count = Self::copy_skills_dir(&claude_skills, &IDEOCODE_skills);
+            let count = Self::copy_skills_dir(&claude_skills, &ideocode_skills);
             if count > 0 {
                 sources.push(format!("{} from Claude Code", count));
-                copied.extend(Self::list_skill_names(&IDEOCODE_skills));
+                copied.extend(Self::list_skill_names(&ideocode_skills));
             }
         }
 
@@ -125,10 +125,10 @@ impl SkillRegistry {
         if let Ok(codex_skills) = crate::storage::user_home_path(".codex/skills")
             && codex_skills.is_dir()
         {
-            let count = Self::copy_skills_dir(&codex_skills, &IDEOCODE_skills);
+            let count = Self::copy_skills_dir(&codex_skills, &ideocode_skills);
             if count > 0 {
                 sources.push(format!("{} from Codex CLI", count));
-                copied.extend(Self::list_skill_names(&IDEOCODE_skills));
+                copied.extend(Self::list_skill_names(&ideocode_skills));
             }
         }
 
@@ -248,10 +248,10 @@ impl SkillRegistry {
         }
 
         // Load from ~/.IDEOCODE/skills/ (IDEOCODE's own global skills)
-        if let Ok(IDEOCODE_dir) = crate::storage::IDEOCODE_dir() {
-            let IDEOCODE_skills = IDEOCODE_dir.join("skills");
-            if IDEOCODE_skills.exists() {
-                registry.load_from_dir(&IDEOCODE_skills)?;
+        if let Ok(ideocode_dir) = crate::storage::ideocode_dir() {
+            let ideocode_skills = ideocode_dir.join("skills");
+            if ideocode_skills.exists() {
+                registry.load_from_dir(&ideocode_skills)?;
             }
         }
 
@@ -600,10 +600,10 @@ impl SkillRegistry {
         }
 
         // Load from ~/.IDEOCODE/skills/ (IDEOCODE's own global skills)
-        if let Ok(IDEOCODE_dir) = crate::storage::IDEOCODE_dir() {
-            let IDEOCODE_skills = IDEOCODE_dir.join("skills");
-            if IDEOCODE_skills.exists() {
-                count += self.load_from_dir_count(&IDEOCODE_skills)?;
+        if let Ok(ideocode_dir) = crate::storage::ideocode_dir() {
+            let ideocode_skills = ideocode_dir.join("skills");
+            if ideocode_skills.exists() {
+                count += self.load_from_dir_count(&ideocode_skills)?;
             }
         }
 
@@ -1079,7 +1079,7 @@ mod tests {
     }
 
     #[test]
-    fn load_for_working_dir_reads_project_local_IDEOCODE_skills() {
+    fn load_for_working_dir_reads_project_local_ideocode_skills() {
         let temp = tempfile::tempdir().expect("tempdir");
         write_test_skill(temp.path(), ".IDEOCODE", "wd-only");
 
@@ -1397,7 +1397,7 @@ mod tests {
     }
 
     #[test]
-    fn explicit_IDEOCODE_skill_wins_over_plugin_skill_with_same_name() {
+    fn explicit_ideocode_skill_wins_over_plugin_skill_with_same_name() {
         let temp = tempfile::tempdir().expect("tempdir");
         let plugins_root = temp.path().join("plugins");
 

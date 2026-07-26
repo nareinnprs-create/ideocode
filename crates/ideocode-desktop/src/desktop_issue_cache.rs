@@ -448,10 +448,10 @@ pub(crate) fn issue_cache_root() -> PathBuf {
     if let Some(path) = std::env::var_os("IDEOCODE_DESKTOP_ISSUE_CACHE_DIR") {
         return PathBuf::from(path);
     }
-    IDEOCODE_data_dir().join("desktop/github/issues")
+    ideocode_data_dir().join("desktop/github/issues")
 }
 
-fn IDEOCODE_data_dir() -> PathBuf {
+fn ideocode_data_dir() -> PathBuf {
     if let Some(path) = std::env::var_os("IDEOCODE_HOME") {
         return PathBuf::from(path);
     }

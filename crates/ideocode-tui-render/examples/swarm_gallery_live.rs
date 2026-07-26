@@ -26,7 +26,7 @@ use ratatui::crossterm::{
 use ratatui::prelude::*;
 use ratatui::widgets::{Block, Borders, Clear, Paragraph, Wrap};
 
-use IDEOCODE_tui_render::swarm_gallery::{GalleryMember, humanize_age, render_gallery};
+use ideocode_tui_render::swarm_gallery::{GalleryMember, humanize_age, render_gallery};
 
 /// A simulated worker, mirroring the fields the real adapter reads from a
 /// `SwarmMemberStatus` (name, role, status, streamed output tail).

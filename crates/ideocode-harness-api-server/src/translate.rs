@@ -1,7 +1,7 @@
 ﻿//! Pure JSON-to-JSON translation between the harness API and the legacy
 //! internal protocol. Kept side-effect free so it is trivially unit-testable.
 
-use IDEOCODE_harness_api::{ApiEvent, ErrorCode, HistoryMessage, ServerFrame, SessionInfo};
+use ideocode_harness_api::{ApiEvent, ErrorCode, HistoryMessage, ServerFrame, SessionInfo};
 use serde_json::{Value, json};
 
 /// Where a translated client request should go.

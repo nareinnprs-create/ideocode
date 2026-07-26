@@ -7,7 +7,7 @@
 //! "Swarm plan synced" notice from [`super::swarm_plan_core`].
 
 use crate::protocol::SwarmMemberStatus;
-use IDEOCODE_tui_render::swarm_gallery::is_active_status;
+use ideocode_tui_render::swarm_gallery::is_active_status;
 
 /// How many member names to list per transition category before collapsing
 /// the rest into "+N".

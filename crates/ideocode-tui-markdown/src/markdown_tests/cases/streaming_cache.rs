@@ -337,12 +337,12 @@ fn test_incremental_renderer_streams_fenced_block_before_close() {
 #[cfg(feature = "mermaid-renderer")]
 #[test]
 fn test_incremental_renderer_defers_mermaid_render_until_background_ready() {
-    IDEOCODE_tui_mermaid::clear_cache().ok();
+    ideocode_tui_mermaid::clear_cache().ok();
 
     let mut renderer = IncrementalMarkdownRenderer::new(Some(80));
     let text = "Plan:\n\n```mermaid\nflowchart LR\n  A[Start] --> B[End]\n```\n";
     let lines =
-        IDEOCODE_tui_mermaid::with_image_protocol_override(Some(true), || renderer.update(text));
+        ideocode_tui_mermaid::with_image_protocol_override(Some(true), || renderer.update(text));
     let rendered = lines_to_string(&lines);
 
     assert!(
@@ -397,7 +397,7 @@ fn test_incremental_renderer_rerenders_pending_mermaid_after_epoch_bump() {
     let text = "Plan:\n\n```mermaid\nflowchart LR\n  E1[EpochBump] --> E2[FastPath]\n```\n";
 
     let lines =
-        IDEOCODE_tui_mermaid::with_image_protocol_override(Some(true), || renderer.update(text));
+        ideocode_tui_mermaid::with_image_protocol_override(Some(true), || renderer.update(text));
     if !lines.iter().any(line_is_mermaid_pending_placeholder) {
         // Cache already warm (render finished before this update); nothing to pin.
         return;
@@ -406,10 +406,10 @@ fn test_incremental_renderer_rerenders_pending_mermaid_after_epoch_bump() {
     // Simulate the background render completing. (The real worker may also
     // bump concurrently; either way the epoch now differs from the stamp
     // taken before the pending render above.)
-    IDEOCODE_tui_mermaid::debug_bump_deferred_render_epoch_for_tests();
+    ideocode_tui_mermaid::debug_bump_deferred_render_epoch_for_tests();
 
     let before = thread_render_count();
-    let _ = IDEOCODE_tui_mermaid::with_image_protocol_override(Some(true), || renderer.update(text));
+    let _ = ideocode_tui_mermaid::with_image_protocol_override(Some(true), || renderer.update(text));
     assert!(
         thread_render_count() > before,
         "identical text with an advanced deferred epoch must re-render \

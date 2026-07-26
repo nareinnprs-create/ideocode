@@ -28,16 +28,16 @@ use crate::live_provider_probes::{
     run_live_native_provider_tool_smoke, run_live_openai_compatible_smoke,
     run_live_openai_compatible_stream_smoke, run_live_openai_compatible_tool_smoke,
 };
-use IDEOCODE_base::auth::lifecycle::{
+use ideocode_base::auth::lifecycle::{
     AuthActivationRequest, activate_auth_change, validate_catalog_invariants,
 };
-use IDEOCODE_base::live_tests::{
+use ideocode_base::live_tests::{
     self, LiveVerificationAuth, LiveVerificationEvent, LiveVerificationResult,
     LiveVerificationStage, LiveVerificationStageStatus, checkpoints,
 };
-use IDEOCODE_base::protocol::{AuthChanged, CatalogNamespace, RuntimeProviderKey};
-use IDEOCODE_base::provider::ModelRoute;
-use IDEOCODE_base::provider_catalog::OpenAiCompatibleProfile;
+use ideocode_base::protocol::{AuthChanged, CatalogNamespace, RuntimeProviderKey};
+use ideocode_base::provider::ModelRoute;
+use ideocode_base::provider_catalog::OpenAiCompatibleProfile;
 
 /// How much of the strict pipeline to exercise.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -292,7 +292,7 @@ fn label_for(checkpoint: &str) -> &'static str {
 /// "missing a thought_signature ... position N" 400) or `skipped` (the model
 /// declined a second tool call). Surfacing it keeps the coverage observable in
 /// the doctor report instead of collapsing to a generic pass string.
-fn tool_stage_detail(stage: &IDEOCODE_base::live_tests::LiveVerificationStage) -> String {
+fn tool_stage_detail(stage: &ideocode_base::live_tests::LiveVerificationStage) -> String {
     let multi = match stage
         .evidence
         .get("multi_tool_replay")
@@ -328,7 +328,7 @@ fn tool_stage_detail(stage: &IDEOCODE_base::live_tests::LiveVerificationStage) -
 /// `none` are legitimate because providers like Gemini-3 and OpenAI hide their
 /// reasoning. Surfacing the classification keeps the observation visible in the
 /// doctor report.
-fn reasoning_stage_detail(stage: &IDEOCODE_base::live_tests::LiveVerificationStage) -> String {
+fn reasoning_stage_detail(stage: &ideocode_base::live_tests::LiveVerificationStage) -> String {
     match stage
         .evidence
         .get("reasoning_capability")
@@ -400,7 +400,7 @@ pub async fn run_provider_e2e(
     requested_model: Option<&str>,
     tier: DoctorTier,
 ) -> anyhow::Result<DoctorReport> {
-    let resolved = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(profile);
+    let resolved = ideocode_base::provider_catalog::resolve_openai_compatible_profile(profile);
     let provider_id = profile.id.to_string();
     let provider_label = profile.display_name.to_string();
     let mut checks: Vec<DoctorCheck> = Vec::new();
@@ -546,11 +546,11 @@ pub async fn run_provider_e2e(
 /// the Antigravity (Google OAuth Cloud Code) provider, and the generic
 /// native-runtime providers (OpenAI, Gemini, Cursor, Copilot, Bedrock).
 ///
-/// The predicate itself lives in `IDEOCODE_base::auth::doctor` so base-internal
+/// The predicate itself lives in `ideocode_base::auth::doctor` so base-internal
 /// code (`live_tests` roster annotation) can call it without depending on this
 /// crate; `native_provider_roster_matches_base_predicate` below keeps it in
 /// sync with [`NativeProviderKind`].
-pub use IDEOCODE_base::auth::doctor::native_doctor_supports_provider;
+pub use ideocode_base::auth::doctor::native_doctor_supports_provider;
 
 /// The wiring contract for the native Claude (OAuth/subscription) provider.
 ///
@@ -603,12 +603,12 @@ pub async fn run_claude_native_e2e(
     requested_model: Option<&str>,
     tier: DoctorTier,
 ) -> anyhow::Result<DoctorReport> {
-    use IDEOCODE_base::provider::Provider;
-    use IDEOCODE_provider_anthropic_runtime::AnthropicProvider;
+    use ideocode_base::provider::Provider;
+    use ideocode_provider_anthropic_runtime::AnthropicProvider;
 
-    let normalized = IDEOCODE_base::auth::lifecycle::normalized_auth_provider_id(Some(provider_id))
+    let normalized = ideocode_base::auth::lifecycle::normalized_auth_provider_id(Some(provider_id))
         .unwrap_or("claude");
-    let provider_label = IDEOCODE_base::auth::lifecycle::provider_display_label(Some(normalized))
+    let provider_label = ideocode_base::auth::lifecycle::provider_display_label(Some(normalized))
         .unwrap_or_else(|| "Anthropic/Claude".to_string());
     let provider_id = normalized.to_string();
     let mut checks: Vec<DoctorCheck> = Vec::new();
@@ -720,7 +720,7 @@ pub async fn run_claude_native_e2e(
                 // Endpoint worked but returned nothing usable; fall back to the
                 // known model ids so wiring checks can still run, and record the
                 // catalog endpoint as passed (it answered) but note the fallback.
-                let fallback = IDEOCODE_base::provider::known_anthropic_model_ids();
+                let fallback = ideocode_base::provider::known_anthropic_model_ids();
                 checks.push(DoctorCheck::passed(
                     checkpoints::MODEL_CATALOG_LIVE_ENDPOINT,
                     label_for(checkpoints::MODEL_CATALOG_LIVE_ENDPOINT),
@@ -754,7 +754,7 @@ pub async fn run_claude_native_e2e(
             label_for(checkpoints::MODEL_CATALOG_LIVE_ENDPOINT),
             "offline tier: using known Claude model ids (no network)".to_string(),
         ));
-        IDEOCODE_base::provider::known_anthropic_model_ids()
+        ideocode_base::provider::known_anthropic_model_ids()
     };
 
     // Pick the model under test. When the caller does not request a specific
@@ -1003,13 +1003,13 @@ pub async fn run_antigravity_native_e2e(
     requested_model: Option<&str>,
     tier: DoctorTier,
 ) -> anyhow::Result<DoctorReport> {
-    use IDEOCODE_base::provider::Provider;
-    use IDEOCODE_provider_antigravity_runtime::AntigravityProvider;
+    use ideocode_base::provider::Provider;
+    use ideocode_provider_antigravity_runtime::AntigravityProvider;
 
     // The antigravity login provider has a single fixed id; accept any alias the
     // caller passed (e.g. "antigravity") and normalize to the canonical id.
-    let _ = IDEOCODE_base::auth::lifecycle::normalized_auth_provider_id(Some(provider_id));
-    let provider_label = IDEOCODE_base::auth::lifecycle::provider_display_label(Some("antigravity"))
+    let _ = ideocode_base::auth::lifecycle::normalized_auth_provider_id(Some(provider_id));
+    let provider_label = ideocode_base::auth::lifecycle::provider_display_label(Some("antigravity"))
         .unwrap_or_else(|| "Antigravity".to_string());
     let provider_id = "antigravity".to_string();
     let mut checks: Vec<DoctorCheck> = Vec::new();
@@ -1396,9 +1396,9 @@ impl NativeProviderKind {
                 // route identity is the managed IDEOCODE subscription. Model
                 // switches use a bare model id so they stay on that runtime.
                 contract: WiringContract {
-                    api_method: IDEOCODE_base::subscription_catalog::IDEOCODE_ROUTE_API_METHOD
+                    api_method: ideocode_base::subscription_catalog::IDEOCODE_ROUTE_API_METHOD
                         .to_string(),
-                    route_provider: IDEOCODE_base::subscription_catalog::IDEOCODE_PROVIDER_DISPLAY_NAME
+                    route_provider: ideocode_base::subscription_catalog::IDEOCODE_PROVIDER_DISPLAY_NAME
                         .to_string(),
                     expected_runtime: "IDEOCODE",
                     expected_namespace: None,
@@ -1432,14 +1432,14 @@ impl NativeProviderKind {
     /// Build the production runtime for this provider, pinned to no model yet.
     /// Returns an error only when the runtime cannot be constructed at all (e.g.
     /// Copilot with no credential file); model selection happens later.
-    fn build_runtime(self) -> anyhow::Result<std::sync::Arc<dyn IDEOCODE_base::provider::Provider>> {
+    fn build_runtime(self) -> anyhow::Result<std::sync::Arc<dyn ideocode_base::provider::Provider>> {
         use anyhow::Context as _;
-        use IDEOCODE_base::provider::Provider;
+        use ideocode_base::provider::Provider;
         let runtime: std::sync::Arc<dyn Provider> = match self {
             Self::OpenAi => {
                 let credentials =
-                    IDEOCODE_base::auth::codex::load_credentials().unwrap_or_else(|_| {
-                        IDEOCODE_base::auth::codex::CodexCredentials {
+                    ideocode_base::auth::codex::load_credentials().unwrap_or_else(|_| {
+                        ideocode_base::auth::codex::CodexCredentials {
                             access_token: String::new(),
                             refresh_token: String::new(),
                             id_token: None,
@@ -1447,15 +1447,15 @@ impl NativeProviderKind {
                             expires_at: None,
                         }
                     });
-                std::sync::Arc::new(IDEOCODE_provider_openai_runtime::OpenAIProvider::new(
+                std::sync::Arc::new(ideocode_provider_openai_runtime::OpenAIProvider::new(
                     credentials,
                 ))
             }
             Self::Gemini => {
-                std::sync::Arc::new(IDEOCODE_provider_gemini_runtime::GeminiProvider::new())
+                std::sync::Arc::new(ideocode_provider_gemini_runtime::GeminiProvider::new())
             }
             Self::Cursor => {
-                std::sync::Arc::new(IDEOCODE_provider_cursor_runtime::CursorCliProvider::new())
+                std::sync::Arc::new(ideocode_provider_cursor_runtime::CursorCliProvider::new())
             }
             Self::Copilot => {
                 // `new()` requires a loadable GitHub token; fall back to an empty
@@ -1468,31 +1468,31 @@ impl NativeProviderKind {
                 // `detect_tier_and_set_default` (run from `prefetch_models`). With
                 // the default grace window the doctor's immediate prefetch returns
                 // early without marking init done, so the live probes would hang.
-                IDEOCODE_base::env::set_var("IDEOCODE_COPILOT_PREFETCH_STARTUP_GRACE_MS", "0");
-                let runtime = match IDEOCODE_provider_copilot_runtime::CopilotApiProvider::new() {
+                ideocode_base::env::set_var("IDEOCODE_COPILOT_PREFETCH_STARTUP_GRACE_MS", "0");
+                let runtime = match ideocode_provider_copilot_runtime::CopilotApiProvider::new() {
                     Ok(runtime) => runtime,
-                    Err(_) => IDEOCODE_provider_copilot_runtime::CopilotApiProvider::new_with_token(
+                    Err(_) => ideocode_provider_copilot_runtime::CopilotApiProvider::new_with_token(
                         String::new(),
                     ),
                 };
                 std::sync::Arc::new(runtime)
             }
             Self::Bedrock => {
-                std::sync::Arc::new(IDEOCODE_base::provider::bedrock::BedrockProvider::new())
+                std::sync::Arc::new(ideocode_base::provider::bedrock::BedrockProvider::new())
             }
-            Self::IDEOCODE => std::sync::Arc::new(IDEOCODE_base::provider::IDEOCODE::IDEOCODEProvider::new()),
+            Self::IDEOCODE => std::sync::Arc::new(ideocode_base::provider::ideocode::IDEOCODEProvider::new()),
             Self::Azure => {
                 // Azure OpenAI is the OpenRouter transport configured via Azure
                 // env; apply that env (endpoint/key/header wiring) before building
                 // so the runtime points at the user's Azure deployment.
-                IDEOCODE_base::auth::azure::apply_runtime_env()
+                ideocode_base::auth::azure::apply_runtime_env()
                     .context("apply Azure OpenAI runtime env")?;
-                let runtime = IDEOCODE_provider_openrouter_runtime::OpenRouterProvider::new()
+                let runtime = ideocode_provider_openrouter_runtime::OpenRouterProvider::new()
                     .context("construct Azure OpenAI (OpenRouter transport) runtime")?;
                 // Azure exposes a single user-configured deployment rather than a
                 // live catalog; pin the runtime to it so the catalog/picker
                 // checks have a model to assert.
-                if let Some(model) = IDEOCODE_base::auth::azure::load_model() {
+                if let Some(model) = ideocode_base::auth::azure::load_model() {
                     let _ = runtime.set_model(&model);
                 }
                 std::sync::Arc::new(runtime)
@@ -1508,7 +1508,7 @@ impl NativeProviderKind {
         use anyhow::Context as _;
         match self {
             Self::OpenAi => {
-                let credentials = IDEOCODE_base::auth::codex::load_credentials()
+                let credentials = ideocode_base::auth::codex::load_credentials()
                     .context("load OpenAI credentials (run `IDEOCODE login --provider openai`)")?;
                 if credentials.access_token.trim().is_empty() {
                     anyhow::bail!("resolved an empty OpenAI access token");
@@ -1516,7 +1516,7 @@ impl NativeProviderKind {
                 Ok("OpenAI credential resolved".to_string())
             }
             Self::Gemini => {
-                let tokens = IDEOCODE_base::auth::gemini::load_or_refresh_tokens()
+                let tokens = ideocode_base::auth::gemini::load_or_refresh_tokens()
                     .await
                     .context("load Gemini OAuth tokens")?;
                 if tokens.access_token.trim().is_empty() {
@@ -1525,7 +1525,7 @@ impl NativeProviderKind {
                 Ok("Gemini Code Assist OAuth credential resolved".to_string())
             }
             Self::Cursor => {
-                let key = IDEOCODE_base::auth::cursor::load_api_key()
+                let key = ideocode_base::auth::cursor::load_api_key()
                     .context("load Cursor credential (run `IDEOCODE login --provider cursor`)")?;
                 if key.trim().is_empty() {
                     anyhow::bail!("resolved an empty Cursor credential");
@@ -1533,7 +1533,7 @@ impl NativeProviderKind {
                 Ok("Cursor credential resolved".to_string())
             }
             Self::Copilot => {
-                let token = IDEOCODE_base::auth::copilot::load_github_token()
+                let token = ideocode_base::auth::copilot::load_github_token()
                     .context("load GitHub Copilot token (run `IDEOCODE login --provider copilot`)")?;
                 if token.trim().is_empty() {
                     anyhow::bail!("resolved an empty GitHub Copilot token");
@@ -1541,7 +1541,7 @@ impl NativeProviderKind {
                 Ok("GitHub Copilot token resolved".to_string())
             }
             Self::Bedrock => {
-                if !IDEOCODE_base::provider::bedrock::BedrockProvider::has_credentials() {
+                if !ideocode_base::provider::bedrock::BedrockProvider::has_credentials() {
                     anyhow::bail!(
                         "no AWS Bedrock credentials found (set AWS_BEARER_TOKEN_BEDROCK, AWS_PROFILE, \
                          or AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY)"
@@ -1550,7 +1550,7 @@ impl NativeProviderKind {
                 Ok("AWS Bedrock credential resolved".to_string())
             }
             Self::IDEOCODE => {
-                if !IDEOCODE_base::subscription_catalog::has_credentials() {
+                if !ideocode_base::subscription_catalog::has_credentials() {
                     anyhow::bail!(
                         "no IDEOCODE subscription credential found (set IDEOCODE_API_KEY or run \
                          `IDEOCODE login --provider IDEOCODE`)"
@@ -1559,7 +1559,7 @@ impl NativeProviderKind {
                 Ok("IDEOCODE subscription credential resolved".to_string())
             }
             Self::Azure => {
-                if !IDEOCODE_base::auth::azure::has_configuration() {
+                if !ideocode_base::auth::azure::has_configuration() {
                     anyhow::bail!(
                         "Azure OpenAI is not fully configured (need AZURE_OPENAI_ENDPOINT plus an \
                          API key or Entra ID); run `IDEOCODE login --provider azure`"
@@ -1567,7 +1567,7 @@ impl NativeProviderKind {
                 }
                 Ok(format!(
                     "Azure OpenAI configured ({})",
-                    IDEOCODE_base::auth::azure::method_detail()
+                    ideocode_base::auth::azure::method_detail()
                 ))
             }
         }
@@ -1847,7 +1847,7 @@ pub async fn run_generic_native_e2e(
 /// Drive the three generic live native probes and fold their results into the
 /// six API-dependent checkpoints, mirroring [`run_native_claude_api_checks`].
 async fn run_generic_native_api_checks(
-    provider: &dyn IDEOCODE_base::provider::Provider,
+    provider: &dyn ideocode_base::provider::Provider,
     selected: &str,
     label: &str,
     checks: &mut Vec<DoctorCheck>,
@@ -1953,7 +1953,7 @@ struct WiringContract {
 }
 
 fn wiring_contract(profile: OpenAiCompatibleProfile) -> WiringContract {
-    match IDEOCODE_base::auth::lifecycle::normalized_auth_provider_id(Some(profile.id)) {
+    match ideocode_base::auth::lifecycle::normalized_auth_provider_id(Some(profile.id)) {
         Some("claude-api") => WiringContract {
             api_method: "claude-api".to_string(),
             route_provider: "Anthropic".to_string(),
@@ -2018,7 +2018,7 @@ fn run_wiring_checks_for_contract(
         .collect();
 
     let auth = AuthChanged {
-        provider: IDEOCODE_base::protocol::AuthProviderId::new(auth_provider_id),
+        provider: ideocode_base::protocol::AuthProviderId::new(auth_provider_id),
         credential_source: None,
         auth_method: None,
         expected_runtime: Some(RuntimeProviderKey::new(contract.expected_runtime)),
@@ -2543,7 +2543,7 @@ mod tests {
         ));
     }
 
-    /// `native_doctor_supports_provider` lives in `IDEOCODE_base::auth::doctor`
+    /// `native_doctor_supports_provider` lives in `ideocode_base::auth::doctor`
     /// (so base's `live_tests` roster can call it) while the drivers live
     /// here. Keep the base predicate in sync with the driver roster: every
     /// generic `NativeProviderKind` id plus the bespoke claude/antigravity
@@ -2584,15 +2584,15 @@ mod tests {
     }
 
     #[test]
-    fn native_IDEOCODE_contract_uses_managed_subscription_identity() {
+    fn native_ideocode_contract_uses_managed_subscription_identity() {
         let contract = NativeProviderKind::IDEOCODE.spec().contract;
         assert_eq!(
             contract.api_method,
-            IDEOCODE_base::subscription_catalog::IDEOCODE_ROUTE_API_METHOD
+            ideocode_base::subscription_catalog::IDEOCODE_ROUTE_API_METHOD
         );
         assert_eq!(
             contract.route_provider,
-            IDEOCODE_base::subscription_catalog::IDEOCODE_PROVIDER_DISPLAY_NAME
+            ideocode_base::subscription_catalog::IDEOCODE_PROVIDER_DISPLAY_NAME
         );
         assert_eq!(contract.expected_runtime, "IDEOCODE");
         assert!(contract.expected_namespace.is_none());

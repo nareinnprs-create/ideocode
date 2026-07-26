@@ -10,12 +10,12 @@ use std::sync::Mutex;
 static TRACKER: Mutex<Option<CopilotUsageTracker>> = Mutex::new(None);
 
 fn usage_path() -> PathBuf {
-    crate::storage::IDEOCODE_dir()
+    crate::storage::ideocode_dir()
         .unwrap_or_else(|_| PathBuf::from(".").join(".IDEOCODE"))
         .join("copilot_usage.json")
 }
 
-pub use IDEOCODE_usage_types::{AllTimeUsage, CopilotUsageTracker, DayUsage, MonthUsage};
+pub use ideocode_usage_types::{AllTimeUsage, CopilotUsageTracker, DayUsage, MonthUsage};
 
 fn roll_if_needed(tracker: &mut CopilotUsageTracker) {
     let now = Utc::now();
@@ -140,7 +140,7 @@ mod tests {
     }
 
     #[test]
-    fn usage_path_respects_IDEOCODE_home() {
+    fn usage_path_respects_ideocode_home() {
         let _env_lock = lock_env();
         clear_tracker();
         let temp = tempfile::tempdir().expect("tempdir");
@@ -150,7 +150,7 @@ mod tests {
     }
 
     #[test]
-    fn save_and_load_roundtrip_under_IDEOCODE_home() {
+    fn save_and_load_roundtrip_under_ideocode_home() {
         let _env_lock = lock_env();
         clear_tracker();
         let temp = tempfile::tempdir().expect("tempdir");

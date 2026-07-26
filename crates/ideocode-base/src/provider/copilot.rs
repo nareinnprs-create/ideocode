@@ -7,8 +7,8 @@
 //! pure model-catalog data (from `IDEOCODE-provider-copilot`) that its routing
 //! logic needs, plus a credentials probe that delegates to auth.
 
-pub use IDEOCODE_provider_copilot::{DEFAULT_MODEL, FALLBACK_MODELS, is_known_display_model};
-pub use IDEOCODE_provider_core::PremiumMode;
+pub use ideocode_provider_copilot::{DEFAULT_MODEL, FALLBACK_MODELS, is_known_display_model};
+pub use ideocode_provider_core::PremiumMode;
 
 /// Whether GitHub Copilot credentials are present (GitHub OAuth token).
 ///

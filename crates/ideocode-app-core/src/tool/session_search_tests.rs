@@ -194,7 +194,7 @@ fn bench_real_session_search_corpus() {
         return;
     }
 
-    let sessions_dir = crate::storage::IDEOCODE_dir()
+    let sessions_dir = crate::storage::ideocode_dir()
         .expect("IDEOCODE dir")
         .join("sessions");
     let mut options = SearchOptions::for_test("benchmark-current-session");
@@ -213,8 +213,8 @@ fn bench_real_session_search_corpus() {
         eprintln!(
             "BENCH query={query} elapsed_ms={} scanned={} candidates={} results={} truncated={}",
             start.elapsed().as_millis(),
-            report.scanned_IDEOCODE_sessions,
-            report.candidate_IDEOCODE_sessions,
+            report.scanned_ideocode_sessions,
+            report.candidate_ideocode_sessions,
             report.results.len(),
             report.truncated
         );
@@ -235,7 +235,7 @@ fn bench_real_session_search_corpus() {
         eprintln!(
             "BENCH_EXTERNAL query={query} elapsed_ms={} scanned_IDEOCODE={} scanned_external={} sources={:?} results={} truncated={}",
             start.elapsed().as_millis(),
-            report.scanned_IDEOCODE_sessions,
+            report.scanned_ideocode_sessions,
             report.scanned_external_sessions,
             report.external_sources,
             report.results.len(),
@@ -537,7 +537,7 @@ fn context_expansion_returns_neighboring_messages_without_matching_hit() {
 }
 
 #[test]
-fn external_codex_sessions_are_searchable_without_IDEOCODE_session_dir() {
+fn external_codex_sessions_are_searchable_without_ideocode_session_dir() {
     with_temp_home(|home| {
         let codex_dir = home.join("external/.codex/sessions/2026/05/01");
         std::fs::create_dir_all(&codex_dir).expect("create codex dir");
@@ -586,7 +586,7 @@ fn external_codex_sessions_are_searchable_without_IDEOCODE_session_dir() {
         options.context_after = 1;
         let report = run_report(home, "external-codex-needle", &options);
 
-        assert_eq!(report.scanned_IDEOCODE_sessions, 0);
+        assert_eq!(report.scanned_ideocode_sessions, 0);
         assert!(report.scanned_external_sessions >= 1);
         assert_eq!(report.external_sources, vec!["codex"]);
         assert_eq!(report.results.len(), 1);
@@ -611,7 +611,7 @@ fn external_codex_sessions_are_searchable_without_IDEOCODE_session_dir() {
 }
 
 #[test]
-fn external_cursor_sessions_are_searchable_without_IDEOCODE_session_dir() {
+fn external_cursor_sessions_are_searchable_without_ideocode_session_dir() {
     with_temp_home(|home| {
         let session_id = "11111111-2222-3333-4444-555555555555";
         let cursor_dir = home.join(format!(
@@ -645,7 +645,7 @@ fn external_cursor_sessions_are_searchable_without_IDEOCODE_session_dir() {
         options.source_filter = Some("cursor".to_string());
         let report = run_report(home, "external-cursor-needle", &options);
 
-        assert_eq!(report.scanned_IDEOCODE_sessions, 0);
+        assert_eq!(report.scanned_ideocode_sessions, 0);
         assert!(report.scanned_external_sessions >= 1);
         assert_eq!(report.external_sources, vec!["cursor"]);
         assert_eq!(report.results.len(), 1);

@@ -40,7 +40,7 @@ fn reasoning_region_emits_dim_italic_lines_no_gutter_header_or_footer() {
             !streaming.contains("Thought for"),
             "no footer expected: {streaming:?}"
         );
-        let sentinel = IDEOCODE_tui_markdown::REASONING_SENTINEL;
+        let sentinel = ideocode_tui_markdown::REASONING_SENTINEL;
         assert!(
             streaming.contains(&format!("*{sentinel}Let me think.{sentinel}*")),
             "first line not dim+italic: {streaming:?}"
@@ -97,12 +97,12 @@ fn reasoning_region_closes_before_normal_output() {
             .find(|l| l.contains("Final answer."))
             .expect("answer line present");
         assert!(
-            !answer_line.contains(IDEOCODE_tui_markdown::REASONING_SENTINEL),
+            !answer_line.contains(ideocode_tui_markdown::REASONING_SENTINEL),
             "final answer must not be styled as reasoning: {answer_line:?}"
         );
         // The reasoning left the stream and anchored as a display-only message.
         assert!(
-            !text.contains(IDEOCODE_tui_markdown::REASONING_SENTINEL),
+            !text.contains(ideocode_tui_markdown::REASONING_SENTINEL),
             "reasoning must not remain in the answer stream: {text:?}"
         );
         assert!(
@@ -122,7 +122,7 @@ fn reasoning_region_open_is_idempotent() {
     app.append_reasoning_text("b\n");
 
     let text = app.streaming_text();
-    let sentinel = IDEOCODE_tui_markdown::REASONING_SENTINEL;
+    let sentinel = ideocode_tui_markdown::REASONING_SENTINEL;
     assert!(
         text.contains(&format!("*{sentinel}a{sentinel}*")),
         "first chunk: {text:?}"
@@ -148,7 +148,7 @@ fn reasoning_line_split_across_deltas_stays_one_run() {
 
     // While streaming live, the split-across-deltas line is a single emphasis run.
     let content = app.streaming_text();
-    let sentinel = IDEOCODE_tui_markdown::REASONING_SENTINEL;
+    let sentinel = ideocode_tui_markdown::REASONING_SENTINEL;
     assert!(
         content.contains(&format!("*{sentinel}one two{sentinel}*")),
         "split line must be one emphasis run: {content:?}"
@@ -181,7 +181,7 @@ fn reasoning_region_renders_dim_italic_text_without_gutter() {
     // No blockquote gutter, and the sentinel is stripped from the visible text.
     assert!(!rendered.contains('│'), "no gutter expected: {rendered:?}");
     assert!(
-        !rendered.contains(IDEOCODE_tui_markdown::REASONING_SENTINEL),
+        !rendered.contains(ideocode_tui_markdown::REASONING_SENTINEL),
         "sentinel must be stripped: {rendered:?}"
     );
 
@@ -204,14 +204,14 @@ fn strip_reasoning_lines_removes_reasoning_keeps_answer() {
     // Build content the way the streaming buffer would: reasoning lines wrapped
     // with the sentinel, then a normal answer paragraph.
     let mut content = String::new();
-    content.push_str(&IDEOCODE_tui_markdown::reasoning_line_markup("thinking one"));
-    content.push_str(&IDEOCODE_tui_markdown::reasoning_line_markup("thinking two"));
+    content.push_str(&ideocode_tui_markdown::reasoning_line_markup("thinking one"));
+    content.push_str(&ideocode_tui_markdown::reasoning_line_markup("thinking two"));
     content.push('\n');
     content.push_str("Here is the answer.\n");
 
     let stripped = strip_reasoning_lines(&content);
     assert_eq!(stripped, "Here is the answer.");
-    assert!(!stripped.contains(IDEOCODE_tui_markdown::REASONING_SENTINEL));
+    assert!(!stripped.contains(ideocode_tui_markdown::REASONING_SENTINEL));
 }
 
 #[test]
@@ -219,7 +219,7 @@ fn strip_reasoning_lines_reasoning_only_becomes_empty() {
     use crate::tui::app::input::strip_reasoning_lines;
 
     let mut content = String::new();
-    content.push_str(&IDEOCODE_tui_markdown::reasoning_line_markup("only thinking"));
+    content.push_str(&ideocode_tui_markdown::reasoning_line_markup("only thinking"));
     let stripped = strip_reasoning_lines(&content);
     assert!(stripped.trim().is_empty(), "got: {stripped:?}");
 }
@@ -229,7 +229,7 @@ fn reasoning_partial_line_renders_live_before_newline() {
     // The in-progress line (no trailing newline) must render immediately as a
     // dim+italic partial tail so reasoning streams token-by-token.
     let mut app = create_test_app();
-    let sentinel = IDEOCODE_tui_markdown::REASONING_SENTINEL;
+    let sentinel = ideocode_tui_markdown::REASONING_SENTINEL;
 
     app.open_reasoning_region();
     app.append_reasoning_text("partial thou");
@@ -246,7 +246,7 @@ fn reasoning_partial_tail_grows_in_place_without_duplication() {
     // Successive deltas of the same line replace the live tail (truncate + rebuild)
     // rather than appending duplicate fragments.
     let mut app = create_test_app();
-    let sentinel = IDEOCODE_tui_markdown::REASONING_SENTINEL;
+    let sentinel = ideocode_tui_markdown::REASONING_SENTINEL;
 
     app.open_reasoning_region();
     app.append_reasoning_text("one ");
@@ -275,7 +275,7 @@ fn reasoning_partial_promotes_to_committed_line_on_newline() {
     // When the newline arrives, the live tail becomes a committed line and a fresh
     // (empty) tail follows; no duplicate copies of the completed line remain.
     let mut app = create_test_app();
-    let sentinel = IDEOCODE_tui_markdown::REASONING_SENTINEL;
+    let sentinel = ideocode_tui_markdown::REASONING_SENTINEL;
 
     app.open_reasoning_region();
     app.append_reasoning_text("growing line");
@@ -309,7 +309,7 @@ fn reasoning_close_promotes_pending_partial_line() {
         // Closing the region with an in-progress (no-newline) partial promotes it to a
         // committed line exactly once, then collapses into the reasoning message.
         let mut app = create_test_app();
-        let sentinel = IDEOCODE_tui_markdown::REASONING_SENTINEL;
+        let sentinel = ideocode_tui_markdown::REASONING_SENTINEL;
 
         app.open_reasoning_region();
         app.append_reasoning_text("final thought");
@@ -346,7 +346,7 @@ fn reasoning_preceded_by_answer_keeps_order_and_drops_reasoning() {
         // anchored trace so the transcript keeps chronological order; answer text
         // after the close streams below the anchored trace.
         let mut app = create_test_app();
-        let sentinel = IDEOCODE_tui_markdown::REASONING_SENTINEL;
+        let sentinel = ideocode_tui_markdown::REASONING_SENTINEL;
 
         app.append_streaming_text("Intro before thinking.");
         app.open_reasoning_region();
@@ -414,7 +414,7 @@ fn multiple_reasoning_blocks_anchor_in_order_and_clear_next_prompt() {
         );
         assert!(
             !app.streaming_text()
-                .contains(IDEOCODE_tui_markdown::REASONING_SENTINEL),
+                .contains(ideocode_tui_markdown::REASONING_SENTINEL),
             "no reasoning markup should linger in the stream: {:?}",
             app.streaming_text()
         );
@@ -738,7 +738,7 @@ fn repro_reasoning_rendered_then_removed_when_turn_ends_open() {
         app.apply_stream_ops(ops);
         assert!(
             app.streaming_text()
-                .contains(IDEOCODE_tui_markdown::REASONING_SENTINEL),
+                .contains(ideocode_tui_markdown::REASONING_SENTINEL),
             "precondition: reasoning rendered live in the stream"
         );
         assert!(app.reasoning_streaming, "region open: no ReasoningDone sent");
@@ -749,7 +749,7 @@ fn repro_reasoning_rendered_then_removed_when_turn_ends_open() {
         // The reasoning that was rendered live must not silently vanish on finish.
         let lingered_in_stream = app
             .streaming_text()
-            .contains(IDEOCODE_tui_markdown::REASONING_SENTINEL);
+            .contains(ideocode_tui_markdown::REASONING_SENTINEL);
         let anchored = app
             .display_messages
             .iter()
@@ -786,7 +786,7 @@ fn open_reasoning_region_closed_at_turn_finish_is_anchored_not_dropped() {
         assert!(app.reasoning_streaming, "precondition: region open");
         assert!(
             app.streaming_text()
-                .contains(IDEOCODE_tui_markdown::REASONING_SENTINEL),
+                .contains(ideocode_tui_markdown::REASONING_SENTINEL),
             "precondition: reasoning rendered live in the stream"
         );
 
@@ -803,7 +803,7 @@ fn open_reasoning_region_closed_at_turn_finish_is_anchored_not_dropped() {
             .any(|m| m.role == "reasoning" && m.content.contains("weighing the options"));
         let lingered_in_stream = app
             .streaming_text()
-            .contains(IDEOCODE_tui_markdown::REASONING_SENTINEL);
+            .contains(ideocode_tui_markdown::REASONING_SENTINEL);
         assert!(
             anchored || lingered_in_stream,
             "reasoning rendered live must be preserved at turn finish; display_messages={:?}, stream={:?}",
@@ -853,7 +853,7 @@ fn answer_text_appended_into_open_region_does_not_glue_next_reasoning() {
     // straight into the reasoning run with no break (e.g.
     // `...patch + build.Ah, I see what's happening now.`).
     let mut app = create_test_app();
-    let sentinel = IDEOCODE_tui_markdown::REASONING_SENTINEL;
+    let sentinel = ideocode_tui_markdown::REASONING_SENTINEL;
 
     app.open_reasoning_region();
     app.append_reasoning_text("first thinking\n");

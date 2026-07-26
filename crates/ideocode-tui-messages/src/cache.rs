@@ -1,5 +1,5 @@
 ﻿use crate::DisplayMessage;
-use IDEOCODE_config_types::{DiagramDisplayMode, DiffDisplayMode};
+use ideocode_config_types::{DiagramDisplayMode, DiffDisplayMode};
 use ratatui::layout::Alignment;
 use ratatui::text::{Line, Span};
 use std::collections::{HashMap, VecDeque};

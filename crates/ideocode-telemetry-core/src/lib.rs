@@ -1,9 +1,9 @@
-﻿use IDEOCODE_logging as logging;
-use IDEOCODE_storage as storage;
+﻿use ideocode_logging as logging;
+use ideocode_storage as storage;
 mod lifecycle;
 mod state_support;
 use chrono::{DateTime, NaiveDate, Utc};
-use IDEOCODE_usage_types::{
+use ideocode_usage_types::{
     AuthEvent, DiscoveryEvent, ErrorCounts, FeedbackEvent, InstallEvent, OnboardingStepEvent,
     SessionLifecycleEvent, SessionStartEvent, TelemetryProjectProfile as ProjectProfile,
     TelemetryToolCategory as ToolCategory, TelemetryWorkflowCounts, TurnEndEvent, UpgradeEvent,
@@ -12,7 +12,7 @@ use IDEOCODE_usage_types::{
     mcp_telemetry_server_name as mcp_server_name, sanitize_feedback_text, sanitize_telemetry_label,
     telemetry_workflow_flags_from_counts,
 };
-pub use IDEOCODE_usage_types::{ErrorCategory, SessionEndReason};
+pub use ideocode_usage_types::{ErrorCategory, SessionEndReason};
 use lifecycle::emit_lifecycle_event;
 use serde_json::Value;
 use state_support::*;
@@ -326,7 +326,7 @@ pub fn is_enabled() -> bool {
 /// across shells so the onboarding "Telemetry settings" screen can honor the
 /// choice without asking the user to edit their environment.
 fn opt_out_marker_path() -> Option<std::path::PathBuf> {
-    storage::IDEOCODE_dir().ok().map(|d| d.join("no_telemetry"))
+    storage::ideocode_dir().ok().map(|d| d.join("no_telemetry"))
 }
 
 /// Whether telemetry is disabled by an environment variable rather than by the
@@ -375,7 +375,7 @@ pub fn set_usage_telemetry_enabled(enabled: bool) -> bool {
 /// off by default and only enabled when the user explicitly opts in (e.g. via
 /// the first-run onboarding flow).
 fn share_content_marker_path() -> Option<std::path::PathBuf> {
-    storage::IDEOCODE_dir()
+    storage::ideocode_dir()
         .ok()
         .map(|d| d.join("telemetry_share_content"))
 }
@@ -675,7 +675,7 @@ fn detect_project_profile() -> ProjectProfile {
     let Some(root) = cwd.as_deref() else {
         return profile;
     };
-    profile.repo_present = root.join(".git").exists() || is_IDEOCODE_repo_dir(root);
+    profile.repo_present = root.join(".git").exists() || is_ideocode_repo_dir(root);
     let mut scanned_files = 0usize;
     for entry in walkdir::WalkDir::new(root)
         .max_depth(3)
@@ -1036,7 +1036,7 @@ fn post_payload(payload: serde_json::Value, timeout: Duration) -> bool {
     }
     let client = TELEMETRY_HTTP_CLIENT.get_or_init(|| {
         reqwest::blocking::Client::builder()
-            .user_agent(IDEOCODE_provider_core::IDEOCODE_USER_AGENT)
+            .user_agent(ideocode_provider_core::IDEOCODE_USER_AGENT)
             .build()
             .expect("telemetry HTTP client should build")
     });
@@ -1524,7 +1524,7 @@ pub fn record_provider_selected(provider: &str) {
 }
 
 pub fn record_auth_started(provider: &str, method: &str) {
-    IDEOCODE_logging::auth_event("auth_started", provider, &[("method", method)]);
+    ideocode_logging::auth_event("auth_started", provider, &[("method", method)]);
     emit_onboarding_step("auth_started", Some(provider), Some(method), None);
 }
 
@@ -1533,7 +1533,7 @@ pub fn record_auth_failed(provider: &str, method: &str) {
 }
 
 pub fn record_auth_failed_reason(provider: &str, method: &str, reason: &str) {
-    IDEOCODE_logging::auth_event(
+    ideocode_logging::auth_event(
         "auth_failed",
         provider,
         &[("method", method), ("reason", reason)],
@@ -1542,17 +1542,17 @@ pub fn record_auth_failed_reason(provider: &str, method: &str, reason: &str) {
 }
 
 pub fn record_auth_cancelled(provider: &str, method: &str) {
-    IDEOCODE_logging::auth_event("auth_cancelled", provider, &[("method", method)]);
+    ideocode_logging::auth_event("auth_cancelled", provider, &[("method", method)]);
     emit_onboarding_step("auth_cancelled", Some(provider), Some(method), None);
 }
 
 pub fn record_auth_surface_blocked(provider: &str, method: &str) {
-    IDEOCODE_logging::auth_event("auth_surface_blocked", provider, &[("method", method)]);
+    ideocode_logging::auth_event("auth_surface_blocked", provider, &[("method", method)]);
     emit_onboarding_step("auth_surface_blocked", Some(provider), Some(method), None);
 }
 
 pub fn record_auth_surface_blocked_reason(provider: &str, method: &str, reason: &str) {
-    IDEOCODE_logging::auth_event(
+    ideocode_logging::auth_event(
         "auth_surface_blocked",
         provider,
         &[("method", method), ("reason", reason)],
@@ -1566,7 +1566,7 @@ pub fn record_auth_surface_blocked_reason(provider: &str, method: &str, reason: 
 }
 
 pub fn record_auth_success(provider: &str, method: &str) {
-    IDEOCODE_logging::auth_event("auth_success", provider, &[("method", method)]);
+    ideocode_logging::auth_event("auth_success", provider, &[("method", method)]);
     if !is_enabled() {
         return;
     }
@@ -2147,7 +2147,7 @@ fn show_first_run_notice() {
     // exactly the double-click-the-exe path) render raw escapes as `←[90m`
     // garbage (issue #498), so only colorize when the console accepts ANSI
     // (the helper also opportunistically enables VT mode on Windows).
-    let (dim, reset) = if IDEOCODE_core::console::stderr_supports_ansi() {
+    let (dim, reset) = if ideocode_core::console::stderr_supports_ansi() {
         ("\x1b[90m", "\x1b[0m")
     } else {
         ("", "")

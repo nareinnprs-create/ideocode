@@ -176,7 +176,7 @@ impl Provider for OpenRouterSpecCaptureProvider {
 }
 
 fn create_test_app() -> App {
-    ensure_test_IDEOCODE_home_if_unset();
+    ensure_test_ideocode_home_if_unset();
     clear_persisted_test_ui_state();
     crate::tui::ui::clear_test_render_state_for_tests();
 
@@ -190,7 +190,7 @@ fn create_test_app() -> App {
 }
 
 fn create_named_provider_test_app(name: &'static str, model: &'static str) -> App {
-    ensure_test_IDEOCODE_home_if_unset();
+    ensure_test_ideocode_home_if_unset();
     clear_persisted_test_ui_state();
     crate::tui::ui::clear_test_render_state_for_tests();
 
@@ -216,7 +216,7 @@ fn wait_for_model_picker_load(app: &mut App) {
 }
 
 fn create_refresh_summary_test_app(summary: crate::provider::ModelCatalogRefreshSummary) -> App {
-    ensure_test_IDEOCODE_home_if_unset();
+    ensure_test_ideocode_home_if_unset();
     clear_persisted_test_ui_state();
     crate::tui::ui::clear_test_render_state_for_tests();
 
@@ -230,7 +230,7 @@ fn create_refresh_summary_test_app(summary: crate::provider::ModelCatalogRefresh
 }
 
 fn create_openrouter_spec_capture_test_app() -> (App, StdArc<StdMutex<Vec<String>>>) {
-    ensure_test_IDEOCODE_home_if_unset();
+    ensure_test_ideocode_home_if_unset();
     clear_persisted_test_ui_state();
     crate::tui::ui::clear_test_render_state_for_tests();
 
@@ -324,7 +324,7 @@ fn test_side_panel_snapshot(page_id: &str, title: &str) -> crate::side_panel::Si
     }
 }
 
-fn ensure_test_IDEOCODE_home_if_unset() {
+fn ensure_test_ideocode_home_if_unset() {
     use std::sync::OnceLock;
 
     static TEST_HOME: OnceLock<std::path::PathBuf> = OnceLock::new();
@@ -342,7 +342,7 @@ fn ensure_test_IDEOCODE_home_if_unset() {
 }
 
 fn clear_persisted_test_ui_state() {
-    if let Ok(home) = crate::storage::IDEOCODE_dir() {
+    if let Ok(home) = crate::storage::ideocode_dir() {
         let ambient_dir = home.join("ambient");
         let _ = std::fs::remove_file(ambient_dir.join("queue.json"));
         let _ = std::fs::remove_file(ambient_dir.join("state.json"));
@@ -353,7 +353,7 @@ fn clear_persisted_test_ui_state() {
     crate::auth::AuthStatus::invalidate_cache();
 }
 
-fn with_temp_IDEOCODE_home<T>(f: impl FnOnce() -> T) -> T {
+fn with_temp_ideocode_home<T>(f: impl FnOnce() -> T) -> T {
     let _guard = crate::storage::lock_test_env();
     let temp = tempfile::tempdir().expect("tempdir");
     let prev_home = std::env::var_os("IDEOCODE_HOME");
@@ -387,7 +387,7 @@ fn with_temp_IDEOCODE_home<T>(f: impl FnOnce() -> T) -> T {
 /// explicitly so the tests exercise the behaviour they document instead of
 /// silently following a config default they do not control.
 fn with_reasoning_current_home<T>(f: impl FnOnce() -> T) -> T {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         crate::config::Config::set_reasoning_display(
             crate::config::ReasoningDisplayMode::Current,
         )
@@ -397,7 +397,7 @@ fn with_reasoning_current_home<T>(f: impl FnOnce() -> T) -> T {
     })
 }
 
-fn create_IDEOCODE_repo_fixture() -> tempfile::TempDir {
+fn create_ideocode_repo_fixture() -> tempfile::TempDir {
     let temp = tempfile::TempDir::new().expect("temp repo");
     std::fs::create_dir_all(temp.path().join(".git")).expect("git dir");
     std::fs::write(
@@ -441,7 +441,7 @@ fn create_real_git_repo_fixture() -> tempfile::TempDir {
 
 #[test]
 fn test_handle_turn_error_failover_prompt_manual_mode_shows_system_notice() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         write_test_config("[provider]\ncross_provider_failover = \"manual\"\n");
         let mut app = create_test_app();
         let prompt = crate::provider::ProviderFailoverPrompt {
@@ -470,7 +470,7 @@ fn test_handle_turn_error_failover_prompt_manual_mode_shows_system_notice() {
 
 #[test]
 fn test_handle_turn_error_failover_prompt_countdown_can_switch_and_retry() {
-    with_temp_IDEOCODE_home(|| {
+    with_temp_ideocode_home(|| {
         write_test_config("[provider]\ncross_provider_failover = \"countdown\"\n");
         let (mut app, active_provider) = create_switchable_test_app("claude");
         let prompt = crate::provider::ProviderFailoverPrompt {

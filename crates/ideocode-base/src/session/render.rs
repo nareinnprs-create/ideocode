@@ -1,7 +1,7 @@
 ﻿use super::{Session, StoredDisplayRole};
 use crate::message::{ContentBlock, Role, ToolCall};
-use IDEOCODE_config_types::ReasoningDisplayMode;
-pub use IDEOCODE_session_types::{
+use ideocode_config_types::ReasoningDisplayMode;
+pub use ideocode_session_types::{
     RenderedCompactedHistoryInfo, RenderedImage, RenderedImageAnchor, RenderedImageSource,
     RenderedMessage,
 };
@@ -40,7 +40,7 @@ fn format_reasoning_markup(text: &str) -> String {
     }
     let mut out = String::new();
     for line in text.split('\n') {
-        out.push_str(&IDEOCODE_render_core::reasoning_line_markup(line));
+        out.push_str(&ideocode_render_core::reasoning_line_markup(line));
     }
     // Blank line terminates the reasoning block.
     out.push('\n');

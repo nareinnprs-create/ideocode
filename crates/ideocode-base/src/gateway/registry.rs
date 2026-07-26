@@ -2,7 +2,7 @@
 use sha2::{Digest, Sha256};
 
 use crate::storage;
-use IDEOCODE_gateway_types::{PairedDevice, PairingCode};
+use ideocode_gateway_types::{PairedDevice, PairingCode};
 
 // ---------------------------------------------------------------------------
 // Device registry (persisted to ~/.IDEOCODE/devices.json)
@@ -18,7 +18,7 @@ pub struct DeviceRegistry {
 impl DeviceRegistry {
     /// Load from ~/.IDEOCODE/devices.json
     pub fn load() -> Self {
-        let path = match storage::IDEOCODE_dir() {
+        let path = match storage::ideocode_dir() {
             Ok(d) => d.join("devices.json"),
             Err(_) => return Self::default(),
         };
@@ -33,7 +33,7 @@ impl DeviceRegistry {
 
     /// Save to ~/.IDEOCODE/devices.json
     pub fn save(&self) -> Result<()> {
-        let path = storage::IDEOCODE_dir()?.join("devices.json");
+        let path = storage::ideocode_dir()?.join("devices.json");
         let contents = serde_json::to_string_pretty(self)?;
         std::fs::write(&path, contents)?;
         Ok(())

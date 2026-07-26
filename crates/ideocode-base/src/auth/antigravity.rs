@@ -120,7 +120,7 @@ struct LoadCodeAssistResponse {
 }
 
 pub fn tokens_path() -> Result<std::path::PathBuf> {
-    Ok(crate::storage::IDEOCODE_dir()?.join("antigravity_oauth.json"))
+    Ok(crate::storage::ideocode_dir()?.join("antigravity_oauth.json"))
 }
 
 pub fn load_tokens() -> Result<AntigravityTokens> {

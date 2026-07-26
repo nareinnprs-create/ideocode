@@ -1,7 +1,7 @@
 ﻿use anyhow::Result;
 use bytes::Bytes;
 use futures::Stream;
-use IDEOCODE_message_types::StreamEvent;
+use ideocode_message_types::StreamEvent;
 use serde_json::Value;
 use std::collections::VecDeque;
 use std::pin::Pin;
@@ -12,7 +12,7 @@ use std::time::Instant;
 use crate::{PinSource, ProviderPin};
 
 fn truncated_stream_payload_context(data: &str) -> String {
-    IDEOCODE_core::util::truncate_str(&data.trim().replace('\n', "\\n"), 240).to_string()
+    ideocode_core::util::truncate_str(&data.trim().replace('\n', "\\n"), 240).to_string()
 }
 
 /// Pop the next complete SSE event off the front of `buffer`.
@@ -128,7 +128,7 @@ impl OpenRouterStream {
 
     fn push_completed_tool_call(&mut self, tc: ToolCallAccumulator) {
         if tc.id.trim().is_empty() {
-            IDEOCODE_logging::warn(&format!(
+            ideocode_logging::warn(&format!(
                 "OpenRouter SSE dropped incomplete tool call for model {}: missing id (name={} args_len={})",
                 self.model,
                 tc.name,
@@ -138,7 +138,7 @@ impl OpenRouterStream {
         }
 
         if tc.name.trim().is_empty() {
-            IDEOCODE_logging::warn(&format!(
+            ideocode_logging::warn(&format!(
                 "OpenRouter SSE dropped incomplete tool call for model {}: missing name (id={} args_len={})",
                 self.model,
                 tc.id,
@@ -219,7 +219,7 @@ impl OpenRouterStream {
             let mut data_lines = Vec::new();
             let mut saw_done = false;
             for line in event_str.lines() {
-                if let Some(d) = IDEOCODE_core::util::sse_data_line(line.trim_end_matches('\r')) {
+                if let Some(d) = ideocode_core::util::sse_data_line(line.trim_end_matches('\r')) {
                     if d.trim() == "[DONE]" {
                         saw_done = true;
                     } else {
@@ -257,7 +257,7 @@ impl OpenRouterStream {
             let parsed: Value = match serde_json::from_str(data) {
                 Ok(v) => v,
                 Err(error) => {
-                    IDEOCODE_logging::warn(&format!(
+                    ideocode_logging::warn(&format!(
                         "OpenRouter SSE JSON parse failed for model {}: {} payload={} ",
                         self.model,
                         error,

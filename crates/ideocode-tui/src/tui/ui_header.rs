@@ -302,7 +302,7 @@ fn auth_full_specs(auth: &AuthStatus) -> Vec<(String, AuthState)> {
     // instead of an ambiguous "oauth+key" that looks like both are being used
     // at once.
     fn dual_method_label(
-        provider: IDEOCODE_provider_core::ActiveProvider,
+        provider: ideocode_provider_core::ActiveProvider,
         auth: &AuthStatus,
     ) -> Option<&'static str> {
         use crate::auth::{ActiveCredential, resolve_dual_credential_auth};
@@ -322,13 +322,13 @@ fn auth_full_specs(auth: &AuthStatus) -> Vec<(String, AuthState)> {
     let anthropic_label = provider_label(
         "anthropic",
         auth.anthropic.state,
-        dual_method_label(IDEOCODE_provider_core::ActiveProvider::Claude, auth),
+        dual_method_label(ideocode_provider_core::ActiveProvider::Claude, auth),
     );
 
     let openai_label = provider_label(
         "openai",
         auth.openai,
-        dual_method_label(IDEOCODE_provider_core::ActiveProvider::OpenAI, auth),
+        dual_method_label(ideocode_provider_core::ActiveProvider::OpenAI, auth),
     );
 
     let gemini_label = if auth.gemini != AuthState::NotConfigured {
@@ -377,7 +377,7 @@ fn header_provider_auth_tag(name: &str, auth: &AuthStatus) -> &'static str {
     // route through the canonical ActiveProvider rather than matching display
     // strings, which is how this surface previously broke (name == "claude"
     // never matched a "anthropic"-only arm and the tag silently vanished).
-    if let Some(provider) = IDEOCODE_provider_core::parse_provider_hint(name) {
+    if let Some(provider) = ideocode_provider_core::parse_provider_hint(name) {
         use crate::auth::{ActiveCredential, resolve_dual_credential_auth};
         match resolve_dual_credential_auth(provider, auth, runtime_provider.as_deref()) {
             Some(resolved) => {
@@ -394,8 +394,8 @@ fn header_provider_auth_tag(name: &str, auth: &AuthStatus) -> &'static str {
             // Provider recognized but no credentials configured: no tag.
             None if matches!(
                 provider,
-                IDEOCODE_provider_core::ActiveProvider::Claude
-                    | IDEOCODE_provider_core::ActiveProvider::OpenAI
+                ideocode_provider_core::ActiveProvider::Claude
+                    | ideocode_provider_core::ActiveProvider::OpenAI
             ) =>
             {
                 return "";
@@ -591,7 +591,7 @@ fn build_persistent_header_with_auth(
     let server_version_full = app.server_display_version();
     let client_version_full = server_name
         .as_ref()
-        .map(|_| IDEOCODE_build_meta::version().to_string());
+        .map(|_| ideocode_build_meta::version().to_string());
     let version_mismatch = matches!(
         (&server_version_full, &client_version_full),
         (Some(server), Some(client)) if server.trim() != client.trim()
@@ -744,7 +744,7 @@ fn build_persistent_header_with_auth(
     // still surface the running version on the IDEOCODE line's own row.
     if client_version_label.is_none() {
         let version_text = if is_running_stable_release() {
-            let tag = IDEOCODE_build_meta::git_tag();
+            let tag = ideocode_build_meta::git_tag();
             if tag.is_empty() || tag.contains('-') {
                 format!("{} · release", semver())
             } else {
@@ -963,7 +963,7 @@ mod tests {
         }
     }
 
-    fn ensure_test_IDEOCODE_home_if_unset() {
+    fn ensure_test_ideocode_home_if_unset() {
         static TEST_HOME: OnceLock<std::path::PathBuf> = OnceLock::new();
 
         if std::env::var_os("IDEOCODE_HOME").is_some() {
@@ -979,7 +979,7 @@ mod tests {
     }
 
     fn create_test_app() -> crate::tui::app::App {
-        ensure_test_IDEOCODE_home_if_unset();
+        ensure_test_ideocode_home_if_unset();
 
         let provider: Arc<dyn Provider> = Arc::new(MockProvider);
         let rt = tokio::runtime::Runtime::new().expect("test runtime");
@@ -1079,7 +1079,7 @@ mod tests {
             server_line.contains("server: Blazing 🔥 · v0.14.2-dev"),
             "server line should carry the server version: {server_line}"
         );
-        let client_version = compact_version_label(IDEOCODE_build_meta::version());
+        let client_version = compact_version_label(ideocode_build_meta::version());
         assert!(
             client_line.contains("client: Fox"),
             "client line should keep the session name: {client_line}"
@@ -1093,7 +1093,7 @@ mod tests {
     #[test]
     fn persistent_header_keeps_git_hash_when_semvers_match_but_builds_differ() {
         let mut app = create_test_app();
-        let client_semver = compact_version_label(IDEOCODE_build_meta::version());
+        let client_semver = compact_version_label(ideocode_build_meta::version());
         let fake_server_version = format!("{} (0000000)", client_semver);
         app.set_remote_server_identity_for_tests(
             Some("blazing"),
@@ -1117,7 +1117,7 @@ mod tests {
             "same-semver mismatch should keep the server git hash: {server_line}"
         );
         assert!(
-            client_line.contains(&format!("· {}", IDEOCODE_build_meta::version())),
+            client_line.contains(&format!("· {}", ideocode_build_meta::version())),
             "same-semver mismatch should keep the client git hash: {client_line}"
         );
     }

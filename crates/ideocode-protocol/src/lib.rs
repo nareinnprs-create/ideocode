@@ -15,10 +15,10 @@ mod notifications;
 pub use comm_format::*;
 pub use notifications::{FeatureToggle, NotificationType};
 
-use IDEOCODE_batch_types::BatchProgress;
-use IDEOCODE_message_types::{InputShellResult, ToolCall};
-use IDEOCODE_plan::{PlanItem, VersionedPlan, next_runnable_item_ids, summarize_plan_graph};
-use IDEOCODE_side_panel_types::{SidePanelSnapshot, snapshot_is_empty};
+use ideocode_batch_types::BatchProgress;
+use ideocode_message_types::{InputShellResult, ToolCall};
+use ideocode_plan::{PlanItem, VersionedPlan, next_runnable_item_ids, summarize_plan_graph};
+use ideocode_side_panel_types::{SidePanelSnapshot, snapshot_is_empty};
 use std::collections::BTreeMap;
 
 #[path = "protocol_memory.rs"]
@@ -169,7 +169,7 @@ impl AuthChanged {
     }
 }
 
-pub type ReloadRecoverySnapshot = IDEOCODE_selfdev_types::ReloadRecoveryDirective;
+pub type ReloadRecoverySnapshot = ideocode_selfdev_types::ReloadRecoveryDirective;
 
 mod wire;
 pub use wire::TaskGraphNodeSpec;
@@ -400,7 +400,7 @@ impl PlanGraphStatus {
         newly_ready_ids: Vec<String>,
     ) -> Self {
         let graph = summarize_plan_graph(&plan.items);
-        let growth = IDEOCODE_plan::bridge::growth_stats(plan);
+        let growth = ideocode_plan::bridge::growth_stats(plan);
         let failed_reasons: BTreeMap<String, String> = graph
             .failed_ids
             .iter()
@@ -425,7 +425,7 @@ impl PlanGraphStatus {
             unresolved_dependency_ids: graph.unresolved_dependency_ids,
             next_ready_ids: next_runnable_item_ids(&plan.items, next_ready_limit),
             newly_ready_ids,
-            low_confidence_ids: IDEOCODE_plan::bridge::low_confidence_completed_ids(plan),
+            low_confidence_ids: ideocode_plan::bridge::low_confidence_completed_ids(plan),
             mode: plan.mode.clone(),
             seeded_count: growth.seeded,
             grown_count: growth.grown(),

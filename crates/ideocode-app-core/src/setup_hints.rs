@@ -1,1 +1,1 @@
-﻿pub use IDEOCODE_setup_hints::*;
+﻿pub use ideocode_setup_hints::*;

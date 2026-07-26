@@ -18,7 +18,7 @@ pub fn color_capability() -> ColorCapability {
 
 /// Terminals whose GPU glyph atlas corrupts under heavy per-cell *truecolor*
 /// churn (the macOS 26 "garbled glyphs" bug in the VS Code integrated terminal
-/// and Apple Terminal; see `IDEOCODE_app_core::perf` and issue #330). These
+/// and Apple Terminal; see `ideocode_app_core::perf` and issue #330). These
 /// renderers key their rasterized-glyph cache on the full 24-bit color, so the
 /// continuous color animations IDEOCODE emits (shimmer, rainbow, pulsing tool
 /// colors) generate an effectively unbounded set of atlas entries, overflowing
@@ -45,7 +45,7 @@ fn fragile_glyph_cache_terminal() -> bool {
         return false;
     }
 
-    // Mirror of `IDEOCODE_app_core::perf::detect_terminal` for the two affected
+    // Mirror of `ideocode_app_core::perf::detect_terminal` for the two affected
     // terminals (kept local to avoid a crate dependency from tui-style).
     match std::env::var("TERM_PROGRAM") {
         Ok(tp) => {

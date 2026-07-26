@@ -175,7 +175,7 @@ fn repeated_external_resume_reuses_the_imported_snapshot() {
         "{\"type\":\"user\",\"uuid\":\"u1\",\"sessionId\":\"cached\",\"message\":{\"role\":\"user\",\"content\":\"hello\"},\"timestamp\":\"2026-07-13T10:00:00Z\"}\n",
     )
     .unwrap();
-    let target = IDEOCODE_session_types::ResumeTarget::ClaudeCodeSession {
+    let target = ideocode_session_types::ResumeTarget::ClaudeCodeSession {
         session_id: "cached".to_string(),
         session_path: transcript.to_string_lossy().to_string(),
     };
@@ -256,7 +256,7 @@ fn ordinary_resume_never_stops_a_live_claude_process() {
         .spawn()
         .unwrap();
     write_live_claude_record(&external.join("sessions"), &claude, "ordinary-live");
-    let target = IDEOCODE_session_types::ResumeTarget::ClaudeCodeSession {
+    let target = ideocode_session_types::ResumeTarget::ClaudeCodeSession {
         session_id: "ordinary-live".to_string(),
         session_path: transcript.to_string_lossy().to_string(),
     };
@@ -264,7 +264,7 @@ fn ordinary_resume_never_stops_a_live_claude_process() {
     let resolved = resolve_resume_target_to_IDEOCODE(&target).unwrap();
     assert!(matches!(
         resolved,
-        IDEOCODE_session_types::ResumeTarget::IDEOCODESession { .. }
+        ideocode_session_types::ResumeTarget::IDEOCODESession { .. }
     ));
     assert!(claude.try_wait().unwrap().is_none());
 
@@ -299,13 +299,13 @@ fn explicit_takeover_preserves_history_and_stops_only_matching_process() {
         .spawn()
         .unwrap();
     let registry = write_live_claude_record(&external.join("sessions"), &claude, "takeover-live");
-    let target = IDEOCODE_session_types::ResumeTarget::ClaudeCodeSession {
+    let target = ideocode_session_types::ResumeTarget::ClaudeCodeSession {
         session_id: "takeover-live".to_string(),
         session_path: transcript.to_string_lossy().to_string(),
     };
 
     let resolved = take_over_live_claude_session(&target).unwrap();
-    let IDEOCODE_session_types::ResumeTarget::IDEOCODESession { session_id } = resolved else {
+    let ideocode_session_types::ResumeTarget::IDEOCODESession { session_id } = resolved else {
         panic!("expected IDEOCODE session");
     };
     assert!(session_id.starts_with("session_"));
@@ -355,7 +355,7 @@ fn takeover_with_no_complete_messages_leaves_claude_running() {
         .spawn()
         .unwrap();
     write_live_claude_record(&external.join("sessions"), &claude, "incomplete-live");
-    let target = IDEOCODE_session_types::ResumeTarget::ClaudeCodeSession {
+    let target = ideocode_session_types::ResumeTarget::ClaudeCodeSession {
         session_id: "incomplete-live".to_string(),
         session_path: transcript.to_string_lossy().to_string(),
     };
@@ -392,7 +392,7 @@ fn takeover_rejects_a_transcript_from_a_different_live_session() {
         .spawn()
         .unwrap();
     write_live_claude_record(&external.join("sessions"), &claude, "live-session");
-    let target = IDEOCODE_session_types::ResumeTarget::ClaudeCodeSession {
+    let target = ideocode_session_types::ResumeTarget::ClaudeCodeSession {
         session_id: "live-session".to_string(),
         session_path: transcript.to_string_lossy().to_string(),
     };
@@ -408,7 +408,7 @@ fn takeover_rejects_a_transcript_from_a_different_live_session() {
 
 #[cfg(target_os = "linux")]
 #[test]
-fn takeover_timeout_preserves_the_staged_IDEOCODE_session_after_sigterm() {
+fn takeover_timeout_preserves_the_staged_ideocode_session_after_sigterm() {
     use std::process::{Command, Stdio};
 
     let _guard = crate::storage::lock_test_env();
@@ -427,7 +427,7 @@ fn takeover_timeout_preserves_the_staged_IDEOCODE_session_after_sigterm() {
         .unwrap();
     std::thread::sleep(std::time::Duration::from_millis(50));
     write_live_claude_record(&external.join("sessions"), &claude, "slow-exit");
-    let target = IDEOCODE_session_types::ResumeTarget::ClaudeCodeSession {
+    let target = ideocode_session_types::ResumeTarget::ClaudeCodeSession {
         session_id: "slow-exit".to_string(),
         session_path: transcript.to_string_lossy().to_string(),
     };
@@ -507,7 +507,7 @@ fn cached_imported_session_preserves_existing_history_verbatim() {
     legacy.save().unwrap();
 
     let resolved =
-        resolve_resume_target_to_IDEOCODE(&IDEOCODE_session_types::ResumeTarget::CodexSession {
+        resolve_resume_target_to_IDEOCODE(&ideocode_session_types::ResumeTarget::CodexSession {
             session_id: "legacy-tools".to_string(),
             session_path: temp
                 .path()
@@ -518,7 +518,7 @@ fn cached_imported_session_preserves_existing_history_verbatim() {
         .unwrap();
     assert_eq!(
         resolved,
-        IDEOCODE_session_types::ResumeTarget::IDEOCODESession {
+        ideocode_session_types::ResumeTarget::IDEOCODESession {
             session_id: imported_id.clone(),
         }
     );
@@ -760,7 +760,7 @@ fn test_import_claude_session_uses_recovered_live_transcript() {
 }
 
 #[test]
-fn test_import_pi_session_creates_IDEOCODE_snapshot() {
+fn test_import_pi_session_creates_ideocode_snapshot() {
     let _guard = crate::storage::lock_test_env();
     let temp = tempfile::TempDir::new().unwrap();
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
@@ -791,7 +791,7 @@ fn test_import_pi_session_creates_IDEOCODE_snapshot() {
 }
 
 #[test]
-fn test_import_opencode_session_creates_IDEOCODE_snapshot() {
+fn test_import_opencode_session_creates_ideocode_snapshot() {
     let _guard = crate::storage::lock_test_env();
     let temp = tempfile::TempDir::new().unwrap();
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
@@ -910,7 +910,7 @@ fn test_import_opencode_session_creates_IDEOCODE_snapshot() {
 }
 
 #[test]
-fn test_resolve_resume_target_to_IDEOCODE_imports_codex_session() {
+fn test_resolve_resume_target_to_ideocode_imports_codex_session() {
     let _guard = crate::storage::lock_test_env();
     let temp = tempfile::TempDir::new().unwrap();
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
@@ -928,7 +928,7 @@ fn test_resolve_resume_target_to_IDEOCODE_imports_codex_session() {
         .unwrap();
 
     let resolved =
-        resolve_resume_target_to_IDEOCODE(&IDEOCODE_session_types::ResumeTarget::CodexSession {
+        resolve_resume_target_to_IDEOCODE(&ideocode_session_types::ResumeTarget::CodexSession {
             session_id: "codex-resolve-test".to_string(),
             session_path: codex_dir
                 .join("rollout.jsonl")
@@ -939,7 +939,7 @@ fn test_resolve_resume_target_to_IDEOCODE_imports_codex_session() {
 
     assert_eq!(
         resolved,
-        IDEOCODE_session_types::ResumeTarget::IDEOCODESession {
+        ideocode_session_types::ResumeTarget::IDEOCODESession {
             session_id: imported_codex_session_id("codex-resolve-test"),
         }
     );
@@ -954,7 +954,7 @@ fn test_resolve_resume_target_to_IDEOCODE_imports_codex_session() {
 /// detect -> import -> resume round-trip for Claude Code (previously only Codex
 /// had coverage here).
 #[test]
-fn test_resolve_resume_target_to_IDEOCODE_imports_claude_code_session() {
+fn test_resolve_resume_target_to_ideocode_imports_claude_code_session() {
     let _guard = crate::storage::lock_test_env();
     let temp = tempfile::TempDir::new().unwrap();
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
@@ -972,7 +972,7 @@ fn test_resolve_resume_target_to_IDEOCODE_imports_claude_code_session() {
         .unwrap();
 
     let resolved =
-        resolve_resume_target_to_IDEOCODE(&IDEOCODE_session_types::ResumeTarget::ClaudeCodeSession {
+        resolve_resume_target_to_IDEOCODE(&ideocode_session_types::ResumeTarget::ClaudeCodeSession {
             session_id: "claude-resolve-test".to_string(),
             session_path: transcript_path.to_string_lossy().to_string(),
         })
@@ -981,7 +981,7 @@ fn test_resolve_resume_target_to_IDEOCODE_imports_claude_code_session() {
     let imported_id = imported_claude_code_session_id("claude-resolve-test");
     assert_eq!(
         resolved,
-        IDEOCODE_session_types::ResumeTarget::IDEOCODESession {
+        ideocode_session_types::ResumeTarget::IDEOCODESession {
             session_id: imported_id.clone(),
         }
     );
@@ -989,7 +989,7 @@ fn test_resolve_resume_target_to_IDEOCODE_imports_claude_code_session() {
     // The id the picker would also derive via `imported_session_id_for_target`
     // must match the snapshot actually written to disk.
     assert_eq!(
-        imported_session_id_for_target(&IDEOCODE_session_types::ResumeTarget::ClaudeCodeSession {
+        imported_session_id_for_target(&ideocode_session_types::ResumeTarget::ClaudeCodeSession {
             session_id: "claude-resolve-test".to_string(),
             session_path: transcript_path.to_string_lossy().to_string(),
         }),
@@ -1012,7 +1012,7 @@ fn test_resolve_resume_target_to_IDEOCODE_imports_claude_code_session() {
 /// blind re-import previously overwrote the snapshot and dropped the IDEOCODE-side
 /// messages. The continuation must be preserved instead.
 #[test]
-fn test_reimporting_claude_session_preserves_IDEOCODE_continuation() {
+fn test_reimporting_claude_session_preserves_ideocode_continuation() {
     let _guard = crate::storage::lock_test_env();
     let temp = tempfile::TempDir::new().unwrap();
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
@@ -1053,14 +1053,14 @@ fn test_reimporting_claude_session_preserves_IDEOCODE_continuation() {
 
     // Re-selecting the external entry re-enters import; the continuation must survive.
     let resumed =
-        resolve_resume_target_to_IDEOCODE(&IDEOCODE_session_types::ResumeTarget::ClaudeCodeSession {
+        resolve_resume_target_to_IDEOCODE(&ideocode_session_types::ResumeTarget::ClaudeCodeSession {
             session_id: "claude-continued".to_string(),
             session_path: transcript_path.to_string_lossy().to_string(),
         })
         .unwrap();
     assert_eq!(
         resumed,
-        IDEOCODE_session_types::ResumeTarget::IDEOCODESession {
+        ideocode_session_types::ResumeTarget::IDEOCODESession {
             session_id: imported_id.clone(),
         }
     );
@@ -1081,7 +1081,7 @@ fn test_reimporting_claude_session_preserves_IDEOCODE_continuation() {
 }
 
 #[test]
-fn test_import_cursor_session_creates_IDEOCODE_snapshot() {
+fn test_import_cursor_session_creates_ideocode_snapshot() {
     let _guard = crate::storage::lock_test_env();
     let temp = tempfile::TempDir::new().unwrap();
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
@@ -1129,7 +1129,7 @@ fn test_import_cursor_session_creates_IDEOCODE_snapshot() {
 
     // Resolving the resume target should import and remap to the IDEOCODE snapshot.
     let resumed = crate::import::resolve_resume_target_to_IDEOCODE(
-        &IDEOCODE_session_types::ResumeTarget::CursorSession {
+        &ideocode_session_types::ResumeTarget::CursorSession {
             session_id: session_id.to_string(),
             session_path: transcript_path.to_string_lossy().to_string(),
         },
@@ -1137,7 +1137,7 @@ fn test_import_cursor_session_creates_IDEOCODE_snapshot() {
     .unwrap();
     assert_eq!(
         resumed,
-        IDEOCODE_session_types::ResumeTarget::IDEOCODESession {
+        ideocode_session_types::ResumeTarget::IDEOCODESession {
             session_id: imported_cursor_session_id(session_id),
         }
     );

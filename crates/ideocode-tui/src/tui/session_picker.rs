@@ -8,7 +8,7 @@ use crate::session::{CrashedSessionsInfo, Session};
 use crate::tui::{DisplayMessage, markdown};
 use anyhow::Result;
 use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers, MouseEventKind};
-use IDEOCODE_session_types::SessionStatus;
+use ideocode_session_types::SessionStatus;
 use ratatui::{
     Frame,
     layout::{Alignment, Constraint, Direction, Layout, Margin, Rect},
@@ -20,7 +20,7 @@ use std::collections::HashSet;
 use std::io::IsTerminal;
 use std::time::Duration;
 
-pub use IDEOCODE_tui_session_picker::{
+pub use ideocode_tui_session_picker::{
     PickerItem, PreviewMessage, ResumeTarget, ServerGroup, SessionFilterMode, SessionInfo,
     SessionSource,
 };
@@ -2291,7 +2291,7 @@ impl SessionPicker {
             Line::from(Span::styled(
                 format!(
                     "Take over live Claude session {}?",
-                    IDEOCODE_core::util::truncate_str(session_id, 12)
+                    ideocode_core::util::truncate_str(session_id, 12)
                 ),
                 Style::default()
                     .fg(Color::White)
@@ -2362,7 +2362,7 @@ impl SessionPicker {
                 self.render(frame);
                 // Standalone picker loop bypasses `ui::draw`; adapt for light
                 // terminal themes here (no-op on dark).
-                IDEOCODE_tui_style::adapt_buffer_for_theme(frame.buffer_mut());
+                ideocode_tui_style::adapt_buffer_for_theme(frame.buffer_mut());
                 crate::tui::ui::adapt_buffer_for_emoji_preference(frame.buffer_mut());
             })?;
             if event::poll(Duration::from_millis(100))? {

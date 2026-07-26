@@ -8,7 +8,7 @@ use crate::storage;
 // ---------------------------------------------------------------------------
 
 pub(super) fn ambient_dir() -> Result<PathBuf> {
-    let dir = storage::IDEOCODE_dir()?.join("ambient");
+    let dir = storage::ideocode_dir()?.join("ambient");
     storage::ensure_dir(&dir)?;
     Ok(dir)
 }

@@ -4,10 +4,10 @@ use std::path::PathBuf;
 
 const VALIDATION_STATUS_FILE: &str = "auth-validation.json";
 
-pub use IDEOCODE_auth_types::ProviderValidationRecord;
+pub use ideocode_auth_types::ProviderValidationRecord;
 
 pub fn status_path() -> Result<PathBuf> {
-    Ok(crate::storage::IDEOCODE_dir()?.join(VALIDATION_STATUS_FILE))
+    Ok(crate::storage::ideocode_dir()?.join(VALIDATION_STATUS_FILE))
 }
 
 pub fn load_all() -> BTreeMap<String, ProviderValidationRecord> {

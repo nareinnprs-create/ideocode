@@ -106,7 +106,7 @@ fn persist_approved_key(approved: &ApprovedAccountKey) -> Result<()> {
 /// Full browser-first device login. No email or secret is requested in the
 /// terminal. A valid exchanged key is retained when plan activation times out or
 /// the user cancels activation polling.
-pub(super) async fn login_IDEOCODE_device_flow(no_browser: bool) -> Result<LoginCompletion> {
+pub(super) async fn login_ideocode_device_flow(no_browser: bool) -> Result<LoginCompletion> {
     let client = crate::provider::shared_http_client();
     let api_base = subscription_api::configured_api_base();
     let device = subscription_api::request_device_authorization(

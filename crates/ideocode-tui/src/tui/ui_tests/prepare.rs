@@ -1182,10 +1182,10 @@ fn test_prepare_messages_renders_reasoning_role_dim_italic_without_sentinel() {
 
     // A collapsing reasoning message carries sentinel-wrapped dim/italic markup.
     let mut content = String::new();
-    content.push_str(&IDEOCODE_tui_markdown::reasoning_line_markup(
+    content.push_str(&ideocode_tui_markdown::reasoning_line_markup(
         "weighing the options",
     ));
-    content.push_str(&IDEOCODE_tui_markdown::reasoning_line_markup(
+    content.push_str(&ideocode_tui_markdown::reasoning_line_markup(
         "▸ thought for 3s",
     ));
 
@@ -1210,7 +1210,7 @@ fn test_prepare_messages_renders_reasoning_role_dim_italic_without_sentinel() {
         .expect("reasoning body line present");
     let rendered: String = body.spans.iter().map(|s| s.content.as_ref()).collect();
     assert!(
-        !rendered.contains(IDEOCODE_tui_markdown::REASONING_SENTINEL),
+        !rendered.contains(ideocode_tui_markdown::REASONING_SENTINEL),
         "sentinel must be stripped from visible reasoning: {rendered:?}"
     );
     let span = body
@@ -1244,7 +1244,7 @@ fn test_prepare_messages_renders_anchored_reasoning_message_in_flow() {
     // Anchored reasoning traces are ordinary display messages in the body:
     // they render dim+italic (sentinel stripped) between surrounding entries.
     let mut trace = String::new();
-    trace.push_str(&IDEOCODE_tui_markdown::reasoning_line_markup(
+    trace.push_str(&ideocode_tui_markdown::reasoning_line_markup(
         "anchored thinking",
     ));
 
@@ -1278,7 +1278,7 @@ fn test_prepare_messages_renders_anchored_reasoning_message_in_flow() {
     );
     // Sentinel is stripped from the visible reasoning text.
     assert!(
-        !joined[reasoning_idx].contains(IDEOCODE_tui_markdown::REASONING_SENTINEL),
+        !joined[reasoning_idx].contains(ideocode_tui_markdown::REASONING_SENTINEL),
         "sentinel must be stripped: {:?}",
         joined[reasoning_idx]
     );

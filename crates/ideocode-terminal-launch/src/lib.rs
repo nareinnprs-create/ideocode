@@ -1021,7 +1021,7 @@ mod tests {
 
     #[test]
     #[cfg(not(unix))]
-    fn windows_cmd_fallback_runs_IDEOCODE_under_cmd_k() {
+    fn windows_cmd_fallback_runs_ideocode_under_cmd_k() {
         let command = TerminalCommand::new(
             std::path::PathBuf::from(r"C:\Program Files\IDEOCODE\IDEOCODE.exe"),
             vec!["self-dev".to_string()],

@@ -313,7 +313,7 @@ pub fn default_model() -> &'static CuratedModel {
 /// routing suffix, the `[1m]` long-context suffix, and lowercases.
 fn normalize_model_key(model: &str) -> String {
     let base = model.trim().split('@').next().unwrap_or("").trim();
-    IDEOCODE_provider_core::model_id::canonical(base)
+    ideocode_provider_core::model_id::canonical(base)
 }
 
 pub fn find_curated_model(model: &str) -> Option<&'static CuratedModel> {

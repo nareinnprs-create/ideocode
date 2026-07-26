@@ -27,7 +27,7 @@ use crossterm::event::{
 use debug::DebugTrace;
 use futures::StreamExt;
 use helpers::*;
-use IDEOCODE_tui_messages::DisplayMessage;
+use ideocode_tui_messages::DisplayMessage;
 use ratatui::DefaultTerminal;
 use std::cell::RefCell;
 use std::collections::HashSet;
@@ -1079,7 +1079,7 @@ pub struct App {
     /// provider has no OAuth-vs-API-key distinction. Lets the info widget choose
     /// subscription vs cost-based usage display for remote sessions without
     /// re-deriving it from the provider name.
-    remote_resolved_credential: Option<IDEOCODE_provider_core::ResolvedCredential>,
+    remote_resolved_credential: Option<ideocode_provider_core::ResolvedCredential>,
     remote_startup_phase: Option<RemoteStartupPhase>,
     remote_startup_phase_started: Option<Instant>,
     remote_reasoning_effort: Option<String>,

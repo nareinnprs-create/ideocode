@@ -10,8 +10,8 @@
 //! ```
 fn main() -> anyhow::Result<()> {
     let repo = std::env::current_dir()?;
-    let state = IDEOCODE_build_support::current_source_state(&repo)?;
-    let path = IDEOCODE_build_support::write_current_dev_binary_source_metadata(&repo, &state)?;
+    let state = ideocode_build_support::current_source_state(&repo)?;
+    let path = ideocode_build_support::write_current_dev_binary_source_metadata(&repo, &state)?;
     println!("wrote {} for {}", path.display(), state.version_label);
     Ok(())
 }

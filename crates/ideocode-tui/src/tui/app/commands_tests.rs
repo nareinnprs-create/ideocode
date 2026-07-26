@@ -61,15 +61,15 @@ fn parse_manual_subagent_spec_rejects_missing_prompt() {
 #[test]
 fn swarm_prompt_edit_path_prefers_nonblank_project_override() {
     let project = tempfile::tempdir().expect("project tempdir");
-    let IDEOCODE_home = tempfile::tempdir().expect("IDEOCODE tempdir");
+    let ideocode_home = tempfile::tempdir().expect("IDEOCODE tempdir");
     let project_prompt = project.path().join(".IDEOCODE/swarm-prompt.md");
     std::fs::create_dir_all(project_prompt.parent().expect("prompt parent"))
         .expect("create project config dir");
     std::fs::write(&project_prompt, "project routing").expect("write project prompt");
-    std::fs::write(IDEOCODE_home.path().join("swarm-prompt.md"), "global routing")
+    std::fs::write(ideocode_home.path().join("swarm-prompt.md"), "global routing")
         .expect("write global prompt");
 
-    let path = ensure_swarm_prompt_edit_path(project.path().to_str(), IDEOCODE_home.path())
+    let path = ensure_swarm_prompt_edit_path(project.path().to_str(), ideocode_home.path())
         .expect("resolve prompt path");
     assert_eq!(path, project_prompt);
 }
@@ -77,15 +77,15 @@ fn swarm_prompt_edit_path_prefers_nonblank_project_override() {
 #[test]
 fn swarm_prompt_edit_path_falls_back_to_nonblank_global_override() {
     let project = tempfile::tempdir().expect("project tempdir");
-    let IDEOCODE_home = tempfile::tempdir().expect("IDEOCODE tempdir");
+    let ideocode_home = tempfile::tempdir().expect("IDEOCODE tempdir");
     let project_prompt = project.path().join(".IDEOCODE/swarm-prompt.md");
     std::fs::create_dir_all(project_prompt.parent().expect("prompt parent"))
         .expect("create project config dir");
     std::fs::write(&project_prompt, "  \n").expect("write blank project prompt");
-    let global_prompt = IDEOCODE_home.path().join("swarm-prompt.md");
+    let global_prompt = ideocode_home.path().join("swarm-prompt.md");
     std::fs::write(&global_prompt, "global routing").expect("write global prompt");
 
-    let path = ensure_swarm_prompt_edit_path(project.path().to_str(), IDEOCODE_home.path())
+    let path = ensure_swarm_prompt_edit_path(project.path().to_str(), ideocode_home.path())
         .expect("resolve prompt path");
     assert_eq!(path, global_prompt);
 }
@@ -93,11 +93,11 @@ fn swarm_prompt_edit_path_falls_back_to_nonblank_global_override() {
 #[test]
 fn swarm_prompt_edit_path_materializes_builtin_default_globally() {
     let project = tempfile::tempdir().expect("project tempdir");
-    let IDEOCODE_home = tempfile::tempdir().expect("IDEOCODE tempdir");
+    let ideocode_home = tempfile::tempdir().expect("IDEOCODE tempdir");
 
-    let path = ensure_swarm_prompt_edit_path(project.path().to_str(), IDEOCODE_home.path())
+    let path = ensure_swarm_prompt_edit_path(project.path().to_str(), ideocode_home.path())
         .expect("create editable prompt");
-    assert_eq!(path, IDEOCODE_home.path().join("swarm-prompt.md"));
+    assert_eq!(path, ideocode_home.path().join("swarm-prompt.md"));
     let content = std::fs::read_to_string(path).expect("read created prompt");
     assert_eq!(content.trim(), crate::prompt::DEFAULT_SWARM_PROMPT.trim());
 }

@@ -89,7 +89,7 @@ impl Provider for NativeAutoCompactionProvider {
         true
     }
 
-    fn uses_IDEOCODE_compaction(&self) -> bool {
+    fn uses_ideocode_compaction(&self) -> bool {
         false
     }
 
@@ -141,7 +141,7 @@ impl Provider for NativeCompactionStreamProvider {
         true
     }
 
-    fn uses_IDEOCODE_compaction(&self) -> bool {
+    fn uses_ideocode_compaction(&self) -> bool {
         false
     }
 
@@ -1049,8 +1049,8 @@ async fn env_snapshot_detail_is_minimal_for_empty_sessions_and_full_after_histor
 
     assert_eq!(agent.env_snapshot_detail(), EnvSnapshotDetail::Minimal);
     let minimal = agent.build_env_snapshot("create", agent.env_snapshot_detail());
-    assert!(minimal.IDEOCODE_git_hash.is_none());
-    assert!(minimal.IDEOCODE_git_dirty.is_none());
+    assert!(minimal.ideocode_git_hash.is_none());
+    assert!(minimal.ideocode_git_dirty.is_none());
     assert!(minimal.working_git.is_none());
 
     agent

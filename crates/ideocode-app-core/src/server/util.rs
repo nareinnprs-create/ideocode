@@ -23,8 +23,8 @@ pub(crate) fn debug_control_allowed() -> bool {
         return true;
     }
     // Check for file-based toggle (allows enabling without restart)
-    if let Ok(IDEOCODE_dir) = crate::storage::IDEOCODE_dir()
-        && IDEOCODE_dir.join("debug_control").exists()
+    if let Ok(ideocode_dir) = crate::storage::ideocode_dir()
+        && ideocode_dir.join("debug_control").exists()
     {
         return true;
     }

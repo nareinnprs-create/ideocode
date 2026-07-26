@@ -1,5 +1,5 @@
 ﻿use anyhow::Result;
-use IDEOCODE_message_types::{ContentBlock, Message, Role, ToolCall, ToolDefinition};
+use ideocode_message_types::{ContentBlock, Message, Role, ToolCall, ToolDefinition};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::collections::HashSet;

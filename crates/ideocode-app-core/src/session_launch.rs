@@ -428,15 +428,15 @@ pub fn spawn_resume_in_new_terminal_with_context(
 ) -> Result<bool> {
     use std::process::{Command, Stdio};
 
-    let mut IDEOCODE_args: Vec<String> = Vec::new();
+    let mut ideocode_args: Vec<String> = Vec::new();
     if let Some(provider_arg) = resume_provider_arg(provider_key) {
-        IDEOCODE_args.push("--provider".to_string());
-        IDEOCODE_args.push(provider_arg.to_string());
+        ideocode_args.push("--provider".to_string());
+        ideocode_args.push(provider_arg.to_string());
     }
-    IDEOCODE_args.push("--resume".to_string());
-    IDEOCODE_args.push(session_id.to_string());
+    ideocode_args.push("--resume".to_string());
+    ideocode_args.push(session_id.to_string());
 
-    let hook_command = crate::terminal_launch::TerminalCommand::new(exe, IDEOCODE_args.clone())
+    let hook_command = crate::terminal_launch::TerminalCommand::new(exe, ideocode_args.clone())
         .title(resumed_window_title(session_id));
     let hook_command = context.apply(hook_command, "resume", session_id);
     if crate::terminal_launch::try_spawn_via_configured_hook(&hook_command, cwd) {
@@ -469,7 +469,7 @@ pub fn spawn_resume_in_new_terminal_with_context(
                 let mut cmd = Command::new(wezterm_bin);
                 cmd.args(["start", "--always-new-process", "--"])
                     .arg(exe)
-                    .args(&IDEOCODE_args)
+                    .args(&ideocode_args)
                     .current_dir(cwd)
                     .stdin(Stdio::null())
                     .stdout(Stdio::null())
@@ -483,7 +483,7 @@ pub fn spawn_resume_in_new_terminal_with_context(
                 let mut cmd = Command::new("wt.exe");
                 cmd.args(["-p", "Command Prompt"])
                     .arg(exe)
-                    .args(&IDEOCODE_args)
+                    .args(&ideocode_args)
                     .current_dir(cwd)
                     .stdin(Stdio::null())
                     .stdout(Stdio::null())
@@ -497,7 +497,7 @@ pub fn spawn_resume_in_new_terminal_with_context(
                 let mut cmd = Command::new("alacritty");
                 cmd.args(["-e"])
                     .arg(exe)
-                    .args(&IDEOCODE_args)
+                    .args(&ideocode_args)
                     .current_dir(cwd)
                     .stdin(Stdio::null())
                     .stdout(Stdio::null())
@@ -550,18 +550,18 @@ pub fn spawn_selfdev_in_new_terminal_with_context(
 ) -> Result<bool> {
     use std::process::{Command, Stdio};
 
-    let mut IDEOCODE_args: Vec<String> = Vec::new();
+    let mut ideocode_args: Vec<String> = Vec::new();
     if let Some(provider_arg) = resume_provider_arg(provider_key) {
-        IDEOCODE_args.push("--provider".to_string());
-        IDEOCODE_args.push(provider_arg.to_string());
+        ideocode_args.push("--provider".to_string());
+        ideocode_args.push(provider_arg.to_string());
     }
-    IDEOCODE_args.extend([
+    ideocode_args.extend([
         "--resume".to_string(),
         session_id.to_string(),
         "self-dev".to_string(),
     ]);
 
-    let hook_command = crate::terminal_launch::TerminalCommand::new(exe, IDEOCODE_args.clone())
+    let hook_command = crate::terminal_launch::TerminalCommand::new(exe, ideocode_args.clone())
         .title(format!("{} [self-dev]", resumed_window_title(session_id)));
     let hook_command = context.apply(hook_command, "selfdev", session_id);
     if crate::terminal_launch::try_spawn_via_configured_hook(&hook_command, cwd) {
@@ -594,7 +594,7 @@ pub fn spawn_selfdev_in_new_terminal_with_context(
                 let mut cmd = Command::new(wezterm_bin);
                 cmd.args(["start", "--always-new-process", "--"])
                     .arg(exe)
-                    .args(&IDEOCODE_args)
+                    .args(&ideocode_args)
                     .current_dir(cwd)
                     .stdin(Stdio::null())
                     .stdout(Stdio::null())
@@ -608,7 +608,7 @@ pub fn spawn_selfdev_in_new_terminal_with_context(
                 let mut cmd = Command::new("wt.exe");
                 cmd.args(["-p", "Command Prompt"])
                     .arg(exe)
-                    .args(&IDEOCODE_args)
+                    .args(&ideocode_args)
                     .current_dir(cwd)
                     .stdin(Stdio::null())
                     .stdout(Stdio::null())
@@ -622,7 +622,7 @@ pub fn spawn_selfdev_in_new_terminal_with_context(
                 let mut cmd = Command::new("alacritty");
                 cmd.args(["-e"])
                     .arg(exe)
-                    .args(&IDEOCODE_args)
+                    .args(&ideocode_args)
                     .current_dir(cwd)
                     .stdin(Stdio::null())
                     .stdout(Stdio::null())

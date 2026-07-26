@@ -42,7 +42,7 @@ struct RemoteModelCatalogCache {
     #[serde(default)]
     origin: String,
     #[serde(flatten)]
-    snapshot: IDEOCODE_provider_core::ModelCatalogSnapshot,
+    snapshot: ideocode_provider_core::ModelCatalogSnapshot,
     observed_at_unix_secs: u64,
 }
 
@@ -286,7 +286,7 @@ fn remote_catalog_api_method_is_safe(api_method: &str) -> bool {
 }
 
 fn remote_model_catalog_snapshot_is_safe(
-    snapshot: &IDEOCODE_provider_core::ModelCatalogSnapshot,
+    snapshot: &ideocode_provider_core::ModelCatalogSnapshot,
 ) -> bool {
     if snapshot.available_models.len() > REMOTE_MODEL_CATALOG_MAX_ROUTES
         || snapshot.model_routes.len() > REMOTE_MODEL_CATALOG_MAX_ROUTES
@@ -357,7 +357,7 @@ fn model_picker_route_is_current(
     if current_provider.trim().eq_ignore_ascii_case("remote") {
         return true;
     }
-    IDEOCODE_provider_core::model_route_provider_labels_match(&route.provider, current_provider)
+    ideocode_provider_core::model_route_provider_labels_match(&route.provider, current_provider)
 }
 
 const RECOMMENDED_MODELS: &[&str] = &["gpt-5.5", "claude-opus-4-8"];
@@ -371,7 +371,7 @@ fn model_picker_recommendation_rank(name: &str) -> usize {
 
 fn model_picker_route_is_recommended(model_name: &str, route: &PickerOption) -> bool {
     RECOMMENDED_MODELS.contains(&model_name)
-        && IDEOCODE_provider_core::model_route_metadata_is_recommended(
+        && ideocode_provider_core::model_route_metadata_is_recommended(
             model_name,
             &route.provider,
             &route.api_method,
@@ -412,7 +412,7 @@ fn model_picker_route_provider_matches_key(
     route_provider_label: &str,
     desired_provider: &str,
 ) -> bool {
-    IDEOCODE_provider_core::model_route_provider_matches_key(
+    ideocode_provider_core::model_route_provider_matches_key(
         route_provider_key,
         route_provider_label,
         desired_provider,
@@ -470,7 +470,7 @@ fn model_picker_route_is_default(
 
     if let Some((bare_model, provider_label)) = default_model.rsplit_once('@') {
         return bare_model == model_name
-            && IDEOCODE_provider_core::model_route_provider_labels_match(
+            && ideocode_provider_core::model_route_provider_labels_match(
                 &route.provider,
                 provider_label,
             );
@@ -484,8 +484,8 @@ fn model_picker_route_is_default(
 impl App {
     pub(super) fn remote_model_catalog_snapshot(
         &self,
-    ) -> IDEOCODE_provider_core::ModelCatalogSnapshot {
-        IDEOCODE_provider_core::ModelCatalogSnapshot::new(
+    ) -> ideocode_provider_core::ModelCatalogSnapshot {
+        ideocode_provider_core::ModelCatalogSnapshot::new(
             self.remote_provider_name.clone(),
             self.remote_provider_model.clone(),
             self.remote_available_entries.clone(),
@@ -495,7 +495,7 @@ impl App {
 
     pub(super) fn replace_remote_model_catalog_snapshot(
         &mut self,
-        snapshot: IDEOCODE_provider_core::ModelCatalogSnapshot,
+        snapshot: ideocode_provider_core::ModelCatalogSnapshot,
     ) -> bool {
         let mut provider_meta_changed = false;
         let mut provider_name_changed = false;
@@ -537,7 +537,7 @@ impl App {
     /// auth method: an older session may have baked an OAuth-only fallback
     /// route into the cache, which would otherwise permanently hide the
     /// API-key route for that model.
-    fn append_IDEOCODE_subscription_routes_static(
+    fn append_ideocode_subscription_routes_static(
         remote_available_entries: &[String],
         routes: &mut Vec<crate::provider::ModelRoute>,
         require_credentials: bool,
@@ -607,12 +607,12 @@ impl App {
         // IDEOCODE subscription routes are a complete, server-managed catalog.
         // Do not mix in locally configured Anthropic/OpenAI credentials merely
         // because a curated model also belongs to one of those upstreams.
-        let provider_is_IDEOCODE_subscription = remote_provider_name.is_some_and(|name| {
+        let provider_is_ideocode_subscription = remote_provider_name.is_some_and(|name| {
             name.eq_ignore_ascii_case(crate::subscription_catalog::IDEOCODE_PROVIDER_DISPLAY_NAME)
         });
-        if provider_is_IDEOCODE_subscription {
+        if provider_is_ideocode_subscription {
             routes.clear();
-            Self::append_IDEOCODE_subscription_routes_static(
+            Self::append_ideocode_subscription_routes_static(
                 remote_available_entries,
                 routes,
                 false,
@@ -620,13 +620,13 @@ impl App {
             );
             return;
         }
-        let poisoned_by_IDEOCODE_subscription = !routes.is_empty()
+        let poisoned_by_ideocode_subscription = !routes.is_empty()
             && routes.iter().all(|route| {
                 route
                     .api_method
                     .eq_ignore_ascii_case(crate::subscription_catalog::IDEOCODE_ROUTE_API_METHOD)
             });
-        if poisoned_by_IDEOCODE_subscription {
+        if poisoned_by_ideocode_subscription {
             // Version 1 could turn a mixed provider catalog into all-IDEOCODE rows
             // after seeing just one managed subscription route. Rebuild ordinary
             // routes from the names catalog, then append only the current tier's
@@ -635,7 +635,7 @@ impl App {
                 remote_provider_name,
                 remote_available_entries,
             );
-            Self::append_IDEOCODE_subscription_routes_static(
+            Self::append_ideocode_subscription_routes_static(
                 remote_available_entries,
                 routes,
                 false,
@@ -705,7 +705,7 @@ impl App {
         // The curated client catalog is versioned with the backend and is the
         // authority for managed subscription entitlements. Do not hide newly
         // launched subscription models behind a stale remote names snapshot.
-        Self::append_IDEOCODE_subscription_routes_static(
+        Self::append_ideocode_subscription_routes_static(
             remote_available_entries,
             routes,
             true,
@@ -715,7 +715,7 @@ impl App {
 
     fn hydrate_remote_model_catalog_snapshot(
         &mut self,
-        snapshot: IDEOCODE_provider_core::ModelCatalogSnapshot,
+        snapshot: ideocode_provider_core::ModelCatalogSnapshot,
     ) -> bool {
         if !snapshot.has_routes() {
             return false;
@@ -1397,7 +1397,7 @@ impl App {
         }
 
         fn route_matches_recent_auth(route_provider: &str, login_provider: &str) -> bool {
-            IDEOCODE_provider_core::model_route_provider_labels_related(route_provider, login_provider)
+            ideocode_provider_core::model_route_provider_labels_related(route_provider, login_provider)
         }
 
         let timestamp_started = std::time::Instant::now();
@@ -2465,11 +2465,11 @@ impl App {
                 ResumeTarget::ClaudeCodeSession { session_id, .. } => {
                     format!(
                         "Claude Code {}",
-                        IDEOCODE_core::util::truncate_str(session_id, 8)
+                        ideocode_core::util::truncate_str(session_id, 8)
                     )
                 }
                 ResumeTarget::CodexSession { session_id, .. } => {
-                    format!("Codex {}", IDEOCODE_core::util::truncate_str(session_id, 8))
+                    format!("Codex {}", ideocode_core::util::truncate_str(session_id, 8))
                 }
                 ResumeTarget::PiSession { session_path } => std::path::Path::new(session_path)
                     .file_stem()
@@ -2477,10 +2477,10 @@ impl App {
                     .unwrap_or("Pi session")
                     .to_string(),
                 ResumeTarget::OpenCodeSession { session_id, .. } => {
-                    format!("OpenCode {}", IDEOCODE_core::util::truncate_str(session_id, 8))
+                    format!("OpenCode {}", ideocode_core::util::truncate_str(session_id, 8))
                 }
                 ResumeTarget::CursorSession { session_id, .. } => {
-                    format!("Cursor {}", IDEOCODE_core::util::truncate_str(session_id, 8))
+                    format!("Cursor {}", ideocode_core::util::truncate_str(session_id, 8))
                 }
             };
             let resolved_target = match crate::import::resolve_resume_target_to_IDEOCODE(target) {
@@ -2570,11 +2570,11 @@ impl App {
             ResumeTarget::ClaudeCodeSession { session_id, .. } => {
                 format!(
                     "Claude Code {}",
-                    IDEOCODE_core::util::truncate_str(session_id, 8)
+                    ideocode_core::util::truncate_str(session_id, 8)
                 )
             }
             ResumeTarget::CodexSession { session_id, .. } => {
-                format!("Codex {}", IDEOCODE_core::util::truncate_str(session_id, 8))
+                format!("Codex {}", ideocode_core::util::truncate_str(session_id, 8))
             }
             ResumeTarget::PiSession { session_path } => std::path::Path::new(session_path)
                 .file_stem()
@@ -2582,10 +2582,10 @@ impl App {
                 .unwrap_or("Pi session")
                 .to_string(),
             ResumeTarget::OpenCodeSession { session_id, .. } => {
-                format!("OpenCode {}", IDEOCODE_core::util::truncate_str(session_id, 8))
+                format!("OpenCode {}", ideocode_core::util::truncate_str(session_id, 8))
             }
             ResumeTarget::CursorSession { session_id, .. } => {
-                format!("Cursor {}", IDEOCODE_core::util::truncate_str(session_id, 8))
+                format!("Cursor {}", ideocode_core::util::truncate_str(session_id, 8))
             }
         };
 
@@ -2637,7 +2637,7 @@ impl App {
             ));
             return false;
         };
-        let display_id = IDEOCODE_core::util::truncate_str(session_id, 8);
+        let display_id = ideocode_core::util::truncate_str(session_id, 8);
         self.set_status_notice(format!("Preparing Claude takeover → {display_id}"));
 
         let resolved = match crate::import::take_over_live_claude_session(target) {
@@ -3436,7 +3436,7 @@ impl App {
     }
 
     pub(super) fn picker_fuzzy_score(pattern: &str, text: &str) -> Option<i32> {
-        IDEOCODE_fuzzy::fuzzy_score_tokens(pattern, text)
+        ideocode_fuzzy::fuzzy_score_tokens(pattern, text)
     }
 
     pub(super) fn apply_inline_interactive_filter(picker: &mut InlineInteractiveState) {
@@ -3446,7 +3446,7 @@ impl App {
             let query = picker.filter.trim();
             // Prepare the query once per keystroke instead of re-parsing and
             // re-lowercasing it for every entry.
-            let prepared = IDEOCODE_fuzzy::PreparedTokenQuery::new(&picker.filter);
+            let prepared = ideocode_fuzzy::PreparedTokenQuery::new(&picker.filter);
             let mut scored: Vec<(usize, bool, i32)> = picker
                 .entries
                 .iter()
@@ -3687,19 +3687,19 @@ mod tests {
 
     #[test]
     fn model_picker_current_route_allows_provider_aliases() {
-        assert!(IDEOCODE_provider_core::model_route_provider_labels_match(
+        assert!(ideocode_provider_core::model_route_provider_labels_match(
             "Anthropic",
             "Claude"
         ));
-        assert!(IDEOCODE_provider_core::model_route_provider_labels_match(
+        assert!(ideocode_provider_core::model_route_provider_labels_match(
             "auto",
             "OpenRouter"
         ));
-        assert!(IDEOCODE_provider_core::model_route_provider_labels_match(
+        assert!(ideocode_provider_core::model_route_provider_labels_match(
             "GitHub Copilot",
             "Copilot"
         ));
-        assert!(IDEOCODE_provider_core::model_route_provider_labels_match(
+        assert!(ideocode_provider_core::model_route_provider_labels_match(
             "AWS Bedrock",
             "Bedrock"
         ));
@@ -3707,11 +3707,11 @@ mod tests {
 
     #[test]
     fn model_picker_provider_match_does_not_use_substring_false_positives() {
-        assert!(!IDEOCODE_provider_core::model_route_provider_labels_match(
+        assert!(!ideocode_provider_core::model_route_provider_labels_match(
             "OpenRouter/OpenAI",
             "OpenAI"
         ));
-        assert!(!IDEOCODE_provider_core::model_route_provider_labels_match(
+        assert!(!ideocode_provider_core::model_route_provider_labels_match(
             "OpenAI",
             "OpenRouter"
         ));
@@ -3908,7 +3908,7 @@ mod tests {
 
     #[test]
     fn remote_model_catalog_cache_rejects_stale_and_future_timestamps() {
-        let snapshot = IDEOCODE_provider_core::ModelCatalogSnapshot::new(
+        let snapshot = ideocode_provider_core::ModelCatalogSnapshot::new(
             Some("OpenAI".to_string()),
             Some("gpt-5.5".to_string()),
             vec!["gpt-5.5".to_string()],
@@ -3931,7 +3931,7 @@ mod tests {
 
     #[test]
     fn remote_model_catalog_cache_rejects_forged_or_oversized_routes() {
-        let safe_snapshot = IDEOCODE_provider_core::ModelCatalogSnapshot::new(
+        let safe_snapshot = ideocode_provider_core::ModelCatalogSnapshot::new(
             Some("AWS Bedrock".to_string()),
             Some("us.anthropic.claude-sonnet-4-6".to_string()),
             vec!["us.anthropic.claude-sonnet-4-6".to_string()],

@@ -35,7 +35,7 @@ fn harden_secret_file_permissions_sets_owner_only_modes() {
 }
 
 #[test]
-fn user_home_path_uses_external_dir_under_IDEOCODE_home() {
+fn user_home_path_uses_external_dir_under_ideocode_home() {
     let _guard = lock_test_env();
     let prev_home = std::env::var_os("IDEOCODE_HOME");
     let temp = tempfile::TempDir::new().expect("create temp dir");
@@ -73,7 +73,7 @@ fn validate_external_auth_file_rejects_symlink() {
 }
 
 #[test]
-fn app_config_dir_uses_IDEOCODE_home_when_set() {
+fn app_config_dir_uses_ideocode_home_when_set() {
     let _guard = lock_test_env();
     let prev_home = std::env::var_os("IDEOCODE_HOME");
     let temp = tempfile::TempDir::new().expect("create temp dir");

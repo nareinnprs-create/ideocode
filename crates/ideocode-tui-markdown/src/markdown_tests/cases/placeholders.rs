@@ -7,7 +7,7 @@ fn test_normalize_block_separators_preserves_inline_image_placeholder_body() {
     let rows = 12u16;
     let mut lines = vec![Line::from("before")];
     lines.push(Line::from(""));
-    lines.extend(IDEOCODE_tui_mermaid::inline_image_placeholder_lines(
+    lines.extend(ideocode_tui_mermaid::inline_image_placeholder_lines(
         0xabcdef, rows, 40,
     ));
     lines.push(Line::from(""));
@@ -17,7 +17,7 @@ fn test_normalize_block_separators_preserves_inline_image_placeholder_body() {
 
     let marker_idx = lines
         .iter()
-        .position(|line| IDEOCODE_tui_mermaid::parse_inline_image_placeholder(line).is_some())
+        .position(|line| ideocode_tui_mermaid::parse_inline_image_placeholder(line).is_some())
         .expect("placeholder marker must survive normalization");
     let blank_run = lines[marker_idx + 1..]
         .iter()
@@ -45,7 +45,7 @@ fn test_normalize_block_separators_keeps_trailing_placeholder_body() {
     let rows = 8u16;
     let mut lines = vec![Line::from("intro")];
     lines.push(Line::from(""));
-    lines.extend(IDEOCODE_tui_mermaid::inline_image_placeholder_lines(
+    lines.extend(ideocode_tui_mermaid::inline_image_placeholder_lines(
         0x123456, rows, 30,
     ));
 
@@ -53,7 +53,7 @@ fn test_normalize_block_separators_keeps_trailing_placeholder_body() {
 
     let marker_idx = lines
         .iter()
-        .position(|line| IDEOCODE_tui_mermaid::parse_inline_image_placeholder(line).is_some())
+        .position(|line| ideocode_tui_mermaid::parse_inline_image_placeholder(line).is_some())
         .expect("placeholder marker must survive normalization");
     assert_eq!(
         lines.len() - marker_idx,

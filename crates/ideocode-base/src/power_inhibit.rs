@@ -324,7 +324,7 @@ impl WindowsPowerGuard {
 impl Drop for WindowsPowerGuard {
     fn drop(&mut self) {
         if let Err(error) = self.stop() {
-            IDEOCODE_logging::warn(&format!("failed to stop Windows power guard: {error}"));
+            ideocode_logging::warn(&format!("failed to stop Windows power guard: {error}"));
         }
     }
 }
@@ -345,7 +345,7 @@ fn run_windows_power_guard(
 
     if ready_tx.send(Ok(())).is_err() {
         if unsafe { SetThreadExecutionState(windows_clear_execution_state_flags()) } == 0 {
-            IDEOCODE_logging::warn("failed to clear Windows power guard after receiver disconnect");
+            ideocode_logging::warn("failed to clear Windows power guard after receiver disconnect");
         }
         return;
     }

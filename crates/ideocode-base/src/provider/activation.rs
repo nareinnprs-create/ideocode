@@ -1,5 +1,5 @@
 ﻿use anyhow::Result;
-use IDEOCODE_provider_core::{ActiveProvider, provider_key};
+use ideocode_provider_core::{ActiveProvider, provider_key};
 
 /// Stable product/runtime identity selected by login or provider initialization.
 ///
@@ -151,7 +151,7 @@ impl ProviderActivation {
         }
     }
 
-    pub fn IDEOCODE_subscription(model: impl Into<String>) -> Self {
+    pub fn ideocode_subscription(model: impl Into<String>) -> Self {
         Self::initial(RuntimeProviderId::IDEOCODE, ActiveProvider::OpenRouter)
             .with_model_hint("IDEOCODE_OPENROUTER_MODEL", model)
     }

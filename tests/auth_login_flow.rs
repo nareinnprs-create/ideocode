@@ -1,11 +1,11 @@
 ﻿use anyhow::Result;
-use IDEOCODE::auth::{AuthState, AuthStatus};
-use IDEOCODE::provider::Provider;
-use IDEOCODE::provider_catalog::{
+use ideocode::auth::{AuthState, AuthStatus};
+use ideocode::provider::Provider;
+use ideocode::provider_catalog::{
     OPENAI_COMPAT_LOGIN_PROVIDER, login_providers, openai_compatible_profiles,
 };
-use IDEOCODE::tui::login_picker::{LoginPicker, LoginPickerItem, LoginPickerSummary};
-use IDEOCODE_provider_openrouter_runtime::OpenRouterProvider;
+use ideocode::tui::login_picker::{LoginPicker, LoginPickerItem, LoginPickerSummary};
+use ideocode_provider_openrouter_runtime::OpenRouterProvider;
 use ratatui::{Terminal, backend::TestBackend, buffer::Buffer};
 use std::collections::HashSet;
 use std::io::{Read, Write};
@@ -82,15 +82,15 @@ impl TestEnv {
             .collect::<Vec<_>>();
 
         for (key, _) in &saved {
-            IDEOCODE::env::remove_var(key);
+            ideocode::env::remove_var(key);
         }
 
-        IDEOCODE::env::set_var("HOME", temp.path());
-        IDEOCODE::env::set_var("XDG_CONFIG_HOME", temp.path().join("config"));
-        IDEOCODE::env::set_var("APPDATA", temp.path().join("AppData").join("Roaming"));
-        IDEOCODE::env::set_var("IDEOCODE_HOME", temp.path().join("IDEOCODE-home"));
-        IDEOCODE::env::set_var("NO_PROXY", "127.0.0.1,localhost");
-        IDEOCODE::env::set_var("no_proxy", "127.0.0.1,localhost");
+        ideocode::env::set_var("HOME", temp.path());
+        ideocode::env::set_var("XDG_CONFIG_HOME", temp.path().join("config"));
+        ideocode::env::set_var("APPDATA", temp.path().join("AppData").join("Roaming"));
+        ideocode::env::set_var("IDEOCODE_HOME", temp.path().join("IDEOCODE-home"));
+        ideocode::env::set_var("NO_PROXY", "127.0.0.1,localhost");
+        ideocode::env::set_var("no_proxy", "127.0.0.1,localhost");
         AuthStatus::invalidate_cache();
 
         Ok(Self {
@@ -108,21 +108,21 @@ impl TestEnv {
         allow_no_auth: bool,
     ) {
         let _ = self.temp.path();
-        IDEOCODE::env::set_var("IDEOCODE_OPENROUTER_API_BASE", api_base);
-        IDEOCODE::env::set_var("IDEOCODE_OPENROUTER_API_KEY_NAME", "AUTH_FLOW_TEST_KEY");
-        IDEOCODE::env::set_var("IDEOCODE_OPENROUTER_ENV_FILE", "auth-flow-test.env");
-        IDEOCODE::env::set_var("IDEOCODE_OPENROUTER_CACHE_NAMESPACE", cache_namespace);
-        IDEOCODE::env::set_var("IDEOCODE_OPENROUTER_PROVIDER_FEATURES", "0");
-        IDEOCODE::env::set_var("IDEOCODE_OPENROUTER_MODEL_CATALOG", "1");
+        ideocode::env::set_var("IDEOCODE_OPENROUTER_API_BASE", api_base);
+        ideocode::env::set_var("IDEOCODE_OPENROUTER_API_KEY_NAME", "AUTH_FLOW_TEST_KEY");
+        ideocode::env::set_var("IDEOCODE_OPENROUTER_ENV_FILE", "auth-flow-test.env");
+        ideocode::env::set_var("IDEOCODE_OPENROUTER_CACHE_NAMESPACE", cache_namespace);
+        ideocode::env::set_var("IDEOCODE_OPENROUTER_PROVIDER_FEATURES", "0");
+        ideocode::env::set_var("IDEOCODE_OPENROUTER_MODEL_CATALOG", "1");
         if let Some(key) = key {
-            IDEOCODE::env::set_var("AUTH_FLOW_TEST_KEY", key);
+            ideocode::env::set_var("AUTH_FLOW_TEST_KEY", key);
         } else {
-            IDEOCODE::env::remove_var("AUTH_FLOW_TEST_KEY");
+            ideocode::env::remove_var("AUTH_FLOW_TEST_KEY");
         }
         if allow_no_auth {
-            IDEOCODE::env::set_var("IDEOCODE_OPENROUTER_ALLOW_NO_AUTH", "1");
+            ideocode::env::set_var("IDEOCODE_OPENROUTER_ALLOW_NO_AUTH", "1");
         } else {
-            IDEOCODE::env::remove_var("IDEOCODE_OPENROUTER_ALLOW_NO_AUTH");
+            ideocode::env::remove_var("IDEOCODE_OPENROUTER_ALLOW_NO_AUTH");
         }
         AuthStatus::invalidate_cache();
     }
@@ -133,9 +133,9 @@ impl Drop for TestEnv {
         AuthStatus::invalidate_cache();
         for (key, value) in &self.saved {
             if let Some(value) = value {
-                IDEOCODE::env::set_var(key, value);
+                ideocode::env::set_var(key, value);
             } else {
-                IDEOCODE::env::remove_var(key);
+                ideocode::env::remove_var(key);
             }
         }
         AuthStatus::invalidate_cache();
@@ -320,8 +320,8 @@ fn live_models_contract_supports_api_key_header_mode() -> Result<()> {
         Some("sk-header-contract"),
         false,
     );
-    IDEOCODE::env::set_var("IDEOCODE_OPENROUTER_AUTH_HEADER", "api-key");
-    IDEOCODE::env::set_var("IDEOCODE_OPENROUTER_AUTH_HEADER_NAME", "x-api-key");
+    ideocode::env::set_var("IDEOCODE_OPENROUTER_AUTH_HEADER", "api-key");
+    ideocode::env::set_var("IDEOCODE_OPENROUTER_AUTH_HEADER_NAME", "x-api-key");
 
     let provider = OpenRouterProvider::new()?;
     let models = run_current_thread(provider.fetch_models())?;
@@ -390,7 +390,7 @@ fn model_picker_cache_miss_schedules_single_background_refresh_and_updates_route
         None,
         true,
     );
-    IDEOCODE::env::set_var("IDEOCODE_OPENROUTER_MODEL", "background-race-selected-model");
+    ideocode::env::set_var("IDEOCODE_OPENROUTER_MODEL", "background-race-selected-model");
 
     let provider = OpenRouterProvider::new()?;
     run_current_thread(async {
@@ -463,8 +463,8 @@ fn live_model_catalog_failure_keeps_static_and_selected_model_picker_fallbacks()
         Some("sk-catalog-failure"),
         false,
     );
-    IDEOCODE::env::set_var("IDEOCODE_OPENROUTER_MODEL", "selected-fallback-model");
-    IDEOCODE::env::set_var(
+    ideocode::env::set_var("IDEOCODE_OPENROUTER_MODEL", "selected-fallback-model");
+    ideocode::env::set_var(
         "IDEOCODE_OPENROUTER_STATIC_MODELS",
         "selected-fallback-model\nstatic-fallback-model",
     );

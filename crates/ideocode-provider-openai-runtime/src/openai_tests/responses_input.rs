@@ -209,7 +209,7 @@ fn test_build_responses_input_keeps_image_context_after_tool_output() {
 #[test]
 fn test_build_responses_input_replaces_oversized_native_compaction_with_text() {
     let oversized =
-        "x".repeat(IDEOCODE_base::provider::openai_request::OPENAI_ENCRYPTED_CONTENT_SAFE_MAX_CHARS + 1);
+        "x".repeat(ideocode_base::provider::openai_request::OPENAI_ENCRYPTED_CONTENT_SAFE_MAX_CHARS + 1);
     let messages = vec![ChatMessage {
         role: Role::User,
         content: vec![ContentBlock::OpenAICompaction {
@@ -452,15 +452,15 @@ fn test_build_response_request_respects_configured_cache_retention() {
 #[test]
 fn test_openai_cache_ttl_is_model_aware() {
     assert_eq!(
-        IDEOCODE_base::provider::cache_ttl_for_provider_model("openai", Some("gpt-5.6-sol")),
+        ideocode_base::provider::cache_ttl_for_provider_model("openai", Some("gpt-5.6-sol")),
         Some(24 * 60 * 60)
     );
     assert_eq!(
-        IDEOCODE_base::provider::cache_ttl_for_provider_model("openai", Some("gpt-5.5")),
+        ideocode_base::provider::cache_ttl_for_provider_model("openai", Some("gpt-5.5")),
         Some(24 * 60 * 60)
     );
     assert_eq!(
-        IDEOCODE_base::provider::cache_ttl_for_provider_model("openai", Some("gpt-4o")),
+        ideocode_base::provider::cache_ttl_for_provider_model("openai", Some("gpt-4o")),
         Some(300)
     );
 }

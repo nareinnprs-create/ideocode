@@ -310,7 +310,7 @@ fn command_output_with_timeout(command: &mut Command, timeout: Duration) -> Resu
 /// 2. Saved key in `~/.config/IDEOCODE/cursor.env`
 pub fn load_api_key() -> Result<String> {
     if let Ok(key) = std::env::var("CURSOR_API_KEY") {
-        let trimmed = IDEOCODE_provider_env::sanitize_secret_value(&key);
+        let trimmed = ideocode_provider_env::sanitize_secret_value(&key);
         if !trimmed.is_empty() {
             return Ok(trimmed.to_string());
         }
@@ -324,7 +324,7 @@ pub fn load_api_key() -> Result<String> {
         for line in content.lines() {
             let line = line.trim();
             if let Some(key) = line.strip_prefix("CURSOR_API_KEY=") {
-                let key = IDEOCODE_provider_env::sanitize_secret_value(key);
+                let key = ideocode_provider_env::sanitize_secret_value(key);
                 if !key.is_empty() {
                     return Ok(key.to_string());
                 }

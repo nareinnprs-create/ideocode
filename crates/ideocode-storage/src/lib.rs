@@ -143,11 +143,11 @@ fn ensure_private_runtime_dir(path: &Path) {
     let _ = std::fs::create_dir_all(path);
     #[cfg(unix)]
     {
-        let _ = IDEOCODE_core::fs::set_directory_permissions_owner_only(path);
+        let _ = ideocode_core::fs::set_directory_permissions_owner_only(path);
     }
 }
 
-pub fn IDEOCODE_dir() -> Result<PathBuf> {
+pub fn ideocode_dir() -> Result<PathBuf> {
     if let Ok(path) = std::env::var("IDEOCODE_HOME") {
         return Ok(PathBuf::from(path));
     }
@@ -157,7 +157,7 @@ pub fn IDEOCODE_dir() -> Result<PathBuf> {
 }
 
 pub fn logs_dir() -> Result<PathBuf> {
-    Ok(IDEOCODE_dir()?.join("logs"))
+    Ok(ideocode_dir()?.join("logs"))
 }
 
 /// Durable state directory for state that must survive reboots.
@@ -174,7 +174,7 @@ pub fn durable_state_dir() -> PathBuf {
     if let Ok(dir) = std::env::var("IDEOCODE_RUNTIME_DIR") {
         return PathBuf::from(dir).join("durable-state");
     }
-    match IDEOCODE_dir() {
+    match ideocode_dir() {
         Ok(dir) => dir.join("state"),
         Err(_) => runtime_dir().join("durable-state"),
     }
@@ -226,16 +226,16 @@ pub fn harden_user_config_permissions() {
     #[cfg(windows)]
     {
         if let Some(config_dir) = dirs::config_dir() {
-            let IDEOCODE_config_dir = config_dir.join("IDEOCODE");
-            if IDEOCODE_config_dir.exists() {
-                schedule_windows_path_hardening(&IDEOCODE_config_dir, true);
+            let ideocode_config_dir = config_dir.join("IDEOCODE");
+            if ideocode_config_dir.exists() {
+                schedule_windows_path_hardening(&ideocode_config_dir, true);
             }
         }
 
-        if let Ok(IDEOCODE_home) = IDEOCODE_dir()
-            && IDEOCODE_home.exists()
+        if let Ok(ideocode_home) = ideocode_dir()
+            && ideocode_home.exists()
         {
-            schedule_windows_path_hardening(&IDEOCODE_home, true);
+            schedule_windows_path_hardening(&ideocode_home, true);
         }
         return;
     }
@@ -243,16 +243,16 @@ pub fn harden_user_config_permissions() {
     #[cfg(not(windows))]
     {
         if let Some(config_dir) = dirs::config_dir() {
-            let IDEOCODE_config_dir = config_dir.join("IDEOCODE");
-            if IDEOCODE_config_dir.exists() {
-                let _ = IDEOCODE_core::fs::set_directory_permissions_owner_only(&IDEOCODE_config_dir);
+            let ideocode_config_dir = config_dir.join("IDEOCODE");
+            if ideocode_config_dir.exists() {
+                let _ = ideocode_core::fs::set_directory_permissions_owner_only(&ideocode_config_dir);
             }
         }
 
-        if let Ok(IDEOCODE_home) = IDEOCODE_dir()
-            && IDEOCODE_home.exists()
+        if let Ok(ideocode_home) = ideocode_dir()
+            && ideocode_home.exists()
         {
-            let _ = IDEOCODE_core::fs::set_directory_permissions_owner_only(&IDEOCODE_home);
+            let _ = ideocode_core::fs::set_directory_permissions_owner_only(&ideocode_home);
         }
     }
 }
@@ -271,10 +271,10 @@ pub fn harden_secret_file_permissions(path: &Path) {
     #[cfg(not(windows))]
     {
         if let Some(parent) = path.parent() {
-            let _ = IDEOCODE_core::fs::set_directory_permissions_owner_only(parent);
+            let _ = ideocode_core::fs::set_directory_permissions_owner_only(parent);
         }
         if path.exists() {
-            let _ = IDEOCODE_core::fs::set_permissions_owner_only(path);
+            let _ = ideocode_core::fs::set_permissions_owner_only(path);
         }
     }
 }
@@ -353,13 +353,13 @@ fn run_windows_hardening_worker() {
 
         let mut directory_results = Vec::with_capacity(directories.len());
         for path in &directories {
-            let succeeded = IDEOCODE_core::fs::set_directory_permissions_owner_only(path).is_ok();
+            let succeeded = ideocode_core::fs::set_directory_permissions_owner_only(path).is_ok();
             directory_results.push((path.clone(), succeeded));
         }
         let mut file_results = Vec::with_capacity(files.len());
         for path in &files {
             let succeeded =
-                !path.exists() || IDEOCODE_core::fs::set_permissions_owner_only(path).is_ok();
+                !path.exists() || ideocode_core::fs::set_permissions_owner_only(path).is_ok();
             file_results.push((path.clone(), succeeded));
         }
 
@@ -434,7 +434,7 @@ pub fn validate_external_auth_file(path: &Path) -> Result<PathBuf> {
 pub fn ensure_dir(path: &Path) -> Result<()> {
     if !path.exists() {
         std::fs::create_dir_all(path)?;
-        IDEOCODE_core::fs::set_directory_permissions_owner_only(path)?;
+        ideocode_core::fs::set_directory_permissions_owner_only(path)?;
     }
     Ok(())
 }
@@ -523,7 +523,7 @@ fn write_bytes_inner(path: &Path, bytes: &[u8], durable: bool, secret: bool) -> 
             // deferred on Windows. Harden the container before any secret
             // bytes are created so a permissive inherited ACL is never
             // published, even briefly.
-            IDEOCODE_core::fs::set_directory_permissions_owner_only(parent)?;
+            ideocode_core::fs::set_directory_permissions_owner_only(parent)?;
         }
     }
 
@@ -534,7 +534,7 @@ fn write_bytes_inner(path: &Path, bytes: &[u8], durable: bool, secret: bool) -> 
     let result = (|| -> Result<()> {
         let file = std::fs::File::create(&tmp_path)?;
         if secret {
-            IDEOCODE_core::fs::set_permissions_owner_only(&tmp_path)?;
+            ideocode_core::fs::set_permissions_owner_only(&tmp_path)?;
         }
         let mut writer = std::io::BufWriter::new(file);
         writer.write_all(bytes)?;
@@ -549,7 +549,7 @@ fn write_bytes_inner(path: &Path, bytes: &[u8], durable: bool, secret: bool) -> 
         if path.exists() {
             let bak_path = path.with_extension("bak");
             if secret {
-                IDEOCODE_core::fs::set_permissions_owner_only(path)?;
+                ideocode_core::fs::set_permissions_owner_only(path)?;
             }
             // Preserve the previous version as .bak without ever leaving the
             // primary path missing. On Unix, rename(tmp, path) atomically
@@ -573,13 +573,13 @@ fn write_bytes_inner(path: &Path, bytes: &[u8], durable: bool, secret: bool) -> 
                 let _ = std::fs::rename(path, &bak_path);
             }
             if secret && bak_path.exists() {
-                IDEOCODE_core::fs::set_permissions_owner_only(&bak_path)?;
+                ideocode_core::fs::set_permissions_owner_only(&bak_path)?;
             }
         }
 
         std::fs::rename(&tmp_path, path)?;
         if secret {
-            IDEOCODE_core::fs::set_permissions_owner_only(path)?;
+            ideocode_core::fs::set_permissions_owner_only(path)?;
         }
 
         #[cfg(unix)]

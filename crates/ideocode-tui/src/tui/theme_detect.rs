@@ -10,10 +10,10 @@
 //!    they do not add hundreds of milliseconds to startup.
 //! 4. Fallback: dark (IDEOCODE's native palette).
 //!
-//! The result is stored in `IDEOCODE_tui_style::theme_mode` where the renderer
+//! The result is stored in `ideocode_tui_style::theme_mode` where the renderer
 //! adapts colors for light backgrounds at frame time.
 
-use IDEOCODE_tui_style::ThemeMode;
+use ideocode_tui_style::ThemeMode;
 use std::sync::OnceLock;
 
 static DETECTED: OnceLock<ThemeMode> = OnceLock::new();
@@ -23,7 +23,7 @@ static DETECTED: OnceLock<ThemeMode> = OnceLock::new();
 /// free. Must be called before entering raw mode / the alternate screen.
 pub fn init_theme_mode() -> ThemeMode {
     let mode = *DETECTED.get_or_init(resolve_theme_mode);
-    IDEOCODE_tui_style::set_theme_mode(mode);
+    ideocode_tui_style::set_theme_mode(mode);
     mode
 }
 
@@ -42,12 +42,12 @@ pub fn init_theme_mode_for_resume(inherited_theme: Option<&str>) -> ThemeMode {
     });
     let mode = *DETECTED
         .get_or_init(|| inherited_theme.unwrap_or_else(resolve_theme_mode_without_terminal_query));
-    IDEOCODE_tui_style::set_theme_mode(mode);
+    ideocode_tui_style::set_theme_mode(mode);
     mode
 }
 
 pub fn current_theme_label() -> &'static str {
-    match IDEOCODE_tui_style::theme_mode() {
+    match ideocode_tui_style::theme_mode() {
         ThemeMode::Dark => "dark",
         ThemeMode::Light => "light",
     }

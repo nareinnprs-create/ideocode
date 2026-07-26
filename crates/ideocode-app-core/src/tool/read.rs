@@ -4,7 +4,7 @@ use super::{Tool, ToolContext, ToolOutput};
 use crate::bus::{Bus, BusEvent, FileOp, FileTouch};
 use anyhow::Result;
 use async_trait::async_trait;
-use IDEOCODE_terminal_image::{ImageDisplayParams, ImageProtocol, display_image};
+use ideocode_terminal_image::{ImageDisplayParams, ImageProtocol, display_image};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use std::path::Path;
@@ -489,7 +489,7 @@ fn handle_pdf_file(path: &Path, file_path: &str) -> Result<ToolOutput> {
     };
 
     // Extract text from PDF
-    match IDEOCODE_pdf::extract_text(path) {
+    match ideocode_pdf::extract_text(path) {
         Ok(text) => {
             let mut output = String::new();
             output.push_str(&format!("PDF: {} ({})\n", file_path, size_str));

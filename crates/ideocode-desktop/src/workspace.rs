@@ -1587,7 +1587,7 @@ fn fuzzy_slash_completion(needle: &str, completions: &[&'static str]) -> Option<
 }
 
 fn slash_fuzzy_score(needle: &str, haystack: &str) -> Option<i32> {
-    IDEOCODE_fuzzy::command_fuzzy_score(needle, haystack)
+    ideocode_fuzzy::command_fuzzy_score(needle, haystack)
 }
 
 fn longest_common_prefix<'a>(values: &'a [&'a str]) -> Option<&'a str> {

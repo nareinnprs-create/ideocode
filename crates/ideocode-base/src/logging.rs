@@ -9,4 +9,4 @@
 //! and does not pull the root crate into rebuilds. This module is a thin facade
 //! that preserves the existing `crate::logging::*` API for all call sites.
 
-pub use IDEOCODE_logging::*;
+pub use ideocode_logging::*;

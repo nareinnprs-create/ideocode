@@ -1,6 +1,6 @@
 ﻿// End-to-end task-DAG flow through the real server handlers and assignment loop.
 //
-// Unlike the engine unit tests (which exercise `IDEOCODE_plan::dag` in isolation),
+// Unlike the engine unit tests (which exercise `ideocode_plan::dag` in isolation),
 // this drives the live `comm_graph` handlers against real server state
 // (swarm_members / swarms_by_id / swarm_plans / coordinators) and then the real
 // `handle_comm_assign_task` path, proving the substrate works request-to-plan and
@@ -487,7 +487,7 @@ async fn e2e_deep_assignment_carries_fanout_and_artifact_contract() {
     };
     let prompt = queued.expect("deep assignment should queue a task prompt for the worker");
     assert!(
-        prompt.contains(IDEOCODE_swarm_core::SWARM_DEEP_NODE_MARKER),
+        prompt.contains(ideocode_swarm_core::SWARM_DEEP_NODE_MARKER),
         "deep assignment prompt must carry the deep-node contract, got: {prompt}"
     );
     assert!(prompt.contains("action=\"expand_node\", node_id=\"explore.a\""));
@@ -530,7 +530,7 @@ async fn e2e_deep_assignment_carries_fanout_and_artifact_contract() {
     }
     .expect("light assignment should also queue a task prompt");
     assert!(
-        !light_prompt.contains(IDEOCODE_swarm_core::SWARM_DEEP_NODE_MARKER),
+        !light_prompt.contains(ideocode_swarm_core::SWARM_DEEP_NODE_MARKER),
         "light assignments must not carry the deep contract"
     );
 }
@@ -644,7 +644,7 @@ async fn e2e_deep_gate_assignment_carries_inject_gap_contract() {
         })
     }
     .expect("gate assignment should queue a task prompt for the worker");
-    assert!(prompt.contains(IDEOCODE_swarm_core::SWARM_DEEP_NODE_MARKER));
+    assert!(prompt.contains(ideocode_swarm_core::SWARM_DEEP_NODE_MARKER));
     assert!(
         prompt.contains(&format!("action=\"inject_gap\", gate_id=\"{gate_id}\"")),
         "gate prompt must carry the inject_gap contract, got: {prompt}"
@@ -730,7 +730,7 @@ async fn e2e_complete_flows_artifact_to_downstream_assignment() {
         let api = plan.items.iter().find(|i| i.id == "api").unwrap();
         assert_eq!(api.status, "completed");
         assert!(plan.node_meta["api"].artifact_json.is_some());
-        let ready = IDEOCODE_plan::next_runnable_item_ids(&plan.items, None);
+        let ready = ideocode_plan::next_runnable_item_ids(&plan.items, None);
         assert!(
             ready.contains(&"ui".to_string()),
             "ui should be ready: {ready:?}"

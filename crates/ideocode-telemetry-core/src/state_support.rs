@@ -1,33 +1,33 @@
 ﻿use super::{SESSION_STATE, sanitize_telemetry_label};
 use chrono::{DateTime, Datelike, Timelike, Utc};
-use IDEOCODE_storage as storage;
+use ideocode_storage as storage;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
 
 pub(super) fn telemetry_id_path() -> Option<PathBuf> {
-    storage::IDEOCODE_dir().ok().map(|d| d.join("telemetry_id"))
+    storage::ideocode_dir().ok().map(|d| d.join("telemetry_id"))
 }
 
 pub(super) fn install_recorded_path() -> Option<PathBuf> {
-    storage::IDEOCODE_dir()
+    storage::ideocode_dir()
         .ok()
         .map(|d| d.join("telemetry_install_sent"))
 }
 
 pub(super) fn install_conversion_id_path() -> Option<PathBuf> {
-    storage::IDEOCODE_dir()
+    storage::ideocode_dir()
         .ok()
         .map(|d| d.join("install_conversion_id"))
 }
 
 pub(super) fn version_recorded_path() -> Option<PathBuf> {
-    storage::IDEOCODE_dir()
+    storage::ideocode_dir()
         .ok()
         .map(|d| d.join("telemetry_version_sent"))
 }
 
 pub(super) fn telemetry_state_path(name: &str) -> Option<PathBuf> {
-    storage::IDEOCODE_dir().ok().map(|d| d.join(name))
+    storage::ideocode_dir().ok().map(|d| d.join(name))
 }
 
 pub(super) fn milestone_recorded_path(id: &str, key: &str) -> Option<PathBuf> {
@@ -270,7 +270,7 @@ pub(super) fn is_first_run() -> bool {
 }
 
 pub(super) fn version() -> String {
-    IDEOCODE_build_meta::pkg_version().to_string()
+    ideocode_build_meta::pkg_version().to_string()
 }
 
 pub(super) fn install_recorded_for_id(id: &str) -> bool {
@@ -303,7 +303,7 @@ pub(super) fn new_event_id() -> String {
     uuid::Uuid::new_v4().to_string()
 }
 
-pub(super) fn is_IDEOCODE_repo_dir(dir: &Path) -> bool {
+pub(super) fn is_ideocode_repo_dir(dir: &Path) -> bool {
     let cargo_toml = dir.join("Cargo.toml");
     if !cargo_toml.exists() || !dir.join(".git").exists() {
         return false;
@@ -314,23 +314,23 @@ pub(super) fn is_IDEOCODE_repo_dir(dir: &Path) -> bool {
         .unwrap_or(false)
 }
 
-fn find_IDEOCODE_repo_in_ancestors(start: &Path) -> Option<PathBuf> {
+fn find_ideocode_repo_in_ancestors(start: &Path) -> Option<PathBuf> {
     start
         .ancestors()
-        .find(|dir| is_IDEOCODE_repo_dir(dir))
+        .find(|dir| is_ideocode_repo_dir(dir))
         .map(Path::to_path_buf)
 }
 
-fn telemetry_IDEOCODE_repo_dir() -> Option<PathBuf> {
+fn telemetry_ideocode_repo_dir() -> Option<PathBuf> {
     if let Ok(path) = std::env::var("IDEOCODE_REPO_DIR") {
         let path = PathBuf::from(path);
-        if is_IDEOCODE_repo_dir(&path) {
+        if is_ideocode_repo_dir(&path) {
             return Some(path);
         }
     }
 
     let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    if let Some(repo) = find_IDEOCODE_repo_in_ancestors(&manifest_dir) {
+    if let Some(repo) = find_ideocode_repo_in_ancestors(&manifest_dir) {
         return Some(repo);
     }
 
@@ -339,18 +339,18 @@ fn telemetry_IDEOCODE_repo_dir() -> Option<PathBuf> {
             .parent()
             .and_then(Path::parent)
             .and_then(Path::parent)
-            .filter(|dir| is_IDEOCODE_repo_dir(dir))
+            .filter(|dir| is_ideocode_repo_dir(dir))
     {
         return Some(repo.to_path_buf());
     }
 
     std::env::current_dir()
         .ok()
-        .and_then(|cwd| find_IDEOCODE_repo_in_ancestors(&cwd))
+        .and_then(|cwd| find_ideocode_repo_in_ancestors(&cwd))
 }
 
 pub(super) fn build_channel() -> String {
-    if std::env::var(IDEOCODE_selfdev_types::CLIENT_SELFDEV_ENV).is_ok() {
+    if std::env::var(ideocode_selfdev_types::CLIENT_SELFDEV_ENV).is_ok() {
         return "selfdev".to_string();
     }
     if let Ok(exe) = std::env::current_exe() {
@@ -362,14 +362,14 @@ pub(super) fn build_channel() -> String {
             return "local_build".to_string();
         }
     }
-    if telemetry_IDEOCODE_repo_dir().is_some() {
+    if telemetry_ideocode_repo_dir().is_some() {
         return "git_checkout".to_string();
     }
     "release".to_string()
 }
 
 pub(super) fn is_git_checkout() -> bool {
-    telemetry_IDEOCODE_repo_dir().is_some()
+    telemetry_ideocode_repo_dir().is_some()
 }
 
 pub(super) fn is_ci() -> bool {

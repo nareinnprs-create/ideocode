@@ -15,7 +15,7 @@ pub type ImportCoreResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync
 ///
 /// Returns a slice of at most `max_bytes` bytes, ending at a valid char
 /// boundary so it never panics on multibyte input. This mirrors
-/// `IDEOCODE_core::util::truncate_str`, duplicated here to keep this leaf crate
+/// `ideocode_core::util::truncate_str`, duplicated here to keep this leaf crate
 /// free of the heavier `IDEOCODE-core` dependency.
 fn truncate_str(s: &str, max_bytes: usize) -> &str {
     if s.len() <= max_bytes {

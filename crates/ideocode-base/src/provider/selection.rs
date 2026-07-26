@@ -1,6 +1,6 @@
 ﻿use super::*;
 use crate::provider_catalog::{LoginProviderDescriptor, LoginProviderTarget};
-pub(super) use IDEOCODE_provider_core::{ActiveProvider, ProviderAvailability};
+pub(super) use ideocode_provider_core::{ActiveProvider, ProviderAvailability};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum ConfigProviderSelection {
@@ -44,11 +44,11 @@ pub struct DefaultModelSelection {
 
 impl MultiProvider {
     pub(super) fn auto_default_provider(availability: ProviderAvailability) -> ActiveProvider {
-        IDEOCODE_provider_core::auto_default_provider(availability)
+        ideocode_provider_core::auto_default_provider(availability)
     }
 
     pub(super) fn parse_provider_hint(value: &str) -> Option<ActiveProvider> {
-        IDEOCODE_provider_core::parse_provider_hint(value)
+        ideocode_provider_core::parse_provider_hint(value)
     }
 
     pub(super) fn initial_provider_from_env() -> Option<ActiveProvider> {
@@ -70,11 +70,11 @@ impl MultiProvider {
     }
 
     pub(super) fn provider_label(provider: ActiveProvider) -> &'static str {
-        IDEOCODE_provider_core::provider_label(provider)
+        ideocode_provider_core::provider_label(provider)
     }
 
     pub(super) fn provider_key(provider: ActiveProvider) -> &'static str {
-        IDEOCODE_provider_core::provider_key(provider)
+        ideocode_provider_core::provider_key(provider)
     }
 
     pub(super) fn set_active_provider(&self, provider: ActiveProvider) {
@@ -220,7 +220,7 @@ impl MultiProvider {
         // Fold any dual-auth (Anthropic/OpenAI OAuth-vs-API) alias onto its
         // canonical session key via the single shared parser, so this never
         // drifts from the route/runtime vocabularies. Non-dual keys pass through.
-        if let Some(route) = IDEOCODE_provider_core::AuthRoute::parse(provider_key) {
+        if let Some(route) = ideocode_provider_core::AuthRoute::parse(provider_key) {
             return route.session_provider_key();
         }
         provider_key.trim()
@@ -233,7 +233,7 @@ impl MultiProvider {
             if !prefix.is_empty() && !rest.trim().is_empty() {
                 // Dual-auth (Anthropic/OpenAI) prefixes fold onto their canonical
                 // session key via the single shared parser.
-                if let Some(route) = IDEOCODE_provider_core::AuthRoute::parse(prefix) {
+                if let Some(route) = ideocode_provider_core::AuthRoute::parse(prefix) {
                     return Some(route.session_provider_key().to_string());
                 }
                 match prefix {
@@ -383,7 +383,7 @@ impl MultiProvider {
 
         // Dual-auth keys map to their canonical model prefix via the single
         // shared parser, keeping the emitted prefix in lockstep with the parsers.
-        if let Some(route) = IDEOCODE_provider_core::AuthRoute::parse(provider_key) {
+        if let Some(route) = ideocode_provider_core::AuthRoute::parse(provider_key) {
             return format!("{}:{model}", route.model_prefix());
         }
 
@@ -470,7 +470,7 @@ impl MultiProvider {
         // OAuth-vs-API routing decision it encodes is silently dropped.
         Self::parse_provider_hint(trimmed)
             .or_else(|| {
-                IDEOCODE_provider_core::AuthRoute::parse(trimmed).map(|route| route.active_provider())
+                ideocode_provider_core::AuthRoute::parse(trimmed).map(|route| route.active_provider())
             })
             .map(ConfigProviderSelection::BuiltIn)
     }

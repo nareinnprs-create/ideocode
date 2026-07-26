@@ -9,13 +9,13 @@ use crate::{build, logging, session, startup_profile};
 use super::output;
 use super::provider_init::ProviderChoice;
 
-pub use IDEOCODE_selfdev_types::CLIENT_SELFDEV_ENV;
-pub use IDEOCODE_selfdev_types::client_selfdev_requested;
+pub use ideocode_selfdev_types::CLIENT_SELFDEV_ENV;
+pub use ideocode_selfdev_types::client_selfdev_requested;
 
 const IDEOCODE_REPO_URL: &str = "https://github.com/nareinnprs-create/ideocode.git";
 
 fn selfdev_clone_dir() -> Result<PathBuf> {
-    Ok(crate::storage::IDEOCODE_dir()?.join("source").join("IDEOCODE"))
+    Ok(crate::storage::ideocode_dir()?.join("source").join("IDEOCODE"))
 }
 
 fn resolve_or_clone_repo_dir() -> Result<PathBuf> {
@@ -25,7 +25,7 @@ fn resolve_or_clone_repo_dir() -> Result<PathBuf> {
 
     let repo_dir = selfdev_clone_dir()?;
     if repo_dir.exists() {
-        if build::is_IDEOCODE_repo(&repo_dir) {
+        if build::is_ideocode_repo(&repo_dir) {
             return Ok(repo_dir);
         }
 
@@ -66,7 +66,7 @@ fn resolve_or_clone_repo_dir() -> Result<PathBuf> {
         );
     }
 
-    if !build::is_IDEOCODE_repo(&repo_dir) {
+    if !build::is_ideocode_repo(&repo_dir) {
         anyhow::bail!(
             "Cloned self-dev source is not a valid IDEOCODE repository: {}",
             repo_dir.display()

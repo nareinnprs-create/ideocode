@@ -2,7 +2,7 @@
 //! tests that synthesize events / capture the screen are `#[ignore]`d.
 
 use super::*;
-use IDEOCODE_tool_core::{ToolContext, ToolExecutionMode};
+use ideocode_tool_core::{ToolContext, ToolExecutionMode};
 
 fn ctx() -> ToolContext {
     ToolContext {

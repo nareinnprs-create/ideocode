@@ -131,7 +131,7 @@ fn copy_selection_text_with_math_targets(
         .filter(|target| {
             matches!(
                 &target.kind,
-                IDEOCODE_tui_markdown::CopyTargetKind::Math { .. }
+                ideocode_tui_markdown::CopyTargetKind::Math { .. }
             )
                 // Selection points are half-open display positions. Ending at
                 // column zero of the label does not select the image; dragging
@@ -269,8 +269,8 @@ fn raw_selection_point(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use IDEOCODE_tui_markdown::CopyTargetKind;
-    use IDEOCODE_tui_messages::{CopyTarget, PreparedChatFrame, PreparedMessages, WrappedLineMap};
+    use ideocode_tui_markdown::CopyTargetKind;
+    use ideocode_tui_messages::{CopyTarget, PreparedChatFrame, PreparedMessages, WrappedLineMap};
     use ratatui::layout::Rect;
     use ratatui::text::Line;
     use std::sync::Arc;

@@ -85,7 +85,7 @@ pub fn log_provider_canonical_input(
     let first_item_hash = item_hashes.first().copied();
     let last_item_hash = item_hashes.last().copied();
 
-    let log_context = IDEOCODE_logging::current_context_snapshot();
+    let log_context = ideocode_logging::current_context_snapshot();
     let session_key = log_context.session.as_deref().unwrap_or("no-session");
     let key = format!(
         "{}\u{1f}{}\u{1f}{}\u{1f}{}",
@@ -142,7 +142,7 @@ pub fn log_provider_canonical_input(
         }
     }
 
-    IDEOCODE_logging::info(&format!(
+    ideocode_logging::info(&format!(
         "PROVIDER_CANONICAL_INPUT: provider={} model={} format={} request_hash={} request_json_chars={} \
          input_hash={} item_count={} previous_item_count={:?} item_hashes_hash={} first_item_hash={:?} last_item_hash={:?} \
          previous_age_secs={:?} prefix_matches={:?} common_prefix_items={:?} first_changed_item_index={:?} \

@@ -1,5 +1,5 @@
 ﻿#[cfg(target_os = "linux")]
-use super::focused_IDEOCODE_session;
+use super::focused_ideocode_session;
 use super::{
     ClientCandidate, extract_session_short_name_from_window_title, last_focused_session,
     normalize_session_short_name, parse_ppid, read_resumed_session_id,
@@ -124,7 +124,7 @@ fn read_resumed_session_id_from_cmdline_for_current_process() {
 }
 
 #[test]
-fn extract_session_short_name_from_IDEOCODE_window_title() {
+fn extract_session_short_name_from_ideocode_window_title() {
     assert_eq!(
         extract_session_short_name_from_window_title("🦢 IDEOCODE/cliff Swan [self-dev]"),
         Some("swan".to_string())
@@ -173,7 +173,7 @@ fn remember_and_read_last_focused_session() {
 
 #[cfg(target_os = "linux")]
 #[test]
-fn focused_IDEOCODE_session_uses_niri_window_title_when_process_name_is_generic() {
+fn focused_ideocode_session_uses_niri_window_title_when_process_name_is_generic() {
     let _guard = crate::storage::lock_test_env();
     let temp = tempfile::TempDir::new().expect("tempdir");
     let _home = EnvVarGuard::set("IDEOCODE_HOME", temp.path());
@@ -197,7 +197,7 @@ fn focused_IDEOCODE_session_uses_niri_window_title_when_process_name_is_generic(
     let _path = EnvVarGuard::set("PATH", path);
 
     assert_eq!(
-        focused_IDEOCODE_session().expect("resolve focused session"),
+        focused_ideocode_session().expect("resolve focused session"),
         Some("session_swan_123".to_string())
     );
 }

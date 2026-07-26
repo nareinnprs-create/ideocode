@@ -63,7 +63,7 @@ fn test_compute_image_regions_mermaid_placeholder_owns_blank_run() {
     assert_eq!(region.abs_line_idx, 1, "region starts at the marker line");
     assert_eq!(region.height, 3, "marker plus the two-blank run");
     assert_eq!(region.end_line, 4, "exclusive end covers the blank run");
-    assert_eq!(region.render, IDEOCODE_tui_messages::ImageRegionRender::Crop);
+    assert_eq!(region.render, ideocode_tui_messages::ImageRegionRender::Crop);
 }
 
 #[test]
@@ -86,7 +86,7 @@ fn test_compute_image_regions_inline_image_uses_marker_geometry() {
     );
     assert_eq!(region.end_line, 5);
     assert_eq!(region.width, 20);
-    assert_eq!(region.render, IDEOCODE_tui_messages::ImageRegionRender::Fit);
+    assert_eq!(region.render, ideocode_tui_messages::ImageRegionRender::Fit);
 }
 
 #[test]

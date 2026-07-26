@@ -89,7 +89,7 @@ pub(super) fn status_spinner_only_symbol(app: &App) -> Option<&'static str> {
     }
 
     if status_uses_primary_spinner(&app.status) {
-        Some(IDEOCODE_tui_style::theme::activity_indicator(
+        Some(ideocode_tui_style::theme::activity_indicator(
             status_spinner_elapsed(app),
             STATUS_SPINNER_FPS,
             policy.enable_decorative_animations,
@@ -323,7 +323,7 @@ fn render_status_spinner_into_buffer(buffer: &Buffer, area: Rect, symbol: &str) 
         && area.height > 0
         && buffer
             .cell((area.x, area.y))
-            .is_some_and(|cell| IDEOCODE_tui_style::theme::is_activity_indicator_frame(cell.symbol()))
+            .is_some_and(|cell| ideocode_tui_style::theme::is_activity_indicator_frame(cell.symbol()))
         && !symbol.is_empty()
 }
 
@@ -335,8 +335,8 @@ fn render_status_spinner_into_buffer_mut(buffer: &mut Buffer, area: Rect, symbol
         1,
         // The spinner cell is patched outside the full-frame draw, so apply
         // light-theme adaptation here explicitly (no-op on dark themes).
-        Style::default().fg(IDEOCODE_tui_style::adapt_color_for_theme(
-            IDEOCODE_tui_style::theme::ai_color(),
+        Style::default().fg(ideocode_tui_style::adapt_color_for_theme(
+            ideocode_tui_style::theme::ai_color(),
         )),
     );
 }
@@ -808,17 +808,17 @@ mod tests {
         let full_status_elapsed = 0.0;
         let app_lifetime_elapsed = 0.24;
 
-        let full_status_symbol = IDEOCODE_tui_style::theme::activity_indicator(
+        let full_status_symbol = ideocode_tui_style::theme::activity_indicator(
             full_status_elapsed,
             STATUS_SPINNER_FPS,
             true,
         );
-        let old_app_lifetime_symbol = IDEOCODE_tui_style::theme::activity_indicator(
+        let old_app_lifetime_symbol = ideocode_tui_style::theme::activity_indicator(
             app_lifetime_elapsed,
             STATUS_SPINNER_FPS,
             true,
         );
-        let fast_path_symbol = IDEOCODE_tui_style::theme::activity_indicator(
+        let fast_path_symbol = ideocode_tui_style::theme::activity_indicator(
             status_spinner_elapsed_for_sources(Some(full_status_elapsed)),
             STATUS_SPINNER_FPS,
             true,
@@ -895,7 +895,7 @@ mod tests {
                     assert_eq!(buffer.cell((x, y)).unwrap().symbol(), "⠙");
                     assert_eq!(
                         buffer.cell((x, y)).unwrap().fg,
-                        IDEOCODE_tui_style::theme::ai_color()
+                        ideocode_tui_style::theme::ai_color()
                     );
                 } else {
                     assert_eq!(buffer.cell((x, y)), before.cell((x, y)));

@@ -61,7 +61,7 @@
 
 use std::path::{Path, PathBuf};
 
-use IDEOCODE_tui_mermaid::{
+use ideocode_tui_mermaid::{
     RenderResult, clear_cache, debug_stats, render_mermaid_untracked, with_preferred_aspect_ratio,
 };
 

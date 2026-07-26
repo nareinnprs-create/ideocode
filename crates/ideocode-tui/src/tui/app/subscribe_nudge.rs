@@ -61,7 +61,7 @@ struct NudgeState {
 }
 
 fn state_path() -> Option<PathBuf> {
-    crate::storage::IDEOCODE_dir()
+    crate::storage::ideocode_dir()
         .ok()
         .map(|dir| dir.join("subscribe-nudge.json"))
 }

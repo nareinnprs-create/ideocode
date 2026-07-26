@@ -333,7 +333,7 @@ impl SafetySystem {
 
     /// Persist a transcript to ~/.IDEOCODE/ambient/transcripts/{timestamp}.json
     pub fn save_transcript(&self, transcript: &AmbientTranscript) -> Result<()> {
-        let dir = storage::IDEOCODE_dir()?.join("ambient").join("transcripts");
+        let dir = storage::ideocode_dir()?.join("ambient").join("transcripts");
         storage::ensure_dir(&dir)?;
 
         let filename = transcript.started_at.format("%Y-%m-%d-%H%M%S").to_string();
@@ -353,11 +353,11 @@ impl Default for SafetySystem {
 // ---------------------------------------------------------------------------
 
 fn queue_path() -> Result<std::path::PathBuf> {
-    Ok(storage::IDEOCODE_dir()?.join("safety").join("queue.json"))
+    Ok(storage::ideocode_dir()?.join("safety").join("queue.json"))
 }
 
 fn history_path() -> Result<std::path::PathBuf> {
-    Ok(storage::IDEOCODE_dir()?.join("safety").join("history.json"))
+    Ok(storage::ideocode_dir()?.join("safety").join("history.json"))
 }
 
 fn persist_queue(queue: &[PermissionRequest]) -> Result<()> {

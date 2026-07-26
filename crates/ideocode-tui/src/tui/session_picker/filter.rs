@@ -128,15 +128,15 @@ impl SessionPicker {
     }
 
     pub(super) fn session_is_claude_code(session: &SessionInfo) -> bool {
-        IDEOCODE_tui_session_picker::session_is_claude_code(session.source, &session.id)
+        ideocode_tui_session_picker::session_is_claude_code(session.source, &session.id)
     }
 
     pub(super) fn session_is_codex(session: &SessionInfo) -> bool {
-        IDEOCODE_tui_session_picker::session_is_codex(session.source, session.model.as_deref())
+        ideocode_tui_session_picker::session_is_codex(session.source, session.model.as_deref())
     }
 
     pub(super) fn session_is_pi(session: &SessionInfo) -> bool {
-        IDEOCODE_tui_session_picker::session_is_pi(
+        ideocode_tui_session_picker::session_is_pi(
             session.source,
             session.provider_key.as_deref(),
             session.model.as_deref(),
@@ -144,14 +144,14 @@ impl SessionPicker {
     }
 
     pub(super) fn session_is_open_code(session: &SessionInfo) -> bool {
-        IDEOCODE_tui_session_picker::session_is_open_code(
+        ideocode_tui_session_picker::session_is_open_code(
             session.source,
             session.provider_key.as_deref(),
         )
     }
 
     pub(super) fn session_is_cursor(session: &SessionInfo) -> bool {
-        IDEOCODE_tui_session_picker::session_is_cursor(session.source, session.provider_key.as_deref())
+        ideocode_tui_session_picker::session_is_cursor(session.source, session.provider_key.as_deref())
     }
 
     fn session_matches_filter_mode(

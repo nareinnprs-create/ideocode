@@ -50,7 +50,7 @@ pub fn load_swarm_prompt(working_dir: Option<&Path>) -> String {
     let project_dir = working_dir.unwrap_or(Path::new("."));
     let candidates = [
         Some(project_dir.join(".IDEOCODE").join("swarm-prompt.md")),
-        crate::storage::IDEOCODE_dir()
+        crate::storage::ideocode_dir()
             .ok()
             .map(|dir| dir.join("swarm-prompt.md")),
     ];
@@ -624,8 +624,8 @@ pub fn build_session_context(working_dir: Option<&Path>) -> String {
     lines.push(format!("Architecture: {}", std::env::consts::ARCH));
     lines.push(format!(
         "IDEOCODE version: {} ({})",
-        IDEOCODE_build_meta::version(),
-        IDEOCODE_build_meta::git_hash()
+        ideocode_build_meta::version(),
+        ideocode_build_meta::git_hash()
     ));
 
     if let Some(hardware) = hardware_context() {
@@ -884,7 +884,7 @@ fn load_prompt_overlay_files_from_dir(working_dir: Option<&Path>) -> (Option<Str
         contents.push(content);
     }
 
-    if let Ok(global_overlay) = crate::storage::IDEOCODE_dir().map(|dir| dir.join("prompt-overlay.md"))
+    if let Ok(global_overlay) = crate::storage::ideocode_dir().map(|dir| dir.join("prompt-overlay.md"))
         && let Some((content, size)) = load_file(
             &global_overlay,
             "Global Prompt Overlay (~/.IDEOCODE/prompt-overlay.md)",
@@ -928,7 +928,7 @@ fn load_preferred_tools_files_from_dir(working_dir: Option<&Path>) -> (Option<St
     }
 
     if let Ok(global_preferred_tools) =
-        crate::storage::IDEOCODE_dir().map(|dir| dir.join("preferred-tools.md"))
+        crate::storage::ideocode_dir().map(|dir| dir.join("preferred-tools.md"))
         && let Some((content, size)) = load_file(
             &global_preferred_tools,
             "Global Preferred Tools (~/.IDEOCODE/preferred-tools.md)",

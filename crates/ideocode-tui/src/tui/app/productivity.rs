@@ -33,7 +33,7 @@ pub(super) fn handle_productivity_command(app: &mut App, trimmed: &str) -> bool 
 
     let session_id = app.session.id.clone();
     std::thread::spawn(move || {
-        let result = IDEOCODE_productivity_core::generate()
+        let result = ideocode_productivity_core::generate()
             .map(|out| ProductivityReportPayload {
                 markdown: out.markdown,
                 png: out.png,

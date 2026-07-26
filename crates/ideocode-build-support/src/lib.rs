@@ -6,7 +6,7 @@ mod storage_helpers;
 pub use paths::{
     SELFDEV_CARGO_PROFILE, binary_name, binary_stem, client_update_candidate,
     current_binary_build_time_string, current_binary_built_at, find_dev_binary,
-    find_repo_in_ancestors, get_repo_dir, is_IDEOCODE_repo, launcher_binary_path, launcher_dir,
+    find_repo_in_ancestors, get_repo_dir, is_ideocode_repo, launcher_binary_path, launcher_dir,
     preferred_reload_candidate, release_binary_path, resolve_binary_payload, run_selfdev_build,
     selfdev_binary_path, selfdev_build_command, selfdev_build_command_for_target,
     shared_server_update_candidate, update_launcher_symlink_to_current,
@@ -28,7 +28,7 @@ pub use storage_helpers::{
 
 use anyhow::Result;
 use chrono::Utc;
-use IDEOCODE_storage as storage;
+use ideocode_storage as storage;
 use serde::{Deserialize, Serialize};
 #[cfg(unix)]
 use std::io::{BufRead, BufReader, Write};
@@ -37,7 +37,7 @@ use std::process::Command;
 #[cfg(unix)]
 use std::time::{Duration, Instant};
 
-pub use IDEOCODE_selfdev_types::{
+pub use ideocode_selfdev_types::{
     BinaryChoice, BinaryVersionReport, BuildInfo, CanaryStatus, CrashInfo, DevBinarySourceMetadata,
     MigrationContext, PendingActivation, PublishedBuild, SelfDevBuildCommand, SelfDevBuildTarget,
     SourceState,

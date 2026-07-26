@@ -289,15 +289,15 @@ fn opencode_path() -> Result<PathBuf> {
     crate::storage::user_home_path(".local/share/opencode/auth.json")
 }
 
-pub fn IDEOCODE_path() -> Result<PathBuf> {
-    Ok(crate::storage::IDEOCODE_dir()?.join("auth.json"))
+pub fn ideocode_path() -> Result<PathBuf> {
+    Ok(crate::storage::ideocode_dir()?.join("auth.json"))
 }
 
 // ---- Multi-account helpers ----
 
 /// Read the IDEOCODE auth file, auto-migrating from legacy format if needed.
 pub fn load_auth_file() -> Result<IDEOCODEAuthFile> {
-    let path = IDEOCODE_path()?;
+    let path = ideocode_path()?;
     if !path.exists() {
         return Ok(IDEOCODEAuthFile::default());
     }
@@ -337,7 +337,7 @@ pub fn load_auth_file() -> Result<IDEOCODEAuthFile> {
 
 /// Write the IDEOCODE auth file (multi-account format).
 pub fn save_auth_file(auth: &IDEOCODEAuthFile) -> Result<()> {
-    let auth_path = IDEOCODE_path()?;
+    let auth_path = ideocode_path()?;
 
     let clean = IDEOCODEAuthFile {
         anthropic_accounts: auth.anthropic_accounts.clone(),
@@ -574,7 +574,7 @@ pub fn load_credentials() -> Result<ClaudeCredentials> {
         expired_candidates.push(("claude-native", creds));
     }
 
-    if let Ok(creds) = load_IDEOCODE_credentials() {
+    if let Ok(creds) = load_ideocode_credentials() {
         if creds.expires_at > now_ms {
             return Ok(creds);
         }
@@ -627,7 +627,7 @@ pub fn load_credentials_for_account(label: &str) -> Result<ClaudeCredentials> {
 }
 
 /// Load credentials from the active IDEOCODE account (multi-account aware).
-fn load_IDEOCODE_credentials() -> Result<ClaudeCredentials> {
+fn load_ideocode_credentials() -> Result<ClaudeCredentials> {
     let auth = load_auth_file()?;
     if auth.anthropic_accounts.is_empty() {
         anyhow::bail!("No anthropic accounts configured in IDEOCODE auth.json");

@@ -2,7 +2,7 @@
 use crate::server::reload_recovery::ReloadRecoveryRole;
 use crate::server::{SwarmEvent, SwarmEventType, SwarmMember};
 use crate::tool::selfdev::ReloadContext;
-use IDEOCODE_agent_runtime::InterruptSignal;
+use ideocode_agent_runtime::InterruptSignal;
 use std::collections::HashMap;
 use std::process::Stdio;
 use std::sync::Arc;

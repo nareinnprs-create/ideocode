@@ -14,14 +14,14 @@
 //! This crate holds the server/tool/agent layer and its presentation-adjacent
 //! leaves. The foundational layer it builds on (provider, auth, config, session,
 //! message, memory, telemetry, ...) lives in the `IDEOCODE-base` crate and is
-//! re-exported here via `pub use IDEOCODE_base::*`, so every existing
+//! re-exported here via `pub use ideocode_base::*`, so every existing
 //! `crate::<module>` path (e.g. `crate::config`, `crate::provider`) keeps
 //! resolving unchanged across this crate and the root `IDEOCODE` crate, which in
-//! turn re-exports this crate via `pub use IDEOCODE_app_core::*`.
+//! turn re-exports this crate via `pub use ideocode_app_core::*`.
 
 // Foundational layer: re-export every `IDEOCODE-base` module so `crate::<module>`
 // paths resolve here exactly as they did before the split.
-pub use IDEOCODE_base::*;
+pub use ideocode_base::*;
 
 // Upper layer (server / tool / agent and supporting leaves).
 pub mod agent;

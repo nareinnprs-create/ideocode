@@ -847,7 +847,7 @@ pub(super) fn draw_status(frame: &mut Frame, app: &dyn TuiState, area: Rect, pen
                 let bar_speed = if decorative {
                     2.0
                 } else {
-                    IDEOCODE_tui_style::theme::LIVENESS_INDICATOR_FPS / half_width as f32
+                    ideocode_tui_style::theme::LIVENESS_INDICATOR_FPS / half_width as f32
                 };
                 let progress = elapsed * bar_speed % 1.0;
                 let filled_pos = ((progress * half_width as f32) as usize) % half_width;

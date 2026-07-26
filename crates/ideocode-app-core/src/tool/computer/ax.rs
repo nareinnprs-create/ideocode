@@ -11,7 +11,7 @@
 
 use super::osa;
 use anyhow::{Result, bail};
-use IDEOCODE_tool_types::ToolOutput;
+use ideocode_tool_types::ToolOutput;
 use serde::Deserialize;
 use serde_json::json;
 use std::time::Duration;

@@ -84,7 +84,7 @@ pub fn fingerprint_config(config: &McpServerConfig) -> String {
 }
 
 fn cache_path() -> Option<PathBuf> {
-    crate::storage::IDEOCODE_dir().ok().map(|d| d.join(CACHE_FILE))
+    crate::storage::ideocode_dir().ok().map(|d| d.join(CACHE_FILE))
 }
 
 impl McpSchemaCache {

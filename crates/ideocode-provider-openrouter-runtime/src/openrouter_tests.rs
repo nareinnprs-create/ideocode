@@ -1,7 +1,7 @@
 ﻿use super::*;
 use bytes::Bytes;
 use futures::StreamExt;
-use IDEOCODE_provider_openrouter::stream::OpenRouterStream;
+use ideocode_provider_openrouter::stream::OpenRouterStream;
 use std::ffi::OsString;
 use std::io::{Read, Write};
 use std::net::TcpListener;
@@ -23,7 +23,7 @@ impl SharedEnvLock {
     /// flood of unrelated `PoisonError` failures across every other test
     /// that takes this lock.
     pub(crate) fn lock(&self) -> std::sync::MutexGuard<'static, ()> {
-        IDEOCODE_base::storage::lock_test_env()
+        ideocode_base::storage::lock_test_env()
     }
 }
 
@@ -35,13 +35,13 @@ pub(crate) struct EnvVarGuard {
 impl EnvVarGuard {
     pub(crate) fn set(key: &'static str, value: impl AsRef<std::ffi::OsStr>) -> Self {
         let previous = std::env::var_os(key);
-        IDEOCODE_base::env::set_var(key, value);
+        ideocode_base::env::set_var(key, value);
         Self { key, previous }
     }
 
     pub(crate) fn remove(key: &'static str) -> Self {
         let previous = std::env::var_os(key);
-        IDEOCODE_base::env::remove_var(key);
+        ideocode_base::env::remove_var(key);
         Self { key, previous }
     }
 }
@@ -49,9 +49,9 @@ impl EnvVarGuard {
 impl Drop for EnvVarGuard {
     fn drop(&mut self) {
         if let Some(previous) = &self.previous {
-            IDEOCODE_base::env::set_var(self.key, previous);
+            ideocode_base::env::set_var(self.key, previous);
         } else {
-            IDEOCODE_base::env::remove_var(self.key);
+            ideocode_base::env::remove_var(self.key);
         }
     }
 }
@@ -106,7 +106,7 @@ fn isolate_openrouter_autodetect_env() -> Vec<EnvVarGuard> {
         EnvVarGuard::remove("IDEOCODE_OPENAI_COMPAT_LOCAL_ENABLED"),
     ];
     guards.extend(
-        IDEOCODE_base::provider_catalog::openai_compatible_profiles()
+        ideocode_base::provider_catalog::openai_compatible_profiles()
             .iter()
             .map(|profile| EnvVarGuard::remove(profile.api_key_env)),
     );
@@ -255,7 +255,7 @@ fn named_openai_compatible_provider_sets_catalog_cache_namespace() {
     let _namespace = EnvVarGuard::remove("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
     let _key = EnvVarGuard::set("TEST_NAMED_COMPAT_KEY", "test-key");
 
-    let profile = IDEOCODE_base::config::NamedProviderConfig {
+    let profile = ideocode_base::config::NamedProviderConfig {
         base_url: "https://llm.example.com/v1".to_string(),
         api_key_env: Some("TEST_NAMED_COMPAT_KEY".to_string()),
         model_catalog: true,
@@ -278,12 +278,12 @@ fn named_openai_compatible_provider_exposes_static_models_as_routes() {
     let _namespace = EnvVarGuard::remove("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
     let _key = EnvVarGuard::set("TEST_NAMED_COMPAT_KEY", "test-key");
 
-    let profile = IDEOCODE_base::config::NamedProviderConfig {
+    let profile = ideocode_base::config::NamedProviderConfig {
         base_url: "https://llm.example.com/v1".to_string(),
         api_key_env: Some("TEST_NAMED_COMPAT_KEY".to_string()),
         model_catalog: true,
         default_model: Some("glm-51-nvfp4".to_string()),
-        models: vec![IDEOCODE_base::config::NamedProviderModelConfig {
+        models: vec![ideocode_base::config::NamedProviderModelConfig {
             id: "glm-51-nvfp4".to_string(),
             ..Default::default()
         }],
@@ -306,9 +306,9 @@ fn direct_openai_compatible_provider_advertises_image_input_support() {
     let _lock = ENV_LOCK.lock();
     let _namespace = EnvVarGuard::remove("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
 
-    let profile = IDEOCODE_base::config::NamedProviderConfig {
+    let profile = ideocode_base::config::NamedProviderConfig {
         base_url: "http://localhost:1234/v1".to_string(),
-        auth: IDEOCODE_base::config::NamedProviderAuth::None,
+        auth: ideocode_base::config::NamedProviderAuth::None,
         default_model: Some("local-vision-model".to_string()),
         ..Default::default()
     };
@@ -324,17 +324,17 @@ fn named_openai_compatible_provider_uses_per_model_image_input_support() {
     let _lock = ENV_LOCK.lock();
     let _namespace = EnvVarGuard::remove("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
 
-    let profile = IDEOCODE_base::config::NamedProviderConfig {
+    let profile = ideocode_base::config::NamedProviderConfig {
         base_url: "http://localhost:1234/v1".to_string(),
-        auth: IDEOCODE_base::config::NamedProviderAuth::None,
+        auth: ideocode_base::config::NamedProviderAuth::None,
         default_model: Some("vision-model".to_string()),
         models: vec![
-            IDEOCODE_base::config::NamedProviderModelConfig {
+            ideocode_base::config::NamedProviderModelConfig {
                 id: "vision-model".to_string(),
                 input: vec!["text".to_string(), "image".to_string()],
                 ..Default::default()
             },
-            IDEOCODE_base::config::NamedProviderModelConfig {
+            ideocode_base::config::NamedProviderModelConfig {
                 id: "text-model".to_string(),
                 input: vec!["text".to_string()],
                 ..Default::default()
@@ -715,8 +715,8 @@ fn kimi_for_coding_tool_call_message_includes_reasoning_content() {
 
 #[test]
 fn minimax_profile_exposes_static_models_before_catalog_refresh() {
-    let models = IDEOCODE_base::provider_catalog::openai_compatible_profile_static_models(
-        IDEOCODE_provider_metadata::MINIMAX_PROFILE,
+    let models = ideocode_base::provider_catalog::openai_compatible_profile_static_models(
+        ideocode_provider_metadata::MINIMAX_PROFILE,
     );
     assert!(models.iter().any(|model| model == "MiniMax-M2.7"));
     assert!(models.iter().any(|model| model == "MiniMax-M2.7-highspeed"));
@@ -726,12 +726,12 @@ fn minimax_profile_exposes_static_models_before_catalog_refresh() {
 #[test]
 fn cerebras_profile_exposes_live_chat_models_before_catalog_refresh() {
     assert_eq!(
-        IDEOCODE_provider_metadata::CEREBRAS_PROFILE.default_model,
+        ideocode_provider_metadata::CEREBRAS_PROFILE.default_model,
         Some("gpt-oss-120b")
     );
 
-    let models = IDEOCODE_base::provider_catalog::openai_compatible_profile_static_models(
-        IDEOCODE_provider_metadata::CEREBRAS_PROFILE,
+    let models = ideocode_base::provider_catalog::openai_compatible_profile_static_models(
+        ideocode_provider_metadata::CEREBRAS_PROFILE,
     );
 
     assert!(
@@ -751,52 +751,52 @@ fn cerebras_profile_exposes_live_chat_models_before_catalog_refresh() {
 #[test]
 fn openai_compatible_profiles_with_unverified_live_catalogs_have_static_fallbacks() {
     let cases = [
-        (IDEOCODE_provider_metadata::OPENCODE_PROFILE, "minimax-m2.7"),
-        (IDEOCODE_provider_metadata::OPENCODE_GO_PROFILE, "kimi-k2.5"),
-        (IDEOCODE_provider_metadata::ZAI_PROFILE, "glm-4.7"),
+        (ideocode_provider_metadata::OPENCODE_PROFILE, "minimax-m2.7"),
+        (ideocode_provider_metadata::OPENCODE_GO_PROFILE, "kimi-k2.5"),
+        (ideocode_provider_metadata::ZAI_PROFILE, "glm-4.7"),
         (
-            IDEOCODE_provider_metadata::AI302_PROFILE,
+            ideocode_provider_metadata::AI302_PROFILE,
             "qwen3-235b-a22b-instruct-2507",
         ),
-        (IDEOCODE_provider_metadata::BASETEN_PROFILE, "zai-org/GLM-4.7"),
-        (IDEOCODE_provider_metadata::CORTECS_PROFILE, "kimi-k2.5"),
-        (IDEOCODE_provider_metadata::KIMI_PROFILE, "kimi-for-coding"),
-        (IDEOCODE_provider_metadata::FIRMWARE_PROFILE, "kimi-k2.5"),
+        (ideocode_provider_metadata::BASETEN_PROFILE, "zai-org/GLM-4.7"),
+        (ideocode_provider_metadata::CORTECS_PROFILE, "kimi-k2.5"),
+        (ideocode_provider_metadata::KIMI_PROFILE, "kimi-for-coding"),
+        (ideocode_provider_metadata::FIRMWARE_PROFILE, "kimi-k2.5"),
         (
-            IDEOCODE_provider_metadata::HUGGING_FACE_PROFILE,
+            ideocode_provider_metadata::HUGGING_FACE_PROFILE,
             "Qwen/Qwen3-Coder-480B-A35B-Instruct",
         ),
-        (IDEOCODE_provider_metadata::MOONSHOT_PROFILE, "kimi-k2.5"),
+        (ideocode_provider_metadata::MOONSHOT_PROFILE, "kimi-k2.5"),
         (
-            IDEOCODE_provider_metadata::NEBIUS_PROFILE,
+            ideocode_provider_metadata::NEBIUS_PROFILE,
             "openai/gpt-oss-120b",
         ),
         (
-            IDEOCODE_provider_metadata::SCALEWAY_PROFILE,
+            ideocode_provider_metadata::SCALEWAY_PROFILE,
             "qwen3-coder-30b-a3b-instruct",
         ),
         (
-            IDEOCODE_provider_metadata::STACKIT_PROFILE,
+            ideocode_provider_metadata::STACKIT_PROFILE,
             "openai/gpt-oss-120b",
         ),
-        (IDEOCODE_provider_metadata::PERPLEXITY_PROFILE, "sonar"),
+        (ideocode_provider_metadata::PERPLEXITY_PROFILE, "sonar"),
         (
-            IDEOCODE_provider_metadata::DEEPINFRA_PROFILE,
+            ideocode_provider_metadata::DEEPINFRA_PROFILE,
             "moonshotai/Kimi-K2-Instruct",
         ),
         (
-            IDEOCODE_provider_metadata::FIREWORKS_PROFILE,
+            ideocode_provider_metadata::FIREWORKS_PROFILE,
             "accounts/fireworks/routers/kimi-k2p5-turbo",
         ),
-        (IDEOCODE_provider_metadata::XIAOMI_MIMO_PROFILE, "mimo-v2.5"),
+        (ideocode_provider_metadata::XIAOMI_MIMO_PROFILE, "mimo-v2.5"),
         (
-            IDEOCODE_provider_metadata::ALIBABA_CODING_PLAN_PROFILE,
+            ideocode_provider_metadata::ALIBABA_CODING_PLAN_PROFILE,
             "qwen3-coder-plus",
         ),
     ];
 
     for (profile, expected_model) in cases {
-        let models = IDEOCODE_base::provider_catalog::openai_compatible_profile_static_models(profile);
+        let models = ideocode_base::provider_catalog::openai_compatible_profile_static_models(profile);
         assert!(
             models.iter().any(|model| model == expected_model),
             "{} should expose static fallback model {expected_model}; got {models:?}",
@@ -835,15 +835,15 @@ fn max_tokens_env_overrides_profile_default() {
 fn test_configured_api_base_accepts_https() {
     let _lock = ENV_LOCK.lock();
     let prev = std::env::var("IDEOCODE_OPENROUTER_API_BASE").ok();
-    IDEOCODE_base::env::set_var(
+    ideocode_base::env::set_var(
         "IDEOCODE_OPENROUTER_API_BASE",
         "https://api.groq.com/openai/v1/",
     );
     assert_eq!(configured_api_base(), "https://api.groq.com/openai/v1");
     if let Some(value) = prev {
-        IDEOCODE_base::env::set_var("IDEOCODE_OPENROUTER_API_BASE", value);
+        ideocode_base::env::set_var("IDEOCODE_OPENROUTER_API_BASE", value);
     } else {
-        IDEOCODE_base::env::remove_var("IDEOCODE_OPENROUTER_API_BASE");
+        ideocode_base::env::remove_var("IDEOCODE_OPENROUTER_API_BASE");
     }
 }
 
@@ -851,12 +851,12 @@ fn test_configured_api_base_accepts_https() {
 fn test_configured_api_base_rejects_insecure_http_remote() {
     let _lock = ENV_LOCK.lock();
     let prev = std::env::var("IDEOCODE_OPENROUTER_API_BASE").ok();
-    IDEOCODE_base::env::set_var("IDEOCODE_OPENROUTER_API_BASE", "http://example.com/v1");
+    ideocode_base::env::set_var("IDEOCODE_OPENROUTER_API_BASE", "http://example.com/v1");
     assert_eq!(configured_api_base(), DEFAULT_API_BASE);
     if let Some(value) = prev {
-        IDEOCODE_base::env::set_var("IDEOCODE_OPENROUTER_API_BASE", value);
+        ideocode_base::env::set_var("IDEOCODE_OPENROUTER_API_BASE", value);
     } else {
-        IDEOCODE_base::env::remove_var("IDEOCODE_OPENROUTER_API_BASE");
+        ideocode_base::env::remove_var("IDEOCODE_OPENROUTER_API_BASE");
     }
 }
 
@@ -869,8 +869,8 @@ fn autodetects_single_saved_openai_compatible_profile() {
     let _appdata = EnvVarGuard::set("APPDATA", temp.path().join("AppData").join("Roaming"));
     let _env = isolate_openrouter_autodetect_env();
 
-    let opencode = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(
-        IDEOCODE_base::provider_catalog::OPENCODE_PROFILE,
+    let opencode = ideocode_base::provider_catalog::resolve_openai_compatible_profile(
+        ideocode_base::provider_catalog::OPENCODE_PROFILE,
     );
     write_test_api_key(
         &temp,
@@ -894,8 +894,8 @@ fn autodetects_single_saved_local_openai_compatible_profile() {
     let _appdata = EnvVarGuard::set("APPDATA", temp.path().join("AppData").join("Roaming"));
     let _env = isolate_openrouter_autodetect_env();
 
-    let lmstudio = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(
-        IDEOCODE_base::provider_catalog::LMSTUDIO_PROFILE,
+    let lmstudio = ideocode_base::provider_catalog::resolve_openai_compatible_profile(
+        ideocode_base::provider_catalog::LMSTUDIO_PROFILE,
     );
     let config_dir = test_config_dir(&temp).join("IDEOCODE");
     std::fs::create_dir_all(&config_dir).expect("create test config dir");
@@ -903,7 +903,7 @@ fn autodetects_single_saved_local_openai_compatible_profile() {
         config_dir.join(&lmstudio.env_file),
         format!(
             "{}=1\n",
-            IDEOCODE_base::provider_catalog::OPENAI_COMPAT_LOCAL_ENABLED_ENV
+            ideocode_base::provider_catalog::OPENAI_COMPAT_LOCAL_ENABLED_ENV
         ),
     )
     .expect("write local config");
@@ -934,35 +934,35 @@ fn openrouter_transport_state_distinguishes_runtime_identities() {
     assert!(OpenRouterTransportState::from_current_env(None).accrues_user_api_key_cost());
     assert!(OpenRouterTransportState::from_current_env(None).is_real_openrouter());
 
-    IDEOCODE_base::env::set_var("IDEOCODE_OPENROUTER_TRANSPORT_STATE", "direct-api-key");
+    ideocode_base::env::set_var("IDEOCODE_OPENROUTER_TRANSPORT_STATE", "direct-api-key");
     assert_eq!(
         OpenRouterTransportState::from_current_env(None),
         OpenRouterTransportState::DirectApiKey
     );
-    IDEOCODE_base::env::remove_var("IDEOCODE_OPENROUTER_TRANSPORT_STATE");
+    ideocode_base::env::remove_var("IDEOCODE_OPENROUTER_TRANSPORT_STATE");
 
-    IDEOCODE_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "openrouter");
+    ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "openrouter");
     assert_eq!(
         OpenRouterTransportState::from_current_env(Some("openrouter")),
         OpenRouterTransportState::OpenRouterApiKey
     );
     assert!(OpenRouterTransportState::from_current_env(Some("openrouter")).is_real_openrouter());
-    IDEOCODE_base::env::remove_var("IDEOCODE_RUNTIME_PROVIDER");
+    ideocode_base::env::remove_var("IDEOCODE_RUNTIME_PROVIDER");
 
-    IDEOCODE_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "IDEOCODE");
+    ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "IDEOCODE");
     assert_eq!(
         OpenRouterTransportState::from_current_env(Some("IDEOCODE")),
         OpenRouterTransportState::IDEOCODESubscription
     );
     assert!(!OpenRouterTransportState::from_current_env(Some("IDEOCODE")).accrues_user_api_key_cost());
 
-    IDEOCODE_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "openai-compatible");
+    ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "openai-compatible");
     assert_eq!(
         OpenRouterTransportState::from_current_env(Some("openai-compatible")),
         OpenRouterTransportState::DirectApiKey
     );
 
-    IDEOCODE_base::env::set_var("IDEOCODE_OPENROUTER_ALLOW_NO_AUTH", "1");
+    ideocode_base::env::set_var("IDEOCODE_OPENROUTER_ALLOW_NO_AUTH", "1");
     assert_eq!(
         OpenRouterTransportState::from_current_env(Some("openai-compatible")),
         OpenRouterTransportState::DirectNoAuth
@@ -972,9 +972,9 @@ fn openrouter_transport_state_distinguishes_runtime_identities() {
             .accrues_user_api_key_cost()
     );
 
-    IDEOCODE_base::env::remove_var("IDEOCODE_OPENROUTER_ALLOW_NO_AUTH");
-    IDEOCODE_base::env::remove_var("IDEOCODE_RUNTIME_PROVIDER");
-    IDEOCODE_base::env::set_var("IDEOCODE_NAMED_PROVIDER_PROFILE", "my-gateway");
+    ideocode_base::env::remove_var("IDEOCODE_OPENROUTER_ALLOW_NO_AUTH");
+    ideocode_base::env::remove_var("IDEOCODE_RUNTIME_PROVIDER");
+    ideocode_base::env::set_var("IDEOCODE_NAMED_PROVIDER_PROFILE", "my-gateway");
     assert_eq!(
         OpenRouterTransportState::from_current_env(None),
         OpenRouterTransportState::DirectApiKey
@@ -990,11 +990,11 @@ fn does_not_guess_when_multiple_saved_openai_compatible_profiles_exist() {
     let _appdata = EnvVarGuard::set("APPDATA", temp.path().join("AppData").join("Roaming"));
     let _env = isolate_openrouter_autodetect_env();
 
-    let opencode = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(
-        IDEOCODE_base::provider_catalog::OPENCODE_PROFILE,
+    let opencode = ideocode_base::provider_catalog::resolve_openai_compatible_profile(
+        ideocode_base::provider_catalog::OPENCODE_PROFILE,
     );
-    let chutes = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(
-        IDEOCODE_base::provider_catalog::CHUTES_PROFILE,
+    let chutes = ideocode_base::provider_catalog::resolve_openai_compatible_profile(
+        ideocode_base::provider_catalog::CHUTES_PROFILE,
     );
     write_test_api_key(
         &temp,
@@ -1024,8 +1024,8 @@ fn autodetected_profile_seeds_default_model_and_cache_namespace() {
     let _appdata = EnvVarGuard::set("APPDATA", temp.path().join("AppData").join("Roaming"));
     let _env = isolate_openrouter_autodetect_env();
 
-    let zai = IDEOCODE_base::provider_catalog::resolve_openai_compatible_profile(
-        IDEOCODE_base::provider_catalog::ZAI_PROFILE,
+    let zai = ideocode_base::provider_catalog::resolve_openai_compatible_profile(
+        ideocode_base::provider_catalog::ZAI_PROFILE,
     );
     write_test_api_key(&temp, &zai.env_file, &zai.api_key_env, "test-zai-key");
 
@@ -1090,7 +1090,7 @@ fn make_endpoint(name: &str, throughput: f64, uptime: f64, cache: bool, cost: f6
 
 fn make_provider() -> OpenRouterProvider {
     OpenRouterProvider {
-        client: IDEOCODE_provider_core::shared_http_client(),
+        client: ideocode_provider_core::shared_http_client(),
         model: Arc::new(RwLock::new(DEFAULT_MODEL.to_string())),
         reasoning_effort: Arc::new(RwLock::new(None)),
         api_base: DEFAULT_API_BASE.to_string(),
@@ -1119,7 +1119,7 @@ fn make_provider() -> OpenRouterProvider {
 
 fn make_custom_compatible_provider() -> OpenRouterProvider {
     OpenRouterProvider {
-        client: IDEOCODE_provider_core::shared_http_client(),
+        client: ideocode_provider_core::shared_http_client(),
         model: Arc::new(RwLock::new(DEFAULT_MODEL.to_string())),
         reasoning_effort: Arc::new(RwLock::new(None)),
         api_base: "https://compat.example.test/v1".to_string(),
@@ -1764,11 +1764,11 @@ fn direct_deepseek_profile_uses_static_1m_context_when_catalog_is_absent() {
 fn named_openai_compatible_model_context_window_overrides_default() {
     let _lock = ENV_LOCK.lock();
     let _namespace = EnvVarGuard::remove("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
-    let mut config = IDEOCODE_base::config::NamedProviderConfig {
+    let mut config = ideocode_base::config::NamedProviderConfig {
         base_url: "https://compat.example.test/v1".to_string(),
         api_key: Some("test".to_string()),
         default_model: Some("custom-long-context".to_string()),
-        models: vec![IDEOCODE_base::config::NamedProviderModelConfig {
+        models: vec![ideocode_base::config::NamedProviderModelConfig {
             id: "custom-long-context".to_string(),
             context_window: Some(512_000),
             input: Vec::new(),
@@ -1791,11 +1791,11 @@ fn named_profile_context_window_survives_provider_qualified_model() {
     // through to the (large) provider default and over-budgeting the request.
     let _lock = ENV_LOCK.lock();
     let _namespace = EnvVarGuard::remove("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
-    let mut config = IDEOCODE_base::config::NamedProviderConfig {
+    let mut config = ideocode_base::config::NamedProviderConfig {
         base_url: "http://10.15.15.53:8080/v1".to_string(),
-        auth: IDEOCODE_base::config::NamedProviderAuth::None,
+        auth: ideocode_base::config::NamedProviderAuth::None,
         default_model: Some("qwen3.6-35b-a2000-128k".to_string()),
-        models: vec![IDEOCODE_base::config::NamedProviderModelConfig {
+        models: vec![ideocode_base::config::NamedProviderModelConfig {
             id: "qwen3.6-35b-a2000-128k".to_string(),
             context_window: Some(131_072),
             input: Vec::new(),
@@ -1828,7 +1828,7 @@ fn named_openai_compatible_loads_api_key_from_env_file() {
     let _api_key = EnvVarGuard::remove("CUSTOM_API_KEY");
     write_test_api_key(&temp, "custom.env", "CUSTOM_API_KEY", "from-env-file");
 
-    let config = IDEOCODE_base::config::NamedProviderConfig {
+    let config = ideocode_base::config::NamedProviderConfig {
         base_url: "https://compat.example.test/v1".to_string(),
         api_key_env: Some("CUSTOM_API_KEY".to_string()),
         env_file: Some("custom.env".to_string()),
@@ -2292,15 +2292,15 @@ fn runtime_display_name_for_profile_runtime_instance() {
     // `Provider::display_name`.
     let _lock = ENV_LOCK.lock();
     let temp = TempDir::new().expect("create temp home");
-    let IDEOCODE_home = temp.path().join("IDEOCODE-home");
-    let _IDEOCODE_home = EnvVarGuard::set("IDEOCODE_HOME", &IDEOCODE_home);
+    let ideocode_home = temp.path().join("IDEOCODE-home");
+    let _ideocode_home = EnvVarGuard::set("IDEOCODE_HOME", &ideocode_home);
     let _home = EnvVarGuard::set("HOME", temp.path());
     let _appdata = EnvVarGuard::set("APPDATA", temp.path().join("AppData").join("Roaming"));
     let _env = isolate_openrouter_autodetect_env();
     let _key = EnvVarGuard::set("NVIDIA_API_KEY", "nim-test-key");
 
     let nim = OpenRouterProvider::new_openai_compatible_profile_runtime(
-        IDEOCODE_base::provider_catalog::NVIDIA_NIM_PROFILE,
+        ideocode_base::provider_catalog::NVIDIA_NIM_PROFILE,
     )
     .expect("build nvidia-nim runtime");
     assert_eq!(nim.runtime_display_name(), "NVIDIA NIM");
@@ -2308,30 +2308,30 @@ fn runtime_display_name_for_profile_runtime_instance() {
 }
 
 #[test]
-fn IDEOCODE_subscription_runtime_has_explicit_display_and_route_identity() {
+fn ideocode_subscription_runtime_has_explicit_display_and_route_identity() {
     let _lock = ENV_LOCK.lock();
     let temp = TempDir::new().expect("create temp home");
-    let IDEOCODE_home = temp.path().join("IDEOCODE-home");
-    let _IDEOCODE_home = EnvVarGuard::set("IDEOCODE_HOME", &IDEOCODE_home);
+    let ideocode_home = temp.path().join("IDEOCODE-home");
+    let _ideocode_home = EnvVarGuard::set("IDEOCODE_HOME", &ideocode_home);
     let _home = EnvVarGuard::set("HOME", temp.path());
     let _appdata = EnvVarGuard::set("APPDATA", temp.path().join("AppData").join("Roaming"));
     let _env = isolate_openrouter_autodetect_env();
     let _base = EnvVarGuard::set(
         "IDEOCODE_OPENROUTER_API_BASE",
-        IDEOCODE_base::subscription_catalog::DEFAULT_IDEOCODE_API_BASE,
+        ideocode_base::subscription_catalog::DEFAULT_IDEOCODE_API_BASE,
     );
     let _key_name = EnvVarGuard::set(
         "IDEOCODE_OPENROUTER_API_KEY_NAME",
-        IDEOCODE_base::subscription_catalog::IDEOCODE_API_KEY_ENV,
+        ideocode_base::subscription_catalog::IDEOCODE_API_KEY_ENV,
     );
     let _env_file = EnvVarGuard::set(
         "IDEOCODE_OPENROUTER_ENV_FILE",
-        IDEOCODE_base::subscription_catalog::IDEOCODE_ENV_FILE,
+        ideocode_base::subscription_catalog::IDEOCODE_ENV_FILE,
     );
     let _provider_features = EnvVarGuard::set("IDEOCODE_OPENROUTER_PROVIDER_FEATURES", "0");
     let _transport = EnvVarGuard::set("IDEOCODE_OPENROUTER_TRANSPORT_STATE", "IDEOCODE-subscription");
     let _key = EnvVarGuard::set(
-        IDEOCODE_base::subscription_catalog::IDEOCODE_API_KEY_ENV,
+        ideocode_base::subscription_catalog::IDEOCODE_API_KEY_ENV,
         "IDEOCODE_test_subscription_key",
     );
 
@@ -2344,7 +2344,7 @@ fn IDEOCODE_subscription_runtime_has_explicit_display_and_route_identity() {
         Some((
             "IDEOCODE Subscription".to_string(),
             "IDEOCODE-subscription".to_string(),
-            IDEOCODE_base::subscription_catalog::DEFAULT_IDEOCODE_API_BASE.to_string(),
+            ideocode_base::subscription_catalog::DEFAULT_IDEOCODE_API_BASE.to_string(),
         ))
     );
 }
@@ -2353,8 +2353,8 @@ fn IDEOCODE_subscription_runtime_has_explicit_display_and_route_identity() {
 fn non_subscription_runtimes_keep_existing_display_and_route_identity() {
     let _lock = ENV_LOCK.lock();
     let temp = TempDir::new().expect("create temp home");
-    let IDEOCODE_home = temp.path().join("IDEOCODE-home");
-    let _IDEOCODE_home = EnvVarGuard::set("IDEOCODE_HOME", &IDEOCODE_home);
+    let ideocode_home = temp.path().join("IDEOCODE-home");
+    let _ideocode_home = EnvVarGuard::set("IDEOCODE_HOME", &ideocode_home);
     let _home = EnvVarGuard::set("HOME", temp.path());
     let _appdata = EnvVarGuard::set("APPDATA", temp.path().join("AppData").join("Roaming"));
     let _env = isolate_openrouter_autodetect_env();
@@ -2386,22 +2386,22 @@ fn non_subscription_runtimes_keep_existing_display_and_route_identity() {
 }
 
 #[test]
-fn custom_endpoint_using_IDEOCODE_key_name_is_not_a_subscription_runtime() {
+fn custom_endpoint_using_ideocode_key_name_is_not_a_subscription_runtime() {
     let _lock = ENV_LOCK.lock();
     let temp = TempDir::new().expect("create temp home");
-    let IDEOCODE_home = temp.path().join("IDEOCODE-home");
-    let _IDEOCODE_home = EnvVarGuard::set("IDEOCODE_HOME", &IDEOCODE_home);
+    let ideocode_home = temp.path().join("IDEOCODE-home");
+    let _ideocode_home = EnvVarGuard::set("IDEOCODE_HOME", &ideocode_home);
     let _home = EnvVarGuard::set("HOME", temp.path());
     let _appdata = EnvVarGuard::set("APPDATA", temp.path().join("AppData").join("Roaming"));
     let _env = isolate_openrouter_autodetect_env();
     let _base = EnvVarGuard::set("IDEOCODE_OPENROUTER_API_BASE", "https://example.com/v1");
     let _key_name = EnvVarGuard::set(
         "IDEOCODE_OPENROUTER_API_KEY_NAME",
-        IDEOCODE_base::subscription_catalog::IDEOCODE_API_KEY_ENV,
+        ideocode_base::subscription_catalog::IDEOCODE_API_KEY_ENV,
     );
     let _provider_features = EnvVarGuard::set("IDEOCODE_OPENROUTER_PROVIDER_FEATURES", "0");
     let _key = EnvVarGuard::set(
-        IDEOCODE_base::subscription_catalog::IDEOCODE_API_KEY_ENV,
+        ideocode_base::subscription_catalog::IDEOCODE_API_KEY_ENV,
         "custom-endpoint-test-key",
     );
 
@@ -2495,16 +2495,16 @@ fn resolve_extra_body_ignores_non_object_config() {
 fn named_profile_extra_body_threads_into_provider() {
     let _lock = ENV_LOCK.lock();
     let temp = TempDir::new().expect("create temp home");
-    let IDEOCODE_home = temp.path().join("IDEOCODE-home");
-    let _IDEOCODE_home = EnvVarGuard::set("IDEOCODE_HOME", &IDEOCODE_home);
+    let ideocode_home = temp.path().join("IDEOCODE-home");
+    let _ideocode_home = EnvVarGuard::set("IDEOCODE_HOME", &ideocode_home);
     let _home = EnvVarGuard::set("HOME", temp.path());
     let _appdata = EnvVarGuard::set("APPDATA", temp.path().join("AppData").join("Roaming"));
     let _env = isolate_openrouter_autodetect_env();
     let _extra_guard = EnvVarGuard::remove("IDEOCODE_OPENAI_EXTRA_BODY");
 
-    let mut profile = IDEOCODE_base::config::NamedProviderConfig {
+    let mut profile = ideocode_base::config::NamedProviderConfig {
         base_url: "https://integrate.api.nvidia.com/v1".to_string(),
-        auth: IDEOCODE_base::config::NamedProviderAuth::None,
+        auth: ideocode_base::config::NamedProviderAuth::None,
         requires_api_key: Some(false),
         ..Default::default()
     };
@@ -2538,7 +2538,7 @@ default_model = "deepseek-ai/deepseek-v4-flash"
 thinking = true
 reasoning_effort = "high"
 "#;
-    let profile: IDEOCODE_base::config::NamedProviderConfig =
+    let profile: ideocode_base::config::NamedProviderConfig =
         toml::from_str(toml_str).expect("parse named provider toml");
     let extra = profile.extra_body.as_ref().expect("extra_body present");
     let kwargs = extra
@@ -2859,7 +2859,7 @@ fn named_profile_construction_reads_openai_reasoning_effort_config() {
     let _lock = ENV_LOCK.lock();
     let _namespace = EnvVarGuard::remove("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
 
-    let config = IDEOCODE_base::config::NamedProviderConfig {
+    let config = ideocode_base::config::NamedProviderConfig {
         base_url: "https://compat.example.test/v1".to_string(),
         api_key: Some("test".to_string()),
         default_model: Some("deepseek-v4".to_string()),
@@ -2873,7 +2873,7 @@ fn named_profile_construction_reads_openai_reasoning_effort_config() {
     // with no config value the provider starts with no effort but still
     // supports setting one.
     let initial = provider.reasoning_effort();
-    let configured = IDEOCODE_base::config::config()
+    let configured = ideocode_base::config::config()
         .provider
         .openai_reasoning_effort
         .clone();
@@ -2898,16 +2898,16 @@ fn named_profile_construction_reads_openai_reasoning_effort_config() {
 fn user_named_profile_prefix_is_stripped_even_without_profile_id() {
     let _lock = ENV_LOCK.lock();
     let temp = TempDir::new().expect("create temp home");
-    let IDEOCODE_home = temp.path().join("IDEOCODE-home");
-    let _IDEOCODE_home = EnvVarGuard::set("IDEOCODE_HOME", &IDEOCODE_home);
+    let ideocode_home = temp.path().join("IDEOCODE-home");
+    let _ideocode_home = EnvVarGuard::set("IDEOCODE_HOME", &ideocode_home);
     let _home = EnvVarGuard::set("HOME", temp.path());
     let _appdata = EnvVarGuard::set("APPDATA", temp.path().join("AppData").join("Roaming"));
     let _env = isolate_openrouter_autodetect_env();
     let (api_base, request_rx) = spawn_single_response_chat_server();
 
-    std::fs::create_dir_all(&IDEOCODE_home).expect("create test config dir");
+    std::fs::create_dir_all(&ideocode_home).expect("create test config dir");
     std::fs::write(
-        IDEOCODE_home.join("config.toml"),
+        ideocode_home.join("config.toml"),
         r#"
 [provider]
 default_provider = "cline"
@@ -2921,7 +2921,7 @@ model_catalog = false
 "#,
     )
     .expect("write test config");
-    IDEOCODE_base::config::invalidate_config_cache();
+    ideocode_base::config::invalidate_config_cache();
 
     // Simulate the shared-server provider slot: a generic OpenAI-compatible
     // provider with NO profile_id bound (deferred-auth bootstrap path).
@@ -2975,5 +2975,5 @@ model_catalog = false
         "user-defined named profile prefix must be stripped from the outbound model id; got: {request}"
     );
 
-    IDEOCODE_base::config::invalidate_config_cache();
+    ideocode_base::config::invalidate_config_cache();
 }

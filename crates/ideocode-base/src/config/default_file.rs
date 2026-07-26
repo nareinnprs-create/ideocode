@@ -626,11 +626,11 @@ desktop_notifications = true
 	"#;
 
         // Substitute platform-specific defaults from the keybinding registry.
-        let p = IDEOCODE_config_types::KeybindingPlatform::current();
+        let p = ideocode_config_types::KeybindingPlatform::current();
         let effort_increase =
-            IDEOCODE_config_types::default_binding("effort_increase", p).unwrap_or("alt+right");
+            ideocode_config_types::default_binding("effort_increase", p).unwrap_or("alt+right");
         let effort_decrease =
-            IDEOCODE_config_types::default_binding("effort_decrease", p).unwrap_or("alt+left");
+            ideocode_config_types::default_binding("effort_decrease", p).unwrap_or("alt+left");
         let default_content = default_content
             .replace("@EFFORT_INCREASE@", effort_increase)
             .replace("@EFFORT_DECREASE@", effort_decrease);

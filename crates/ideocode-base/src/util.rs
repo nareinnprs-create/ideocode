@@ -1,5 +1,5 @@
-﻿pub use IDEOCODE_core::util::*;
-pub use IDEOCODE_provider_core::http_error_body;
+﻿pub use ideocode_core::util::*;
+pub use ideocode_provider_core::http_error_body;
 
 /// Format an anyhow error including its full cause chain.
 ///

@@ -40,7 +40,7 @@ pub struct VisibleCycleContext {
 
 impl VisibleCycleContext {
     pub fn context_path() -> Result<PathBuf> {
-        Ok(storage::IDEOCODE_dir()?
+        Ok(storage::ideocode_dir()?
             .join("ambient")
             .join("visible_cycle.json"))
     }
@@ -59,7 +59,7 @@ impl VisibleCycleContext {
     }
 
     pub fn result_path() -> Result<PathBuf> {
-        Ok(storage::IDEOCODE_dir()?
+        Ok(storage::ideocode_dir()?
             .join("ambient")
             .join("cycle_result.json"))
     }
