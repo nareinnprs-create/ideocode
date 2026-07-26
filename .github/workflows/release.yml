@@ -505,27 +505,34 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          expected=(
+          required=(
             artifacts/IDEOCODE-linux-x86_64/IDEOCODE-linux-x86_64.tar.gz
             artifacts/IDEOCODE-linux-aarch64/IDEOCODE-linux-aarch64.tar.gz
             artifacts/IDEOCODE-macos-aarch64/IDEOCODE-macos-aarch64.tar.gz
             artifacts/IDEOCODE-macos-x86_64/IDEOCODE-macos-x86_64.tar.gz
+            artifacts/IDEOCODE-freebsd-x86_64/IDEOCODE-freebsd-x86_64.tar.gz
+          )
+          optional=(
             artifacts/IDEOCODE-windows-x86_64/IDEOCODE-windows-x86_64.exe
             artifacts/IDEOCODE-windows-x86_64/IDEOCODE-windows-x86_64.tar.gz
             artifacts/IDEOCODE-windows-aarch64/IDEOCODE-windows-aarch64.exe
             artifacts/IDEOCODE-windows-aarch64/IDEOCODE-windows-aarch64.tar.gz
-            artifacts/IDEOCODE-freebsd-x86_64/IDEOCODE-freebsd-x86_64.tar.gz
           )
 
           missing=()
-          for asset in "${expected[@]}"; do
+          for asset in "${required[@]}"; do
             if [ ! -f "$asset" ]; then
               missing+=("$asset")
             fi
           done
+          for asset in "${optional[@]}"; do
+            if [ ! -f "$asset" ]; then
+              echo "Optional asset missing (skipping): $asset" >&2
+            fi
+          done
           if [ "${#missing[@]}" -ne 0 ]; then
             printf 'Missing required release asset: %s\n' "${missing[@]}" >&2
-            echo "Keeping the release as a draft until every platform succeeds" >&2
+            echo "Keeping the release as a draft until every required platform succeeds" >&2
             exit 1
           fi
 
