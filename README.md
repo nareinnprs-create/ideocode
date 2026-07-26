@@ -2,11 +2,11 @@
 
 # IDEOCODE
 
-[![Latest Release](https://badgen.net/github/release/1jehuang/IDEOCODE?icon=github)](https://github.com/1jehuang/IDEOCODE/releases)
+[![Latest Release](https://badgen.net/github/release/nareinnprs-create/ideocode?icon=github)](https://github.com/nareinnprs-create/ideocode/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
-[![Platforms](https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows-blue?style=flat-square)](https://github.com/1jehuang/IDEOCODE/releases)
-[![Last Commit](https://badgen.net/github/last-commit/1jehuang/IDEOCODE/master?icon=github)](https://github.com/1jehuang/IDEOCODE/commits/master)
-[![GitHub Stars](https://badgen.net/github/stars/1jehuang/IDEOCODE?icon=github)](https://github.com/1jehuang/IDEOCODE/stargazers)
+[![Platforms](https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows-blue?style=flat-square)](https://github.com/nareinnprs-create/ideocode/releases)
+[![Last Commit](https://badgen.net/github/last-commit/nareinnprs-create/ideocode/master?icon=github)](https://github.com/nareinnprs-create/ideocode/commits/master)
+[![GitHub Stars](https://badgen.net/github/stars/nareinnprs-create/ideocode?icon=github)](https://github.com/nareinnprs-create/ideocode/stargazers)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/nBe9vGyK9a)
 
 The next generation coding agent harness to raise the skill ceiling. <br>
@@ -14,8 +14,8 @@ Built for multi-session workflows, infinite customizability, and performance.
 
 <br>
 
-<a href="https://github.com/1jehuang/IDEOCODE/releases/download/readme-assets/IDEOCODE-memory-demo.mp4">
-  <img src="https://github.com/1jehuang/IDEOCODE/releases/download/readme-assets/IDEOCODE-memory-demo.webp" alt="IDEOCODE memory demonstration" width="800">
+<a href="https://github.com/nareinnprs-create/ideocode/releases/download/readme-assets/IDEOCODE-memory-demo.mp4">
+  <img src="https://github.com/nareinnprs-create/ideocode/releases/download/readme-assets/IDEOCODE-memory-demo.webp" alt="IDEOCODE memory demonstration" width="800">
 </a>
 
 <br>
@@ -254,8 +254,8 @@ versions tested for this corrected memory rerun:
 
 <div align="center">
 
-  <a href="https://github.com/1jehuang/IDEOCODE/releases/download/readme-assets/IDEOCODE-performance-demo.mp4">
-    <img src="https://github.com/1jehuang/IDEOCODE/releases/download/readme-assets/IDEOCODE-performance-demo.webp" alt="IDEOCODE performance demonstration" width="900">
+  <a href="https://github.com/nareinnprs-create/ideocode/releases/download/readme-assets/IDEOCODE-performance-demo.mp4">
+    <img src="https://github.com/nareinnprs-create/ideocode/releases/download/readme-assets/IDEOCODE-performance-demo.webp" alt="IDEOCODE performance demonstration" width="900">
   </a>
 
   <p><em>IDEOCODE performance demonstration</em></p>
@@ -277,8 +277,8 @@ Memories are automatically consolidated every so often via the ambient mode. Thi
 
 <div align="center">
 
-  <a href="https://github.com/1jehuang/IDEOCODE/releases/download/readme-assets/IDEOCODE-memory-demo.mp4">
-    <img src="https://github.com/1jehuang/IDEOCODE/releases/download/readme-assets/IDEOCODE-memory-demo.webp" alt="IDEOCODE memory demonstration" width="900">
+  <a href="https://github.com/nareinnprs-create/ideocode/releases/download/readme-assets/IDEOCODE-memory-demo.mp4">
+    <img src="https://github.com/nareinnprs-create/ideocode/releases/download/readme-assets/IDEOCODE-memory-demo.webp" alt="IDEOCODE memory demonstration" width="900">
   </a>
 
   <p><em>IDEOCODE memory demonstration</em></p>
@@ -314,8 +314,8 @@ Spawn two or more agents in the same repo, and they will automatically be manage
 
 <div align="center">
 
-  <a href="https://github.com/1jehuang/IDEOCODE/releases/download/readme-assets/swarm-demo.mp4">
-    <img src="https://github.com/1jehuang/IDEOCODE/releases/download/readme-assets/IDEOCODE-swarm-demonstration.webp" alt="IDEOCODE swarm demonstration" width="900">
+  <a href="https://github.com/nareinnprs-create/ideocode/releases/download/readme-assets/swarm-demo.mp4">
+    <img src="https://github.com/nareinnprs-create/ideocode/releases/download/readme-assets/IDEOCODE-swarm-demonstration.webp" alt="IDEOCODE swarm demonstration" width="900">
   </a>
 
   <p><em>IDEOCODE swarm demonstration</em></p>
@@ -653,8 +653,8 @@ and hotkey-friendly dictation without requiring a bundled speech-to-text stack.
 
 <div align="center">
 
-  <a href="https://github.com/1jehuang/IDEOCODE/releases/download/readme-assets/workflow.mp4">
-    <img src="https://github.com/1jehuang/IDEOCODE/releases/download/readme-assets/IDEOCODE-workflow-demonstration.webp" alt="IDEOCODE workflow demonstration" width="900">
+  <a href="https://github.com/nareinnprs-create/ideocode/releases/download/readme-assets/workflow.mp4">
+    <img src="https://github.com/nareinnprs-create/ideocode/releases/download/readme-assets/IDEOCODE-workflow-demonstration.webp" alt="IDEOCODE workflow demonstration" width="900">
   </a>
 
   <p><em>IDEOCODE workflow demonstration</em></p>
@@ -734,7 +734,7 @@ Set up IDEOCODE on this machine for me.
 1. Detect the operating system, available package managers, and shell environment, then install IDEOCODE using the best matching command below instead of referring me somewhere else:
 
    - macOS with Homebrew available:
-     brew tap 1jehuang/IDEOCODE
+     brew tap nareinnprs-create/ideocode
      brew install IDEOCODE
 
    - macOS or Linux via install script:
@@ -744,7 +744,7 @@ Set up IDEOCODE on this machine for me.
      irm https://IDEOCODE.sh/install.ps1 | iex
 
    - From source if the above paths are not appropriate:
-     git clone https://github.com/1jehuang/IDEOCODE.git
+     git clone https://github.com/nareinnprs-create/ideocode.git
      cd IDEOCODE
      cargo build --release
      scripts/install_release.sh
@@ -821,14 +821,14 @@ is available with `-BuildFromSource` and requires Git, Rust, and Visual Studio
 ### macOS via Homebrew
 
 ```bash
-brew tap 1jehuang/IDEOCODE
+brew tap nareinnprs-create/ideocode
 brew install IDEOCODE
 ```
 
 ### From Source (all platforms)
 
 ```bash
-git clone https://github.com/1jehuang/IDEOCODE.git
+git clone https://github.com/nareinnprs-create/ideocode.git
 cd IDEOCODE
 cargo build --release
 ```
@@ -857,14 +857,14 @@ Removes installed binaries and the launcher but keeps your config, auth, and
 sessions so a clean reinstall picks up where you left off:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/1jehuang/IDEOCODE/master/scripts/uninstall.sh | bash -s -- --yes
+curl -fsSL https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/uninstall.sh | bash -s -- --yes
 ```
 
 For a full wipe of everything including config, auth, sessions, logs, and
 memory (useful for recovering from a broken install):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/1jehuang/IDEOCODE/master/scripts/uninstall.sh | bash -s -- --purge --yes
+curl -fsSL https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/uninstall.sh | bash -s -- --purge --yes
 ```
 
 Add `--dry-run` to preview what would be removed without deleting anything.

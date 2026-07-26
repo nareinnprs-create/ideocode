@@ -12,7 +12,7 @@ use super::provider_init::ProviderChoice;
 pub use IDEOCODE_selfdev_types::CLIENT_SELFDEV_ENV;
 pub use IDEOCODE_selfdev_types::client_selfdev_requested;
 
-const IDEOCODE_REPO_URL: &str = "https://github.com/1jehuang/IDEOCODE.git";
+const IDEOCODE_REPO_URL: &str = "https://github.com/nareinnprs-create/ideocode.git";
 
 fn selfdev_clone_dir() -> Result<PathBuf> {
     Ok(crate::storage::IDEOCODE_dir()?.join("source").join("IDEOCODE"))

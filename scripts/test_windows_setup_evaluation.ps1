@@ -152,8 +152,8 @@ try {
     . $installScript -SkipAlacrittySetup -SkipHotkeySetup
 
     Invoke-Case 'release_lookup_avoids_unauthenticated_github_api' {
-        Assert-Equal 'v1.2.3' (Resolve-IDEOCODEReleaseTagFromUri 'https://github.com/1jehuang/IDEOCODE/releases/tag/v1.2.3') 'release redirect parser should extract the stable tag'
-        Assert-Equal 'v1.2.3-rc.1' (Resolve-IDEOCODEReleaseTagFromUri 'https://github.com/1jehuang/IDEOCODE/releases/tag/v1.2.3-rc.1?source=latest') 'release redirect parser should stop before query parameters'
+        Assert-Equal 'v1.2.3' (Resolve-IDEOCODEReleaseTagFromUri 'https://github.com/nareinnprs-create/ideocode/releases/tag/v1.2.3') 'release redirect parser should extract the stable tag'
+        Assert-Equal 'v1.2.3-rc.1' (Resolve-IDEOCODEReleaseTagFromUri 'https://github.com/nareinnprs-create/ideocode/releases/tag/v1.2.3-rc.1?source=latest') 'release redirect parser should stop before query parameters'
         Assert-Equal $true (Test-IDEOCODEReleaseTag 'v1.2.3') 'stable release tags should validate'
         Assert-Equal $false (Test-IDEOCODEReleaseTag 'latest') 'unversioned release labels should not validate'
         $scriptText = Get-Content -LiteralPath $installScript -Raw
@@ -175,7 +175,7 @@ try {
             if ($Uri -eq 'https://IDEOCODE.sh/releases/v1.2.3/download-bases') {
                 return [pscustomobject]@{ Content = "https://mirror.example/releases/v1.2.3`n" }
             }
-            if ($Uri -eq 'https://github.com/1jehuang/IDEOCODE/releases/latest') {
+            if ($Uri -eq 'https://github.com/nareinnprs-create/ideocode/releases/latest') {
                 throw 'simulated GitHub block'
             }
             throw "unexpected URI: $Uri"
@@ -184,7 +184,7 @@ try {
             Assert-Equal 'v1.2.3' (Get-LatestIDEOCODEReleaseTag) 'static metadata should cover a blocked GitHub release lookup'
             $bases = @(Get-IDEOCODEReleaseDownloadBases 'v1.2.3')
             Assert-Equal 'https://mirror.example/releases/v1.2.3' $bases[0] 'configured mirror should be preferred'
-            Assert-Equal 'https://github.com/1jehuang/IDEOCODE/releases/download/v1.2.3' $bases[1] 'GitHub should remain the final fallback'
+            Assert-Equal 'https://github.com/nareinnprs-create/ideocode/releases/download/v1.2.3' $bases[1] 'GitHub should remain the final fallback'
         } finally {
             Remove-Item Function:\Invoke-WebRequest -ErrorAction SilentlyContinue
         }

@@ -33,7 +33,7 @@ pub use reload::{ReloadRecoveryDirective, persisted_background_tasks_note};
 pub use status::selfdev_status_output;
 
 /// Public GitHub source used when cloning the IDEOCODE repository for self-dev.
-pub const IDEOCODE_REPO_URL: &str = "https://github.com/1jehuang/IDEOCODE.git";
+pub const IDEOCODE_REPO_URL: &str = "https://github.com/nareinnprs-create/ideocode.git";
 
 #[derive(Debug, Deserialize)]
 struct SelfDevInput {

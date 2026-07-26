@@ -11,7 +11,7 @@
 #   --yes       Skip the confirmation prompt.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/1jehuang/IDEOCODE/master/scripts/uninstall.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/uninstall.sh | bash
 #   bash scripts/uninstall.sh --purge
 set -euo pipefail
 

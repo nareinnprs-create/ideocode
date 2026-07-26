@@ -89,7 +89,7 @@ case "$url" in
   *telemetry.IDEOCODE.sh*) ;;
   *IDEOCODE.sh/releases/latest/version) printf 'v%s\n' "${EVAL_VERSION:-1.2.3}" ;;
   *IDEOCODE.sh/releases/v*/download-bases)
-    printf 'https://github.com/1jehuang/IDEOCODE/releases/download/v%s\n' "${EVAL_VERSION:-1.2.3}"
+    printf 'https://github.com/nareinnprs-create/ideocode/releases/download/v%s\n' "${EVAL_VERSION:-1.2.3}"
     ;;
   *SHA256SUMS)
     # Checksum of the deterministic fake archive written by the tar mock's
@@ -98,7 +98,7 @@ case "$url" in
       "${EVAL_CHECKSUM_ASSET:-IDEOCODE-linux-x86_64.tar.gz}"
     ;;
   *github.com*/releases/latest)
-    printf 'https://github.com/1jehuang/IDEOCODE/releases/tag/v%s' "${EVAL_VERSION:-1.2.3}"
+    printf 'https://github.com/nareinnprs-create/ideocode/releases/tag/v%s' "${EVAL_VERSION:-1.2.3}"
     ;;
   *github.com*/releases/download/*)
     [ -n "$output" ] || exit 2

@@ -7,7 +7,7 @@
     By default user data under %USERPROFILE%\.IDEOCODE is kept.
 
     One-liner uninstall:
-      irm https://raw.githubusercontent.com/1jehuang/IDEOCODE/master/scripts/uninstall.ps1 | iex
+      irm https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/uninstall.ps1 | iex
 .PARAMETER InstallDir
     Override the launcher directory (default: $env:LOCALAPPDATA\IDEOCODE\bin)
 .PARAMETER Purge

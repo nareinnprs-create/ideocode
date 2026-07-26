@@ -27,7 +27,7 @@ OLD_WRAP="$OLD_DIR/IDEOCODE-linux-x86_64"
 # Fetch + extract the real old release binary if it is not already present.
 if [ ! -x "$OLD_WRAP" ]; then
   mkdir -p "$OLD_DIR"
-  url="$(curl -fsSL "https://api.github.com/repos/1jehuang/IDEOCODE/releases/tags/$OLD_VERSION" \
+  url="$(curl -fsSL "https://api.github.com/repos/nareinnprs-create/ideocode/releases/tags/$OLD_VERSION" \
         | grep -o 'https://[^"]*IDEOCODE-linux-x86_64.tar.gz' | head -1)"
   [ -n "$url" ] || { echo "could not resolve $OLD_VERSION linux asset URL"; exit 2; }
   echo "Downloading old server $OLD_VERSION ..."

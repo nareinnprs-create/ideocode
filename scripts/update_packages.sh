@@ -8,10 +8,10 @@ VERSION_NUM="${VERSION#v}"
 
 echo "Updating packages for $VERSION..."
 
-LINUX_URL="https://github.com/1jehuang/IDEOCODE/releases/download/${VERSION}/IDEOCODE-linux-x86_64.tar.gz"
-LINUX_ARM_URL="https://github.com/1jehuang/IDEOCODE/releases/download/${VERSION}/IDEOCODE-linux-aarch64.tar.gz"
-MACOS_ARM_URL="https://github.com/1jehuang/IDEOCODE/releases/download/${VERSION}/IDEOCODE-macos-aarch64.tar.gz"
-MACOS_INTEL_URL="https://github.com/1jehuang/IDEOCODE/releases/download/${VERSION}/IDEOCODE-macos-x86_64.tar.gz"
+LINUX_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-linux-x86_64.tar.gz"
+LINUX_ARM_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-linux-aarch64.tar.gz"
+MACOS_ARM_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-macos-aarch64.tar.gz"
+MACOS_INTEL_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-macos-x86_64.tar.gz"
 
 tmpdir=$(mktemp -d)
 trap 'rm -rf "$tmpdir"' EXIT
@@ -36,12 +36,12 @@ echo "  macOS Intel SHA256: $MACOS_INTEL_SHA"
 echo ""
 echo "Updating Homebrew tap..."
 BREW_DIR="$tmpdir/homebrew-IDEOCODE"
-git clone --depth 1 git@github.com:1jehuang/homebrew-IDEOCODE.git "$BREW_DIR" 2>/dev/null
+git clone --depth 1 git@github.com:nareinnprs-create/homebrew-ideocode.git "$BREW_DIR" 2>/dev/null
 
 cat > "$BREW_DIR/Formula/IDEOCODE.rb" <<EOF
 class IDEOCODE < Formula
   desc "AI coding agent powered by Claude and ChatGPT"
-  homepage "https://github.com/1jehuang/IDEOCODE"
+  homepage "https://github.com/nareinnprs-create/ideocode"
   version "$VERSION_NUM"
   license "MIT"
 
@@ -112,7 +112,7 @@ pkgver=$VERSION_NUM
 pkgrel=1
 pkgdesc="AI coding agent powered by Claude and ChatGPT"
 arch=('x86_64')
-url="https://github.com/1jehuang/IDEOCODE"
+url="https://github.com/nareinnprs-create/ideocode"
 license=('MIT')
 provides=('IDEOCODE')
 conflicts=('IDEOCODE')

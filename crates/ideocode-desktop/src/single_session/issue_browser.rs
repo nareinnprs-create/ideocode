@@ -37,7 +37,7 @@ pub(crate) struct GitHubIssueBrowserState {
 impl GitHubIssueBrowserState {
     pub(crate) fn sample() -> Self {
         Self {
-            repo: "1jehuang/IDEOCODE".to_string(),
+            repo: "nareinnprs-create/ideocode".to_string(),
             filter_label: "priority · open · local cache".to_string(),
             selected: 0,
             list_scroll: 0,

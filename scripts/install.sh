@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env bash
 set -euo pipefail
 
-REPO="1jehuang/IDEOCODE"
+REPO="nareinnprs-create/ideocode"
 RELEASE_METADATA_BASE="${IDEOCODE_RELEASE_METADATA_BASE:-https://IDEOCODE.sh/releases}"
 IS_WINDOWS=false
 IS_TERMUX=false

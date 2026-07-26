@@ -2157,7 +2157,7 @@ fn show_first_run_notice() {
     eprintln!("  session activity, tool counts, and crash/exit reasons). No code, filenames,");
     eprintln!("  prompts, or personal data is sent.");
     eprintln!("  To opt out: export IDEOCODE_NO_TELEMETRY=1");
-    eprintln!("  Details: https://github.com/1jehuang/IDEOCODE/blob/master/TELEMETRY.md");
+    eprintln!("  Details: https://github.com/nareinnprs-create/ideocode/blob/master/TELEMETRY.md");
     eprintln!("{reset}");
 }
 

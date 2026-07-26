@@ -48,7 +48,7 @@ if ($PSVersionTable.PSVersion.Major -lt 5) {
     exit 1
 }
 
-$Repo = "1jehuang/IDEOCODE"
+$Repo = "nareinnprs-create/ideocode"
 $ReleaseMetadataBase = if ($env:IDEOCODE_RELEASE_METADATA_BASE) {
     $env:IDEOCODE_RELEASE_METADATA_BASE.TrimEnd('/')
 } else {

@@ -70,7 +70,7 @@ Tag push (v*)
           ├─► Keep failed architectures unavailable without blocking others
           ├─► Generate and upload SHA256SUMS
           ├─► Publish the available release assets
-          ├─► Update Homebrew formula (1jehuang/homebrew-IDEOCODE)
+          ├─► Update Homebrew formula (nareinnprs-create/homebrew-ideocode)
           └─► Update AUR package (IDEOCODE-bin)
 ```
 
@@ -88,7 +88,7 @@ Key design decisions:
 
 CI handles Homebrew and AUR updates automatically:
 
-- **Homebrew**: Updates `Formula/IDEOCODE.rb` in `1jehuang/homebrew-IDEOCODE` with new SHA256 hashes
+- **Homebrew**: Updates `Formula/IDEOCODE.rb` in `nareinnprs-create/homebrew-ideocode` with new SHA256 hashes
 - **AUR**: Updates `PKGBUILD` and `.SRCINFO` in the `IDEOCODE-bin` AUR repo
 
 Both are triggered conditionally by the final `release` job. Homebrew updates only when all four Linux/macOS formula assets exist; AUR updates whenever Linux x86_64 exists.

@@ -871,8 +871,8 @@ mod tests {
     #[test]
     fn parses_common_github_remote_urls() {
         assert_eq!(
-            parse_github_repo_from_remote("git@github.com:1jehuang/IDEOCODE.git").as_deref(),
-            Some("1jehuang/IDEOCODE")
+            parse_github_repo_from_remote("git@github.com:nareinnprs-create/ideocode.git").as_deref(),
+            Some("nareinnprs-create/ideocode")
         );
         assert_eq!(
             parse_github_repo_from_remote("https://github.com/owner/repo.git").as_deref(),

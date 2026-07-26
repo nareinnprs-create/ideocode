@@ -26,7 +26,7 @@ use update_metadata::{record_release_update_duration, record_source_update_durat
 pub use update_rate_limit::{RATE_LIMIT_ERROR_PREFIX, is_rate_limit_error};
 use update_rate_limit::{clear_rate_limit_backoff, rate_limit_error};
 
-const GITHUB_REPO: &str = "1jehuang/IDEOCODE";
+const GITHUB_REPO: &str = "nareinnprs-create/ideocode";
 /// Minimum gap between *automatic* update checks.
 ///
 /// Every automatic check costs one or two unauthenticated `api.github.com`
