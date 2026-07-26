@@ -1,8 +1,8 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-binary=${1:-"$repo_root/target/release/jcode"}
+binary=${1:-"$repo_root/target/release/IDEOCODE"}
 
 if [[ ! -x "$binary" ]]; then
   echo "Binary not found or not executable: $binary" >&2

@@ -1,4 +1,4 @@
-# Swarm as a Task DAG (Design)
+﻿# Swarm as a Task DAG (Design)
 
 Status: Being implemented (supersedes the agent-first framing in
 `SWARM_ARCHITECTURE.md`). The DAG engine, deep/light modes, gates, growth
@@ -46,7 +46,7 @@ flowchart LR
   end
 ```
 
-The existing `jcode-plan` graph code is the foundation; this is an evolution of
+The existing `IDEOCODE-plan` graph code is the foundation; this is an evolution of
 it, not a rewrite.
 
 ---
@@ -274,7 +274,7 @@ gaps/failures into new nodes.
 
 ### 6.4 Implemented enforcement (2026-07: growth mechanics)
 
-The pressures above are implemented as hard engine rules in `jcode-plan`'s
+The pressures above are implemented as hard engine rules in `IDEOCODE-plan`'s
 `dag` module, not prompt requests:
 
 - **Root gate (plan-wide audit).** Every deep-mode `seed` auto-inserts a
@@ -550,7 +550,7 @@ in attention as subtrees collapse into synthesized artifacts.
 
 ---
 
-## 10. Data model changes (against `jcode-plan`)
+## 10. Data model changes (against `IDEOCODE-plan`)
 
 Reuse `VersionedPlan` / `PlanItem` (already has `blocked_by` edges,
 `summarize_plan_graph`, `next_runnable_item_ids`, `newly_ready_item_ids`,
@@ -593,7 +593,7 @@ is removed.
 ## 11. Suggested build order
 
 1. Land the typed `HandoffArtifact` schema + `PlanItem` field additions in
-   `jcode-plan`.
+   `IDEOCODE-plan`.
 2. Add validated `expand_node` / `complete_node` / `task_graph` ops (ownership +
    acyclicity + gate auto-insertion).
 3. Extend the scheduler to hydrate downstream input from upstream artifacts and to

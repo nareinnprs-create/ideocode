@@ -1,4 +1,4 @@
-"""Context passed to every reward scorer.
+﻿"""Context passed to every reward scorer.
 
 A scorer reads only what it needs from this object. The aggregator builds one
 Context per matrix cell (device x scenario) and reuses it across all scorers,
@@ -25,7 +25,7 @@ from PIL import Image
 STATUS_BAR_FRAC = 0.055
 HOME_INDICATOR_FRAC = 0.025
 
-# Design tokens, mirrored from Sources/JCodeMobile/Theme.swift. Shared so every
+# Design tokens, mirrored from Sources/IDEOCODEMobile/Theme.swift. Shared so every
 # scorer agrees on "the background" / "the accent".
 TOKENS = {
     "background": 0x0F0F14,
@@ -47,7 +47,7 @@ class Context:
     device: str = "iPhone 17"
     scenario: str = "short"
     scale: int = 3                        # device px per point
-    source_root: Optional[str] = None     # e.g. Sources/JCodeMobile
+    source_root: Optional[str] = None     # e.g. Sources/IDEOCODEMobile
     ax_tree_path: Optional[str] = None     # optional accessibility tree JSON
     runtime: Optional[dict] = None        # optional perf metrics dict
     meta: dict[str, Any] = field(default_factory=dict)

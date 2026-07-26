@@ -1,4 +1,4 @@
-"""Determinism + contract checks for reward scorers.
+﻿"""Determinism + contract checks for reward scorers.
 
 Every scorer must be a pure function: same Context in -> same CategoryScore out,
 and must declare the contract attributes. This guards the reward signal from
@@ -20,7 +20,7 @@ from reward.aggregate import discover_scorers  # noqa: E402
 from reward.context import Context  # noqa: E402
 
 IOS = HERE.parent.parent
-SOURCE_ROOT = str(IOS / "Sources" / "JCodeMobile")
+SOURCE_ROOT = str(IOS / "Sources" / "IDEOCODEMobile")
 
 
 def find_a_screenshot() -> str | None:
@@ -28,8 +28,8 @@ def find_a_screenshot() -> str | None:
     import os
     candidates = []
     for base in (os.environ.get("TMPDIR", "/tmp"), "/tmp"):
-        candidates += glob.glob(os.path.join(base, "jcode-ui-matrix", "*.png"))
-        candidates += glob.glob(os.path.join(base, "jcode_ios_*.png"))
+        candidates += glob.glob(os.path.join(base, "IDEOCODE-ui-matrix", "*.png"))
+        candidates += glob.glob(os.path.join(base, "IDEOCODE_ios_*.png"))
     return candidates[0] if candidates else None
 
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Test swarm coordination features via the debug socket.
 
@@ -21,7 +21,7 @@ import os
 import sys
 import time
 
-DEBUG_SOCKET = f"/run/user/{os.getuid()}/jcode-debug.sock"
+DEBUG_SOCKET = f"/run/user/{os.getuid()}/IDEOCODE-debug.sock"
 TEST_DIR = "/tmp/swarm-test"
 
 
@@ -471,9 +471,9 @@ def main():
 
     if not os.path.exists(DEBUG_SOCKET):
         print(f"Error: Debug socket not found: {DEBUG_SOCKET}")
-        print("Make sure jcode server is running with debug_control enabled:")
-        print("  touch ~/.jcode/debug_control")
-        print("  jcode serve")
+        print("Make sure IDEOCODE server is running with debug_control enabled:")
+        print("  touch ~/.IDEOCODE/debug_control")
+        print("  IDEOCODE serve")
         sys.exit(1)
 
     results = []

@@ -1,0 +1,18 @@
+[package]
+name = "ideocode-provider-env"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "ideocode_provider_env"
+path = "src/lib.rs"
+
+[dependencies]
+anyhow = "1"
+ideocode-core = { path = "../ideocode-core" }
+ideocode-logging = { path = "../ideocode-logging" }
+ideocode-provider-metadata = { path = "../ideocode-provider-metadata" }
+ideocode-storage = { path = "../ideocode-storage" }
+
+[dev-dependencies]
+tempfile = "3"

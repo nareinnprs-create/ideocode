@@ -1,0 +1,27 @@
+[package]
+name = "ideocode-telemetry-core"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+name = "ideocode_telemetry_core"
+path = "src/lib.rs"
+
+[dependencies]
+chrono = { version = "0.4", features = ["serde"] }
+ideocode-build-meta = { path = "../ideocode-build-meta" }
+ideocode-core = { path = "../ideocode-core" }
+ideocode-logging = { path = "../ideocode-logging" }
+ideocode-provider-core = { path = "../ideocode-provider-core" }
+ideocode-selfdev-types = { path = "../ideocode-selfdev-types" }
+ideocode-storage = { path = "../ideocode-storage" }
+ideocode-usage-types = { path = "../ideocode-usage-types" }
+reqwest = { version = "0.12", default-features = false, features = ["json", "blocking", "charset", "http2", "system-proxy", "rustls-tls", "rustls-tls-native-roots"] }
+serde_json = "1"
+walkdir = "2"
+tokio = { version = "1", features = ["rt"] }
+uuid = { version = "1", features = ["v4"] }
+
+[dev-dependencies]
+tempfile = "3"

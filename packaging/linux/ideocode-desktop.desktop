@@ -1,0 +1,12 @@
+﻿[Desktop Entry]
+Version=1.0
+Type=Application
+Name=IDEOCODE Desktop (Beta)
+GenericName=AI Development Workspace
+Comment=IDEOCODE fullscreen desktop workspace (beta)
+Exec=IDEOCODE-desktop
+Icon=IDEOCODE
+Terminal=false
+Categories=Development;IDE;
+StartupNotify=true
+Keywords=IDEOCODE;AI;Agent;Development;Workspace;

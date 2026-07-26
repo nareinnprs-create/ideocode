@@ -1,24 +1,24 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -euo pipefail
 
 # End-to-end smoke test for desktop stable-host /reload behavior under niri.
 #
-# It launches jcode-desktop in stable-host mode, records the compositor window id
+# It launches IDEOCODE-desktop in stable-host mode, records the compositor window id
 # and layout, injects `/reload`, then verifies the same OS window is still present
 # with the same niri placement and the app-worker child process changed. This catches
 # regressions where slash reload falls back to the old full-process handoff path
 # that closes/reopens the desktop window.
 #
-# Requirements: niri, jq, wtype, a Wayland session, and a built jcode-desktop.
+# Requirements: niri, jq, wtype, a Wayland session, and a built IDEOCODE-desktop.
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BIN="${JCODE_DESKTOP_BIN:-$ROOT_DIR/target/debug/jcode-desktop}"
-TIMEOUT_SECS="${JCODE_DESKTOP_RELOAD_E2E_TIMEOUT_SECS:-15}"
-LOG_FILE="${JCODE_DESKTOP_RELOAD_E2E_LOG:-$(mktemp -t jcode-desktop-reload-e2e.XXXXXX.log)}"
+BIN="${IDEOCODE_DESKTOP_BIN:-$ROOT_DIR/target/debug/IDEOCODE-desktop}"
+TIMEOUT_SECS="${IDEOCODE_DESKTOP_RELOAD_E2E_TIMEOUT_SECS:-15}"
+LOG_FILE="${IDEOCODE_DESKTOP_RELOAD_E2E_LOG:-$(mktemp -t IDEOCODE-desktop-reload-e2e.XXXXXX.log)}"
 
 if [[ ! -x "$BIN" ]]; then
   echo "desktop binary not found or not executable: $BIN" >&2
-  echo "hint: cargo build -p jcode-desktop --bin jcode-desktop" >&2
+  echo "hint: cargo build -p IDEOCODE-desktop --bin IDEOCODE-desktop" >&2
   exit 2
 fi
 for tool in niri jq wtype; do

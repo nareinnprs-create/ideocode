@@ -1,0 +1,21 @@
+[package]
+name = "ideocode-protocol"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+ideocode-batch-types = { path = "../ideocode-batch-types" }
+ideocode-config-types = { path = "../ideocode-config-types" }
+ideocode-message-types = { path = "../ideocode-message-types" }
+ideocode-plan = { path = "../ideocode-plan" }
+ideocode-provider-core = { path = "../ideocode-provider-core" }
+ideocode-selfdev-types = { path = "../ideocode-selfdev-types" }
+ideocode-session-types = { path = "../ideocode-session-types" }
+ideocode-side-panel-types = { path = "../ideocode-side-panel-types" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[dev-dependencies]
+anyhow = "1"
+rand = "0.9"

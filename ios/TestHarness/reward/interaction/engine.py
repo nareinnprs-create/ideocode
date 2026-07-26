@@ -1,4 +1,4 @@
-"""engine.py - price the user-behavior graph into interaction-cost metrics.
+﻿"""engine.py - price the user-behavior graph into interaction-cost metrics.
 
 Given the weighted ActionGraph (user_model) and target geometry (ui_map), this:
 
@@ -106,7 +106,7 @@ def _stationary_distribution(graph: ActionGraph, iters: int = 500, tol: float = 
 def run_engine(
     *,
     days: int = 7,
-    log_dir: str = "~/.jcode/logs",
+    log_dir: str = "~/.IDEOCODE/logs",
     source_root: str | None = None,
     ops: Operators = Operators(),
 ) -> EngineResult:

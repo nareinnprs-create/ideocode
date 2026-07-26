@@ -1,4 +1,4 @@
-# TLS `BadRecordMac` transport-retry reproduction
+﻿# TLS `BadRecordMac` transport-retry reproduction
 
 Standalone reproduction for the bug fixed in commit
 `fix(providers): retry on TLS transport faults (BadRecordMac) across all providers`.
@@ -12,7 +12,7 @@ Stream error: IO error: received fatal alert: BadRecordMac
 ```
 
 A `BadRecordMac` is a TLS record-authentication failure. It is transient: a
-fresh connection on retry almost always succeeds. The bug was that jcode failed
+fresh connection on retry almost always succeeds. The bug was that IDEOCODE failed
 these immediately instead of retrying, for two reasons:
 
 1. **OpenAI** maintained its own `is_retryable_error` allowlist that did not

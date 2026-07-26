@@ -1,23 +1,23 @@
-// swift-tools-version:5.9
+﻿// swift-tools-version:5.9
 import PackageDescription
 
 let package = Package(
-    name: "JCodeKit",
+    name: "IDEOCODEKit",
     platforms: [
         .iOS(.v17),
         .macOS(.v14),
     ],
     products: [
-        .library(name: "JCodeKit", targets: ["JCodeKit"])
+        .library(name: "IDEOCODEKit", targets: ["IDEOCODEKit"])
     ],
     targets: [
         .target(
-            name: "JCodeKit",
+            name: "IDEOCODEKit",
             swiftSettings: [.enableUpcomingFeature("StrictConcurrency")]
         ),
         .testTarget(
-            name: "JCodeKitTests",
-            dependencies: ["JCodeKit"]
+            name: "IDEOCODEKitTests",
+            dependencies: ["IDEOCODEKit"]
         ),
     ]
 )

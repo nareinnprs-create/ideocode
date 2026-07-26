@@ -1,4 +1,4 @@
-# Memory Architecture Design
+﻿# Memory Architecture Design
 
 > **Status:** Implemented (Core), Planned (Graph-Based Hybrid)
 > **Updated:** 2026-01-27
@@ -179,7 +179,7 @@ User-defined or automatically inferred labels.
 - Extracted by sidecar during end-of-session processing
 
 **Examples:**
-- `#project:jcode` - Project-specific
+- `#project:IDEOCODE` - Project-specific
 - `#rust`, `#python` - Language-specific
 - `#auth`, `#database` - Domain-specific
 - `#preference`, `#correction` - Category tags
@@ -670,7 +670,7 @@ sequenceDiagram
 ## Storage Layout
 
 ```
-~/.jcode/memory/
+~/.IDEOCODE/memory/
 ├── graph.json                    # Serialized petgraph
 ├── projects/
 │   └── <project_hash>.json       # Per-directory memories
@@ -745,7 +745,7 @@ memory { action: "tag", id: "...", tags: ["new", "tags"] }
 ### Phase 7: Full Integration ✅
 - [x] End-of-session extraction
 - [x] Sidecar consolidation on write (see below)
-- [x] User control CLI (`jcode memory` commands)
+- [x] User control CLI (`IDEOCODE memory` commands)
 - [x] Memory export/import
 
 ### Phase 7.5: Sidecar Consolidation (Inline, Per-Turn) ✅
@@ -801,7 +801,7 @@ Before storing any memory, scan for:
 
 > **Status:** TODO - Design pending
 
-Similar to how humans consolidate memories during sleep, jcode can run background consolidation to optimize the memory graph:
+Similar to how humans consolidate memories during sleep, IDEOCODE can run background consolidation to optimize the memory graph:
 
 ### Concept
 

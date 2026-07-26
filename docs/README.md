@@ -1,6 +1,6 @@
-# jcode Docs
+﻿# IDEOCODE Docs
 
-Reference documentation for the jcode codebase.
+Reference documentation for the IDEOCODE codebase.
 
 ## Layout
 

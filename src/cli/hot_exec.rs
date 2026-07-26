@@ -1,4 +1,4 @@
-use anyhow::Result;
+﻿use anyhow::Result;
 use std::process::Command as ProcessCommand;
 
 pub use crate::session_rebuild::{hot_rebuild, spawn_background_session_rebuild};
@@ -39,7 +39,7 @@ pub fn hot_restart(session_id: &str) -> Result<()> {
 
     crate::logging::info(&format!("Restarting with current binary: {:?}", exe));
 
-    crate::env::set_var("JCODE_RESUMING", "1");
+    crate::env::set_var("IDEOCODE_RESUMING", "1");
 
     let mut cmd = ProcessCommand::new(&exe);
     if is_selfdev {
@@ -54,9 +54,9 @@ pub fn hot_restart(session_id: &str) -> Result<()> {
 pub fn hot_reload(session_id: &str) -> Result<()> {
     let cwd = std::env::current_dir()?;
 
-    crate::env::set_var("JCODE_RESUMING", "1");
+    crate::env::set_var("IDEOCODE_RESUMING", "1");
 
-    if let Ok(migrate_binary) = std::env::var("JCODE_MIGRATE_BINARY") {
+    if let Ok(migrate_binary) = std::env::var("IDEOCODE_MIGRATE_BINARY") {
         let binary_path = std::path::PathBuf::from(&migrate_binary);
         if binary_path.exists() {
             crate::logging::info("Migrating to stable binary...");
@@ -64,7 +64,7 @@ pub fn hot_reload(session_id: &str) -> Result<()> {
             cmd.arg("--resume")
                 .arg(session_id)
                 .arg("--no-update")
-                .env_remove("JCODE_MIGRATE_BINARY")
+                .env_remove("IDEOCODE_MIGRATE_BINARY")
                 .current_dir(cwd);
             let err = crate::platform::replace_process(&mut cmd);
             return Err(anyhow::anyhow!("Failed to exec {:?}: {}", binary_path, err));
@@ -136,7 +136,7 @@ pub fn hot_update(session_id: &str) -> Result<()> {
 
     match update::check_for_update_blocking() {
         Ok(Some(release)) => {
-            let current = jcode_build_meta::version();
+            let current = IDEOCODE_build_meta::version();
             update::print_centered(&format!(
                 "Update available: {} -> {}",
                 current, release.tag_name
@@ -161,7 +161,7 @@ pub fn hot_update(session_id: &str) -> Result<()> {
 
                     update::print_centered(&format!("Restarting with session {}...", session_id));
 
-                    crate::env::set_var("JCODE_RESUMING", "1");
+                    crate::env::set_var("IDEOCODE_RESUMING", "1");
 
                     let mut cmd = ProcessCommand::new(&exe);
                     if is_selfdev {
@@ -188,7 +188,7 @@ pub fn hot_update(session_id: &str) -> Result<()> {
             }
             update::print_centered(&format!(
                 "Already up to date ({})",
-                jcode_build_meta::version()
+                IDEOCODE_build_meta::version()
             ));
         }
         Err(e) => {
@@ -199,7 +199,7 @@ pub fn hot_update(session_id: &str) -> Result<()> {
         }
     }
 
-    crate::env::set_var("JCODE_RESUMING", "1");
+    crate::env::set_var("IDEOCODE_RESUMING", "1");
     let exe = std::env::current_exe()?;
     let is_selfdev = crate::cli::selfdev::client_selfdev_requested();
     let mut cmd = ProcessCommand::new(&exe);
@@ -218,7 +218,7 @@ pub fn get_repo_dir() -> Option<std::path::PathBuf> {
     build::get_repo_dir()
 }
 
-/// Minimum interval between `git fetch` update probes across all jcode
+/// Minimum interval between `git fetch` update probes across all IDEOCODE
 /// processes. Every source-build client spawn used to fetch unconditionally,
 /// so spawning N clients at once ran N concurrent `git fetch` + ssh sessions
 /// against the remote. One probe per interval per machine is plenty; a marker
@@ -226,7 +226,7 @@ pub fn get_repo_dir() -> Option<std::path::PathBuf> {
 const UPDATE_FETCH_INTERVAL_SECS: u64 = 15 * 60;
 
 fn claim_update_fetch_slot() -> bool {
-    let Ok(base) = crate::storage::jcode_dir() else {
+    let Ok(base) = crate::storage::IDEOCODE_dir() else {
         // Cannot coordinate without a home dir; fall back to probing.
         return true;
     };
@@ -280,7 +280,7 @@ pub fn run_auto_update() -> Result<()> {
     use crate::bus::{Bus, BusEvent, UpdateStatus};
 
     let repo_dir =
-        get_repo_dir().ok_or_else(|| anyhow::anyhow!("Could not find jcode repository"))?;
+        get_repo_dir().ok_or_else(|| anyhow::anyhow!("Could not find IDEOCODE repository"))?;
 
     update::run_git_pull_ff_only(&repo_dir, true)?;
 
@@ -341,7 +341,7 @@ pub fn run_update() -> Result<()> {
             Ok(Some(release)) => {
                 update::print_centered(&format!(
                     "Downloading {} \u{2192} {}...",
-                    jcode_build_meta::version(),
+                    IDEOCODE_build_meta::version(),
                     release.tag_name
                 ));
                 let _path =
@@ -354,7 +354,7 @@ pub fn run_update() -> Result<()> {
                     })?;
                 update::print_centered(&format!("✅ Updated to {}", release.tag_name));
                 reload_server_after_update("installed update");
-                update::print_centered("Restart jcode to use the new version.");
+                update::print_centered("Restart IDEOCODE to use the new version.");
             }
             Ok(None) => {
                 if repair_stale_shared_server_after_update_check() {
@@ -362,7 +362,7 @@ pub fn run_update() -> Result<()> {
                 }
                 update::print_centered(&format!(
                     "Already up to date ({})",
-                    jcode_build_meta::version()
+                    IDEOCODE_build_meta::version()
                 ));
             }
             Err(e) => {
@@ -376,9 +376,9 @@ pub fn run_update() -> Result<()> {
     }
 
     let repo_dir =
-        get_repo_dir().ok_or_else(|| anyhow::anyhow!("Could not find jcode repository"))?;
+        get_repo_dir().ok_or_else(|| anyhow::anyhow!("Could not find IDEOCODE repository"))?;
 
-    update::print_centered(&format!("Updating jcode from {}...", repo_dir.display()));
+    update::print_centered(&format!("Updating IDEOCODE from {}...", repo_dir.display()));
 
     update::print_centered("Pulling latest changes (fast-forward only)...");
     update::run_git_pull_ff_only(&repo_dir, true)?;
@@ -440,7 +440,7 @@ fn reload_server_after_update(reason: &str) {
         .map(|(path, _)| path)
         .or_else(|| std::env::current_exe().ok());
     let Some(exe) = exe else {
-        crate::logging::warn("update: could not find jcode binary to reload stale server");
+        crate::logging::warn("update: could not find IDEOCODE binary to reload stale server");
         return;
     };
 

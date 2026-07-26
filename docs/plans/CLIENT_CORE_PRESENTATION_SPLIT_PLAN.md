@@ -1,4 +1,4 @@
-# Client-Core vs Presentation Split Plan
+﻿# Client-Core vs Presentation Split Plan
 
 Status: Proposed
 
@@ -821,9 +821,9 @@ to become thin shells that:
 
 Only after ratatui/crossterm have been removed from core APIs:
 
-- create `crates/jcode-client-core`
+- create `crates/IDEOCODE-client-core`
 - move `src/client_core/*` into the crate
-- keep presentation in the main crate or a future `jcode-tui-presentation` crate
+- keep presentation in the main crate or a future `IDEOCODE-tui-presentation` crate
 
 Do not start with the crate split. Start with the boundary.
 

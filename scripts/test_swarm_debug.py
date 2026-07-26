@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Test script for swarm debug socket commands.
 Tests all the new swarm commands including proposals, touches, timestamps, etc.
@@ -11,8 +11,8 @@ import sys
 import os
 from pathlib import Path
 
-SOCKET_PATH = f"/run/user/{os.getuid()}/jcode-debug.sock"
-MAIN_SOCKET_PATH = f"/run/user/{os.getuid()}/jcode.sock"
+SOCKET_PATH = f"/run/user/{os.getuid()}/IDEOCODE-debug.sock"
+MAIN_SOCKET_PATH = f"/run/user/{os.getuid()}/IDEOCODE.sock"
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 def send_cmd(cmd, session_id=None, timeout=10):
@@ -433,8 +433,8 @@ def main():
     # Check socket exists
     if not os.path.exists(SOCKET_PATH):
         print(f"\n✗ Debug socket not found at {SOCKET_PATH}")
-        print("Make sure jcode server is running with debug control enabled.")
-        print("Enable with: touch ~/.jcode/debug_control")
+        print("Make sure IDEOCODE server is running with debug control enabled.")
+        print("Enable with: touch ~/.IDEOCODE/debug_control")
         sys.exit(1)
 
     total_passed = 0

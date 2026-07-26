@@ -1,6 +1,6 @@
--- Website visit -> successful first Jcode launch funnel, last 30 days.
+﻿-- Website visit -> successful first IDEOCODE launch funnel, last 30 days.
 -- Usage:
---   wrangler d1 execute jcode-telemetry --remote --file=conversion.sql
+--   wrangler d1 execute IDEOCODE-telemetry --remote --file=conversion.sql
 
 WITH site_traffic AS (
     SELECT

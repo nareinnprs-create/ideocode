@@ -1,4 +1,4 @@
-{
+﻿{
   "version": "0.43.0",
   "date": "2026-07-11",
   "title": "Terminal math and smoother swarm work",
@@ -15,6 +15,6 @@
   "fixes": [
     "Images with mismatched format labels are corrected before sending so providers no longer reject valid image payloads",
     "Idle TUI sessions release retained heap memory more effectively",
-    "Jcode login directs users to the correct pricing path"
+    "IDEOCODE login directs users to the correct pricing path"
   ]
 }

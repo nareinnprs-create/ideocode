@@ -1,11 +1,11 @@
-//! Mock provider for e2e tests
+﻿//! Mock provider for e2e tests
 //!
 //! Returns pre-scripted StreamEvent sequences for deterministic testing.
 
 use anyhow::Result;
 use async_stream::stream;
-use jcode::message::{Message, StreamEvent, ToolDefinition};
-use jcode::provider::{EventStream, Provider};
+use IDEOCODE::message::{Message, StreamEvent, ToolDefinition};
+use IDEOCODE::provider::{EventStream, Provider};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 

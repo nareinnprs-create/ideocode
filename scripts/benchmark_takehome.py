@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Benchmark single agent vs swarm on the Anthropic Performance Take-Home.
 
@@ -19,7 +19,7 @@ import subprocess
 import threading
 from pathlib import Path
 
-DEBUG_SOCKET = f"/run/user/{os.getuid()}/jcode-debug.sock"
+DEBUG_SOCKET = f"/run/user/{os.getuid()}/IDEOCODE-debug.sock"
 TAKEHOME_SOURCE = os.environ.get(
     "TAKEHOME_SOURCE", str(Path.home() / "original_performance_takehome")
 )

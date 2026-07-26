@@ -1,0 +1,42 @@
+[package]
+name = "ideocode-provider-doctor"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+# Provider diagnostics that sit downstream of ideocode-base: the strict
+# `ideocode provider-doctor` end-to-end runner (provider_e2e), the live provider
+# probes it drives, and the auth-lifecycle contract driver. Split out of
+# ideocode-base so edits to the doctor cluster no longer rebuild the
+# base -> app-core -> tui spine, and base compiles faster with lower peak
+# memory.
+
+[lib]
+name = "ideocode_provider_doctor"
+path = "src/lib.rs"
+
+[dependencies]
+anyhow = "1"
+futures = "0.3"
+reqwest = { version = "0.12", default-features = false, features = ["json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["time"] }
+
+# default-features = false: the doctor only needs base's always-on surface
+# (auth, provider runtimes, provider_catalog, live_tests). Feature unification
+# in the root binary re-enables embeddings/bedrock there.
+ideocode-base = { path = "../ideocode-base", default-features = false }
+ideocode-provider-gemini-runtime = { path = "../ideocode-provider-gemini-runtime" }
+ideocode-provider-anthropic-runtime = { path = "../ideocode-provider-anthropic-runtime" }
+ideocode-provider-openai-runtime = { path = "../ideocode-provider-openai-runtime" }
+ideocode-provider-openrouter-runtime = { path = "../ideocode-provider-openrouter-runtime" }
+ideocode-provider-cursor-runtime = { path = "../ideocode-provider-cursor-runtime" }
+ideocode-provider-antigravity-runtime = { path = "../ideocode-provider-antigravity-runtime" }
+ideocode-provider-copilot-runtime = { path = "../ideocode-provider-copilot-runtime" }
+
+[dev-dependencies]
+# The auth-lifecycle driver tests run inside ideocode-base's auth test sandbox.
+ideocode-base = { path = "../ideocode-base", default-features = false, features = ["test-support"] }
+ideocode-provider-metadata = { path = "../ideocode-provider-metadata" }
+tokio = { version = "1", features = ["macros", "rt"] }

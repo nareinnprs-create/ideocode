@@ -1,10 +1,10 @@
-[package]
+﻿[package]
 name = "tls-bad-record-mac-repro"
 version = "0.1.0"
 edition = "2021"
 publish = false
 
-# Standalone: do not attach to the parent jcode workspace.
+# Standalone: do not attach to the parent IDEOCODE workspace.
 [workspace]
 
 [dependencies]

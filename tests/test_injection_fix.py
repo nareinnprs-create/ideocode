@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Test script to verify soft interrupt injection happens at the correct point.
 
@@ -18,7 +18,7 @@ import sys
 import os
 
 RUNTIME_DIR = os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{os.getuid()}"
-SOCKET_PATH = os.path.join(RUNTIME_DIR, "jcode-debug.sock")
+SOCKET_PATH = os.path.join(RUNTIME_DIR, "IDEOCODE-debug.sock")
 
 def send_cmd(sock, cmd, session_id=None, timeout=60):
     """Send a debug command and get the response."""
@@ -54,7 +54,7 @@ def test_injection_during_tools():
         sock.connect(SOCKET_PATH)
     except FileNotFoundError:
         print(f"ERROR: Debug socket not found at {SOCKET_PATH}")
-        print("Make sure jcode is running with debug control enabled.")
+        print("Make sure IDEOCODE is running with debug control enabled.")
         return False
 
     try:

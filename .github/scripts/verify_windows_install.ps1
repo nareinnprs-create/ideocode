@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory = $true)][string]$ArtifactExePath,
     [string]$Version
 )
@@ -13,8 +13,8 @@ $originalEnvironment = @{
     LOCALAPPDATA = $env:LOCALAPPDATA
     APPDATA = $env:APPDATA
     USERPROFILE = $env:USERPROFILE
-    JCODE_HOME = $env:JCODE_HOME
-    JCODE_WINDOWS_SETUP_SKIP_PROCESS_LIFECYCLE = $env:JCODE_WINDOWS_SETUP_SKIP_PROCESS_LIFECYCLE
+    IDEOCODE_HOME = $env:IDEOCODE_HOME
+    IDEOCODE_WINDOWS_SETUP_SKIP_PROCESS_LIFECYCLE = $env:IDEOCODE_WINDOWS_SETUP_SKIP_PROCESS_LIFECYCLE
 }
 
 if (-not $Version) {
@@ -24,8 +24,8 @@ if (-not $Version) {
     }
 
     $artifactVersionText = ($artifactVersionOutput -join "`n")
-    if ($artifactVersionText -notmatch '(?i)\bjcode\s+v?(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\b') {
-        throw "Could not parse jcode version from local artifact output: $artifactVersionText"
+    if ($artifactVersionText -notmatch '(?i)\bIDEOCODE\s+v?(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\b') {
+        throw "Could not parse IDEOCODE version from local artifact output: $artifactVersionText"
     }
     $Version = 'v' + $Matches[1]
 } else {
@@ -33,21 +33,21 @@ if (-not $Version) {
 }
 
 $tempBase = if ($env:RUNNER_TEMP) { $env:RUNNER_TEMP } else { $env:TEMP }
-$tempRoot = Join-Path $tempBase ("jcode-windows-install-verify-" + [guid]::NewGuid().ToString('N'))
+$tempRoot = Join-Path $tempBase ("IDEOCODE-windows-install-verify-" + [guid]::NewGuid().ToString('N'))
 $localAppData = Join-Path $tempRoot 'localappdata'
 $appData = Join-Path $tempRoot 'appdata'
 $userProfile = Join-Path $tempRoot 'userprofile'
-$jcodeHome = Join-Path $tempRoot '.jcode'
-$installDir = Join-Path $localAppData 'jcode\bin'
+$IDEOCODEHome = Join-Path $tempRoot '.IDEOCODE'
+$installDir = Join-Path $localAppData 'IDEOCODE\bin'
 
 try {
-New-Item -ItemType Directory -Force -Path $localAppData, $appData, $userProfile, $jcodeHome | Out-Null
+New-Item -ItemType Directory -Force -Path $localAppData, $appData, $userProfile, $IDEOCODEHome | Out-Null
 
 $env:LOCALAPPDATA = $localAppData
 $env:APPDATA = $appData
 $env:USERPROFILE = $userProfile
-$env:JCODE_HOME = $jcodeHome
-$env:JCODE_WINDOWS_SETUP_SKIP_PROCESS_LIFECYCLE = '1'
+$env:IDEOCODE_HOME = $IDEOCODEHome
+$env:IDEOCODE_WINDOWS_SETUP_SKIP_PROCESS_LIFECYCLE = '1'
 
 $installScript = Join-Path $repoRoot 'scripts\install.ps1'
 
@@ -56,9 +56,9 @@ $installScript = Join-Path $repoRoot 'scripts\install.ps1'
     -Version $Version `
     -ArtifactExePath $resolvedArtifact
 
-$launcherPath = Join-Path $installDir 'jcode.exe'
-$versionDir = Join-Path $localAppData ('jcode\builds\versions\' + $Version.TrimStart('v') + '\jcode.exe')
-$stablePath = Join-Path $localAppData 'jcode\builds\stable\jcode.exe'
+$launcherPath = Join-Path $installDir 'IDEOCODE.exe'
+$versionDir = Join-Path $localAppData ('IDEOCODE\builds\versions\' + $Version.TrimStart('v') + '\IDEOCODE.exe')
+$stablePath = Join-Path $localAppData 'IDEOCODE\builds\stable\IDEOCODE.exe'
 
 foreach ($path in @($launcherPath, $versionDir, $stablePath)) {
     if (-not (Test-Path -LiteralPath $path)) {
@@ -66,8 +66,8 @@ foreach ($path in @($launcherPath, $versionDir, $stablePath)) {
     }
 }
 
-$hotkeyDir = Join-Path $jcodeHome 'hotkey'
-$startupShortcut = Join-Path $appData 'Microsoft\Windows\Start Menu\Programs\Startup\jcode-hotkey.lnk'
+$hotkeyDir = Join-Path $IDEOCODEHome 'hotkey'
+$startupShortcut = Join-Path $appData 'Microsoft\Windows\Start Menu\Programs\Startup\IDEOCODE-hotkey.lnk'
 if (Test-Path -LiteralPath $hotkeyDir) {
     throw "Default install unexpectedly created optional hotkey files: $hotkeyDir"
 }
@@ -80,7 +80,7 @@ if ($LASTEXITCODE -ne 0) {
     throw "Installed launcher failed to run --version"
 }
 
-if ($versionOutput -notmatch 'jcode') {
+if ($versionOutput -notmatch 'IDEOCODE') {
     throw "Installed launcher returned unexpected version output: $versionOutput"
 }
 
@@ -122,7 +122,7 @@ if ($shortcut.Arguments -match '(?i)\bBypass\b') {
     throw "Hotkey shortcut unexpectedly bypasses PowerShell execution policy"
 }
 
-$legacyVbs = Join-Path $hotkeyDir 'jcode-hotkey-launcher.vbs'
+$legacyVbs = Join-Path $hotkeyDir 'IDEOCODE-hotkey-launcher.vbs'
 if (Test-Path -LiteralPath $legacyVbs) {
     throw "Legacy VBScript hotkey launcher still exists: $legacyVbs"
 }

@@ -1,9 +1,9 @@
-# Desktop2 Visual & Interface Checklist
+﻿# Desktop2 Visual & Interface Checklist
 
-What "good visuals" means for `jcode-desktop2`, and how each rule is enforced.
+What "good visuals" means for `IDEOCODE-desktop2`, and how each rule is enforced.
 
 This is a working checklist, not a style essay. The design language itself
-lives in `~/jcode-website/STYLE.md` (print, one ink, JetBrains Mono); this
+lives in `~/IDEOCODE-website/STYLE.md` (print, one ink, JetBrains Mono); this
 document covers the things that actually break in a rendered app, plus the
 test that catches each one.
 
@@ -19,17 +19,17 @@ scripts/desktop2_visual_check.sh
 scripts/desktop2_visual_check.sh --gpu   # also run pixel tests
 
 # geometry + text invariants only (fast, no GPU)
-cargo test -p jcode-desktop2
+cargo test -p IDEOCODE-desktop2
 
 # pixel-level visual invariants (renders offscreen, needs a GPU)
-cargo test -p jcode-desktop2 -- --ignored
+cargo test -p IDEOCODE-desktop2 -- --ignored
 
 # list the keybindings ported from the TUI, and what was skipped
-./target/selfdev/jcode-desktop2 --keys
+./target/selfdev/IDEOCODE-desktop2 --keys
 
 # render every state-space node to PNGs for eyeballing / agent review
-cargo build --profile selfdev -p jcode-desktop2 --bin jcode-desktop2
-./target/selfdev/jcode-desktop2 --capture all /tmp/d2caps
+cargo build --profile selfdev -p IDEOCODE-desktop2 --bin IDEOCODE-desktop2
+./target/selfdev/IDEOCODE-desktop2 --capture all /tmp/d2caps
 ```
 
 `--capture` renders at 2x so reviewed frames match what a HiDPI window shows.
@@ -68,7 +68,7 @@ The single highest-value category: this is where the first cut actually broke.
 | 3.2 | Body leading 1.65; captions carry 0.1-0.2em letterspacing. | `layout::BODY_LEADING`, caption styles |
 | 3.3 | Single-line fields **elide**, never wrap past their own rule. | `tests::elide_*`, `visual_tests::masthead_rule_is_clear_of_text` |
 | 3.4 | Elision keeps the informative ends (head and tail of paths, ids, errors). | `tests::elide_respects_budget_and_keeps_ends` |
-| 3.5 | Sentence case; product names keep their own casing (`jcode` lowercase). | manual |
+| 3.5 | Sentence case; product names keep their own casing (`IDEOCODE` lowercase). | manual |
 
 ## 4. Color and contrast
 

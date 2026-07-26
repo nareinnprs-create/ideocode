@@ -1,0 +1,116 @@
+[package]
+name = "ideocode-tui"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+# Presentation layer for ideocode: the terminal UI (`tui`) and the offline replay
+# `video_export`, extracted out of the monolithic root `ideocode` crate so they
+# compile as a separate rustc unit. This crate builds on top of the application
+# core (`ideocode-app-core`) and re-exports it via `pub use ideocode_app_core::*`, so
+# every existing `crate::<module>` path (e.g. `crate::config`, `crate::server`)
+# keeps resolving unchanged across the tui code that was moved here. The root
+# `ideocode` crate (cli + bin) in turn re-exports this crate via
+# `pub use ideocode_tui::*`.
+
+[lib]
+name = "ideocode_tui"
+path = "src/lib.rs"
+
+[dependencies]
+# Application core (server, agent, provider, auth, session, tool, config, ...).
+# Re-exported via `pub use ideocode_app_core::*` in lib.rs. default-features=false
+# so this crate (and ultimately the root crate) controls app-core's features.
+ideocode-app-core = { path = "../ideocode-app-core", default-features = false }
+
+# Pure math kernels for the idle animations (3D samplers, glyph chooser,
+# HSV->RGB). Pinned to opt-level = 3 in all profiles via workspace Cargo.toml so
+# the hot trig loops stay optimized even in debug/selfdev builds.
+ideocode-tui-anim = { path = "../ideocode-tui-anim" }
+
+# Async runtime
+tokio = { version = "1", features = ["fs", "io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"] }
+futures = "0.3"
+async-trait = "0.1"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["raw_value"] }
+
+# Utilities
+anyhow = "1"
+libc = "0.2"
+chrono = { version = "0.4", features = ["serde"] }
+regex = "1"
+dirs = "5"
+similar = "2"
+tempfile = "3"
+open = "5"
+
+# OAuth / hashing helpers used by the login + account UI
+base64 = "0.22"
+sha2 = "0.10"
+rand = "0.9.3"
+hex = "0.4"
+url = "2"
+urlencoding = "2"
+
+# TUI
+ratatui = "0.30"
+crossterm = { version = "0.29", features = ["event-stream"] }
+arboard = "3"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
+unicode-width = "0.2"
+
+# Presentation-layer workspace crates
+ideocode-build-meta = { path = "../ideocode-build-meta" }
+ideocode-logging = { path = "../ideocode-logging" }
+ideocode-core = { path = "../ideocode-core" }
+ideocode-fuzzy = { path = "../ideocode-fuzzy" }
+ideocode-config-types = { path = "../ideocode-config-types" }
+ideocode-selfdev-types = { path = "../ideocode-selfdev-types" }
+ideocode-session-types = { path = "../ideocode-session-types" }
+ideocode-provider-core = { path = "../ideocode-provider-core" }
+ideocode-tui-markdown = { path = "../ideocode-tui-markdown" }
+ideocode-tui-messages = { path = "../ideocode-tui-messages" }
+ideocode-tui-core = { path = "../ideocode-tui-core" }
+ideocode-tui-mermaid = { path = "../ideocode-tui-mermaid" }
+ideocode-tui-account-picker = { path = "../ideocode-tui-account-picker" }
+ideocode-tui-render = { path = "../ideocode-tui-render" }
+ideocode-tui-visual-debug = { path = "../ideocode-tui-visual-debug" }
+ideocode-tui-session-picker = { path = "../ideocode-tui-session-picker", features = ["serde"] }
+ideocode-tui-style = { path = "../ideocode-tui-style" }
+terminal-colorsaurus = "1.0"
+ideocode-tui-permissions = { path = "../ideocode-tui-permissions" }
+ideocode-tui-tool-display = { path = "../ideocode-tui-tool-display" }
+ideocode-tui-usage-overlay = { path = "../ideocode-tui-usage-overlay" }
+ideocode-terminal-image = { path = "../ideocode-terminal-image" }
+ideocode-productivity-core = { path = "../ideocode-productivity-core" }
+ideocode-tui-workspace = { path = "../ideocode-tui-workspace" }
+
+[features]
+default = ["pdf", "embeddings", "bedrock"]
+# Exposes bench-only debug helpers (e.g. debug_copy_selection_text_for_bench)
+# consumed by the dev `tui_bench` binary in the root crate.
+dev-bins = []
+# Forwarded to app-core (and onward to ideocode-base) so the root crate's feature
+# set fully controls the optional stacks.
+jemalloc = ["ideocode-app-core/jemalloc"]
+jemalloc-prof = ["ideocode-app-core/jemalloc-prof"]
+embeddings = ["ideocode-app-core/embeddings"]
+pdf = ["ideocode-app-core/pdf"]
+bedrock = ["ideocode-app-core/bedrock"]
+linux-compat-vendored-openssl = ["ideocode-app-core/linux-compat-vendored-openssl"]
+mmdr-size-api = ["ideocode-tui-mermaid/mmdr-size-api"]
+# Forwards the application core's `test-support` feature (and onward to
+# ideocode-base) so downstream crates' test targets can reach the whole stack's
+# test helpers. Never enabled in normal (non-test) builds.
+test-support = ["ideocode-app-core/test-support"]
+
+[dev-dependencies]
+# Enables the downstream test-support helpers for *this* crate's own test
+# target. Feature unification applies this only to test/bench/example builds.
+ideocode-app-core = { path = "../ideocode-app-core", default-features = false, features = ["test-support"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+global-hotkey = "0.7"

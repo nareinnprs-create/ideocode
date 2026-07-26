@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Offline unit tests for scripts/benchmark_attribution.py."""
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import benchmark_attribution as ba  # noqa: E402
 
-MARKER = "via=jcode-discovery"
+MARKER = "via=IDEOCODE-discovery"
 
 
 def sponsor(**overrides):

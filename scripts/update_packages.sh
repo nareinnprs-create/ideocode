@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # Update Homebrew tap and AUR package for a new release.
 # Usage: scripts/update_packages.sh v0.1.3
 set -euo pipefail
@@ -8,10 +8,10 @@ VERSION_NUM="${VERSION#v}"
 
 echo "Updating packages for $VERSION..."
 
-LINUX_URL="https://github.com/1jehuang/jcode/releases/download/${VERSION}/jcode-linux-x86_64.tar.gz"
-LINUX_ARM_URL="https://github.com/1jehuang/jcode/releases/download/${VERSION}/jcode-linux-aarch64.tar.gz"
-MACOS_ARM_URL="https://github.com/1jehuang/jcode/releases/download/${VERSION}/jcode-macos-aarch64.tar.gz"
-MACOS_INTEL_URL="https://github.com/1jehuang/jcode/releases/download/${VERSION}/jcode-macos-x86_64.tar.gz"
+LINUX_URL="https://github.com/1jehuang/IDEOCODE/releases/download/${VERSION}/IDEOCODE-linux-x86_64.tar.gz"
+LINUX_ARM_URL="https://github.com/1jehuang/IDEOCODE/releases/download/${VERSION}/IDEOCODE-linux-aarch64.tar.gz"
+MACOS_ARM_URL="https://github.com/1jehuang/IDEOCODE/releases/download/${VERSION}/IDEOCODE-macos-aarch64.tar.gz"
+MACOS_INTEL_URL="https://github.com/1jehuang/IDEOCODE/releases/download/${VERSION}/IDEOCODE-macos-x86_64.tar.gz"
 
 tmpdir=$(mktemp -d)
 trap 'rm -rf "$tmpdir"' EXIT
@@ -35,13 +35,13 @@ echo "  macOS Intel SHA256: $MACOS_INTEL_SHA"
 # --- Homebrew tap ---
 echo ""
 echo "Updating Homebrew tap..."
-BREW_DIR="$tmpdir/homebrew-jcode"
-git clone --depth 1 git@github.com:1jehuang/homebrew-jcode.git "$BREW_DIR" 2>/dev/null
+BREW_DIR="$tmpdir/homebrew-IDEOCODE"
+git clone --depth 1 git@github.com:1jehuang/homebrew-IDEOCODE.git "$BREW_DIR" 2>/dev/null
 
-cat > "$BREW_DIR/Formula/jcode.rb" <<EOF
-class Jcode < Formula
+cat > "$BREW_DIR/Formula/IDEOCODE.rb" <<EOF
+class IDEOCODE < Formula
   desc "AI coding agent powered by Claude and ChatGPT"
-  homepage "https://github.com/1jehuang/jcode"
+  homepage "https://github.com/1jehuang/IDEOCODE"
   version "$VERSION_NUM"
   license "MIT"
 
@@ -51,7 +51,7 @@ class Jcode < Formula
       sha256 "$MACOS_ARM_SHA"
 
       def install
-        bin.install "jcode-macos-aarch64" => "jcode"
+        bin.install "IDEOCODE-macos-aarch64" => "IDEOCODE"
       end
     end
 
@@ -60,7 +60,7 @@ class Jcode < Formula
       sha256 "$MACOS_INTEL_SHA"
 
       def install
-        bin.install "jcode-macos-x86_64" => "jcode"
+        bin.install "IDEOCODE-macos-x86_64" => "IDEOCODE"
       end
     end
   end
@@ -71,11 +71,11 @@ class Jcode < Formula
       sha256 "$LINUX_SHA"
 
       def install
-        libexec.install "jcode-linux-x86_64", "jcode-linux-x86_64.bin"
+        libexec.install "IDEOCODE-linux-x86_64", "IDEOCODE-linux-x86_64.bin"
         libexec.install Dir["libssl.so*"], Dir["libcrypto.so*"]
-        (bin/"jcode").write <<~SH
+        (bin/"IDEOCODE").write <<~SH
           #!/bin/sh
-          exec "#{libexec}/jcode-linux-x86_64" "\$@"
+          exec "#{libexec}/IDEOCODE-linux-x86_64" "\$@"
         SH
       end
     end
@@ -85,47 +85,47 @@ class Jcode < Formula
       sha256 "$LINUX_ARM_SHA"
 
       def install
-        bin.install "jcode-linux-aarch64" => "jcode"
+        bin.install "IDEOCODE-linux-aarch64" => "IDEOCODE"
       end
     end
   end
 
   test do
-    assert_match "jcode", shell_output("#{bin}/jcode --version")
+    assert_match "IDEOCODE", shell_output("#{bin}/IDEOCODE --version")
   end
 end
 EOF
 
-(cd "$BREW_DIR" && git add -A && git commit -m "Update jcode to $VERSION" && git push origin main)
+(cd "$BREW_DIR" && git add -A && git commit -m "Update IDEOCODE to $VERSION" && git push origin main)
 echo "  ✅ Homebrew tap updated"
 
 # --- AUR ---
 echo ""
 echo "Updating AUR package..."
-AUR_DIR="$tmpdir/jcode-bin-aur"
-git clone ssh://aur@aur.archlinux.org/jcode-bin.git "$AUR_DIR" 2>/dev/null
+AUR_DIR="$tmpdir/IDEOCODE-bin-aur"
+git clone ssh://aur@aur.archlinux.org/IDEOCODE-bin.git "$AUR_DIR" 2>/dev/null
 
 cat > "$AUR_DIR/PKGBUILD" <<EOF
 # Maintainer: Jeremy Huang <jeremyhuang55555@gmail.com>
-pkgname=jcode-bin
+pkgname=IDEOCODE-bin
 pkgver=$VERSION_NUM
 pkgrel=1
 pkgdesc="AI coding agent powered by Claude and ChatGPT"
 arch=('x86_64')
-url="https://github.com/1jehuang/jcode"
+url="https://github.com/1jehuang/IDEOCODE"
 license=('MIT')
-provides=('jcode')
-conflicts=('jcode')
+provides=('IDEOCODE')
+conflicts=('IDEOCODE')
 source=("$LINUX_URL")
 sha256sums=('$LINUX_SHA')
 
 package() {
-    install -Dm755 "\${srcdir}/jcode-linux-x86_64" "\${pkgdir}/usr/lib/jcode/jcode-linux-x86_64"
-    install -Dm755 "\${srcdir}/jcode-linux-x86_64.bin" "\${pkgdir}/usr/lib/jcode/jcode-linux-x86_64.bin"
-    install -Dm644 "\${srcdir}"/libssl.so* "\${pkgdir}/usr/lib/jcode/"
-    install -Dm644 "\${srcdir}"/libcrypto.so* "\${pkgdir}/usr/lib/jcode/"
+    install -Dm755 "\${srcdir}/IDEOCODE-linux-x86_64" "\${pkgdir}/usr/lib/IDEOCODE/IDEOCODE-linux-x86_64"
+    install -Dm755 "\${srcdir}/IDEOCODE-linux-x86_64.bin" "\${pkgdir}/usr/lib/IDEOCODE/IDEOCODE-linux-x86_64.bin"
+    install -Dm644 "\${srcdir}"/libssl.so* "\${pkgdir}/usr/lib/IDEOCODE/"
+    install -Dm644 "\${srcdir}"/libcrypto.so* "\${pkgdir}/usr/lib/IDEOCODE/"
     mkdir -p "\${pkgdir}/usr/bin"
-    ln -s /usr/lib/jcode/jcode-linux-x86_64 "\${pkgdir}/usr/bin/jcode"
+    ln -s /usr/lib/IDEOCODE/IDEOCODE-linux-x86_64 "\${pkgdir}/usr/bin/IDEOCODE"
 }
 EOF
 

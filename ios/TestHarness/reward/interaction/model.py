@@ -1,4 +1,4 @@
-"""Shared data model for the interaction-cost engine.
+﻿"""Shared data model for the interaction-cost engine.
 
 This is the ONLY module the interaction-engine workers share. It defines the
 user-behavior graph, the UI target geometry, and the HCI operator constants.
@@ -7,7 +7,7 @@ the pieces can be built and tested independently and in parallel.
 
 Concept
 -------
-We model a jcode-mobile user as a weighted directed graph (a Markov chain over
+We model a IDEOCODE-mobile user as a weighted directed graph (a Markov chain over
 UI states). Nodes are UI states the user can be in; edges are actions with a
 relative `weight` = how likely a user in that state is to take that action.
 Normalizing the out-edges of a state gives transition probabilities. The

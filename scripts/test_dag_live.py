@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Live deep-mode task-DAG run via the debug socket. Hunts for problems."""
 import socket, json, os, sys
 
-SOCK = f"/run/user/{os.getuid()}/jcode-debug.sock"
+SOCK = f"/run/user/{os.getuid()}/IDEOCODE-debug.sock"
 import time
 TEST_DIR = f"/tmp/dag-live-{int(time.time()*1000)}"
 

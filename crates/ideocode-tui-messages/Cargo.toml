@@ -1,0 +1,13 @@
+[package]
+name = "ideocode-tui-messages"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+ideocode-config-types = { path = "../ideocode-config-types" }
+ideocode-message-types = { path = "../ideocode-message-types" }
+ideocode-session-types = { path = "../ideocode-session-types" }
+ideocode-tui-markdown = { path = "../ideocode-tui-markdown" }
+ratatui = "0.30"
+serde_json = "1"

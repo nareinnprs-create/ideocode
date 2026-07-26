@@ -1,9 +1,9 @@
-# Desktop First Prototype Target
+﻿# Desktop First Prototype Target
 
 Status: Proposed
 Updated: 2026-04-25
 
-The first implementation step for Jcode Desktop should be **Phase 0: a fullscreen blank white canvas**.
+The first implementation step for IDEOCODE Desktop should be **Phase 0: a fullscreen blank white canvas**.
 
 Do not start with:
 
@@ -63,14 +63,14 @@ It answers:
 The repository includes an install-oriented desktop entry at:
 
 ```text
-packaging/linux/jcode-desktop.desktop
+packaging/linux/IDEOCODE-desktop.desktop
 ```
 
-It expects a `jcode-desktop` binary to be available on `PATH`. For local testing after installing or copying the binary somewhere your desktop launcher can execute, copy the entry to your user applications directory:
+It expects a `IDEOCODE-desktop` binary to be available on `PATH`. For local testing after installing or copying the binary somewhere your desktop launcher can execute, copy the entry to your user applications directory:
 
 ```bash
 mkdir -p ~/.local/share/applications
-cp packaging/linux/jcode-desktop.desktop ~/.local/share/applications/
+cp packaging/linux/IDEOCODE-desktop.desktop ~/.local/share/applications/
 update-desktop-database ~/.local/share/applications 2>/dev/null || true
 ```
 

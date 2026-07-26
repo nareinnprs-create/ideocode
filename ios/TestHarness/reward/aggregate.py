@@ -1,4 +1,4 @@
-"""Scorer discovery + reward aggregation.
+﻿"""Scorer discovery + reward aggregation.
 
 Finds every module under reward/scorers/ that exposes the scorer contract
 (NAME, CATEGORY, WEIGHT, score(ctx) -> CategoryScore), runs them over a matrix
@@ -35,7 +35,7 @@ sys.path.insert(0, str(HERE.parent))  # so `import reward...` works
 from reward.context import Context  # noqa: E402
 from reward.types import CategoryScore  # noqa: E402
 
-DEFAULT_SOURCE_ROOT = str(IOS / "Sources" / "JCodeMobile")
+DEFAULT_SOURCE_ROOT = str(IOS / "Sources" / "IDEOCODEMobile")
 
 
 def discover_scorers():
