@@ -120,7 +120,7 @@ impl fmt::Display for AccountApiError {
             Self::Forbidden => write!(f, "the IDEOCODE account request was denied"),
             Self::LegacyBackend => write!(
                 f,
-                "the configured IDEOCODE API uses the legacy email-based login contract; update the backend or use the current https://api.IDEOCODE.sh/v1 endpoint"
+                "the configured IDEOCODE API uses the legacy email-based login contract; update the backend or use the current https://api.github.com/repos/nareinnprs-create/ideocode/v1 endpoint"
             ),
             Self::Http { status, code } => match code {
                 Some(code) => write!(f, "IDEOCODE account API returned HTTP {status} ({code})"),
@@ -542,12 +542,12 @@ mod tests {
             "account_id": "acct_123", "email": "dev@example.com",
             "tier": "flagship", "status": "active",
             "usage": {"used_usd": 12.5, "budget_usd": 3000.0},
-            "manage_url": "https://IDEOCODE.sh/account"
+            "manage_url": "https://github.com/nareinnprs-create/ideocode/account"
         }"#;
         let me: SubscriptionMe = serde_json::from_str(json).expect("parse");
         assert_eq!(me.parsed_tier(), Some(IDEOCODETier::Flagship));
         assert!(me.has_active_paid_plan());
-        assert_eq!(me.manage_url.as_deref(), Some("https://IDEOCODE.sh/account"));
+        assert_eq!(me.manage_url.as_deref(), Some("https://github.com/nareinnprs-create/ideocode/account"));
     }
 
     #[test]
@@ -571,7 +571,7 @@ mod tests {
         let base = spawn_server(vec![(
             200,
             vec![],
-            r#"{"device_code":"secret","flow_id":"public-flow","verification_uri":"https://IDEOCODE.sh/account","verification_uri_complete":"https://IDEOCODE.sh/account?flow=public-flow","verify_url":"https://IDEOCODE.sh/account?flow=public-flow","expires_in":600,"interval":3}"#.to_string(),
+            r#"{"device_code":"secret","flow_id":"public-flow","verification_uri":"https://github.com/nareinnprs-create/ideocode/account","verification_uri_complete":"https://github.com/nareinnprs-create/ideocode/account?flow=public-flow","verify_url":"https://github.com/nareinnprs-create/ideocode/account?flow=public-flow","expires_in":600,"interval":3}"#.to_string(),
         )]);
         let result = request_device_authorization(&client(), &base, Some(IDEOCODETier::Pro))
             .await

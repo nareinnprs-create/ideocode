@@ -143,7 +143,7 @@ CLI events (sent by IDEOCODE itself): `install`, `upgrade`, `auth_success`,
 
 ### Website analytics and quality events (migrations 0016 and 0018)
 
-Sent by the beacon on `https://IDEOCODE.sh` (and the
+Sent by the beacon on `https://github.com/nareinnprs-create/ideocode` (and the
 `https://solosystems.pages.dev` preview). The browser mints an anonymous
 `visitor_id` UUID in localStorage; the worker uses it as the telemetry id and
 fills in `version`/`os`/`arch` defaults, so the beacon payload can stay tiny.

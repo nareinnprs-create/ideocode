@@ -157,7 +157,7 @@ esac
 
 info "IDEOCODE uninstalled."
 if [ "$PURGE" = false ]; then
-  info "Reinstall with: curl -fsSL https://IDEOCODE.sh/install | bash"
+  info "Reinstall with: curl -fsSL https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/install.sh | bash"
 else
-  info "All IDEOCODE data wiped. Reinstall with: curl -fsSL https://IDEOCODE.sh/install | bash"
+  info "All IDEOCODE data wiped. Reinstall with: curl -fsSL https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/install.sh | bash"
 fi

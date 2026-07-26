@@ -121,8 +121,8 @@ mod tests {
     #[test]
     fn manage_url_accepts_only_public_allowlisted_https_origins() {
         assert_eq!(
-            public_manage_url(Some("https://IDEOCODE.sh/account")),
-            "https://IDEOCODE.sh/account"
+            public_manage_url(Some("https://github.com/nareinnprs-create/ideocode/account")),
+            "https://github.com/nareinnprs-create/ideocode/account"
         );
         assert_eq!(
             public_manage_url(Some("https://evil.example/?key=jck_live_secret")),

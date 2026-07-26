@@ -20,7 +20,7 @@ Built for multi-session workflows, infinite customizability, and performance.
 
 <br>
 
-[Website](https://IDEOCODE.sh) · [Docs](https://IDEOCODE.sh/docs) · [Benchmarks](https://IDEOCODE.sh/bench) · [Features](#features) · [Install](#installation) · [Quick Start](#quick-start) · [Further Reading](#further-reading) · [Contributing](CONTRIBUTING.md)
+[Website](https://github.com/nareinnprs-create/ideocode) · [Docs](https://github.com/nareinnprs-create/ideocode#readme) · [Benchmarks](https://github.com/nareinnprs-create/ideocode#benchmarks) · [Features](#features) · [Install](#installation) · [Quick Start](#quick-start) · [Further Reading](#further-reading) · [Contributing](CONTRIBUTING.md)
 
 </div>
 
@@ -34,12 +34,12 @@ Built for multi-session workflows, infinite customizability, and performance.
 
 ```bash
 # macOS & Linux
-curl -fsSL https://IDEOCODE.sh/install | bash
+curl -fsSL https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/install.sh | bash
 ```
 
 ```powershell
 # Windows 11 (PowerShell 5.1+)
-irm https://IDEOCODE.sh/install.ps1 | iex
+irm https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/install.ps1 | iex
 ```
 
 Need Homebrew, source builds, provider setup, or want an agent to set it up for you?
@@ -706,9 +706,9 @@ Notes:
 
 ## Further Reading
 
-- [IDEOCODE.sh/docs](https://IDEOCODE.sh/docs) — install, providers, configuration, keybindings
-- [IDEOCODE.sh/swarm](https://IDEOCODE.sh/swarm) — many coding agents in one repository
-- [IDEOCODE.sh/bench](https://IDEOCODE.sh/bench) — benchmark methodology and results
+- [Docs](https://github.com/nareinnprs-create/ideocode#readme) — install, providers, configuration, keybindings
+- [Swarm](https://github.com/nareinnprs-create/ideocode#swarm) — many coding agents in one repository
+- [Benchmarks](https://github.com/nareinnprs-create/ideocode#benchmarks) — benchmark methodology and results
 - [Ambient Mode / OpenClaw](docs/AMBIENT_MODE.md)
 - [Browser Provider Protocol](docs/BROWSER_PROVIDER_PROTOCOL.md)
 - [Memory Architecture](docs/MEMORY_ARCHITECTURE.md)
@@ -738,10 +738,10 @@ Set up IDEOCODE on this machine for me.
      brew install IDEOCODE
 
    - macOS or Linux via install script:
-     curl -fsSL https://IDEOCODE.sh/install | bash
+     curl -fsSL https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/install.sh | bash
 
    - Windows PowerShell:
-     irm https://IDEOCODE.sh/install.ps1 | iex
+     irm https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/install.ps1 | iex
 
    - From source if the above paths are not appropriate:
      git clone https://github.com/nareinnprs-create/ideocode.git
@@ -791,7 +791,7 @@ This is intended to be a copy-paste bootstrap prompt for IDEOCODE itself or any 
 
 ```bash
 # macOS & Linux
-curl -fsSL https://IDEOCODE.sh/install | bash
+curl -fsSL https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/install.sh | bash
 ```
 
 On Termux, install the glibc runtime and `patchelf` first so the installer can
@@ -800,12 +800,12 @@ launcher that avoids Termux's `LD_PRELOAD` shim:
 
 ```bash
 pkg install glibc patchelf
-curl -fsSL https://IDEOCODE.sh/install | bash
+curl -fsSL https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/install.sh | bash
 ```
 
 ```powershell
 # Windows 11 x64 or ARM64 (PowerShell 5.1+)
-irm https://IDEOCODE.sh/install.ps1 | iex
+irm https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/install.ps1 | iex
 ```
 
 The Windows installer selects the correct architecture and verifies the download

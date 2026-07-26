@@ -169,10 +169,10 @@ try {
                 [string]$OutFile
             )
             $script:releaseLookupRequests += $Uri
-            if ($Uri -eq 'https://IDEOCODE.sh/releases/latest/version') {
+            if ($Uri -eq 'https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/releases/latest/version') {
                 return [pscustomobject]@{ Content = "v1.2.3`n" }
             }
-            if ($Uri -eq 'https://IDEOCODE.sh/releases/v1.2.3/download-bases') {
+            if ($Uri -eq 'https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/releases/v1.2.3/download-bases') {
                 return [pscustomobject]@{ Content = "https://mirror.example/releases/v1.2.3`n" }
             }
             if ($Uri -eq 'https://github.com/nareinnprs-create/ideocode/releases/latest') {

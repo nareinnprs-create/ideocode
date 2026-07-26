@@ -5,10 +5,10 @@
     Downloads the latest IDEOCODE release and installs it to %LOCALAPPDATA%\IDEOCODE\bin.
 
     One-liner install:
-      irm https://IDEOCODE.sh/install.ps1 | iex
+      irm https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/install.ps1 | iex
 
     Or download and run (allows parameters):
-      & ([scriptblock]::Create((irm https://IDEOCODE.sh/install.ps1)))
+      & ([scriptblock]::Create((irm https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/install.ps1)))
 .PARAMETER InstallDir
     Override the installation directory (default: $env:LOCALAPPDATA\IDEOCODE\bin)
 .PARAMETER Version
@@ -52,7 +52,7 @@ $Repo = "nareinnprs-create/ideocode"
 $ReleaseMetadataBase = if ($env:IDEOCODE_RELEASE_METADATA_BASE) {
     $env:IDEOCODE_RELEASE_METADATA_BASE.TrimEnd('/')
 } else {
-    "https://IDEOCODE.sh/releases"
+    "https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/releases"
 }
 
 if (-not $InstallDir) {

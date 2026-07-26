@@ -129,7 +129,7 @@ enable provenance tagging or coarse usage metering.
 
 ## 4. Implement browse, select, and catalog suggestions
 
-The default client sends `GET https://api.IDEOCODE.sh/v1/discovery` with a
+The default client sends `GET https://api.github.com/repos/nareinnprs-create/ideocode/v1/discovery` with a
 three-second timeout and a 64 KiB maximum response. It sends a
 `User-Agent: IDEOCODE/<version>` header and a random
 `x-IDEOCODE-discovery-request-id` correlation header.

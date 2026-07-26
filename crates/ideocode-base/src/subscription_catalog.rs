@@ -8,9 +8,9 @@ pub const IDEOCODE_TIER_ENV: &str = "IDEOCODE_TIER";
 pub const IDEOCODE_ENV_FILE: &str = "IDEOCODE-subscription.env";
 pub const IDEOCODE_CACHE_NAMESPACE: &str = "IDEOCODE-subscription";
 pub const IDEOCODE_SUBSCRIPTION_ACTIVE_ENV: &str = "IDEOCODE_SUBSCRIPTION_ACTIVE";
-pub const DEFAULT_IDEOCODE_API_BASE: &str = "https://api.IDEOCODE.sh/v1";
-pub const IDEOCODE_PRICING_URL: &str = "https://IDEOCODE.sh/pricing";
-pub const IDEOCODE_ACCOUNT_URL: &str = "https://IDEOCODE.sh/account";
+pub const DEFAULT_IDEOCODE_API_BASE: &str = "https://api.github.com/repos/nareinnprs-create/ideocode/v1";
+pub const IDEOCODE_PRICING_URL: &str = "https://github.com/nareinnprs-create/ideocode/pricing";
+pub const IDEOCODE_ACCOUNT_URL: &str = "https://github.com/nareinnprs-create/ideocode/account";
 pub const IDEOCODE_PROVIDER_DISPLAY_NAME: &str = "IDEOCODE Subscription";
 pub const IDEOCODE_ROUTE_API_METHOD: &str = "IDEOCODE-subscription";
 

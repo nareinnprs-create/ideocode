@@ -404,7 +404,7 @@ if ($pathUpdate.Changed) {
 }
 
 Write-Info "IDEOCODE uninstalled."
-Write-Info "Reinstall with: irm https://IDEOCODE.sh/install.ps1 | iex"
+Write-Info "Reinstall with: irm https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/scripts/install.ps1 | iex"
 
 
     return 0

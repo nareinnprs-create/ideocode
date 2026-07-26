@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REPO="nareinnprs-create/ideocode"
-RELEASE_METADATA_BASE="${IDEOCODE_RELEASE_METADATA_BASE:-https://IDEOCODE.sh/releases}"
+RELEASE_METADATA_BASE="${IDEOCODE_RELEASE_METADATA_BASE:-https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/releases}"
 IS_WINDOWS=false
 IS_TERMUX=false
 INSTALL_STAGE="startup"

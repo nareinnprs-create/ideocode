@@ -620,9 +620,9 @@ desktop_notifications = true
 # share revenue with IDEOCODE when a referred user becomes a customer, but
 # partnership status never influences recommendations. Each session's first
 # use of discover_tools shows a concise disclosure with a learn-more link.
-# See https://IDEOCODE.sh/discovery-tools
+# See https://github.com/nareinnprs-create/ideocode/discovery-tools
 # enabled = true
-# endpoint = "https://api.IDEOCODE.sh/v1/discovery"
+# endpoint = "https://api.github.com/repos/nareinnprs-create/ideocode/v1/discovery"
 	"#;
 
         // Substitute platform-specific defaults from the keybinding registry.

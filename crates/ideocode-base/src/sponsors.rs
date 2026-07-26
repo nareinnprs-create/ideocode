@@ -6,7 +6,7 @@
 //! prompt.
 //! Some providers may share revenue with IDEOCODE when users choose their tools.
 //! Partnership status never influences recommendations. The relationship is
-//! disclosed in the UI with a link to <https://IDEOCODE.sh/discovery-tools>.
+//! disclosed in the UI with a link to <https://github.com/nareinnprs-create/ideocode/discovery-tools>.
 //!
 //! Design constraints (see the discovery-tools page for the public
 //! version of this policy):
@@ -23,7 +23,7 @@
 //!   never session content.
 
 /// Public URL explaining IDEOCODE's tool-provider partnerships.
-pub const DISCOVERY_PARTNERS_URL: &str = "https://IDEOCODE.sh/discovery-tools";
+pub const DISCOVERY_PARTNERS_URL: &str = "https://github.com/nareinnprs-create/ideocode/discovery-tools";
 
 /// Provenance tagging and coarse usage metering for MCP servers connected
 /// as a result of a discovery listing.
@@ -34,7 +34,7 @@ pub const DISCOVERY_DISCLOSURE_TAG: &str = "(partner discovery disclosure)";
 
 /// First-use-per-session disclosure detail rendered inline with discovery.
 pub const DISCOVERY_DISCLOSURE_NOTICE: &str = "IDEOCODE partners with tool providers to make their \
-     tools discoverable. Learn more: https://IDEOCODE.sh/discovery-tools";
+     tools discoverable. Learn more: https://github.com/nareinnprs-create/ideocode/discovery-tools";
 
 /// Categories in which discoverable tools exist. Shipped as a constant so the
 /// tool schema never depends on the network. The tools within each category are

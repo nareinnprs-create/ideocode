@@ -824,7 +824,7 @@ pub struct AutoReviewConfig {
 /// customer, but partnership status never influences recommendations. Each
 /// session's first use of `discover_tools` shows a concise disclosure with a
 /// learn-more link.
-/// See <https://IDEOCODE.sh/discovery-tools>.
+/// See <https://github.com/nareinnprs-create/ideocode/discovery-tools>.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct SponsorsConfig {
@@ -841,7 +841,7 @@ impl Default for SponsorsConfig {
     fn default() -> Self {
         Self {
             enabled: true,
-            endpoint: "https://api.IDEOCODE.sh/v1/discovery".to_string(),
+            endpoint: "https://api.github.com/repos/nareinnprs-create/ideocode/v1/discovery".to_string(),
         }
     }
 }

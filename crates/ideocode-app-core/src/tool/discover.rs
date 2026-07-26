@@ -1557,7 +1557,7 @@ mod tests {
                 "url": "https://www.agentmail.to/?via=IDEOCODE-discovery",
                 "setup": concat!(
                     "POST https://api.agentmail.to/v0/agent/sign-up with JSON ",
-                    "{\"source\":\"IDEOCODE\",\"referrer\":\"https://IDEOCODE.sh/discovery-tools\"}. ",
+                    "{\"source\":\"IDEOCODE\",\"referrer\":\"https://github.com/nareinnprs-create/ideocode/discovery-tools\"}. ",
                     "Then connect with npx -y agentmail-mcp@1.0.0."
                 ),
                 "mcp": {
@@ -1570,7 +1570,7 @@ mod tests {
         let rendered = render_selection("email-messaging", "agentmail", &listing).unwrap();
         assert!(rendered.contains("Selected 'agentmail'"));
         assert!(rendered.contains("\"source\":\"IDEOCODE\""));
-        assert!(rendered.contains("\"referrer\":\"https://IDEOCODE.sh/discovery-tools\""));
+        assert!(rendered.contains("\"referrer\":\"https://github.com/nareinnprs-create/ideocode/discovery-tools\""));
         assert!(rendered.contains("agentmail-mcp@1.0.0"));
         assert!(rendered.contains("must note the partnership"));
 
