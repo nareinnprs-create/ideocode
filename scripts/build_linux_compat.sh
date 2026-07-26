@@ -142,9 +142,9 @@ docker run --rm \
 	    export CARGO_BUILD_JOBS="${CARGO_BUILD_JOBS:-1}"
 	    export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS="${CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS:--C link-arg=-static-libgcc}"
 	    cargo build --profile "$IDEOCODE_COMPAT_PROFILE" --target "$IDEOCODE_COMPAT_TARGET" \
-	      -p IDEOCODE --bin IDEOCODE --features linux-compat-vendored-openssl
+	      -p ideocode --bin ideocode --features linux-compat-vendored-openssl
 
-	    cp "$CARGO_TARGET_DIR/$IDEOCODE_COMPAT_TARGET/$IDEOCODE_COMPAT_PROFILE/IDEOCODE" "/out/'"$artifact"'.bin"
+	    cp "$CARGO_TARGET_DIR/$IDEOCODE_COMPAT_TARGET/$IDEOCODE_COMPAT_PROFILE/ideocode" "/out/'"$artifact"'.bin"
 	    chmod +x "/out/'"$artifact"'.bin"
 	    cat > "/out/'"$artifact"'" <<WRAPPER
 #!/usr/bin/env sh

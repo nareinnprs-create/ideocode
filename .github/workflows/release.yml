@@ -148,7 +148,7 @@ jobs:
         if: matrix.compat_container != true
         run: |
           mkdir -p dist
-          cp target/${{ matrix.target }}/release/IDEOCODE dist/${{ matrix.artifact }}
+          cp target/${{ matrix.target }}/release/ideocode dist/${{ matrix.artifact }}
           chmod +x dist/${{ matrix.artifact }}
           cd dist && tar czf ${{ matrix.artifact }}.tar.gz ${{ matrix.artifact }}
 
@@ -247,7 +247,7 @@ jobs:
       - name: Verify built Windows binary launches
         shell: pwsh
         run: |
-          & "target/${{ matrix.target }}/release/IDEOCODE.exe" --version
+          & "target/${{ matrix.target }}/release/ideocode.exe" --version
           if ($LASTEXITCODE -ne 0) {
             throw "Built Windows binary failed to run --version"
           }
@@ -256,14 +256,14 @@ jobs:
         shell: pwsh
         run: |
           & ./.github/scripts/verify_windows_install.ps1 `
-            -ArtifactExePath "target/${{ matrix.target }}/release/IDEOCODE.exe" `
+            -ArtifactExePath "target/${{ matrix.target }}/release/ideocode.exe" `
             -Version "${{ github.ref_name }}"
 
       - name: Stage unsigned binary for signing
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          Copy-Item "target/${{ matrix.target }}/release/IDEOCODE.exe" "dist/${{ matrix.artifact }}.exe"
+          Copy-Item "target/${{ matrix.target }}/release/ideocode.exe" "dist/${{ matrix.artifact }}.exe"
 
       - name: Upload unsigned binary for signing
         uses: actions/upload-artifact@v4
@@ -453,16 +453,16 @@ jobs:
             export IDEOCODE_RELEASE_BUILD=1
             export IDEOCODE_BUILD_SEMVER="${{ github.ref_name }}"
 
-            echo "::group::cargo build (IDEOCODE binary)"
-            cargo build --locked --release -p IDEOCODE --bin IDEOCODE
+            echo "::group::cargo build (ideocode binary)"
+            cargo build --locked --release -p ideocode --bin ideocode
             echo "::endgroup::"
 
             echo "::group::Verify binary launches"
-            ./target/release/IDEOCODE --version
+            ./target/release/ideocode --version
             echo "::endgroup::"
 
             mkdir -p dist
-            cp target/release/IDEOCODE dist/IDEOCODE-freebsd-x86_64
+            cp target/release/ideocode dist/IDEOCODE-freebsd-x86_64
             chmod +x dist/IDEOCODE-freebsd-x86_64
             cd dist && tar czf IDEOCODE-freebsd-x86_64.tar.gz IDEOCODE-freebsd-x86_64
 
