@@ -1,4 +1,4 @@
-﻿# AWS Bedrock provider
+# AWS Bedrock provider
 
 IDEOCODE supports a native AWS Bedrock provider that talks directly to Bedrock Runtime with the AWS Rust SDK and `ConverseStream`.
 

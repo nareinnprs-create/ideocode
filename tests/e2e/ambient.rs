@@ -1,4 +1,4 @@
-﻿use crate::test_support::*;
+use crate::test_support::*;
 
 /// Test ambient state: load, save, record_cycle
 #[test]

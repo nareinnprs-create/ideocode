@@ -1,4 +1,4 @@
-﻿use super::{App, DisplayMessage, ProcessingStatus, RunResult};
+use super::{App, DisplayMessage, ProcessingStatus, RunResult};
 use crate::replay::{PaneReplayInput, ReplayEvent, TimelineEvent};
 use crate::tui::backend::{RemoteEventState, ReplayRemoteState};
 use anyhow::Result;

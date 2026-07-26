@@ -1,4 +1,4 @@
-﻿use super::DisplayMessageRoleExt;
+use super::DisplayMessageRoleExt;
 use super::keybind::{
     CenteredToggleKeys, ModelSwitchKeys, OptionalBinding, ScrollKeys, WorkspaceNavigationKeys,
 };

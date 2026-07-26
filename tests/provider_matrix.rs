@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use ideocode::auth::{AuthState, AuthStatus};
 use ideocode::cli::provider_init::{
     ProviderChoice, apply_login_provider_profile_env, choice_for_login_provider,

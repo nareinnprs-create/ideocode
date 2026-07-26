@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Isolate which JSON-Schema construct the Antigravity Cloud Code backend's
 # Gemini->Anthropic translation rejects for Claude models.
 #

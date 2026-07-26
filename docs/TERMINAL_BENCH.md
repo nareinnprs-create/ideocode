@@ -1,4 +1,4 @@
-﻿# Terminal-Bench 2.0 with IDEOCODE
+# Terminal-Bench 2.0 with IDEOCODE
 
 This document describes the cleanest currently-working path for running IDEOCODE on Terminal-Bench 2.0 through Harbor.
 

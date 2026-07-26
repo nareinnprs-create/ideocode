@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_centered_mode_right_aligns_ordered_markers_within_list_block() {
     let saved = center_code_blocks();
     set_center_code_blocks(true);

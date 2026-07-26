@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 fn rendered_tool_lines(content: &str, active: bool) -> Vec<SingleSessionStyledLine> {
     let mut lines = Vec::new();

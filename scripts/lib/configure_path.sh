@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Shared helper that ensures a directory is on PATH for bash, zsh, and fish.
 #
 # Usage:

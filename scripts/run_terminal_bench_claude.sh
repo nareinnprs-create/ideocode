@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Run Terminal-Bench through Harbor with IDEOCODE using Opus 4.8.

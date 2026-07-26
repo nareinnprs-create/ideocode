@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Analyze the monolithic root `IDEOCODE` crate to plan a bottom-up split.
 
 For every top-level module under src/ (a `foo.rs` file or a `foo/` dir) it

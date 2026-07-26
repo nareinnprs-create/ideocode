@@ -1,4 +1,4 @@
-﻿//! Harness API wiring for desktop2.
+//! Harness API wiring for desktop2.
 //!
 //! Connects to the harness API socket (`~/.IDEOCODE/IDEOCODE-api.sock`, served by
 //! `IDEOCODE-harness-api-bridge`) on a background thread, attaches a session,

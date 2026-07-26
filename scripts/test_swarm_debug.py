@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Test script for swarm debug socket commands.
 Tests all the new swarm commands including proposals, touches, timestamps, etc.

@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 impl SingleSessionApp {
     pub(crate) fn mark_inline_widget_opened(&mut self) {

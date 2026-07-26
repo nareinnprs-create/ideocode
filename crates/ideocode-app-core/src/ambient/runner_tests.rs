@@ -1,4 +1,4 @@
-﻿use super::AmbientRunnerHandle;
+use super::AmbientRunnerHandle;
 use crate::ambient::{Priority, ScheduleTarget, ScheduledItem};
 use crate::message::{Message, Role, StreamEvent, ToolDefinition};
 use crate::provider::{EventStream, Provider};

@@ -1,4 +1,4 @@
-﻿use crate::id::{extract_session_name, session_icon};
+use crate::id::{extract_session_name, session_icon};
 use crate::message::Role;
 use crate::registry::{self, ServerInfo};
 use crate::session::{self, CrashedSessionsInfo, Session, SessionStatus, StoredDisplayRole};

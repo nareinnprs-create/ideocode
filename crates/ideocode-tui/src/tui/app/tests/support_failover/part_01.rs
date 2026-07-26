@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::bus::{
     BackgroundTaskCompleted, BackgroundTaskProgress, BackgroundTaskProgressEvent,
     BackgroundTaskProgressKind, BackgroundTaskProgressSource, BackgroundTaskStatus, BusEvent,

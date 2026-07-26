@@ -1,4 +1,4 @@
-﻿# Keybinding conflict detection
+# Keybinding conflict detection
 
 IDEOCODE runs inside a terminal, which runs inside an OS. Both layers can claim a
 key chord before it ever reaches IDEOCODE (for example Ghostty binding `Ctrl+Tab`

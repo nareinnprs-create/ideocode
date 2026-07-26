@@ -1,4 +1,4 @@
-﻿//! Shared MCP Server Pool
+//! Shared MCP Server Pool
 //!
 //! Manages a global pool of MCP server processes that are shared across
 //! all IDEOCODE sessions. Instead of each session spawning its own set of

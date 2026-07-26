@@ -1,4 +1,4 @@
-﻿//! Pure diffing of swarm member snapshots into user-facing status notices.
+//! Pure diffing of swarm member snapshots into user-facing status notices.
 //!
 //! The server streams full `SwarmStatus` snapshots; the strip renders them,
 //! but lifecycle transitions (an agent finishing, failing, or blocking) used

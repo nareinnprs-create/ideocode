@@ -1,4 +1,4 @@
-﻿import Foundation
+import Foundation
 
 /// Connection lifecycle reported to the UI.
 public enum ConnectionPhase: Equatable, Sendable {

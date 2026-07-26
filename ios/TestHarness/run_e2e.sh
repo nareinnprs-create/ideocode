@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 #
 # End-to-end iOS harness: builds the app, runs the deterministic mock gateway,
 # boots a simulator, seeds a paired-server credential, launches the app, and

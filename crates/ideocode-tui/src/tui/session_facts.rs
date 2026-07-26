@@ -1,4 +1,4 @@
-﻿//! Centralized session "facts" formatting.
+//! Centralized session "facts" formatting.
 //!
 //! Several surfaces (info widgets, the overscroll status line, and the compact
 //! right-side fact stack) all want to show the same handful of facts: the model,

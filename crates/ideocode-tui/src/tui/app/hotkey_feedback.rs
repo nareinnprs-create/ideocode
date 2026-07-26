@@ -1,4 +1,4 @@
-﻿//! Inline hotkey feedback.
+//! Inline hotkey feedback.
 //!
 //! Two complementary behaviors, both gated behind `display.keybinding_hints`:
 //!

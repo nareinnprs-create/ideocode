@@ -1,4 +1,4 @@
-﻿[package]
+[package]
 name = "tls-bad-record-mac-repro"
 version = "0.1.0"
 edition = "2021"

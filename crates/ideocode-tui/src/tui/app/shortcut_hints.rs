@@ -1,4 +1,4 @@
-﻿//! Learned-keybinding nudges.
+//! Learned-keybinding nudges.
 //!
 //! IDEOCODE tracks, per action, how often the user reaches a result via its
 //! configured keyboard shortcut (the *fast* path) versus the slow way (typing a

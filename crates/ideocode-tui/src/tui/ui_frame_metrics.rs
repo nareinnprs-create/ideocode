@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use serde::Serialize;
 use std::collections::{VecDeque, hash_map::DefaultHasher};
 use std::hash::{Hash, Hasher};

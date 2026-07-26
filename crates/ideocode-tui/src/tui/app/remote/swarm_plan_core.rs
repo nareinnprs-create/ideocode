@@ -1,4 +1,4 @@
-﻿use crate::plan::PlanItem;
+use crate::plan::PlanItem;
 use crate::protocol::PlanGraphStatus;
 
 #[derive(Clone, Debug, PartialEq, Eq)]

@@ -1,4 +1,4 @@
-﻿// Throughput benchmark: old "trig every iteration" samplers vs the new
+// Throughput benchmark: old "trig every iteration" samplers vs the new
 // precomputed-angle-table samplers. Run with:
 //   cargo run --profile selfdev --example bench_anim -p IDEOCODE-tui-anim
 // The IDEOCODE-tui-anim lib is pinned to opt-level=3 in every profile, so this

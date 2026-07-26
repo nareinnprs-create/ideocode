@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_parse_openai_response_completed_captures_incomplete_stop_reason() {
     let data = r#"{"type":"response.completed","response":{"status":"incomplete","incomplete_details":{"reason":"max_output_tokens"}}}"#;
     let mut saw_text_delta = false;

@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Check lightweight crate dependency boundaries.
 
 Type crates should remain data-contract crates. This guard intentionally starts

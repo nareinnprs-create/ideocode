@@ -1,4 +1,4 @@
-﻿//! Tier 1: Accessibility (AX) read + action.
+//! Tier 1: Accessibility (AX) read + action.
 //!
 //! This is the *background* control path. It drives other apps' UI elements by
 //! reference through `System Events`, so it can press buttons and set field

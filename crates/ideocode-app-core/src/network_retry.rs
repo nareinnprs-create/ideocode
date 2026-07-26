@@ -1,4 +1,4 @@
-﻿use std::time::Duration;
+use std::time::Duration;
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 use tokio::process::Command;
 use tokio::time::sleep;

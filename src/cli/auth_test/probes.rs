@@ -1,4 +1,4 @@
-﻿fn generic_credential_paths_for_provider(
+fn generic_credential_paths_for_provider(
     provider: crate::provider_catalog::LoginProviderDescriptor,
 ) -> Vec<String> {
     let Ok(config_dir) = crate::storage::app_config_dir() else {

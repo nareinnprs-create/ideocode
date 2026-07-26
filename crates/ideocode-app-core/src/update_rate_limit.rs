@@ -1,4 +1,4 @@
-﻿//! GitHub API rate-limit detection and shared backoff for update checks.
+//! GitHub API rate-limit detection and shared backoff for update checks.
 //!
 //! Unauthenticated `api.github.com` requests share a 60 req/hour per-IP bucket
 //! with everything else on the machine (and everything behind the same NAT), so

@@ -1,4 +1,4 @@
-﻿# IDEOCODE TUI log schema (for grounding the user model in real usage)
+# IDEOCODE TUI log schema (for grounding the user model in real usage)
 
 Logs live in `~/.IDEOCODE/logs/IDEOCODE-YYYY-MM-DD.log`. Lines look like:
 

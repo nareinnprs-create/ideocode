@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_request_roundtrip() -> Result<()> {
     let req = Request::Message {
         id: 1,

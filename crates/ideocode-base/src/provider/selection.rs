@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::provider_catalog::{LoginProviderDescriptor, LoginProviderTarget};
 pub(super) use ideocode_provider_core::{ActiveProvider, ProviderAvailability};
 

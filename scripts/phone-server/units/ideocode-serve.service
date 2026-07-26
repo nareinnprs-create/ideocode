@@ -1,4 +1,4 @@
-﻿[Unit]
+[Unit]
 Description=IDEOCODE server with WebSocket gateway
 After=network.target
 

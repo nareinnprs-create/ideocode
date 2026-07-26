@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_model_picker_copilot_selection_prefixes_model() {
     let mut app = create_test_app();
     configure_test_remote_models_with_copilot(&mut app);

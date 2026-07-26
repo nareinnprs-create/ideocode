@@ -1,4 +1,4 @@
-﻿# Auth Notes: OAuth + API-key Providers
+# Auth Notes: OAuth + API-key Providers
 
 This document explains how authentication works in J-Code.
 

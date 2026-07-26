@@ -1,4 +1,4 @@
-﻿//! Shared typo-resistant fuzzy matching adapters for TUI slash commands.
+//! Shared typo-resistant fuzzy matching adapters for TUI slash commands.
 
 pub(crate) fn fuzzy_score(needle: &str, haystack: &str) -> Option<i32> {
     ideocode_fuzzy::command_fuzzy_score(needle, haystack)

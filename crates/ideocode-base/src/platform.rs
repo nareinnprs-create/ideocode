@@ -1,4 +1,4 @@
-﻿use std::path::Path;
+use std::path::Path;
 
 #[cfg(target_os = "macos")]
 mod macos_power {

@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use clap::Parser;
 use ideocode::id::new_id;
 use ideocode::message::{Message, ToolDefinition};

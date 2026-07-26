@@ -1,4 +1,4 @@
-﻿//! Placeholder-route helpers for the remote model catalog (issue: poisoned
+//! Placeholder-route helpers for the remote model catalog (issue: poisoned
 //! "remote-catalog"/"current" rows pinning models to useless routes).
 //!
 //! "remote-catalog"/"current" are placeholder methods from names-only catalog

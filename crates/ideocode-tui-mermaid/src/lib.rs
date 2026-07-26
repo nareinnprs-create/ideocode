@@ -1,4 +1,4 @@
-﻿//! Mermaid diagram rendering for terminal display
+//! Mermaid diagram rendering for terminal display
 //!
 //! Renders mermaid diagrams to PNG images, then displays them using
 //! ratatui-image which supports Kitty, Sixel, iTerm2, and halfblock protocols.

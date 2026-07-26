@@ -1,4 +1,4 @@
-﻿#[cfg(feature = "aws-sdk")]
+#[cfg(feature = "aws-sdk")]
 use anyhow::Context;
 use anyhow::Result;
 use async_trait::async_trait;

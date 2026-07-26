@@ -1,4 +1,4 @@
-﻿//! Background task management tool
+//! Background task management tool
 //!
 //! Allows the agent to list, wait on, inspect, read output from, and manage
 //! background tasks.

@@ -1,4 +1,4 @@
-﻿{
+{
   "threshold_loc": 1200,
   "tracked_files": {
     "crates/IDEOCODE-app-core/src/agent/turn_streaming_mpsc.rs": 1694,

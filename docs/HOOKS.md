@@ -1,4 +1,4 @@
-﻿# Lifecycle Hooks
+# Lifecycle Hooks
 
 IDEOCODE can run external commands at well-defined lifecycle points so other
 programs can observe or gate agent behavior without forking IDEOCODE. Hooks

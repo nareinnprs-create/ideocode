@@ -1,4 +1,4 @@
-﻿//! Per-platform keybinding default registry, provenance metadata, and a
+//! Per-platform keybinding default registry, provenance metadata, and a
 //! validation/"check" layer.
 //!
 //! Historically IDEOCODE used a single shared list of default keybindings for

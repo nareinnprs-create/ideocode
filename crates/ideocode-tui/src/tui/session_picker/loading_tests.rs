@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use std::path::Path;
 
 struct EnvVarGuard {

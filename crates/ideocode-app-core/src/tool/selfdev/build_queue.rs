@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 impl SelfDevTool {
     pub(super) fn optimized_test_shell_command(command: &str) -> String {

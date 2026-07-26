@@ -1,4 +1,4 @@
-﻿//! Terminal light/dark theme detection.
+//! Terminal light/dark theme detection.
 //!
 //! Resolves the theme mode once per process, before the TUI enters raw mode:
 //!

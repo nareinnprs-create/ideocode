@@ -1,4 +1,4 @@
-﻿use super::launch_resume_session;
+use super::launch_resume_session;
 use anyhow::{Context, Result};
 use std::io;
 use std::path::Path;

@@ -1,4 +1,4 @@
-﻿#![cfg_attr(test, allow(clippy::await_holding_lock))]
+#![cfg_attr(test, allow(clippy::await_holding_lock))]
 
 use super::debug_jobs::{DebugJob, maybe_start_async_debug_job};
 use super::{ServerIdentity, SessionControlHandle, SessionInterruptQueues};

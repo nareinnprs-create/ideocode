@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ReplyAction {

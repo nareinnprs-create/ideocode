@@ -1,4 +1,4 @@
-﻿use super::{connect_socket, debug_socket_path, socket_path};
+use super::{connect_socket, debug_socket_path, socket_path};
 use crate::protocol::{HistoryMessage, Request, ServerEvent, TranscriptMode};
 use crate::transport::{ReadHalf, WriteHalf};
 use anyhow::Result;

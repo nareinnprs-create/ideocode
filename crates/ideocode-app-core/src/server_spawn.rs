@@ -1,4 +1,4 @@
-﻿//! Shared-server lifecycle hooks usable from lower layers.
+//! Shared-server lifecycle hooks usable from lower layers.
 //!
 //! The actual "spawn a shared IDEOCODE server" logic lives in the CLI command
 //! layer (`cli::dispatch::spawn_server`) because it depends on CLI types like

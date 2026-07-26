@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 #[path = "ui_messages_cache.rs"]
 mod cache_support;
 use crate::message::{

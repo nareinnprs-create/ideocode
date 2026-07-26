@@ -1,4 +1,4 @@
-﻿use super::{SharedContext, SwarmMember, SwarmState, VersionedPlan, persist_swarm_state_for};
+use super::{SharedContext, SwarmMember, SwarmState, VersionedPlan, persist_swarm_state_for};
 use crate::plan::PlanItem;
 use crate::protocol::{NotificationType, ServerEvent};
 use anyhow::Result;

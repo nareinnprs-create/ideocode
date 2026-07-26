@@ -1,4 +1,4 @@
-﻿# Desktop Superapp Workspace Direction
+# Desktop Superapp Workspace Direction
 
 Status: Proposed
 Updated: 2026-04-25

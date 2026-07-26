@@ -1,4 +1,4 @@
-﻿[Unit]
+[Unit]
 Description=IDEOCODE pairing code service
 After=network.target
 

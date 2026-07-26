@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 struct EnvGuard {
     vars: Vec<(String, Option<String>)>,

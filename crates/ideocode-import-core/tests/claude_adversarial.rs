@@ -1,4 +1,4 @@
-﻿//! Adversarial / edge-case tests for the Claude Code JSONL parser and the
+//! Adversarial / edge-case tests for the Claude Code JSONL parser and the
 //! parent_uuid ordering logic in `IDEOCODE-import-core`.
 //!
 //! These assert the *target* (correct) behavior agreed with the swarm

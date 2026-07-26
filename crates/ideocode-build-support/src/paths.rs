@@ -1,4 +1,4 @@
-﻿use super::{
+use super::{
     SelfDevBuildCommand, SelfDevBuildTarget, canary_binary_path, current_binary_path,
     read_current_version, read_shared_server_version, read_stable_version,
     shared_server_binary_path, stable_binary_path,

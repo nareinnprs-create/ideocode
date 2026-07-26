@@ -1,4 +1,4 @@
-﻿use anyhow::{Context, Result};
+use anyhow::{Context, Result};
 use clap::{Parser, ValueEnum};
 use ideocode::message::{ContentBlock, Role, ToolCall};
 use ideocode::perf::{SyntheticSystemProfile, TuiPerfPolicy, tui_policy_for};

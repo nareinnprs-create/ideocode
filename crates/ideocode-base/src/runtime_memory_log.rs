@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use chrono::Utc;
 use serde::Serialize;
 use std::path::{Path, PathBuf};

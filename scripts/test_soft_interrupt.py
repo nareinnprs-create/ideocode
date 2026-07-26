@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Comprehensive test for soft interrupt injection.
 Tests all injection points with real provider.

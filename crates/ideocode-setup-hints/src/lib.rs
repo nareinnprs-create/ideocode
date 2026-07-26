@@ -1,4 +1,4 @@
-﻿//! Platform setup hints shown on startup.
+//! Platform setup hints shown on startup.
 //!
 //! - Windows: suggest native Alt launch hotkeys plus Copilot-key setup and terminal setup.
 //! - macOS: if the user is on the default built-in Terminal.app, show a one-time

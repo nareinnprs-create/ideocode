@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 /// Maximum in-memory RENDER_CACHE entries (metadata only, not images).
 ///

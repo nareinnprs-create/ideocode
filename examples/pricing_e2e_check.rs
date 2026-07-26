@@ -1,4 +1,4 @@
-﻿//! Ad-hoc e2e check: fetch models.dev live and resolve a few model prices.
+//! Ad-hoc e2e check: fetch models.dev live and resolve a few model prices.
 //! Run: cargo run --example pricing_e2e_check
 fn main() {
     ideocode::model_pricing::schedule_refresh();

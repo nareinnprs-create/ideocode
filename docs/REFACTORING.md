@@ -1,4 +1,4 @@
-﻿# Refactoring Roadmap
+# Refactoring Roadmap
 
 This document defines the safe, incremental path for refactoring IDEOCODE while preserving behavior.
 

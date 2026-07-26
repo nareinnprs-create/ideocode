@@ -1,4 +1,4 @@
-﻿//! Subscription usage tracking.
+//! Subscription usage tracking.
 //!
 //! Fetches usage information from Anthropic's OAuth usage endpoint and OpenAI's ChatGPT wham/usage endpoint.
 

@@ -1,4 +1,4 @@
-﻿//! Tier 3/4: clipboard, scripting bridge, waits, notifications, system state.
+//! Tier 3/4: clipboard, scripting bridge, waits, notifications, system state.
 
 use super::osa;
 use anyhow::{Result, bail};

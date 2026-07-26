@@ -1,4 +1,4 @@
-﻿use anyhow::{Context, Result};
+use anyhow::{Context, Result};
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 use std::io::Write;

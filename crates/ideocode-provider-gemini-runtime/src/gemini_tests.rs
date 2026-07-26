@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use ideocode_base::message::{ContentBlock, Message, Role};
 
 struct EnvVarGuard {

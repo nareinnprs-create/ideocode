@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use ideocode::auth::{AuthState, AuthStatus};
 use ideocode::provider::Provider;
 use ideocode::provider_catalog::{

@@ -1,4 +1,4 @@
-﻿use crate::protocol::{AuthChanged, CatalogNamespace, RuntimeProviderKey};
+use crate::protocol::{AuthChanged, CatalogNamespace, RuntimeProviderKey};
 use crate::provider::ModelRoute;
 use crate::provider::activation::{ProviderActivation, RuntimeProviderId};
 use ideocode_provider_core::ActiveProvider;

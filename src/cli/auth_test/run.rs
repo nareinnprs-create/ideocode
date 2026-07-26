@@ -1,4 +1,4 @@
-﻿async fn maybe_run_auth_test_smoke(
+async fn maybe_run_auth_test_smoke(
     report: &mut AuthTestProviderReport,
     kind: AuthTestSmokeKind,
     target: AuthTestTarget,

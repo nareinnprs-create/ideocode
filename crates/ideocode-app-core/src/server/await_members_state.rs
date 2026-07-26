@@ -1,4 +1,4 @@
-﻿use crate::protocol::{AwaitedMemberStatus, ServerEvent};
+use crate::protocol::{AwaitedMemberStatus, ServerEvent};
 use crate::server::durable_state::{
     hashed_request_key, load_json_state, now_unix_ms, save_json_state, state_dir,
 };

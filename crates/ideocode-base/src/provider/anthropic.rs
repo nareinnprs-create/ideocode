@@ -1,4 +1,4 @@
-﻿//! Anthropic provider shared helpers (compatibility shim).
+//! Anthropic provider shared helpers (compatibility shim).
 //!
 //! The direct Anthropic Messages API *runtime* (`AnthropicProvider`) now lives
 //! in the downstream `IDEOCODE-provider-anthropic-runtime` crate so provider

@@ -1,4 +1,4 @@
-﻿pub(super) use ideocode_provider_openai::websocket_health::{
+pub(super) use ideocode_provider_openai::websocket_health::{
     WEBSOCKET_FALLBACK_NOTICE, WEBSOCKET_FIRST_EVENT_TIMEOUT_SECS,
     classify_websocket_fallback_reason, is_stream_activity_event, is_websocket_activity_payload,
     is_websocket_fallback_notice, is_websocket_first_activity_payload, record_websocket_fallback,

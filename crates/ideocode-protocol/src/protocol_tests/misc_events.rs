@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_transcript_request_roundtrip() -> Result<()> {
     let req = Request::Transcript {
         id: 77,

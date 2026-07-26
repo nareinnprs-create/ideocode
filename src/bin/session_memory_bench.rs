@@ -1,4 +1,4 @@
-﻿use clap::{Parser, ValueEnum};
+use clap::{Parser, ValueEnum};
 use ideocode::message::{ContentBlock, Role};
 use ideocode::process_memory;
 use ideocode::session::Session;

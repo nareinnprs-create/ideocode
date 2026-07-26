@@ -1,4 +1,4 @@
-﻿//! Write the dev-binary source metadata sidecar for the current repo state.
+//! Write the dev-binary source metadata sidecar for the current repo state.
 //!
 //! Self-dev helper: after a direct `scripts/dev_cargo.sh build` (outside the
 //! coordinated build queue), the freshly built `target/selfdev/IDEOCODE` has no

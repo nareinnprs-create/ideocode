@@ -1,4 +1,4 @@
-﻿//! Gemini pure protocol types and helpers (compatibility shim).
+//! Gemini pure protocol types and helpers (compatibility shim).
 //!
 //! The Gemini provider *runtime* (`GeminiProvider`) now lives in the
 //! downstream `IDEOCODE-provider-gemini-runtime` crate so provider edits do not

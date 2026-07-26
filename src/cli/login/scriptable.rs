@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(super) fn auto_scriptable_flow_reason(
     provider: LoginProviderDescriptor,

@@ -1,1 +1,1 @@
-﻿pub use ideocode_core::env::*;
+pub use ideocode_core::env::*;

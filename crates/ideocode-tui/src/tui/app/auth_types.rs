@@ -1,4 +1,4 @@
-﻿#[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 pub(crate) enum PendingLogin {
     /// Waiting for user to paste Claude OAuth code for a specific stored account
     ClaudeAccount {

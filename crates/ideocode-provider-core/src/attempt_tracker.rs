@@ -1,4 +1,4 @@
-﻿//! Per-attempt stream output tracking for provider retry loops.
+//! Per-attempt stream output tracking for provider retry loops.
 //!
 //! Retry loops re-invoke a provider's `stream_response` with the same event
 //! sender after a transient transport fault (e.g. TLS `BadRecordMac`, idle

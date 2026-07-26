@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_model_picker_preview_arrow_keys_navigate() {
     let mut app = create_test_app();
     configure_test_remote_models(&mut app);

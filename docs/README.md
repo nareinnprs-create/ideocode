@@ -1,4 +1,4 @@
-﻿# IDEOCODE Docs
+# IDEOCODE Docs
 
 Reference documentation for the IDEOCODE codebase.
 

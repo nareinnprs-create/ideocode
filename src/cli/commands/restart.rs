@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use chrono::Utc;
 use serde::Deserialize;
 use std::io::IsTerminal;

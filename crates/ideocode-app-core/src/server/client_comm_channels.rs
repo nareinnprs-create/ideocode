@@ -1,4 +1,4 @@
-﻿use super::{
+use super::{
     SwarmEvent, SwarmEventType, SwarmMember, record_swarm_event, subscribe_session_to_channel,
     unsubscribe_session_from_channel,
 };

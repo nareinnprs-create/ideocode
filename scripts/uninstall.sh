@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Uninstall IDEOCODE binaries and (optionally) all user data.
 #
 # Default: removes installed binaries, build channels, and the launcher

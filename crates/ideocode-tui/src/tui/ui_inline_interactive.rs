@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use ratatui::widgets::{Block, BorderType, Borders};
 use unicode_width::UnicodeWidthStr;
 

@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 #
 # Stress test: spawn 40 IDEOCODE TUI client instances rapidly
 # Measures startup time, memory usage, CPU, fd count, socket health

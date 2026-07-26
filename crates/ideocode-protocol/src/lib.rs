@@ -1,4 +1,4 @@
-﻿//! Client-server protocol for IDEOCODE
+//! Client-server protocol for IDEOCODE
 //!
 //! Uses newline-delimited JSON over Unix socket.
 //! Server streams events back to clients during message processing.

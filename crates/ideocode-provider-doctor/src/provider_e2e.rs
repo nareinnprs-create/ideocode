@@ -1,4 +1,4 @@
-﻿//! Provider strict end-to-end diagnostic runner.
+//! Provider strict end-to-end diagnostic runner.
 //!
 //! This powers `IDEOCODE provider-doctor`: it walks the same strict provider/model
 //! checkpoints that the coverage ledger tracks, but as a user-facing diagnostic

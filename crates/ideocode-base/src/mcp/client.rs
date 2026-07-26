@@ -1,4 +1,4 @@
-﻿//! MCP Client - handles communication with a single MCP server
+//! MCP Client - handles communication with a single MCP server
 
 use super::protocol::*;
 use anyhow::{Context, Result};

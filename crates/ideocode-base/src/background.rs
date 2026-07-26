@@ -1,4 +1,4 @@
-﻿//! Background task execution manager
+//! Background task execution manager
 //!
 //! Allows tools to run in the background and notify the agent when complete.
 //! Uses file-based storage for crash resilience + event channel for real-time notifications.

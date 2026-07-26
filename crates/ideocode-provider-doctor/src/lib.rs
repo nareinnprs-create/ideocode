@@ -1,4 +1,4 @@
-﻿//! Provider-doctor diagnostics for IDEOCODE.
+//! Provider-doctor diagnostics for IDEOCODE.
 //!
 //! Sits downstream of `IDEOCODE-base` so edits to the doctor cluster do not
 //! rebuild the base -> app-core -> tui spine:

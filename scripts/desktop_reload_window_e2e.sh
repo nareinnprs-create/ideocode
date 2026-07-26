@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # End-to-end smoke test for desktop stable-host /reload behavior under niri.

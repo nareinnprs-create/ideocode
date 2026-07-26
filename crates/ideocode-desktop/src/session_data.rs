@@ -1,4 +1,4 @@
-﻿use crate::workspace::SessionCard;
+use crate::workspace::SessionCard;
 pub use crate::workspace::SessionTranscriptMessage;
 use anyhow::{Context, Result};
 use ideocode_tui_messages::{

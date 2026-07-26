@@ -1,4 +1,4 @@
-﻿use super::dispatch;
+use super::dispatch;
 use super::provider_init::ProviderChoice;
 use crate::protocol::{Request, ServerEvent};
 use crate::transport::{ReadHalf, WriteHalf};

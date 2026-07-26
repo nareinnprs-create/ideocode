@@ -1,4 +1,4 @@
-﻿use super::{
+use super::{
     PickerItem, PreviewMessage, ResumeTarget, ServerGroup, SessionInfo, SessionPicker, SessionRef,
 };
 

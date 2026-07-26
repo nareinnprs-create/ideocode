@@ -1,4 +1,4 @@
-﻿/// Claude Code OAuth beta headers used by the Anthropic transport.
+/// Claude Code OAuth beta headers used by the Anthropic transport.
 pub const ANTHROPIC_OAUTH_BETA_HEADERS: &str = "claude-code-20250219,oauth-2025-04-20,interleaved-thinking-2025-05-14,context-management-2025-06-27,prompt-caching-scope-2026-01-05,advisor-tool-2026-03-01,advanced-tool-use-2025-11-20,effort-2025-11-24";
 
 /// Claude Code OAuth beta headers with Anthropic's explicit 1M context beta.

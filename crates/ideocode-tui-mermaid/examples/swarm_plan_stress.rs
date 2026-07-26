@@ -1,4 +1,4 @@
-﻿//! Stress probe: build the mermaid source that `ideocode_plan::mermaid::
+//! Stress probe: build the mermaid source that `ideocode_plan::mermaid::
 //! swarm_plan_mermaid` (the production swarm plan-graph generator, re-exported
 //! to the TUI via `crate::tui::swarm_plan_graph`) emits for realistic +
 //! hostile plan data, then render through the real pipeline

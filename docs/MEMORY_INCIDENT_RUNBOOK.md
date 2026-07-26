@@ -1,4 +1,4 @@
-﻿# IDEOCODE Server Memory Incident Runbook
+# IDEOCODE Server Memory Incident Runbook
 
 Status: active operational runbook
 Updated: 2026-07-14

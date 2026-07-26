@@ -1,4 +1,4 @@
-﻿//! Markdown rendering of a [`ProductivityReport`] for the chat transcript.
+//! Markdown rendering of a [`ProductivityReport`] for the chat transcript.
 
 use crate::model::ProductivityReport;
 

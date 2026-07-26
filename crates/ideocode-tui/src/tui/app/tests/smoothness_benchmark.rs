@@ -1,4 +1,4 @@
-﻿// Deterministic anchor-stability (smoothness) benchmark over a simulated
+// Deterministic anchor-stability (smoothness) benchmark over a simulated
 // streaming turn.
 //
 // Drives a scripted reasoning -> answer -> commit turn through full

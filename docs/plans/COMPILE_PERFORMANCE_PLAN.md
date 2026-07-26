@@ -1,4 +1,4 @@
-﻿# Compile Performance Plan
+# Compile Performance Plan
 
 This document tracks the plan to make IDEOCODE's self-dev / refactor loop much faster
 without sacrificing full-feature builds.

@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 #[test]
 fn test_summarize_apply_patch_input_ignores_begin_marker() {

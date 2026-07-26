@@ -1,4 +1,4 @@
-﻿use super::live_turn::{LiveTurnSwarmContext, run_live_turn_if_idle};
+use super::live_turn::{LiveTurnSwarmContext, run_live_turn_if_idle};
 use super::state::SwarmEvent;
 use super::{
     SessionAgents, SessionInterruptQueues, SwarmMember, fanout_session_event,

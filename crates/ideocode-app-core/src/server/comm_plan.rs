@@ -1,4 +1,4 @@
-﻿use super::swarm_mutation_state::{
+use super::swarm_mutation_state::{
     PersistedSwarmMutationResponse, SwarmMutationRuntime, begin_or_replay, finish_request,
     request_key,
 };

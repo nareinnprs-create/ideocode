@@ -1,4 +1,4 @@
-﻿//! Interactive, animated demo of the inline swarm gallery.
+//! Interactive, animated demo of the inline swarm gallery.
 //!
 //! This runs as a real full-screen terminal app so you can *see* the inline
 //! gallery the way it looks live in the IDEOCODE TUI, without touching any running

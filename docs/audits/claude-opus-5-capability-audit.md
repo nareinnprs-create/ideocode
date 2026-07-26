@@ -1,4 +1,4 @@
-﻿# Claude Opus 5 capability audit
+# Claude Opus 5 capability audit
 
 Date: 2026-07-24 (Opus 5 general availability)
 Method: live probes against `https://api.anthropic.com/v1/messages` with an

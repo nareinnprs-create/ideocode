@@ -1,4 +1,4 @@
-﻿//! Persistent Memory Agent
+//! Persistent Memory Agent
 //!
 //! A dedicated Haiku-powered agent for memory management that runs alongside
 //! the main agent. It has access to memory-specific tools only (no code execution).

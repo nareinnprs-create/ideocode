@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_handle_server_event_available_models_updated_replaces_remote_model_catalog() {
     let mut app = create_test_app();
     let rt = tokio::runtime::Runtime::new().unwrap();

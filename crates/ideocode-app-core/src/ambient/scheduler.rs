@@ -1,4 +1,4 @@
-﻿//! Adaptive usage calculator for ambient mode scheduling.
+//! Adaptive usage calculator for ambient mode scheduling.
 //!
 //! Tracks per-call token usage (user vs ambient), maintains a rolling usage log,
 //! and computes adaptive intervals for ambient cycles based on rate limit headroom.

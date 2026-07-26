@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_improve_mode_persists_in_session_file() {
     with_temp_ideocode_home(|| {
         let mut session = crate::session::Session::create(None, None);

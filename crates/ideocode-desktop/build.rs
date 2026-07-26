@@ -1,4 +1,4 @@
-﻿use std::process::Command;
+use std::process::Command;
 
 fn main() {
     let pkg_version = env!("CARGO_PKG_VERSION");

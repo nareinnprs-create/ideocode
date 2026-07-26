@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use serde::{Deserialize, Serialize};
 
 fn percentile_ms(samples_ms: &[f64], percentile: f64) -> f64 {

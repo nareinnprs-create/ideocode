@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Enforce a ratcheting cross-crate wildcard re-export budget.
 
 Counts production Rust occurrences of `pub use IDEOCODE_<crate>::*;` (cross-crate

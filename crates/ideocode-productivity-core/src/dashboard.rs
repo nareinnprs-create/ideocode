@@ -1,4 +1,4 @@
-﻿//! Build a shareable dashboard as an SVG and rasterize it to PNG.
+//! Build a shareable dashboard as an SVG and rasterize it to PNG.
 //!
 //! The SVG is assembled by hand (no templating dep) into a dark, card-based
 //! "wrapped"-style poster, then rendered to a PNG via resvg/usvg/tiny-skia using

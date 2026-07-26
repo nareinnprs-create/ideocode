@@ -1,4 +1,4 @@
-﻿//! Server-to-client events: replies and streaming.
+//! Server-to-client events: replies and streaming.
 
 use serde::{Deserialize, Serialize};
 

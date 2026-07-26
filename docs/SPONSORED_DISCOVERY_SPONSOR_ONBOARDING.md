@@ -1,4 +1,4 @@
-﻿# Sponsored discovery sponsor onboarding
+# Sponsored discovery sponsor onboarding
 
 This runbook is the source of truth for adding a tool sponsor to IDEOCODE's
 `discover_tools` catalog. It covers product approval, catalog data, service

@@ -1,4 +1,4 @@
-﻿# OpenRelay Discovery test
+# OpenRelay Discovery test
 
 This is a local-only evaluation of adding OpenRelay to `discover_tools`. It does
 not modify the hosted Discovery manifest, IDEOCODE's default endpoint, or any

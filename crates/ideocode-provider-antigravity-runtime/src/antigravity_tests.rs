@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use chrono::Utc;
 use ideocode_provider_antigravity::{
     FetchAvailableModelsResponse, parse_fetch_available_models_response,

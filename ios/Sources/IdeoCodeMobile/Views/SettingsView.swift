@@ -1,4 +1,4 @@
-﻿import IDEOCODEKit
+import IDEOCODEKit
 import SwiftUI
 
 /// Settings sheet: model picker, reasoning effort, sessions, servers, info.

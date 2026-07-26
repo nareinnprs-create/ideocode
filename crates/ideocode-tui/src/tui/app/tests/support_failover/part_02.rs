@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_cancel_pending_provider_failover_clears_countdown() {
     with_temp_ideocode_home(|| {
         write_test_config("[provider]\ncross_provider_failover = \"countdown\"\n");

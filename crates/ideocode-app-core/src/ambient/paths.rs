@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use std::path::PathBuf;
 
 use crate::storage;

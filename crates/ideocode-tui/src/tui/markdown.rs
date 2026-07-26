@@ -1,4 +1,4 @@
-﻿pub use ideocode_tui_markdown::{
+pub use ideocode_tui_markdown::{
     CopyTargetKind, IncrementalMarkdownRenderer, MERMAID_PENDING_PLACEHOLDER_TEXT,
     MarkdownDebugStats, MarkdownMemoryProfile, RawCopyTarget, center_code_blocks,
     debug_memory_profile, debug_stats, debug_stats_json, encode_handterm_latex_apc,

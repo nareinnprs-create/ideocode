@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::storage::ideocode_dir;
 use std::path::PathBuf;
 

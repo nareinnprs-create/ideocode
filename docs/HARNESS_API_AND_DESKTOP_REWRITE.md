@@ -1,4 +1,4 @@
-﻿# Harness as an API + Desktop Rewrite (Pure Rust)
+# Harness as an API + Desktop Rewrite (Pure Rust)
 
 Status: draft, approved direction (2026-07-24)
 

@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::tui::info_widget::InfoWidgetData;
 
 /// Build widget data that yields a stable overview widget (model + queue line etc).

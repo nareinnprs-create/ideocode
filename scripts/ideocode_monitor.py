@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 IDEOCODE Live Monitor - Real-time activity dashboard
 

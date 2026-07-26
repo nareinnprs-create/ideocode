@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Update Homebrew tap and AUR package for a new release.
 # Usage: scripts/update_packages.sh v0.1.3
 set -euo pipefail

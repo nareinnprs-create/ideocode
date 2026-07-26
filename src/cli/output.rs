@@ -1,4 +1,4 @@
-﻿pub const QUIET_ENV: &str = "IDEOCODE_QUIET";
+pub const QUIET_ENV: &str = "IDEOCODE_QUIET";
 
 pub fn set_quiet_enabled(enabled: bool) {
     if enabled {

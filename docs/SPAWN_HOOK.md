@@ -1,4 +1,4 @@
-﻿# Spawn Hook: External Control of Headed Session Spawns
+# Spawn Hook: External Control of Headed Session Spawns
 
 IDEOCODE opens new terminal windows in several flows: swarm agent spawning
 (`swarm spawn` with `spawn_mode=visible`), resume-in-new-terminal, self-dev

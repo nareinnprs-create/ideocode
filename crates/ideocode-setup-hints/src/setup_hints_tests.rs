@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 #[test]
 fn first_three_launches_do_not_show_alignment_tips() {

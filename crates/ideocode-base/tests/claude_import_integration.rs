@@ -1,4 +1,4 @@
-﻿//! End-to-end Claude Code import integration tests (swarm Worker C / dolphin).
+//! End-to-end Claude Code import integration tests (swarm Worker C / dolphin).
 //!
 //! These drive the real `ideocode_base::import` pipeline against synthetic
 //! `.jsonl` fixtures written into a sandboxed `IDEOCODE_HOME`, so they never touch

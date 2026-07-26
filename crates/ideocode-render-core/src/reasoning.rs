@@ -1,4 +1,4 @@
-﻿//! Reasoning-line markdown formatting.
+//! Reasoning-line markdown formatting.
 //!
 //! Pure string helpers shared by the server/streaming path and the TUI renderer
 //! so the wrapping/escaping rules stay in lockstep with the renderer that

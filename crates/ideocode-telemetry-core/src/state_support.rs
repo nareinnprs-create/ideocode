@@ -1,4 +1,4 @@
-﻿use super::{SESSION_STATE, sanitize_telemetry_label};
+use super::{SESSION_STATE, sanitize_telemetry_label};
 use chrono::{DateTime, Datelike, Timelike, Utc};
 use ideocode_storage as storage;
 use std::path::{Path, PathBuf};

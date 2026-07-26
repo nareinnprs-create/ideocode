@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_usage_card_renders_when_loading() {
     let mut app = create_test_app();
     app.open_usage_inline_loading();

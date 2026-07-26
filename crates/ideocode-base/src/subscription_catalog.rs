@@ -1,4 +1,4 @@
-﻿use crate::provider_catalog;
+use crate::provider_catalog;
 
 pub const IDEOCODE_API_KEY_ENV: &str = "IDEOCODE_API_KEY";
 pub const IDEOCODE_API_BASE_ENV: &str = "IDEOCODE_API_BASE";

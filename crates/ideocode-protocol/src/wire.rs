@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 /// Serde default for boolean fields that should default to `true` when absent,
 /// so older clients that omit the field keep their previous (unconditional)

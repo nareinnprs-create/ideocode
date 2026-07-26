@@ -1,4 +1,4 @@
-﻿use anyhow::{Context, ensure};
+use anyhow::{Context, ensure};
 
 use ideocode_base::auth::lifecycle::{
     AuthActivationRequest, AuthActivationResult, AuthCatalogInvariantReport, activate_auth_change,

@@ -1,4 +1,4 @@
-﻿//! Pure, dependency-free math kernels for the TUI idle animations.
+//! Pure, dependency-free math kernels for the TUI idle animations.
 //!
 //! This crate intentionally contains only hot, self-contained numeric code
 //! (3D ray-marching samplers, the 3x3 subpixel glyph chooser and the HSV->RGB

@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use std::process::Command as ProcessCommand;
 
 pub use crate::session_rebuild::{hot_rebuild, spawn_background_session_rebuild};

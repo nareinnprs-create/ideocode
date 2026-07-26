@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use std::ffi::OsString;
 
 struct EnvVarGuard {

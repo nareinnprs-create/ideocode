@@ -1,4 +1,4 @@
-﻿//! OpenAI provider runtime (Codex OAuth + API key, Responses API over SSE and
+//! OpenAI provider runtime (Codex OAuth + API key, Responses API over SSE and
 //! persistent WebSocket), moved out of `IDEOCODE-base` so provider edits compile
 //! only this crate plus a binary relink instead of rebuilding the
 //! base -> app-core -> tui spine. The binary's composition root registers

@@ -1,4 +1,4 @@
-﻿# TuiState Trait Decomposition Plan
+# TuiState Trait Decomposition Plan
 
 Status: Analysis + proposed plan
 

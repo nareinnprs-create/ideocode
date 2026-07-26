@@ -1,4 +1,4 @@
-﻿//! Config-driven global launch hotkeys on Windows.
+//! Config-driven global launch hotkeys on Windows.
 //!
 //! Windows registers normal global hotkeys through `RegisterHotKey`. Because
 //! Windows Shell reserves the physical Copilot chord, Win+Shift+F23 uses a

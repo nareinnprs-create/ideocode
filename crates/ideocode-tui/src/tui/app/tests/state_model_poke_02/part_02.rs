@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_agents_review_picker_saves_config_override() {
     with_temp_ideocode_home(|| {
         let mut app = create_test_app();

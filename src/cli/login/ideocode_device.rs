@@ -1,4 +1,4 @@
-﻿//! CLI orchestration for the IDEOCODE account device authorization flow.
+//! CLI orchestration for the IDEOCODE account device authorization flow.
 //!
 //! Protocol parsing and HTTP behavior live in `subscription_api` so the CLI and
 //! TUI share the same contract and redaction guarantees.

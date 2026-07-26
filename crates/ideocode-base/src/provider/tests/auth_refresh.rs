@@ -1,4 +1,4 @@
-﻿#[derive(Clone)]
+#[derive(Clone)]
 struct SetModelAuthRefreshMockProvider {
     refreshed: Arc<std::sync::atomic::AtomicBool>,
     attempts: Arc<std::sync::atomic::AtomicUsize>,

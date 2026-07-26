@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use std::ffi::OsString;
 
 fn restore_env_var(key: &str, previous: Option<OsString>) {

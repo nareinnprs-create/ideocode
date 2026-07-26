@@ -1,4 +1,4 @@
-﻿#![cfg_attr(test, allow(clippy::await_holding_lock))]
+#![cfg_attr(test, allow(clippy::await_holding_lock))]
 
 use super::client_state::{handle_get_history, spawn_model_prefetch_update};
 use super::{

@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use ideocode_message_types::{ContentBlock, Message, Role, ToolCall, ToolDefinition};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};

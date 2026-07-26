@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # memory_regression_gate.sh - Automated pass/fail gate over client memory.
 #
 # Wraps scripts/memory_probe.sh with thresholds so memory regressions fail

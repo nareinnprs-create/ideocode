@@ -1,4 +1,4 @@
-﻿//! Local Copilot usage tracking
+//! Local Copilot usage tracking
 //!
 //! Tracks request counts and token usage locally since GitHub Copilot
 //! doesn't expose a usage API. Data persists to ~/.IDEOCODE/copilot_usage.json.

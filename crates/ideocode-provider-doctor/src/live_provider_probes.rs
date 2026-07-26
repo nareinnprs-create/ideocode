@@ -1,4 +1,4 @@
-﻿//! Live OpenAI-compatible provider probes shared by the auth lifecycle driver
+//! Live OpenAI-compatible provider probes shared by the auth lifecycle driver
 //! and the provider doctor. These are pure HTTP/JSON checks with no test-only
 //! dependencies, so they compile into the shipping binary.
 //!

@@ -1,4 +1,4 @@
-﻿use super::Agent;
+use super::Agent;
 use crate::logging;
 use crate::message::{ContentBlock, Role};
 use crate::protocol::ServerEvent;

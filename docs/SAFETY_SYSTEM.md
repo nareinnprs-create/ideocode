@@ -1,4 +1,4 @@
-﻿# Safety System
+# Safety System
 
 > **Status:** Design
 > **Updated:** 2026-02-08

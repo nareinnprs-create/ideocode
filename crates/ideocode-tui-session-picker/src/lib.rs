@@ -1,4 +1,4 @@
-﻿use chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc};
 use ideocode_message_types::ToolCall;
 use ideocode_session_types::SessionStatus;
 

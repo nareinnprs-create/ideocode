@@ -1,4 +1,4 @@
-﻿use ideocode_message_types::ToolCall;
+use ideocode_message_types::ToolCall;
 use ideocode_session_types::RenderedMessage;
 use serde_json::Value;
 use std::collections::hash_map::DefaultHasher;

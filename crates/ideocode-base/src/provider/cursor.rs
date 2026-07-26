@@ -1,4 +1,4 @@
-﻿//! Cursor pure model-catalog data (compatibility shim).
+//! Cursor pure model-catalog data (compatibility shim).
 //!
 //! The Cursor provider *runtime* (`CursorCliProvider`) now lives in the
 //! downstream `IDEOCODE-provider-cursor-runtime` crate so provider edits do not

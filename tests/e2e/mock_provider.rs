@@ -1,4 +1,4 @@
-﻿//! Mock provider for e2e tests
+//! Mock provider for e2e tests
 //!
 //! Returns pre-scripted StreamEvent sequences for deterministic testing.
 

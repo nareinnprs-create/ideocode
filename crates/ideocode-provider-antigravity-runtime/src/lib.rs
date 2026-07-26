@@ -1,4 +1,4 @@
-﻿//! Antigravity provider runtime (Google Cloud Code backend multiplexing
+//! Antigravity provider runtime (Google Cloud Code backend multiplexing
 //! Gemini/Claude/gpt-oss upstreams), moved out of `IDEOCODE-base` so provider
 //! edits compile only this crate plus a binary relink instead of rebuilding
 //! the base -> app-core -> tui spine. The binary's composition root registers

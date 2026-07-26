@@ -1,4 +1,4 @@
-﻿use super::{App, MouseScrollTarget};
+use super::{App, MouseScrollTarget};
 #[cfg(unix)]
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};

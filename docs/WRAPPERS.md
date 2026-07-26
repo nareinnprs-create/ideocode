@@ -1,4 +1,4 @@
-﻿# IDEOCODE wrapper / scripting guide
+# IDEOCODE wrapper / scripting guide
 
 This document describes the non-interactive CLI surface intended for wrappers, scripts, and other tools that invoke `IDEOCODE`.
 

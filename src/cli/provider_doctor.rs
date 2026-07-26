@@ -1,4 +1,4 @@
-﻿//! `IDEOCODE provider-doctor` command: a user-facing strict provider/model diagnostic.
+//! `IDEOCODE provider-doctor` command: a user-facing strict provider/model diagnostic.
 
 use std::io::IsTerminal;
 

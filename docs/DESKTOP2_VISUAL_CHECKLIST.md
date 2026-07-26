@@ -1,4 +1,4 @@
-﻿# Desktop2 Visual & Interface Checklist
+# Desktop2 Visual & Interface Checklist
 
 What "good visuals" means for `IDEOCODE-desktop2`, and how each rule is enforced.
 

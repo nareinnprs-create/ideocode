@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub(crate) struct GitHubIssueSyncUiState {

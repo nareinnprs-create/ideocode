@@ -1,4 +1,4 @@
-﻿//! Canonical source of truth for the OAuth-vs-API-key credential decision of
+//! Canonical source of truth for the OAuth-vs-API-key credential decision of
 //! the two "dual-auth" providers: Anthropic/Claude and OpenAI.
 //!
 //! These providers each support *both* a subscription/OAuth login and a direct

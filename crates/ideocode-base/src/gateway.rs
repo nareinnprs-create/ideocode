@@ -1,4 +1,4 @@
-﻿//! WebSocket gateway for remote clients (iOS app, web).
+//! WebSocket gateway for remote clients (iOS app, web).
 //!
 //! Accepts WebSocket connections over TCP and bridges them to the
 //! existing newline-delimited JSON protocol used by Unix socket clients.

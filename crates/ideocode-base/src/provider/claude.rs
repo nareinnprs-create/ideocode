@@ -1,4 +1,4 @@
-﻿//! Deprecated Claude CLI provider (compatibility shim).
+//! Deprecated Claude CLI provider (compatibility shim).
 //!
 //! The Claude CLI provider *runtime* (`ClaudeProvider`, subprocess transport)
 //! now lives in the downstream `IDEOCODE-provider-claude-cli-runtime` crate so

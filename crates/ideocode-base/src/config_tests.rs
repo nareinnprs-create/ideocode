@@ -1,4 +1,4 @@
-﻿use super::{
+use super::{
     AmbientConfig, Config, DiffDisplayMode, DisplayConfig, LatexRenderingMode, ProviderConfig,
     SessionPickerResumeAction, SwarmSpawnMode, ToolConfig, config_env_fingerprint,
     populate_context_limits_from_config_ref,

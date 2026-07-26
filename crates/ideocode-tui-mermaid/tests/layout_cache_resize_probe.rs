@@ -1,4 +1,4 @@
-﻿//! Resize-speedup probe for the mermaid layout-tier cache (commit 72bd457b).
+//! Resize-speedup probe for the mermaid layout-tier cache (commit 72bd457b).
 //!
 //! Verifies, through the public sized-render API only, that:
 //! 1. Rendering ONE diagram at terminal widths 120 -> 200 -> 260 cells runs

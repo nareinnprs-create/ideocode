@@ -1,4 +1,4 @@
-﻿// Regression tests for issue #438: in remote sessions, the runtime model
+// Regression tests for issue #438: in remote sessions, the runtime model
 // picker preview advertises Ctrl+N (toggle favorite) and Ctrl+O (set default),
 // but the remote key path never routed those chords to
 // `model_picker_preview_hotkey`. They fell through to the remote global

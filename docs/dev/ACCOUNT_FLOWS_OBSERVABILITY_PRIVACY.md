@@ -1,4 +1,4 @@
-﻿# Account Flows: Observability, Privacy, and Support Diagnostics
+# Account Flows: Observability, Privacy, and Support Diagnostics
 
 Security logging, audit events, metrics, traces, alerting, redaction,
 retention, and support diagnostics for the six subscription account flows:

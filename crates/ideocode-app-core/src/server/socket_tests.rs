@@ -1,4 +1,4 @@
-﻿#![cfg_attr(test, allow(clippy::await_holding_lock))]
+#![cfg_attr(test, allow(clippy::await_holding_lock))]
 
 use super::socket::sibling_socket_path;
 #[cfg(unix)]

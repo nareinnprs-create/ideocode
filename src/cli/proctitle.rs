@@ -1,4 +1,4 @@
-﻿//! Mapping from parsed CLI arguments to an initial process title.
+//! Mapping from parsed CLI arguments to an initial process title.
 //!
 //! This logic depends on the clap `Args`/`Command` types defined in `cli`, so
 //! it lives in the CLI layer. The low-level title-setting primitives it uses

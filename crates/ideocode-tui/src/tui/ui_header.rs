@@ -1,4 +1,4 @@
-﻿use super::box_utils::render_rounded_box;
+use super::box_utils::render_rounded_box;
 use super::changelog::get_unseen_changelog_entries;
 use super::{
     TuiState, dim_color, header_name_color, is_running_stable_release, semver, shorten_model_name,

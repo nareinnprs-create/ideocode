@@ -1,4 +1,4 @@
-﻿//! Regression tests for static-model / live-catalog merge behavior
+//! Regression tests for static-model / live-catalog merge behavior
 //! across built-in and user-declared OpenAI-compatible provider profiles.
 
 use crate::tests::{ENV_LOCK, EnvVarGuard};

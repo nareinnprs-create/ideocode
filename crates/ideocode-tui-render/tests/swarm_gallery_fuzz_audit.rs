@@ -1,4 +1,4 @@
-﻿//! Audit sweep: panic-safety and width-bound checks for the swarm gallery,
+//! Audit sweep: panic-safety and width-bound checks for the swarm gallery,
 //! panel, and strip renderers across degenerate inputs (empty members, huge
 //! member counts, tiny widths/heights, wide glyphs).
 

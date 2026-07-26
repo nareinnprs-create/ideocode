@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Aggregate a IDEOCODE Terminal-Bench Harbor job dir and compare against the
 Claude Code + Opus 4.8 baseline.
 

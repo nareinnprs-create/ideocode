@@ -1,4 +1,4 @@
-﻿use super::visual_debug::RectCapture;
+use super::visual_debug::RectCapture;
 pub(crate) use ideocode_tui_render::layout::{parse_area_spec, point_in_rect, rect_contains};
 use ratatui::layout::Rect;
 

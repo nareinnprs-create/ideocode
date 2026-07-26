@@ -1,4 +1,4 @@
-﻿//! A normalized, platform-independent representation of a key chord.
+//! A normalized, platform-independent representation of a key chord.
 //!
 //! Both IDEOCODE's own bindings and the bindings we discover on the machine
 //! (terminal config, macOS system hotkeys) are reduced to a [`KeyChord`] so they

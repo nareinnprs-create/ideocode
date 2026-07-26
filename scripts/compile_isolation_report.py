@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Report compile-time isolation risks in the IDEOCODE crate graph.
 
 This is advisory by default. Use --strict-target-state only when a migration phase

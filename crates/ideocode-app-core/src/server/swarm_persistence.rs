@@ -1,4 +1,4 @@
-﻿use super::{SwarmMember, SwarmTaskProgress, VersionedPlan};
+use super::{SwarmMember, SwarmTaskProgress, VersionedPlan};
 use crate::protocol::ServerEvent;
 use crate::storage;
 use ideocode_swarm_core::{SwarmLifecycleStatus, SwarmMemberRecord};

@@ -1,4 +1,4 @@
-﻿pub use ideocode_tui_mermaid::{
+pub use ideocode_tui_mermaid::{
     DiagramBlock, DiagramCacheKey, DiagramId, DiagramInfo, DiagramOrigin, DiagramRenderProfile,
     DiagramRenderRequest, ImageStateInfo, InlineFitReadiness, MermaidCacheEntry, MermaidContent,
     MermaidDebugStats, MermaidDebugStatsDelta, MermaidFlickerBenchmark, MermaidMemoryBenchmark,

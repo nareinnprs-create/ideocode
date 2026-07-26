@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Analyze OpenAI persistent-websocket reuse and KV-cache effectiveness from IDEOCODE logs.
 
 Motivation

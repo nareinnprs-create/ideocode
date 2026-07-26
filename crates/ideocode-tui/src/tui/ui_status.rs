@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 /// Extract semantic version for UI display/grouping.
 pub(super) fn semver() -> &'static str {

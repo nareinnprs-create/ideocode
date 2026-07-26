@@ -1,4 +1,4 @@
-﻿use super::{MigrationContext, binary_name};
+use super::{MigrationContext, binary_name};
 use anyhow::Result;
 use ideocode_storage as storage;
 use std::path::PathBuf;

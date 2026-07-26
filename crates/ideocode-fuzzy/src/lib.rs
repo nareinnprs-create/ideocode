@@ -1,4 +1,4 @@
-﻿//! Small typo-resistant fuzzy matcher shared by IDEOCODE's terminal and desktop UIs.
+//! Small typo-resistant fuzzy matcher shared by IDEOCODE's terminal and desktop UIs.
 //!
 //! The matcher combines subsequence matching with a bounded number of
 //! substitutions, adjacent transpositions, and extra typed characters. Exact,

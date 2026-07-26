@@ -1,4 +1,4 @@
-﻿# IDEOCODE Desktop Build-Out Plan
+# IDEOCODE Desktop Build-Out Plan
 
 Status: Active planning note
 Updated: 2026-05-25

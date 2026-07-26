@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # Screenshot Watcher - monitors for IDEOCODE screenshot signals
 #
 # This script watches the signal directory and captures screenshots

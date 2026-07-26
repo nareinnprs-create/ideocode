@@ -1,4 +1,4 @@
-﻿# Render-Core Parity: Acceptance Criteria, Thresholds, and Statistical Reporting
+# Render-Core Parity: Acceptance Criteria, Thresholds, and Statistical Reporting
 
 Status: adopted for the `IDEOCODE-render-core` -> TUI switchover.
 Harness: `crates/IDEOCODE-tui-markdown/src/render_core_adapter_tests.rs`

@@ -1,4 +1,4 @@
-﻿//! Control logic / phase transitions for the first-run onboarding flow.
+//! Control logic / phase transitions for the first-run onboarding flow.
 //!
 //! See [`super::onboarding_flow`] for the phase definitions. This module hangs
 //! the driving methods off `App` so the rest of the TUI can advance the flow in

@@ -1,4 +1,4 @@
-﻿use super::client_lifecycle::handle_client;
+use super::client_lifecycle::handle_client;
 use super::debug::{ClientConnectionInfo, ClientDebugState, handle_debug_client};
 use super::debug_jobs::DebugJob;
 use super::util::get_shared_mcp_pool;

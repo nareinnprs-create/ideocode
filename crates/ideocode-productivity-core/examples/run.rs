@@ -1,4 +1,4 @@
-﻿fn main() -> anyhow::Result<()> {
+fn main() -> anyhow::Result<()> {
     let t = std::time::Instant::now();
     let out = ideocode_productivity_core::generate()?;
     eprintln!("--- generate() took {:.2}s ---", t.elapsed().as_secs_f64());

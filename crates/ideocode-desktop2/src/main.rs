@@ -1,4 +1,4 @@
-﻿//! IDEOCODE-desktop2: greenfield desktop app.
+//! IDEOCODE-desktop2: greenfield desktop app.
 //!
 //! Milestone 3+4 of docs/HARNESS_API_AND_DESKTOP_REWRITE.md: winit window,
 //! Vello vector rendering, Parley text layout, and a live harness API

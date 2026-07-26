@@ -1,4 +1,4 @@
-﻿use crate::tui::{TuiState, color_support::rgb};
+use crate::tui::{TuiState, color_support::rgb};
 use ratatui::prelude::*;
 use std::cell::RefCell;
 use std::collections::{HashSet, hash_map::DefaultHasher};

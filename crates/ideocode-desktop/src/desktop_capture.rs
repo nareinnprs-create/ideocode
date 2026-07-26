@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(crate) fn headless_chat_smoke_message(args: &[String]) -> Option<String> {
     args.iter().enumerate().find_map(|(index, arg)| {

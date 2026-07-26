@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(crate) fn run_scroll_render_benchmark(frames: usize) -> Result<()> {
     let frames = frames.max(1);

@@ -1,4 +1,4 @@
-﻿//! Context-window resolution for the Anthropic runtime.
+//! Context-window resolution for the Anthropic runtime.
 //!
 //! The default `Provider::context_window` uses the cache-free lookup, so a live
 //! catalog limit for a Claude id that the static classifier does not know yet

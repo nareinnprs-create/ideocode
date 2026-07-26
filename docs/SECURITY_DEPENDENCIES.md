@@ -1,4 +1,4 @@
-﻿# Dependency Security Triage
+# Dependency Security Triage
 
 Last reviewed: 2026-05-14
 

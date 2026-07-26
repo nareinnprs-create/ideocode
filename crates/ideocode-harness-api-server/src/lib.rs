@@ -1,4 +1,4 @@
-﻿//! Harness API bridge: exposes the stable versioned harness API on its own
+//! Harness API bridge: exposes the stable versioned harness API on its own
 //! Unix socket and translates to the internal (legacy) IDEOCODE protocol.
 //!
 //! Architecture (milestone 2 of docs/HARNESS_API_AND_DESKTOP_REWRITE.md):

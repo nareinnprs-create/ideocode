@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(super) fn hotkey(text: &'static str) -> Span<'static> {
     Span::styled(text, Style::default().fg(Color::White).bg(Color::DarkGray))

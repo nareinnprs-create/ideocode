@@ -1,4 +1,4 @@
-﻿# Retention readiness
+# Retention readiness
 
 IDEOCODE separates two questions that should not share a label:
 

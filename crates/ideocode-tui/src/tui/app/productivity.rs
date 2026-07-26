@@ -1,4 +1,4 @@
-﻿//! `/productivity` command: scan local transcripts, render a shareable usage
+//! `/productivity` command: scan local transcripts, render a shareable usage
 //! report (markdown + PNG dashboard), copy the dashboard image to the clipboard,
 //! and open it in the default image viewer.
 //!

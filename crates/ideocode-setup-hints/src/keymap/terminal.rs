@@ -1,4 +1,4 @@
-﻿//! Discover key bindings declared by terminal emulators.
+//! Discover key bindings declared by terminal emulators.
 //!
 //! Different terminals store bindings in different ways. The most reliable
 //! approach for Ghostty is to ask it for its *effective* binding set via

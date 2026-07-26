@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 fn set_or_clear_env(key: &str, value: Option<std::ffi::OsString>) {
     if let Some(value) = value {

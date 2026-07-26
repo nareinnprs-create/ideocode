@@ -1,4 +1,4 @@
-﻿use anyhow::{Context, Result};
+use anyhow::{Context, Result};
 use base64::Engine;
 use ratatui::buffer::Buffer;
 use ratatui::style::Color;

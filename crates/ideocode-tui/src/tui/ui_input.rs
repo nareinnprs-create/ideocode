@@ -1,4 +1,4 @@
-﻿use super::inline_interactive_ui::format_elapsed;
+use super::inline_interactive_ui::format_elapsed;
 use super::selection_highlight::highlight_line_selection;
 use super::tools_ui::{get_tool_activity_detail, summarize_batch_running_tools_compact};
 use super::visual_debug::{self, FrameCaptureBuilder};

@@ -1,4 +1,4 @@
-﻿//! Memory recall benchmark (Mode 1 / no-LLM).
+//! Memory recall benchmark (Mode 1 / no-LLM).
 //!
 //! Faithful offline harness for measuring memory retrieval accuracy. Reuses the
 //! REAL IDEOCODE retrieval primitives:

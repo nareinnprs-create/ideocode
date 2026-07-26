@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Layout efficiency matrix for the IDEOCODE iOS app.
 
 A single screenshot only measures one content state. Real UI quality means the

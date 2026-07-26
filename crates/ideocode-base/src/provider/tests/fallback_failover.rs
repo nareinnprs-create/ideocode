@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_fallback_sequence_includes_all_providers() {
     assert_eq!(
         MultiProvider::fallback_sequence(ActiveProvider::Claude),

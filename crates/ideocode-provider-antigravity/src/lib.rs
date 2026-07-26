@@ -1,4 +1,4 @@
-﻿use chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc};
 use ideocode_provider_gemini::CodeAssistGenerateResponse;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;

@@ -1,4 +1,4 @@
-﻿use crate::auth::claude as claude_auth;
+use crate::auth::claude as claude_auth;
 use anyhow::Result;
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use serde::{Deserialize, Serialize};

@@ -1,4 +1,4 @@
-﻿# Crate Ownership and Modularization Boundaries
+# Crate Ownership and Modularization Boundaries
 
 This document defines the target structure for keeping `IDEOCODE` modular without turning shared crates into a dumping ground. It is intentionally practical: use it when deciding whether to move a type, helper, or behavior out of the root crate.
 

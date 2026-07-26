@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Compare token usage between IDEOCODE and Claude Code CLI.
 

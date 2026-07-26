@@ -1,4 +1,4 @@
-﻿//! Import Claude Code sessions into IDEOCODE
+//! Import Claude Code sessions into IDEOCODE
 //!
 //! This module handles discovering, parsing, and converting Claude Code sessions
 //! so they can be resumed within IDEOCODE.

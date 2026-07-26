@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_new_for_remote_restored_soft_interrupt_resend_triggers_dispatch_state() {
     let mut app = create_test_app();
     let session_id = format!("test-remote-soft-interrupt-dispatch-{}", std::process::id());

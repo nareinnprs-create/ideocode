@@ -1,4 +1,4 @@
-﻿//! Memory tool for storing and recalling information across sessions
+//! Memory tool for storing and recalling information across sessions
 
 use super::{Tool, ToolContext, ToolOutput};
 use crate::memory::{MemoryCategory, MemoryEntry, MemoryManager, MemoryScope};

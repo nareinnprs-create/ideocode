@@ -1,4 +1,4 @@
-﻿"""B. reachability - is the PRIMARY action in the comfortable thumb zone?
+"""B. reachability - is the PRIMARY action in the comfortable thumb zone?
 
 On a phone held one-handed, the thumb comfortably reaches the bottom of the
 screen; the top corners are the hardest to hit. The primary action in IDEOCODE is

@@ -1,4 +1,4 @@
-﻿use crate::message::ContentBlock;
+use crate::message::ContentBlock;
 use crate::session::{Session, SessionStatus};
 use anyhow::Result;
 use chrono::{DateTime, Utc};

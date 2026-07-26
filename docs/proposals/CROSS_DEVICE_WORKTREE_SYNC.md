@@ -1,4 +1,4 @@
-﻿# Cross-Device Worktree and Build Sync (Proposed)
+# Cross-Device Worktree and Build Sync (Proposed)
 
 Status: Proposed (design only, not implemented)
 

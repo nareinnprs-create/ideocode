@@ -1,4 +1,4 @@
-﻿//! MCP Manager - manages MCP server connections for a single session.
+//! MCP Manager - manages MCP server connections for a single session.
 //!
 //! In daemon mode with a shared pool, servers marked `shared: true` (the default)
 //! are managed by the pool and reused across sessions. Servers marked `shared: false`

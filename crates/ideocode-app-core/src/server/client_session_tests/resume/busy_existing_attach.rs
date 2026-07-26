@@ -1,4 +1,4 @@
-﻿#[tokio::test]
+#[tokio::test]
 async fn handle_resume_session_allows_live_attach_when_existing_agent_is_busy() -> Result<()> {
     let _guard = crate::storage::lock_test_env();
     let (_runtime, prev_runtime) = setup_runtime_dir()?;

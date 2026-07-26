@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 /// Reroute target offered after a provider guardrail/refusal stop. Guardrail
 /// refusals are model-side policy stops, so retrying the same model rarely

@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 impl App {
     pub(in crate::tui::app) fn build_scroll_test_content(

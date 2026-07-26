@@ -1,4 +1,4 @@
-﻿pub use ideocode_tui_visual_debug::{
+pub use ideocode_tui_visual_debug::{
     FrameCapture, FrameCaptureBuilder, ImageRegionCapture, InfoWidgetCapture, InfoWidgetSummary,
     LayoutCapture, MarginsCapture, MessageCapture, RectCapture, RenderTimingCapture, RenderedText,
     StateSnapshot, VisualDebugMemoryProfile, WidgetPlacementCapture, check_shift_enter_anomaly,

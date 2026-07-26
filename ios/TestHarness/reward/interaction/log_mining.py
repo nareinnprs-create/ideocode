@@ -1,4 +1,4 @@
-﻿"""Ground the IDEOCODE-mobile user model in the user's REAL TUI usage logs.
+"""Ground the IDEOCODE-mobile user model in the user's REAL TUI usage logs.
 
 This module streams the last N daily logs under ``~/.IDEOCODE/logs`` and mines
 proxies for "what the user actually does", then maps those TUI actions onto the

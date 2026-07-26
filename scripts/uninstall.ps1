@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Uninstall IDEOCODE on Windows.
 .DESCRIPTION

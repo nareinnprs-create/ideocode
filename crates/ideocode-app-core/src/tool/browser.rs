@@ -1,4 +1,4 @@
-﻿use super::{Tool, ToolContext, ToolOutput};
+use super::{Tool, ToolContext, ToolOutput};
 use anyhow::{Context, Result};
 use async_trait::async_trait;
 use base64::{Engine as _, engine::general_purpose::STANDARD};

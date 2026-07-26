@@ -1,4 +1,4 @@
-﻿use super::handle_get_history;
+use super::handle_get_history;
 use super::handle_get_model_catalog;
 use super::session_activity_snapshot;
 use crate::agent::Agent;

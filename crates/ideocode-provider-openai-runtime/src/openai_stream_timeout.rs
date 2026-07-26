@@ -1,4 +1,4 @@
-﻿//! Streaming timeout budgets for the OpenAI Responses transports.
+//! Streaming timeout budgets for the OpenAI Responses transports.
 //!
 //! Both the HTTPS/SSE and websocket paths must agree on how long a silent model
 //! is allowed to think. Reasoning effort drives that budget: without summaries a

@@ -1,4 +1,4 @@
-﻿use std::ffi::OsStr;
+use std::ffi::OsStr;
 
 /// Mutate the process environment for IDEOCODE runtime configuration.
 ///

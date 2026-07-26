@@ -1,4 +1,4 @@
-﻿import boto3
+import boto3
 
 INSTANCE_ID = "i-08214cf66cd3f80c7"
 

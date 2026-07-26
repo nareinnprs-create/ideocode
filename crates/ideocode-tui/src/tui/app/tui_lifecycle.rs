@@ -1,4 +1,4 @@
-﻿use super::state_ui::RestoredReloadInput;
+use super::state_ui::RestoredReloadInput;
 use super::*;
 use crate::tui::{backend, keybind};
 

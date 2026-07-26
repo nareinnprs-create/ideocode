@@ -1,4 +1,4 @@
-﻿# Modular Architecture RFC
+# Modular Architecture RFC
 
 Status: Draft
 

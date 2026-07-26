@@ -1,4 +1,4 @@
-﻿mod agentgrep;
+mod agentgrep;
 pub mod ambient;
 mod apply_patch;
 mod bash;

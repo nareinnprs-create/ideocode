@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_remote_poke_queues_when_turn_is_in_progress() {
     with_temp_ideocode_home(|| {
         let mut app = create_test_app();

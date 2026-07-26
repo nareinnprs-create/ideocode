@@ -1,4 +1,4 @@
-﻿"""engine.py - price the user-behavior graph into interaction-cost metrics.
+"""engine.py - price the user-behavior graph into interaction-cost metrics.
 
 Given the weighted ActionGraph (user_model) and target geometry (ui_map), this:
 

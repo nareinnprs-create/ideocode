@@ -1,4 +1,4 @@
-﻿//! Small persisted UI preferences that survive restarts and session resumes.
+//! Small persisted UI preferences that survive restarts and session resumes.
 //!
 //! These are deliberately separate from the main config file: they capture
 //! in-app toggles (like hiding inline images) that the user flips at runtime

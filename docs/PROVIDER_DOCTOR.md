@@ -1,4 +1,4 @@
-﻿# Provider Doctor
+# Provider Doctor
 
 `IDEOCODE provider-doctor` is a user-facing diagnostic that answers one question:
 

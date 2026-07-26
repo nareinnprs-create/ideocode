@@ -1,4 +1,4 @@
-﻿use super::{EventStream, ModelRoute, MultiProvider, NativeToolResultSender, Provider, copilot};
+use super::{EventStream, ModelRoute, MultiProvider, NativeToolResultSender, Provider, copilot};
 use crate::message::{Message, ToolDefinition};
 use crate::provider::models::ensure_model_allowed_for_subscription;
 use anyhow::Result;

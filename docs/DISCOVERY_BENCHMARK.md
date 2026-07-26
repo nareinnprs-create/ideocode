@@ -1,4 +1,4 @@
-﻿# Discovery trigger benchmark
+# Discovery trigger benchmark
 
 `scripts/benchmark_discovery.py` measures whether ordinary user requests cause
 IDEOCODE to browse the expected sponsored-discovery category and receive a specific

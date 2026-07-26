@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use std::sync::{Mutex, OnceLock};
 
 fn clear_side_panel_render_caches() {

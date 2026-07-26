@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Install the current release binary into the immutable version store,
 # update the stable + current channel symlinks, and point the launcher at current.
 #

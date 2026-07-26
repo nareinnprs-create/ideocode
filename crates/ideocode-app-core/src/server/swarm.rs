@@ -1,4 +1,4 @@
-﻿use super::state::{MAX_EVENT_HISTORY, fanout_session_event};
+use super::state::{MAX_EVENT_HISTORY, fanout_session_event};
 use super::{SwarmEvent, SwarmEventType, SwarmMember, SwarmState, VersionedPlan};
 use super::{persist_swarm_state_for, remove_persisted_swarm_state_for};
 use crate::agent::Agent;

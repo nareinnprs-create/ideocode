@@ -1,4 +1,4 @@
-﻿# Memory Architecture Design
+# Memory Architecture Design
 
 > **Status:** Implemented (Core), Planned (Graph-Based Hybrid)
 > **Updated:** 2026-01-27

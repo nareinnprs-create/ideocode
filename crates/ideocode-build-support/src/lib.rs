@@ -1,4 +1,4 @@
-﻿mod paths;
+mod paths;
 mod platform_support;
 mod source_state;
 mod storage_helpers;

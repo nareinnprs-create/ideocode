@@ -1,4 +1,4 @@
-﻿use crate::protocol::NotificationType;
+use crate::protocol::NotificationType;
 use crate::tui::ui::capitalize;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

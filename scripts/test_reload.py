@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Comprehensive test suite for the selfdev reload mechanism.
 

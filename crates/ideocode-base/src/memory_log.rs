@@ -1,4 +1,4 @@
-﻿//! Persistent memory event log for post-session analysis.
+//! Persistent memory event log for post-session analysis.
 //!
 //! Writes structured JSONL (one JSON object per line) to:
 //!   `~/.IDEOCODE/logs/memory-events-YYYY-MM-DD.jsonl`

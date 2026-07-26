@@ -1,4 +1,4 @@
-﻿#[tokio::test]
+#[tokio::test]
 async fn communicate_assign_task_can_spawn_fallback_agent() {
     let _env_lock = crate::storage::lock_test_env();
     let runtime_dir = tempfile::TempDir::new().expect("runtime tempdir");

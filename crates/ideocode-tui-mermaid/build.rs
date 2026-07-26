@@ -1,4 +1,4 @@
-﻿fn main() {
+fn main() {
     println!("cargo:rustc-check-cfg=cfg(mmdr_size_api_available)");
     // The pinned mermaid-rs-renderer tag (v0.3.0+) ships the render size
     // metadata API, so the size-API path is available by default. Set

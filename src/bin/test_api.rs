@@ -1,4 +1,4 @@
-﻿use futures::StreamExt;
+use futures::StreamExt;
 use ideocode::message::{ContentBlock, Message, ToolDefinition};
 use ideocode::provider::Provider;
 use ideocode_provider_claude_cli_runtime::ClaudeProvider;

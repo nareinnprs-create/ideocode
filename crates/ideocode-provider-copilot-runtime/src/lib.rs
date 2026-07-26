@@ -1,4 +1,4 @@
-﻿//! GitHub Copilot provider runtime (direct API with bearer-token exchange,
+//! GitHub Copilot provider runtime (direct API with bearer-token exchange,
 //! tier detection, premium request modes), moved out of `IDEOCODE-base` so
 //! provider edits compile only this crate plus a binary relink instead of
 //! rebuilding the base -> app-core -> tui spine. The binary's composition

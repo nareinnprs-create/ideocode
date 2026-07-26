@@ -1,4 +1,4 @@
-﻿#[cfg(unix)]
+#[cfg(unix)]
 use super::{
     resumed_window_title, should_show_server_spawning, spawn_resume_in_new_terminal,
     spawn_selfdev_in_new_terminal,

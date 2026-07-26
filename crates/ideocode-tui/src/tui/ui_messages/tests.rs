@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 fn extract_line_text(line: &Line<'_>) -> String {
     line.spans

@@ -1,4 +1,4 @@
-﻿# Auth Credential Sources (single source of truth)
+# Auth Credential Sources (single source of truth)
 
 This document exists because the same confusion keeps recurring: an agent (or a
 human) greps for `ANTHROPIC_API_KEY` / `sk-ant-api`, finds nothing, reads a stale

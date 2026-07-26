@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(crate) const HERO_MASK_SHADER: &str = r#"
 struct HeroVertexOutput {

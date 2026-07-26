@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 impl Config {
     pub fn display_string(&self) -> String {

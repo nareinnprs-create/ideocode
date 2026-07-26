@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 #[test]
 fn manager_without_project_dir_does_not_use_process_cwd() {

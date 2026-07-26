@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 impl App {
     pub(in crate::tui::app) fn debug_picker_state_json(

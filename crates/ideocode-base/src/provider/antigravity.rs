@@ -1,4 +1,4 @@
-﻿//! Antigravity pure protocol types plus the credentialed catalog fetch
+//! Antigravity pure protocol types plus the credentialed catalog fetch
 //! (compatibility shim).
 //!
 //! The Antigravity provider *runtime* (`AntigravityProvider`) now lives in the

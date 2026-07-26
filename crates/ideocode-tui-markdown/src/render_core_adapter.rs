@@ -1,4 +1,4 @@
-﻿//! Adapter: backend-neutral [`ideocode_render_core::Document`] -> ratatui lines.
+//! Adapter: backend-neutral [`ideocode_render_core::Document`] -> ratatui lines.
 //!
 //! This is the thin TUI-side translation layer for the shared render core. It
 //! resolves the core's semantic [`StyleRole`]/[`FillRole`] to this crate's

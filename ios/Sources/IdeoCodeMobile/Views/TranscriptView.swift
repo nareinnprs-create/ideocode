@@ -1,4 +1,4 @@
-﻿import IDEOCODEKit
+import IDEOCODEKit
 import SwiftUI
 
 /// Scrolling transcript with pinned-to-bottom auto-follow.

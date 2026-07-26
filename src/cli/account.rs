@@ -1,4 +1,4 @@
-﻿use anyhow::{Context, Result};
+use anyhow::{Context, Result};
 
 use crate::subscription_api::{self, AccountApiError};
 

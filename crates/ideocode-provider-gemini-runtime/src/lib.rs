@@ -1,4 +1,4 @@
-﻿//! Gemini provider runtime (Google Code Assist OAuth + official Developer API
+//! Gemini provider runtime (Google Code Assist OAuth + official Developer API
 //! key), moved out of `IDEOCODE-base` so provider edits compile only this crate
 //! plus a binary relink instead of rebuilding the base -> app-core -> tui
 //! spine. The binary's composition root registers [`GeminiProvider`] with

@@ -1,4 +1,4 @@
-﻿#[derive(Debug, Clone, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct ToolCall {
     #[serde(default)]
     pub id: String,

@@ -1,4 +1,4 @@
-﻿# IDEOCODE iOS App
+# IDEOCODE iOS App
 
 > Status: v2 rebuild. Pure Swift. This replaces the earlier prototype and the
 > Rust-mobile-core/simulator direction, both removed in the `ios-app-restart`

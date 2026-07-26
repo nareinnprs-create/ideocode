@@ -1,4 +1,4 @@
-﻿use unicode_width::UnicodeWidthStr;
+use unicode_width::UnicodeWidthStr;
 
 use super::display_width::{clamp_display_col, display_col_slice, line_display_width};
 use super::url_regex_support::link_target_for_display_column;

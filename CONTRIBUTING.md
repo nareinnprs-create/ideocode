@@ -1,4 +1,4 @@
-﻿# Contributing to IDEOCODE
+# Contributing to IDEOCODE
 
 Thanks for contributing.
 

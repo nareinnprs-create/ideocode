@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub fn render_markdown_lazy(
     text: &str,

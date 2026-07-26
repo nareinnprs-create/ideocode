@@ -1,4 +1,4 @@
-﻿//! Tracking of active session process IDs under `~/.IDEOCODE/active_pids`.
+//! Tracking of active session process IDs under `~/.IDEOCODE/active_pids`.
 //!
 //! This is pure filesystem state keyed by session ID, used to discover which
 //! sessions are currently running (and to map a PID back to its session). It

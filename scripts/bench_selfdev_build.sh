@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Repeatable self-dev build benchmark (issue #392, part C).
 #
 # Measures the wall-clock cost of the selfdev build paths that matter day to

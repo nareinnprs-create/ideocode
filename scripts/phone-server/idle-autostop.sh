@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # Power off after 30 min with no clients AND no active agent work.
 STATE_FILE=/var/tmp/idle-since
 CONNS=$(ss -Htn state established "( sport = :7643 or sport = :22 )" | wc -l)

@@ -1,4 +1,4 @@
-﻿//! Ignored perf/memory probe for the syntect regex backend.
+//! Ignored perf/memory probe for the syntect regex backend.
 //!
 //! Motivation: a jemalloc heap profile of a long-lived TUI client attributed
 //! ~24 MB (47% of live heap) to lazily-compiled `regex-fancy` highlight

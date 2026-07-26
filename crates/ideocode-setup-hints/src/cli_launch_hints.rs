@@ -1,4 +1,4 @@
-﻿//! Native SessionStart integrations for reminding users about IDEOCODE's global
+//! Native SessionStart integrations for reminding users about IDEOCODE's global
 //! launch shortcut when they open another coding CLI.
 //!
 //! Claude Code and Codex both expose lifecycle hooks. Using those hooks is more

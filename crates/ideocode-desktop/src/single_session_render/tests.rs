@@ -1,4 +1,4 @@
-﻿//! Tests for single_session_render, split out of the parent module.
+//! Tests for single_session_render, split out of the parent module.
 
 use super::*;
 use crate::single_session::{

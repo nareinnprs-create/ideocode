@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Local-only Discovery fixture for evaluating an OpenRelay/Rivet listing.
 
 This server is intentionally separate from the hosted Discovery catalog. It

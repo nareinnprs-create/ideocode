@@ -1,4 +1,4 @@
-﻿#![cfg_attr(
+#![cfg_attr(
     test,
     expect(
         clippy::items_after_test_module,

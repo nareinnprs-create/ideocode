@@ -1,4 +1,4 @@
-﻿//! Cursor provider runtime (direct ChatService HTTP/2 streaming), moved out
+//! Cursor provider runtime (direct ChatService HTTP/2 streaming), moved out
 //! of `IDEOCODE-base` so provider edits compile only this crate plus a binary
 //! relink instead of rebuilding the base -> app-core -> tui spine. The
 //! binary's composition root registers [`CursorCliProvider`] with

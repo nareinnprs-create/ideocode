@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # Replay a IDEOCODE recording as video
 #
 # This script:

@@ -1,4 +1,4 @@
-﻿import boto3
+import boto3
 import hmac
 import json
 import os

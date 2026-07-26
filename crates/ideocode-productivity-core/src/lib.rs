@@ -1,4 +1,4 @@
-﻿//! Productivity report generation for IDEOCODE.
+//! Productivity report generation for IDEOCODE.
 //!
 //! Scans local session transcripts (with an incremental cache), computes
 //! interesting + shareable usage statistics, and renders them as both Markdown

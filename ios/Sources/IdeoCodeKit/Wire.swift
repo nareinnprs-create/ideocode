@@ -1,4 +1,4 @@
-﻿import Foundation
+import Foundation
 
 /// Client request to a IDEOCODE server.
 ///

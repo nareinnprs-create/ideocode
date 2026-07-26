@@ -1,4 +1,4 @@
-﻿use super::events::desktop_event_from_server_value;
+use super::events::desktop_event_from_server_value;
 use super::*;
 use serde_json::{Value, json};
 use std::io::{self, BufRead, BufReader, Write};

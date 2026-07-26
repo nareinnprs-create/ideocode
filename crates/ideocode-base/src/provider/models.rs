@@ -1,4 +1,4 @@
-﻿use crate::auth;
+use crate::auth;
 use crate::provider::cursor;
 
 #[path = "models_catalog.rs"]

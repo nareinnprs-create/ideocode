@@ -1,4 +1,4 @@
-﻿//! Native Cursor Agent transport implementing `agent.v1.AgentService/Run`.
+//! Native Cursor Agent transport implementing `agent.v1.AgentService/Run`.
 //!
 //! Cursor decommissioned the old `api2.cursor.sh/aiserver.v1.ChatService/
 //! StreamUnifiedChatWithTools` endpoint for API-key / CLI tokens (it now returns

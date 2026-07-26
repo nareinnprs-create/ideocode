@@ -1,4 +1,4 @@
-﻿//! State-space nodes for the UI.
+//! State-space nodes for the UI.
 //!
 //! `build_scene` is a pure function of `Model`, so the app's visual states
 //! form an enumerable graph. Each named node here is a deterministic `Model`

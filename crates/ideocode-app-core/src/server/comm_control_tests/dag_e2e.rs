@@ -1,4 +1,4 @@
-﻿// End-to-end task-DAG flow through the real server handlers and assignment loop.
+// End-to-end task-DAG flow through the real server handlers and assignment loop.
 //
 // Unlike the engine unit tests (which exercise `ideocode_plan::dag` in isolation),
 // this drives the live `comm_graph` handlers against real server state

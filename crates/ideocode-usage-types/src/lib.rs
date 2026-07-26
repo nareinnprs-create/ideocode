@@ -1,4 +1,4 @@
-﻿#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct ProviderUsage {
     pub provider_name: String,
     pub limits: Vec<UsageLimit>,

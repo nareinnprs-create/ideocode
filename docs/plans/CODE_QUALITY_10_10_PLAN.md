@@ -1,4 +1,4 @@
-﻿# Code Quality 10/10 Plan
+# Code Quality 10/10 Plan
 
 This document defines the quality target for IDEOCODE, the standards required to reach it, and the phased execution plan to get there without destabilizing the product.
 

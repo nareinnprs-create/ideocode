@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 #[test]
 fn load_for_dir_without_project_does_not_load_process_cwd_config() {

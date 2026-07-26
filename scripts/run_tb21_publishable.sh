@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Publishable Terminal-Bench 2.1 campaign for IDEOCODE + Opus 4.8 (native Anthropic

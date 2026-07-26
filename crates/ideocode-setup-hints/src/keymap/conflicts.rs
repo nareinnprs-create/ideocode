@@ -1,4 +1,4 @@
-﻿//! Detect conflicts between IDEOCODE's own key bindings and the bindings
+//! Detect conflicts between IDEOCODE's own key bindings and the bindings
 //! discovered on the machine (terminal emulator + macOS system shortcuts).
 //!
 //! The flow is:

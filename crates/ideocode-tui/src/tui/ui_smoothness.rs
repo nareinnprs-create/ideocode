@@ -1,4 +1,4 @@
-﻿//! Global anchor-stability (screen smoothness) recorder for the TUI.
+//! Global anchor-stability (screen smoothness) recorder for the TUI.
 //!
 //! Feeds one [`AnchorFrame`] per rendered frame from the messages area of the
 //! terminal buffer into an [`AnchorStabilityRecorder`], which classifies

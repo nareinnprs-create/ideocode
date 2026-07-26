@@ -1,4 +1,4 @@
-﻿//! System prompt management
+//! System prompt management
 
 use std::path::{Path, PathBuf};
 use std::process::Command;

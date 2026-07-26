@@ -1,4 +1,4 @@
-﻿use super::wait_for_reloading_server;
+use super::wait_for_reloading_server;
 use crate::build;
 use crate::{provider, session, storage, tool};
 use std::ffi::{OsStr, OsString};

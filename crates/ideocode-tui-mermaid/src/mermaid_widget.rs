@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 /// Border width for mermaid diagrams (left bar + space)
 pub(super) const BORDER_WIDTH: u16 = 2;

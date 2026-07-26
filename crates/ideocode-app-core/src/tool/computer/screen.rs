@@ -1,4 +1,4 @@
-﻿//! Screen observation: full-screen + per-window screenshots and OCR.
+//! Screen observation: full-screen + per-window screenshots and OCR.
 
 use super::osa;
 use anyhow::{Context, Result, bail};

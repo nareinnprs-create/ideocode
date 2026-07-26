@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Deterministic mock IDEOCODE gateway for end-to-end iOS app testing.
 
 Speaks the exact wire protocol from `crates/IDEOCODE-base/src/gateway.rs` on a

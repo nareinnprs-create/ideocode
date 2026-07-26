@@ -1,4 +1,4 @@
-﻿-- Sponsored-discovery funnel: browse -> select per sponsor.
+-- Sponsored-discovery funnel: browse -> select per sponsor.
 -- Usage:
 --   wrangler d1 execute IDEOCODE-telemetry --remote --file=discovery.sql
 --

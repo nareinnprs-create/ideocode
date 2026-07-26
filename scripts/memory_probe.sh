@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # memory_probe.sh - Reproducible memory probe harness for IDEOCODE TUI clients.
 #
 # Spawns a headless tester TUI via the debug socket (tester:spawn) that resumes

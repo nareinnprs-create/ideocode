@@ -1,4 +1,4 @@
-﻿use ideocode_render_core::{BlockKind, normalize_latex_math, parse_markdown};
+use ideocode_render_core::{BlockKind, normalize_latex_math, parse_markdown};
 
 fn math_display_count(markdown: &str) -> usize {
     parse_markdown(markdown)

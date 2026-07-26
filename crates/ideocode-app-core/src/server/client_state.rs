@@ -1,4 +1,4 @@
-﻿use super::ClientConnectionInfo;
+use super::ClientConnectionInfo;
 use super::server_has_newer_binary;
 use crate::agent::Agent;
 use crate::bus::Bus;

@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_side_diagram_uses_left_splitter_instead_of_rounded_box() {
     let _lock = scroll_render_test_lock();
     let mut app = create_test_app();

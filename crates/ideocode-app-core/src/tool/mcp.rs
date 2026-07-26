@@ -1,4 +1,4 @@
-﻿//! MCP management tool - connect, disconnect, list, reload MCP servers
+//! MCP management tool - connect, disconnect, list, reload MCP servers
 
 use crate::mcp::{McpManager, McpServerConfig};
 use crate::tool::{Tool, ToolContext, ToolOutput};

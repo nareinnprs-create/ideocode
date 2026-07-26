@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(crate) fn session_switcher_styled_lines(
     switcher: &SessionSwitcherState,

@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(super) fn maybe_write_context_json(
     params: &AgentGrepInput,

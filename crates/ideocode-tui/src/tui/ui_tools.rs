@@ -1,4 +1,4 @@
-﻿use crate::message::ToolCall;
+use crate::message::ToolCall;
 
 use super::{dim_color, rgb, tool_color, truncate_line_preserving_suffix_to_width};
 use ratatui::prelude::*;

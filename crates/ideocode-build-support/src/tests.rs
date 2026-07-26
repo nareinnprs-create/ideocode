@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 fn test_env_lock() -> std::sync::MutexGuard<'static, ()> {
     static ENV_LOCK: std::sync::OnceLock<std::sync::Mutex<()>> = std::sync::OnceLock::new();

@@ -1,4 +1,4 @@
-﻿use super::state_ui_storage::infer_spawned_session_startup_hints;
+use super::state_ui_storage::infer_spawned_session_startup_hints;
 use super::*;
 use crate::tui::ui::tools_ui;
 use crate::tui::{TuiState, backend};

@@ -1,4 +1,4 @@
-﻿use ratatui::style::Color;
+use ratatui::style::Color;
 use std::sync::OnceLock;
 
 use ratatui::buffer::Buffer;

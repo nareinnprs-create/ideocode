@@ -1,4 +1,4 @@
-﻿# Compile-time crate splitting plan
+# Compile-time crate splitting plan
 
 ## Goal
 

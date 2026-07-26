@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Headless E2E regression for the edit expand badge shortcut.
 
 This starts a real IDEOCODE TUI client inside a pseudo-terminal, prepares a real

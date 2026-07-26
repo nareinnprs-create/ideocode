@@ -1,4 +1,4 @@
-﻿use chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc};
 
 use super::{AmbientState, Priority, ScheduleTarget, ScheduledItem, take_pending_directives};
 

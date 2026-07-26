@@ -1,4 +1,4 @@
-﻿use crate::auth::{AuthState, AuthStatus};
+use crate::auth::{AuthState, AuthStatus};
 
 use super::pricing::cheapness_for_route;
 use super::{

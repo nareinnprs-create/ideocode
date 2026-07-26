@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 /// Largest byte index `<= index` that is a UTF-8 char boundary in `text`.
 /// Equivalent to the unstable `str::floor_char_boundary`, reimplemented so the

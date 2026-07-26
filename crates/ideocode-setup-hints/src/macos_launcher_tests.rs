@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 #[test]
 fn macos_launcher_script_shows_alerts_and_uses_terminal_launcher() {

@@ -1,4 +1,4 @@
-﻿-- Website visit -> successful first IDEOCODE launch funnel, last 30 days.
+-- Website visit -> successful first IDEOCODE launch funnel, last 30 days.
 -- Usage:
 --   wrangler d1 execute IDEOCODE-telemetry --remote --file=conversion.sql
 

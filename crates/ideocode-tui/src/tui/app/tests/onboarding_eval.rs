@@ -1,4 +1,4 @@
-﻿// Offline onboarding-efficiency evaluator.
+// Offline onboarding-efficiency evaluator.
 //
 // We cannot (and do not want to) collect data from real users, so instead of
 // measuring a live funnel we treat the onboarding flow as an artifact and score

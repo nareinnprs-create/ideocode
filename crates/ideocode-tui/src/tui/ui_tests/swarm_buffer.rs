@@ -1,4 +1,4 @@
-﻿//! Buffer-level (terminal cell) verification for the inline swarm strip and
+//! Buffer-level (terminal cell) verification for the inline swarm strip and
 //! the notification line.
 //!
 //! Prior swarm-strip/notification tests only checked `Line` construction

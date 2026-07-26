@@ -1,4 +1,4 @@
-﻿import IDEOCODEKit
+import IDEOCODEKit
 import SwiftUI
 
 /// Collapsible tool call card with live status.

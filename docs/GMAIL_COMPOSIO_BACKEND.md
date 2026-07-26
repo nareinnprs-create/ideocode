@@ -1,4 +1,4 @@
-﻿# Gmail Tool: Composio Managed Backend
+# Gmail Tool: Composio Managed Backend
 
 The native `gmail` tool can source credentials and transport from one of two
 backends. The tool interface, confirmation gating, access-tier logic, and

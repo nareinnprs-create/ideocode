@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 /// Selection knobs for the real-transcript benchmarks.
 ///

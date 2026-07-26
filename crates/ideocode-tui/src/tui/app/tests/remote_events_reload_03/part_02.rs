@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_metadata_only_history_preserves_fast_restored_startup_state() {
     let _guard = crate::storage::lock_test_env();
     let temp_home = tempfile::TempDir::new().expect("create temp home");

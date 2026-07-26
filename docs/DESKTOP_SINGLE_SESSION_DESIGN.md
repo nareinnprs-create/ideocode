@@ -1,4 +1,4 @@
-﻿# Desktop Single Session Design
+# Desktop Single Session Design
 
 This document describes the visual target for the default `IDEOCODE-desktop` single-session mode.
 

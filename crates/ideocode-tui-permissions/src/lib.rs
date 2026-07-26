@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use chrono::Utc;
 use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};
 use ideocode_base::safety::{self, PermissionRequest, Urgency};

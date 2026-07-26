@@ -1,4 +1,4 @@
-﻿//! Multi-compositor Linux launch-hotkey support.
+//! Multi-compositor Linux launch-hotkey support.
 //!
 //! niri has its own dedicated module ([`crate::linux_niri`]) because it splices
 //! KDL inside a `binds { }` block. Every other supported environment

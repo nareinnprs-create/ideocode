@@ -1,4 +1,4 @@
-﻿import IDEOCODEKit
+import IDEOCODEKit
 import SwiftUI
 
 /// Main conversation screen.

@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_fast_default_on_saves_config_and_updates_session() {
     let _guard = crate::storage::lock_test_env();
     let temp = tempfile::tempdir().expect("tempdir");

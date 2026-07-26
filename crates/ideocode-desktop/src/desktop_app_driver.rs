@@ -1,4 +1,4 @@
-﻿#![allow(dead_code)]
+#![allow(dead_code)]
 
 use crate::desktop_scene::DesktopScene;
 use crate::session_launch;

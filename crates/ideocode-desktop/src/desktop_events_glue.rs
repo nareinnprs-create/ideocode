@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(crate) fn desktop_key_event_to_key_input(event: &DesktopKeyEvent) -> KeyInput {
     let modifiers = desktop_key_modifiers_to_winit(event.modifiers);

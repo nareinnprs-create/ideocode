@@ -1,4 +1,4 @@
-﻿use super::client_lifecycle::process_message_streaming_mpsc;
+use super::client_lifecycle::process_message_streaming_mpsc;
 use super::state::{
     SessionControlHandle, SessionInterruptQueues, queue_soft_interrupt_for_session,
     session_event_fanout_sender,

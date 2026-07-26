@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Post one GitHub release announcement to a Discord webhook.
 
 The release workflow publishes releases with GitHub's built-in GITHUB_TOKEN.

@@ -1,4 +1,4 @@
-﻿# Client-Core vs Presentation Split Plan
+# Client-Core vs Presentation Split Plan
 
 Status: Proposed
 

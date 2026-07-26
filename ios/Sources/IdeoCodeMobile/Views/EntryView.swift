@@ -1,4 +1,4 @@
-﻿import IDEOCODEKit
+import IDEOCODEKit
 import SwiftUI
 
 /// Friendly placeholder for a fresh session, centered in the canvas.

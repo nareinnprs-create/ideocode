@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Compositor-level verification that Alt+Shift+E is NO LONGER grabbed by niri
 # and is delivered to the focused terminal.
 #

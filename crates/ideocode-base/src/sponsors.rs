@@ -1,4 +1,4 @@
-﻿//! Partner discovery: shared constants and provenance tracking.
+//! Partner discovery: shared constants and provenance tracking.
 //!
 //! Partner discovery makes third-party developer tools discoverable to the
 //! agent through the `discover_tools` tool, backed by a hosted manifest. All

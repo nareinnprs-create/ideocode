@@ -1,4 +1,4 @@
-﻿//! Client-to-server requests: the curated stable surface.
+//! Client-to-server requests: the curated stable surface.
 
 use serde::{Deserialize, Serialize};
 

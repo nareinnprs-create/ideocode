@@ -1,4 +1,4 @@
-﻿# Self-Development Mode
+# Self-Development Mode
 
 You are working on the IDEOCODE codebase itself.
 

@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # Test script to capture and analyze debug socket events
 # Usage: ./scripts/debug_socket_test.sh [capture|compare]
 

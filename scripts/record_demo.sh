@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # IDEOCODE demo recording orchestrator
 # Usage: ./scripts/record_demo.sh <demo_name> <prompt>
 #

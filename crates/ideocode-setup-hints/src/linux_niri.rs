@@ -1,4 +1,4 @@
-﻿//! Render and install global "launch a new IDEOCODE" hotkeys on Linux/niri.
+//! Render and install global "launch a new IDEOCODE" hotkeys on Linux/niri.
 //!
 //! Unlike macOS, a Wayland client cannot grab system-wide hotkeys: the
 //! `global-hotkey` crate only works on X11/macOS. The portable, correct

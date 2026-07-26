@@ -1,4 +1,4 @@
-﻿# IDEOCODE Telemetry Worker
+# IDEOCODE Telemetry Worker
 
 Cloudflare Worker that receives anonymous telemetry events from IDEOCODE.
 

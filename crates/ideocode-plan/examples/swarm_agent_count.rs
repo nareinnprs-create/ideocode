@@ -1,4 +1,4 @@
-﻿//! Measure how many agents a swarm task graph would spawn.
+//! Measure how many agents a swarm task graph would spawn.
 //!
 //! This drives the *real* task-DAG engine (`ideocode_plan::dag`) with scripted mock
 //! workers and counts the things that map to live runtime behaviour:

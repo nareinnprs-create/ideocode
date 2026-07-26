@@ -1,4 +1,4 @@
-﻿use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 const PROVIDER_FAILOVER_PROMPT_PREFIX: &str = "[IDEOCODE-provider-failover]";
 

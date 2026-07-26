@@ -1,4 +1,4 @@
-﻿//! Re-exports of the shared output-style helpers (emoji suppression, see #526).
+//! Re-exports of the shared output-style helpers (emoji suppression, see #526).
 //!
 //! Items are re-exported explicitly rather than with a glob so the crate
 //! boundary stays visible in the API surface.

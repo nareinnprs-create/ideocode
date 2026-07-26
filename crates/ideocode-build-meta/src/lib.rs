@@ -1,4 +1,4 @@
-﻿//! Build and runtime version metadata for IDEOCODE.
+//! Build and runtime version metadata for IDEOCODE.
 //!
 //! The build script (`build.rs`) computes git- and version-derived values and
 //! emits them via `cargo:rustc-env`. Most binaries use those compile-time values.

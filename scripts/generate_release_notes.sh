@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Generate a human-readable release notes body for a IDEOCODE release (issue #435).

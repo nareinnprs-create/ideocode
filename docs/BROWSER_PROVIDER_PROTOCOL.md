@@ -1,4 +1,4 @@
-﻿# Browser Provider Protocol
+# Browser Provider Protocol
 
 Status: draft
 Owner: IDEOCODE

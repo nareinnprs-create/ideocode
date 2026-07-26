@@ -1,4 +1,4 @@
-﻿//! Mermaid source generation for the swarm plan graph.
+//! Mermaid source generation for the swarm plan graph.
 //!
 //! The generator itself lives in `IDEOCODE-plan` (`crate::plan::mermaid`) so the
 //! renderer stress probe (`IDEOCODE-tui-mermaid/examples/swarm_plan_stress.rs`)

@@ -1,4 +1,4 @@
-﻿fn main() {
+fn main() {
     let names: Vec<String> = (0..3000)
         .map(|i| {
             format!(

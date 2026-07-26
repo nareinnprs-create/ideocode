@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_remote_done_shows_footer_after_final_tool_result_without_trailing_text() {
     let mut app = create_test_app();
     let rt = tokio::runtime::Runtime::new().unwrap();

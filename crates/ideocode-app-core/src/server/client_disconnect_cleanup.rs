@@ -1,4 +1,4 @@
-﻿use super::{
+use super::{
     ClientConnectionInfo, ClientDebugState, FileTouchService, SessionInterruptQueues, SwarmEvent,
     SwarmEventType, SwarmMember, VersionedPlan, record_swarm_event, remove_background_tool_signal,
     remove_session_channel_subscriptions, remove_session_from_swarm,

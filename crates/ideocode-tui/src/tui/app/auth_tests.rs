@@ -1,4 +1,4 @@
-﻿use super::{
+use super::{
     App, antigravity_input_requires_state_validation, save_tui_openai_compatible_api_base,
     save_tui_openai_compatible_key,
 };

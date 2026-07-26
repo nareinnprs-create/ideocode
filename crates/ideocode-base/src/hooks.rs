@@ -1,4 +1,4 @@
-﻿//! User-configurable lifecycle hooks.
+//! User-configurable lifecycle hooks.
 //!
 //! Hooks are external commands that IDEOCODE runs at well-defined lifecycle
 //! points so other programs can observe or gate agent behavior without

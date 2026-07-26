@@ -1,4 +1,4 @@
-﻿//! Visual Debug Infrastructure
+//! Visual Debug Infrastructure
 //!
 //! Captures TUI frame state for autonomous debugging by AI agents.
 //! When enabled, writes detailed render information to a debug file

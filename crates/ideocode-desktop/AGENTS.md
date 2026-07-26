@@ -1,4 +1,4 @@
-﻿# IDEOCODE Desktop Agent Context
+# IDEOCODE Desktop Agent Context
 
 - This directory is the IDEOCODE desktop application crate. When a desktop-launched agent opens here, assume self-development work is focused on the desktop application unless the user says otherwise.
 - Prefer targeted desktop checks while iterating: `cargo check -p IDEOCODE-desktop` and relevant `IDEOCODE-desktop` tests.

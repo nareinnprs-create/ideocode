@@ -1,4 +1,4 @@
-﻿-- Current UTC-day and trailing-24h DAU dashboard.
+-- Current UTC-day and trailing-24h DAU dashboard.
 -- Usage:
 --   wrangler d1 execute IDEOCODE-telemetry --remote --file=dau.sql
 --

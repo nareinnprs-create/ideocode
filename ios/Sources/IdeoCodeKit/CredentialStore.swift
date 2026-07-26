@@ -1,4 +1,4 @@
-﻿import Foundation
+import Foundation
 
 /// A saved server credential.
 public struct ServerCredential: Codable, Equatable, Sendable, Identifiable {

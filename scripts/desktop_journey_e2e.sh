@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Real-window E2E user-journey test for IDEOCODE-desktop under niri.

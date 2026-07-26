@@ -1,4 +1,4 @@
-﻿//! Mermaid flowchart source generation for a swarm plan's task DAG.
+//! Mermaid flowchart source generation for a swarm plan's task DAG.
 //!
 //! Lives in `IDEOCODE-plan` (rather than the TUI) so every consumer renders the
 //! same graph from the same logic: the TUI's inline plan-graph message, and

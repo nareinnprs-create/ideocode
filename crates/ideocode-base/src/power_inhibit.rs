@@ -1,4 +1,4 @@
-﻿//! Process-wide "keep the machine awake while IDEOCODE is working" inhibitor.
+//! Process-wide "keep the machine awake while IDEOCODE is working" inhibitor.
 //!
 //! The shared `IDEOCODE serve` daemon hosts every session, so a single inhibitor
 //! living in that process is enough to keep the laptop awake while *any* session

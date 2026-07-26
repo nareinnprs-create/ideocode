@@ -1,4 +1,4 @@
-﻿//! Ignored embed-latency probe for the tract inference stack.
+//! Ignored embed-latency probe for the tract inference stack.
 //!
 //! Motivation: at opt-level 0 (plain dev/selfdev profiles before the
 //! workspace pinned tract-* and tokenizers to opt-level 3) a single MiniLM

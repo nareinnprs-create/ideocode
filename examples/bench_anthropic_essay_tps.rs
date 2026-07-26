@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use futures::StreamExt;
 use ideocode::message::{ContentBlock, Message, Role, StreamEvent};
 use ideocode::provider::Provider;

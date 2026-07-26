@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn precise_viewport_accepts_high_auto_zoom_without_panicking() {
     let area = ratatui::prelude::Rect::new(0, 0, 40, 20);
     let mut buf = ratatui::buffer::Buffer::empty(area);

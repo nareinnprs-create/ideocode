@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::message::{Message, StreamEvent, ToolDefinition};
 use crate::provider::{EventStream, Provider};
 use async_trait::async_trait;

@@ -1,4 +1,4 @@
-﻿# AgentCard Discovery demo
+# AgentCard Discovery demo
 
 This demo gives IDEOCODE a deterministic local storefront. The agent can search,
 inspect, and add a simulated charger, while checkout behaves like a shop with no

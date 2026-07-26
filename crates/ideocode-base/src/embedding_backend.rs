@@ -1,4 +1,4 @@
-﻿//! Pluggable embedding backends for memory retrieval.
+//! Pluggable embedding backends for memory retrieval.
 //!
 //! Memory dense-retrieval embeds two kinds of text: stored memories (passages)
 //! and the current query. Historically IDEOCODE had exactly one embedder, the

@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_local_bus_dictation_completion_ignores_other_session() {
     let mut app = create_test_app();
     let session_id = app.session.id.clone();

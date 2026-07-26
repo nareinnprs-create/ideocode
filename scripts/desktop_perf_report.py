@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Summarize IDEOCODE Desktop persistent performance logs.
 
 The desktop app writes JSONL events to ~/.cache/IDEOCODE/desktop/performance.log.

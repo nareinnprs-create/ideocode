@@ -1,4 +1,4 @@
-﻿use super::{SidePanelSource, make_text};
+use super::{SidePanelSource, make_text};
 use anyhow::{Context, Result};
 use ideocode::side_panel::{
     SidePanelPage, SidePanelPageFormat, SidePanelPageSource, SidePanelSnapshot,

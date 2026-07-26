@@ -1,4 +1,4 @@
-﻿//! Cross-session search tool - RAG across all past sessions
+//! Cross-session search tool - RAG across all past sessions
 //!
 //! The tool is optimized for agent recall rather than raw grep output:
 //! - current session, system reminders, and tool-only messages are hidden by default

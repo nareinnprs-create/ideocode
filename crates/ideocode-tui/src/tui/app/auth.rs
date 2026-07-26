@@ -1,4 +1,4 @@
-﻿#[path = "auth_account_commands.rs"]
+#[path = "auth_account_commands.rs"]
 mod auth_account_commands;
 #[path = "auth_account_picker.rs"]
 mod auth_account_picker;

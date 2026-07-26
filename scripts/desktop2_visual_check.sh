@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Enforce the mechanical rules from docs/DESKTOP2_VISUAL_CHECKLIST.md that are
 # about source shape rather than rendered output.
 #

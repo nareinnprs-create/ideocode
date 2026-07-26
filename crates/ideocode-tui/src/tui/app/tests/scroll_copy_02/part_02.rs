@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_copy_badge_modifier_highlights_while_held() {
     let _render_lock = scroll_render_test_lock();
     let (mut app, mut terminal) = create_copy_test_app();

@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use bytes::Bytes;
 use futures::Stream;
 use ideocode_message_types::StreamEvent;

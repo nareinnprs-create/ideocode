@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(crate) const SHADER: &str = r#"
 struct VertexOutput {

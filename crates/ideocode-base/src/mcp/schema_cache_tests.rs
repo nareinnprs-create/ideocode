@@ -1,4 +1,4 @@
-﻿//! Tests for the MCP tool-schema disk cache.
+//! Tests for the MCP tool-schema disk cache.
 
 use super::*;
 use crate::mcp::protocol::McpServerConfig;

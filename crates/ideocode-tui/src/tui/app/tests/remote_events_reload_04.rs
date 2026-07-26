@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_remote_debug_frame_commands_request_a_fresh_draw() {
     for command in [
         "frame",

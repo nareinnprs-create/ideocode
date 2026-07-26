@@ -1,4 +1,4 @@
-﻿//! First-run onboarding welcome screen.
+//! First-run onboarding welcome screen.
 //!
 //! Rendered in place of the normal empty-state transcript when
 //! `TuiState::onboarding_welcome_active()` is true (brand-new install /

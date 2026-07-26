@@ -1,4 +1,4 @@
-﻿//! Cross-provider activity ledger.
+//! Cross-provider activity ledger.
 //!
 //! Tracks two things per login/credential ("source key"):
 //!   1. When IDEOCODE last successfully used it (for recency-sorted `/usage`).

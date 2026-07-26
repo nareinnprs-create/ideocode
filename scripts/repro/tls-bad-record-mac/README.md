@@ -1,4 +1,4 @@
-﻿# TLS `BadRecordMac` transport-retry reproduction
+# TLS `BadRecordMac` transport-retry reproduction
 
 Standalone reproduction for the bug fixed in commit
 `fix(providers): retry on TLS transport faults (BadRecordMac) across all providers`.

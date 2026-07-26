@@ -1,4 +1,4 @@
-﻿//! Clamp outbound image dimensions before sending a request to a provider.
+//! Clamp outbound image dimensions before sending a request to a provider.
 //!
 //! Anthropic's Messages API enforces a per-image pixel cap that depends on how
 //! many images the request carries:

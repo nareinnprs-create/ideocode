@@ -1,4 +1,4 @@
-﻿#![cfg_attr(test, allow(clippy::await_holding_lock))]
+#![cfg_attr(test, allow(clippy::await_holding_lock))]
 
 use super::{
     NotifySessionContext, clone_split_session, handle_notify_session, handle_rename_session,

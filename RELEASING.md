@@ -1,4 +1,4 @@
-﻿# Releasing IDEOCODE
+# Releasing IDEOCODE
 
 IDEOCODE has two release paths: a fast local path for hotfixes, and CI for full releases.
 

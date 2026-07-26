@@ -1,4 +1,4 @@
-﻿//! Standalone harness API bridge daemon.
+//! Standalone harness API bridge daemon.
 //!
 //! Usage: IDEOCODE-harness-api-bridge [api_socket] [legacy_socket]
 

@@ -1,4 +1,4 @@
-﻿//! Progressive disclosure: return full specs for advanced actions on demand,
+//! Progressive disclosure: return full specs for advanced actions on demand,
 //! so the always-on tool schema stays small.
 
 use anyhow::Result;

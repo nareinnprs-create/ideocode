@@ -1,4 +1,4 @@
-﻿//! Detection of an abandoned controlling terminal.
+//! Detection of an abandoned controlling terminal.
 //!
 //! A TUI client can outlive its terminal: if the terminal emulator dies
 //! without delivering SIGHUP (or the signal arrives while the runtime is

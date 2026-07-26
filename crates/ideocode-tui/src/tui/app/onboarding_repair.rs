@@ -1,4 +1,4 @@
-﻿//! Agent-assisted onboarding recovery.
+//! Agent-assisted onboarding recovery.
 //!
 //! When a first-run login import/validation fails, the recovery screen offers
 //! to hand the problem to an AI coding agent the user already uses. This module:

@@ -1,4 +1,4 @@
-﻿//! In-process multi-client reload tests.
+//! In-process multi-client reload tests.
 //!
 //! These exercise the real server reload fan-out and streaming-interrupt paths
 //! against a `MockProvider` with multiple clients attached, without execing a

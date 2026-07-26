@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(crate) fn handle_auth_command(app: &mut App, trimmed: &str) -> bool {
     if trimmed == "/auth" {

@@ -1,4 +1,4 @@
-﻿use super::{
+use super::{
     PersistedSwarmMutationResponse, SwarmMutationRuntime, begin_or_join_in_flight, begin_or_replay,
     finish_request, request_key,
 };

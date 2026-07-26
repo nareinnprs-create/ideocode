@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use std::time::{Duration, Instant};
 
 struct EnvGuard {

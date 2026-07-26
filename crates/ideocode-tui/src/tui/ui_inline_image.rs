@@ -1,4 +1,4 @@
-﻿//! Inline image transcript section.
+//! Inline image transcript section.
 //!
 //! Images attached to the conversation (pasted screenshots, `read` of an image
 //! file, generated images) render directly in the chat flow, sized to fit the

@@ -1,4 +1,4 @@
-﻿pub use ideocode_build_support::{
+pub use ideocode_build_support::{
     BinaryChoice, BinaryVersionReport, BuildInfo, BuildManifest, CanaryStatus, CrashInfo,
     DevBinarySourceMetadata, MigrationContext, PendingActivation, PublishedBuild,
     SELFDEV_CARGO_PROFILE, SelfDevBuildCommand, SelfDevBuildTarget, SharedServerRepair,

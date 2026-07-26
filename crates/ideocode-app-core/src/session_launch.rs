@@ -1,4 +1,4 @@
-﻿//! Launching IDEOCODE sessions in new terminal windows.
+//! Launching IDEOCODE sessions in new terminal windows.
 //!
 //! These helpers spawn a fresh `IDEOCODE` process (resume or self-dev) inside a
 //! new terminal window. They are pure process/terminal orchestration built on

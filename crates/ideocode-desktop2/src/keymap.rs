@@ -1,4 +1,4 @@
-﻿//! Keymap: winit key events to editor actions.
+//! Keymap: winit key events to editor actions.
 //!
 //! The chords mirror the IDEOCODE TUI (see `IDEOCODE-tui/src/tui/app/input.rs`) so
 //! muscle memory transfers. Resolution is a pure function of key + modifiers,

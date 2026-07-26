@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Post-upload TestFlight setup for IDEOCODEMobile.
 
 Run after a build reaches App Store Connect (PLA must be accepted):

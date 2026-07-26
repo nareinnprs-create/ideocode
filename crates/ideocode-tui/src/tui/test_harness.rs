@@ -1,4 +1,4 @@
-﻿//! TUI Test Harness
+//! TUI Test Harness
 //!
 //! Comprehensive testing infrastructure for autonomous TUI testing.
 //! Provides deterministic clock, event replay, log bundles, and headless rendering.

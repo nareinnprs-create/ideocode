@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub fn selfdev_status_output() -> Result<ToolOutput> {
     let manifest = build::BuildManifest::load()?;

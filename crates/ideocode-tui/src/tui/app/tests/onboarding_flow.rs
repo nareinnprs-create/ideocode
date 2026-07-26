@@ -1,4 +1,4 @@
-﻿// Integration tests for the first-run onboarding flow control logic.
+// Integration tests for the first-run onboarding flow control logic.
 
 use super::onboarding_flow::{ExternalCli, OnboardingFlow, OnboardingPhase};
 

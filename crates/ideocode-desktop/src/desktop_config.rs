@@ -1,4 +1,4 @@
-﻿use crate::{desktop_log, desktop_session_events::BACKEND_EVENT_FORWARD_MAX_RAW_EVENTS};
+use crate::{desktop_log, desktop_session_events::BACKEND_EVENT_FORWARD_MAX_RAW_EVENTS};
 use std::ffi::OsString;
 use std::time::{Duration, Instant};
 

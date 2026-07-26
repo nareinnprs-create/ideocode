@@ -1,4 +1,4 @@
-﻿-- Canonical "total users" definitions for IDEOCODE telemetry.
+-- Canonical "total users" definitions for IDEOCODE telemetry.
 -- Usage:
 --   wrangler d1 execute IDEOCODE-telemetry --remote --file=users.sql
 --

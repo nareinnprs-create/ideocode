@@ -1,4 +1,4 @@
-﻿//! Embedding facade for IDEOCODE.
+//! Embedding facade for IDEOCODE.
 //!
 //! The heavy ONNX/tokenizer implementation lives in the `IDEOCODE-embedding`
 //! workspace crate so unchanged embedding code can stay cached across self-dev

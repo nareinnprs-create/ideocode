@@ -1,4 +1,4 @@
-﻿use chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use std::cmp::Reverse;

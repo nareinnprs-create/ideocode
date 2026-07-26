@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 IDEOCODE Stress Test: Spawn 40 sessions via debug socket, measure performance.
 

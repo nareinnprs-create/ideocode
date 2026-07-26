@@ -1,4 +1,4 @@
-﻿use std::fmt;
+use std::fmt;
 use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::path::PathBuf;

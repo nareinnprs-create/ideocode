@@ -1,4 +1,4 @@
-﻿//! Single source of truth for "which credential will this provider actually
+//! Single source of truth for "which credential will this provider actually
 //! use right now?".
 //!
 //! Several UI surfaces need to answer the same question -- the header provider

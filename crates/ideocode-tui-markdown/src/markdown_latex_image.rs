@@ -1,4 +1,4 @@
-﻿use image::GenericImageView;
+use image::GenericImageView;
 use ratatui::prelude::{Line, Modifier, Span, Style};
 use std::collections::{HashMap, VecDeque};
 use std::fs;

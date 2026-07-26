@@ -1,4 +1,4 @@
-﻿use pulldown_cmark::{CodeBlockKind, Event, Options, Parser, Tag, TagEnd};
+use pulldown_cmark::{CodeBlockKind, Event, Options, Parser, Tag, TagEnd};
 use ratatui::prelude::*;
 use serde::Serialize;
 use std::collections::HashMap;

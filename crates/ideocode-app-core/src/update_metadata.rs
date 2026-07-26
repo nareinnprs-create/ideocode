@@ -1,4 +1,4 @@
-﻿//! On-disk state shared by every IDEOCODE process that checks for updates.
+//! On-disk state shared by every IDEOCODE process that checks for updates.
 //!
 //! Update checks are cheap but rate limited, and several IDEOCODE processes can run
 //! on one machine at once, so the cadence and backoff state live in a single

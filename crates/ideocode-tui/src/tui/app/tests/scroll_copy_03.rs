@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_scroll_ctrl_k_j_offset() {
     let _render_lock = scroll_render_test_lock();
     let (mut app, mut terminal) = create_scroll_test_app(100, 30, 1, 20);

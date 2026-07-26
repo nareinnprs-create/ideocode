@@ -1,4 +1,4 @@
-﻿mod accessors;
+mod accessors;
 mod account_failover;
 pub mod activation;
 pub mod anthropic;

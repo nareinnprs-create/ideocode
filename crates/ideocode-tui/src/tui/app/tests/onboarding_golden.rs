@@ -1,4 +1,4 @@
-﻿// Golden state-space walker for the first-run onboarding welcome screen.
+// Golden state-space walker for the first-run onboarding welcome screen.
 //
 // This renders every onboarding phase to an offscreen TestBackend and captures
 // the exact text the user sees. It serves two purposes:

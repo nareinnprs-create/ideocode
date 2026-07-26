@@ -1,4 +1,4 @@
-﻿//! Desktop notification for completed long agent turns.
+//! Desktop notification for completed long agent turns.
 //!
 //! When a turn finishes after a configurable duration (lower threshold when
 //! the session has todos, since those indicate task-style work), the user gets

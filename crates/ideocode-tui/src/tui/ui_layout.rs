@@ -1,4 +1,4 @@
-﻿use ratatui::prelude::*;
+use ratatui::prelude::*;
 
 pub(crate) use ideocode_tui_render::chrome::{
     align_if_unset, centered_content_block_width, left_aligned_content_inset,

@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 /// Total per-request timeout for model catalog fetches. The shared HTTP
 /// client only sets a connect timeout, so without this a hung catalog request

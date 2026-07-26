@@ -1,4 +1,4 @@
-﻿use super::render_support::highlight_code;
+use super::render_support::highlight_code;
 use super::*;
 
 thread_local! {

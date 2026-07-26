@@ -1,4 +1,4 @@
-﻿use super::{
+use super::{
     LoginProviderAuthKind, LoginProviderAuthStateKey, LoginProviderDescriptor,
     LoginProviderSurfaceOrder, LoginProviderTarget, OpenAiCompatibleProfile,
 };

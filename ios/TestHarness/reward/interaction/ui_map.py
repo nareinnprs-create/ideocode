@@ -1,4 +1,4 @@
-﻿"""Map the SwiftUI source -> tappable-control GEOMETRY per screen (`ui_map` worker).
+"""Map the SwiftUI source -> tappable-control GEOMETRY per screen (`ui_map` worker).
 
 This module extracts the geometry (size + on-screen center, in points) of every
 interactive control on each IDEOCODE-mobile screen so the interaction-cost model can

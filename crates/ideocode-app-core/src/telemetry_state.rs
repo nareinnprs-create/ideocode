@@ -1,4 +1,4 @@
-﻿use super::{SESSION_STATE, sanitize_telemetry_label};
+use super::{SESSION_STATE, sanitize_telemetry_label};
 use crate::storage;
 use chrono::{DateTime, Datelike, Timelike, Utc};
 use std::path::PathBuf;

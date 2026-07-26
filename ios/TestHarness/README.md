@@ -1,4 +1,4 @@
-﻿# iOS E2E Test Harness
+# iOS E2E Test Harness
 
 A deterministic, no-LLM harness for developing and validating the IDEOCODE iOS
 client (`IDEOCODEMobile`) end-to-end. It replaces the role of the old Rust

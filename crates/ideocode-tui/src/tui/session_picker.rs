@@ -1,4 +1,4 @@
-﻿//! Interactive session picker with preview
+//! Interactive session picker with preview
 //!
 //! Shows a list of sessions on the left, with a preview of the selected session's
 //! conversation on the right. Sessions are grouped by server for multi-server support.

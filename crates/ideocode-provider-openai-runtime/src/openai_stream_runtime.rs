@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 #[path = "openai_rate_limit_format.rs"]
 mod openai_rate_limit_format;

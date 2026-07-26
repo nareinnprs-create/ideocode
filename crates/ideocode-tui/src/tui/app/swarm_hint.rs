@@ -1,4 +1,4 @@
-﻿//! One-time TUI nudge teaching that the swarm config is a prompt file.
+//! One-time TUI nudge teaching that the swarm config is a prompt file.
 //!
 //! Swarms are complicated, dynamic systems, so their routing policy (which
 //! model/effort each spawned worker gets) is passed to the model as a prompt

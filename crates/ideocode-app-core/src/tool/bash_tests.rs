@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::bus::{BackgroundTaskProgressSource, BackgroundTaskStatus};
 use crate::tool::StdinInputRequest;
 use crate::tool::bash::{BashTool, parse_heuristic_progress};

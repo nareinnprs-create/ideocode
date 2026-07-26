@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::io::Write;

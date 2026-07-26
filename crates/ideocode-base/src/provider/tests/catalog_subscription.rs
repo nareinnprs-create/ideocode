@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_openai_provider_unavailability_is_scoped_per_account() {
     let _guard = crate::storage::lock_test_env();
 

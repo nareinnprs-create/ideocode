@@ -1,4 +1,4 @@
-﻿name: IDEOCODEMobile
+name: IDEOCODEMobile
 options:
   bundleIdPrefix: com.IDEOCODE
   deploymentTarget:

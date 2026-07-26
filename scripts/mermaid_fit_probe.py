@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Probe IDEOCODE pinned Mermaid fit planning for screenshot repros.
 
 This intentionally mirrors the geometry math in src/tui/ui_diagram_pane.rs so a

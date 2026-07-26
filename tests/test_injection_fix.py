@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Test script to verify soft interrupt injection happens at the correct point.
 

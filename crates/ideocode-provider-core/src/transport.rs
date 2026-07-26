@@ -1,4 +1,4 @@
-﻿//! Shared transport-level error classification for provider runtimes.
+//! Shared transport-level error classification for provider runtimes.
 //!
 //! Every provider (Anthropic, OpenAI, Gemini, Cursor, ...) needs to decide
 //! whether a request failure is a transient transport fault worth retrying on

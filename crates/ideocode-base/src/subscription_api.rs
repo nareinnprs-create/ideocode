@@ -1,4 +1,4 @@
-﻿//! Typed client for the IDEOCODE account and subscription API.
+//! Typed client for the IDEOCODE account and subscription API.
 //!
 //! All bearer credentials are sent in authorization headers or JSON response
 //! bodies. They are never placed in URLs, redirects, or diagnostic messages.

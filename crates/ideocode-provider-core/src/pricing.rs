@@ -1,4 +1,4 @@
-﻿use crate::{RouteCheapnessEstimate, RouteCostConfidence, RouteCostSource};
+use crate::{RouteCheapnessEstimate, RouteCostConfidence, RouteCostSource};
 
 fn usd_to_micros(usd: f64) -> u64 {
     (usd * 1_000_000.0).round() as u64

@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_build_response_request_includes_stream_for_http() {
     let request = OpenAIProvider::build_response_request(
         "gpt-5.4",

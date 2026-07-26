@@ -1,4 +1,4 @@
-﻿# Ambient Mode
+# Ambient Mode
 
 > **Status:** Design
 > **Updated:** 2026-02-08

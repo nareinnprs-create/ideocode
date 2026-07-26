@@ -1,4 +1,4 @@
-﻿use anyhow::{Result, anyhow};
+use anyhow::{Result, anyhow};
 use std::panic::AssertUnwindSafe;
 use std::path::Path;
 

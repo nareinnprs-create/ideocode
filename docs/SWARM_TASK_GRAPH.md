@@ -1,4 +1,4 @@
-﻿# Swarm as a Task DAG (Design)
+# Swarm as a Task DAG (Design)
 
 Status: Being implemented (supersedes the agent-first framing in
 `SWARM_ARCHITECTURE.md`). The DAG engine, deep/light modes, gates, growth

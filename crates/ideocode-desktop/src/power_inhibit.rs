@@ -1,4 +1,4 @@
-﻿use std::process::{Child, Command, Stdio};
+use std::process::{Child, Command, Stdio};
 
 const DISABLE_ENV: &str = "IDEOCODE_DISABLE_POWER_INHIBIT";
 const MODE_ENV: &str = "IDEOCODE_DESKTOP_POWER_INHIBIT";

@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # Capture IDEOCODE screenshots with your actual terminal theme
 # Usage: ./capture_screenshot.sh [output_name]
 

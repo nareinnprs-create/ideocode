@@ -1,4 +1,4 @@
-﻿//! Headless state-space walker for the desktop UI.
+//! Headless state-space walker for the desktop UI.
 //!
 //! Explores the reachable UI state graph by replaying every interesting
 //! `KeyInput` against cloned app states (BFS with snapshot-based dedup) and

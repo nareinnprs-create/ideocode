@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Attribution benchmark for sponsored Discovery listings.
 
 For every sponsor in the catalog, this suite verifies that a signup or

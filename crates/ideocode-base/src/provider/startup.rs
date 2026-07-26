@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 impl MultiProvider {
     pub(super) fn spawn_post_auth_model_refresh(

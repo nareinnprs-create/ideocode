@@ -1,4 +1,4 @@
-﻿/// Quality-first default for Claude-capable routes.
+/// Quality-first default for Claude-capable routes.
 pub const DEFAULT_CLAUDE_MODEL: &str = "claude-fable-5";
 
 /// Quality-first default for OpenAI-capable routes.

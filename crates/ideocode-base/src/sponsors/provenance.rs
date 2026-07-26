@@ -1,4 +1,4 @@
-﻿//! Sponsored-discovery provenance and coarse usage metering.
+//! Sponsored-discovery provenance and coarse usage metering.
 //!
 //! When the agent connects an MCP server whose command matches a recent
 //! `discover_tools` listing, that server is tagged with discovery

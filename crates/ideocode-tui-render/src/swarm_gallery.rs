@@ -1,4 +1,4 @@
-﻿//! Shared presentation logic for the inline swarm gallery.
+//! Shared presentation logic for the inline swarm gallery.
 //!
 //! This is the single source of truth for how swarm-agent viewports look:
 //! status accent colors, role glyphs, age formatting, the header line, member

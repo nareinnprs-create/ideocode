@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::tui::ui::{self, WrappedLineMap};
 
 /// Auxiliary render data for an assistant message that is otherwise recomputed

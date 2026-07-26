@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Benchmark + profile the time and resource utilization of a IDEOCODE spawn.
 
 A IDEOCODE "spawn" is the full cold-launch path of the interactive client:

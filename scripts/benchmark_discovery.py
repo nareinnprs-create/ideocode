@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Live benchmark for proactive sponsored Discovery triggering.
 
 The runner starts an isolated IDEOCODE server marked with

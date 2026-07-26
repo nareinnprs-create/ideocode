@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 
 use crate::server;

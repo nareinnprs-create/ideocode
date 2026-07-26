@@ -1,4 +1,4 @@
-﻿use crate::session::GitState;
+use crate::session::GitState;
 use std::path::Path;
 use std::process::Command;
 

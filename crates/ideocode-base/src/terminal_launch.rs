@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 pub use ideocode_terminal_launch::{
     SpawnAttempt, TerminalCommand, build_hook_spawn_command, detected_resume_terminal, expand_home,
     parse_hook_command, resume_terminal_candidates, sh_escape, shell_command,

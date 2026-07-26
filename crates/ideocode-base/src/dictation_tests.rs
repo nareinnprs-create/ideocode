@@ -1,4 +1,4 @@
-﻿#[cfg(target_os = "linux")]
+#[cfg(target_os = "linux")]
 use super::focused_ideocode_session;
 use super::{
     ClientCandidate, extract_session_short_name_from_window_title, last_focused_session,

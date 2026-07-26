@@ -1,4 +1,4 @@
-﻿"""Determinism + contract checks for reward scorers.
+"""Determinism + contract checks for reward scorers.
 
 Every scorer must be a pure function: same Context in -> same CategoryScore out,
 and must declare the contract attributes. This guards the reward signal from

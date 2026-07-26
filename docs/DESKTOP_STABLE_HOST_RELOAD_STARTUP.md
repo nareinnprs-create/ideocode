@@ -1,4 +1,4 @@
-﻿# Desktop Stable Host, Hot Reload, and Fast Startup Plan
+# Desktop Stable Host, Hot Reload, and Fast Startup Plan
 
 Status: In progress
 Updated: 2026-05-24

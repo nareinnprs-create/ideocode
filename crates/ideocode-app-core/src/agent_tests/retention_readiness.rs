@@ -1,4 +1,4 @@
-﻿// Deterministic longitudinal synthetic-cohort evaluator for retention readiness.
+// Deterministic longitudinal synthetic-cohort evaluator for retention readiness.
 //
 // This deliberately does NOT claim to measure human retention. It asks whether
 // IDEOCODE has the product properties that make returning likely: a useful first

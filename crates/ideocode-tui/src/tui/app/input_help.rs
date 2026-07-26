@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 impl App {
     pub(super) fn command_help(&self, topic: &str) -> Option<String> {

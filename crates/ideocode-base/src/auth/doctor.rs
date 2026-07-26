@@ -1,4 +1,4 @@
-﻿use crate::auth::{AuthRefreshSupport, AuthState, ProviderAuthAssessment};
+use crate::auth::{AuthRefreshSupport, AuthState, ProviderAuthAssessment};
 use crate::provider_catalog::{LoginProviderAuthKind, LoginProviderDescriptor};
 
 pub const VALIDATION_STALE_AFTER_MS: i64 = 7 * 24 * 60 * 60 * 1000;

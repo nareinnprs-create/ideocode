@@ -1,4 +1,4 @@
-﻿//! Shared TUI state and logic used across TUI runtime paths.
+//! Shared TUI state and logic used across TUI runtime paths.
 //!
 //! This module contains the common display state, input handling,
 //! and helper methods used by both local and remote TUI modes.

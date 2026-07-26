@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use ideocode_provider_core::{FailoverDecision, ProviderFailoverPrompt};
 
 impl MultiProvider {

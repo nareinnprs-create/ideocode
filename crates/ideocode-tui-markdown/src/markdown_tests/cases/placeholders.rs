@@ -1,4 +1,4 @@
-﻿// Placeholder-preservation tests: image/diagram placeholder bodies are blank
+// Placeholder-preservation tests: image/diagram placeholder bodies are blank
 // lines by design, and block-separator normalization must never collapse them.
 
 #[cfg(feature = "mermaid-renderer")]

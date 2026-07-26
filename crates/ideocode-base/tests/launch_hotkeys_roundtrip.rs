@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn launch_hotkeys_config_round_trips_toml() {
     use ideocode_config_types::{LaunchHotkeyEntry, LaunchHotkeysConfig};
     #[derive(serde::Serialize, serde::Deserialize, Default)]

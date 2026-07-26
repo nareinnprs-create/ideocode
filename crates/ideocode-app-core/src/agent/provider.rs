@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 impl Agent {
     pub fn set_premium_mode(&self, mode: crate::provider::copilot::PremiumMode) {

@@ -1,4 +1,4 @@
-﻿name = "IDEOCODE-telemetry"
+name = "IDEOCODE-telemetry"
 main = "src/worker.js"
 compatibility_date = "2025-01-01"
 

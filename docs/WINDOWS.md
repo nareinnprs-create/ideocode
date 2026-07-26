@@ -1,4 +1,4 @@
-﻿# Windows Support
+# Windows Support
 
 IDEOCODE supports Windows as a first-class platform. The Windows implementation uses native named pipes, Windows process management, PowerShell installation, and platform-specific launch-hotkey integration.
 

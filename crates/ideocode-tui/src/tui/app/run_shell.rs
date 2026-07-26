@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::tui::TuiState;
 use crossterm::cursor::{RestorePosition, SavePosition};
 use crossterm::terminal::{BeginSynchronizedUpdate, EndSynchronizedUpdate};

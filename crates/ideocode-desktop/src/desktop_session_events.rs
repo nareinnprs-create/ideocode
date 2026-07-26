@@ -1,4 +1,4 @@
-﻿use crate::{DesktopUserEvent, desktop_log, session_launch};
+use crate::{DesktopUserEvent, desktop_log, session_launch};
 use std::sync::mpsc;
 use std::time::{Duration, Instant};
 use winit::event_loop::EventLoopProxy;

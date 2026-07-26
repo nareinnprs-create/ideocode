@@ -1,4 +1,4 @@
-﻿#[tokio::test]
+#[tokio::test]
 #[ignore = "requires real OpenAI OAuth credentials"]
 async fn live_openai_catalog_lists_gpt_5_4_family() -> Result<()> {
     let Some(catalog) = live_openai_catalog().await? else {

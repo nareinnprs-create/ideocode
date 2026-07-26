@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::{terminal_eprintln as eprintln, terminal_print as print, terminal_println as println};
 
 impl Agent {

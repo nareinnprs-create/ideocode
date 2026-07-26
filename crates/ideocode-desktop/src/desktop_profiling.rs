@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn log_desktop_session_event_batch_profile(

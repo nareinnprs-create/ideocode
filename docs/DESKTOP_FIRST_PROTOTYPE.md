@@ -1,4 +1,4 @@
-﻿# Desktop First Prototype Target
+# Desktop First Prototype Target
 
 Status: Proposed
 Updated: 2026-04-25

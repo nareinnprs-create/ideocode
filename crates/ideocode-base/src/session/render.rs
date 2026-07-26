@@ -1,4 +1,4 @@
-﻿use super::{Session, StoredDisplayRole};
+use super::{Session, StoredDisplayRole};
 use crate::message::{ContentBlock, Role, ToolCall};
 use ideocode_config_types::ReasoningDisplayMode;
 pub use ideocode_session_types::{

@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use ideocode_agent_runtime::{SoftInterruptMessage, SoftInterruptSource};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;

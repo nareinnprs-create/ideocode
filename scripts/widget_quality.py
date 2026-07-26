@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Quantitative quality metrics for IDEOCODE Desktop inline widgets.
 
 Captures widget states headlessly and scores each card from its PNG plus the

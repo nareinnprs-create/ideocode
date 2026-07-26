@@ -1,4 +1,4 @@
-﻿//! Memory-bound probe for the Layout-tier cache (see
+//! Memory-bound probe for the Layout-tier cache (see
 //! `mermaid_cache_render.rs`: `LayoutCache`, `LAYOUT_CACHE_MAX`,
 //! `approx_layout_bytes`, `layout_cache_usage`).
 //!

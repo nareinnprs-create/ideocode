@@ -1,4 +1,4 @@
-﻿//! Subscription nudge: two tasteful, rate-limited prompts to subscribe.
+//! Subscription nudge: two tasteful, rate-limited prompts to subscribe.
 //!
 //! Surfaces (never a blocking screen):
 //!   - Trigger A (value prop): the provider just rate-limited the user. The

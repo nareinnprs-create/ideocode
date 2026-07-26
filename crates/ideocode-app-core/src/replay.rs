@@ -1,4 +1,4 @@
-﻿use crate::message::{ContentBlock, Role};
+use crate::message::{ContentBlock, Role};
 use crate::protocol::ServerEvent;
 use crate::session::{Session, StoredReplayEventKind};
 use anyhow::Result;

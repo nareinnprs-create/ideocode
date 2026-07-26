@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # End-to-end test script for IDEOCODE
 
 set -e

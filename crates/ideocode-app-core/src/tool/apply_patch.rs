@@ -1,4 +1,4 @@
-﻿use super::{Tool, ToolContext, ToolOutput};
+use super::{Tool, ToolContext, ToolOutput};
 use crate::bus::{Bus, BusEvent, FileOp, FileTouch};
 use anyhow::Result;
 use async_trait::async_trait;

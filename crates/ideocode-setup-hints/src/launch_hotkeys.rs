@@ -1,4 +1,4 @@
-﻿//! Resolve the global "launch a new IDEOCODE" hotkeys from config into a concrete
+//! Resolve the global "launch a new IDEOCODE" hotkeys from config into a concrete
 //! list of (chord, shell command, script file) tuples.
 //!
 //! There are two layers here:

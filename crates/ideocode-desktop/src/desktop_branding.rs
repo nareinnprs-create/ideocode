@@ -1,4 +1,4 @@
-﻿//! Central user-facing branding for the desktop app.
+//! Central user-facing branding for the desktop app.
 //!
 //! Every surface that names the product (window title, status titles, help
 //! text, version output, in-app header labels) should use these constants so

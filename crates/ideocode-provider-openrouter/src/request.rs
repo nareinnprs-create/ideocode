@@ -1,4 +1,4 @@
-﻿use ideocode_message_types::{
+use ideocode_message_types::{
     ContentBlock, Message, Role, TOOL_OUTPUT_MISSING_TEXT, sanitize_tool_id,
 };
 use serde_json::Value;

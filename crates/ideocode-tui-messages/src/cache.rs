@@ -1,4 +1,4 @@
-﻿use crate::DisplayMessage;
+use crate::DisplayMessage;
 use ideocode_config_types::{DiagramDisplayMode, DiffDisplayMode};
 use ratatui::layout::Alignment;
 use ratatui::text::{Line, Span};

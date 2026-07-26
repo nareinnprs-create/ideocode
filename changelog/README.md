@@ -1,4 +1,4 @@
-﻿# Changelog entries
+# Changelog entries
 
 User-facing changelog entries for IDEOCODE releases. One JSON file per release,
 written by the agent during `/cut-release`, reviewed in the release diff, and

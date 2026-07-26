@@ -1,4 +1,4 @@
-﻿use serde_json::Value;
+use serde_json::Value;
 use similar::TextDiff;
 use std::collections::HashMap;
 use std::path::PathBuf;

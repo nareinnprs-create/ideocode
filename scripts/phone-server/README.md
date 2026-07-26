@@ -1,4 +1,4 @@
-﻿# IDEOCODE phone server (managed cloud host)
+# IDEOCODE phone server (managed cloud host)
 
 A self-managing EC2 host that runs `IDEOCODE serve` with the WebSocket gateway so
 phones (the iOS app, or SSH clients like Termius) can drive IDEOCODE sessions

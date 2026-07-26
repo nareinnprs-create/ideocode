@@ -1,4 +1,4 @@
-﻿-- Telemetry health dashboard query.
+-- Telemetry health dashboard query.
 -- Usage:
 --   wrangler d1 execute IDEOCODE-telemetry --remote --file=health.sql
 

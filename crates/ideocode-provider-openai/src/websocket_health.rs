@@ -1,4 +1,4 @@
-﻿use ideocode_message_types::StreamEvent;
+use ideocode_message_types::StreamEvent;
 
 pub const WEBSOCKET_FALLBACK_NOTICE: &str = "falling back from websockets to https transport";
 pub const WEBSOCKET_FIRST_EVENT_TIMEOUT_SECS: u64 = 8;

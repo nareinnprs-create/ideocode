@@ -1,4 +1,4 @@
-﻿use super::loading::session_matches_picker_query;
+use super::loading::session_matches_picker_query;
 use super::*;
 
 impl SessionPicker {

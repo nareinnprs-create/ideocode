@@ -1,4 +1,4 @@
-﻿use super::{load_testers, save_testers};
+use super::{load_testers, save_testers};
 use std::ffi::OsString;
 
 fn lock_env() -> std::sync::MutexGuard<'static, ()> {

@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Shared loader for IDEOCODE remote build defaults.
 #
 # The config file is intentionally a shell fragment so users can write either:

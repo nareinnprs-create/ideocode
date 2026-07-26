@@ -1,4 +1,4 @@
-﻿# Compile-Time Isolation Refactor
+# Compile-Time Isolation Refactor
 
 This is the active migration plan for making full-feature debug/selfdev builds faster without removing features from the developer binary.
 

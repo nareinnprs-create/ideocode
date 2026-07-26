@@ -1,4 +1,4 @@
-﻿# `/resume` behavior
+# `/resume` behavior
 
 `/resume`, `/session`, and `/sessions` open the interactive session picker. They are local UI commands and must not be sent as chat prompts.
 

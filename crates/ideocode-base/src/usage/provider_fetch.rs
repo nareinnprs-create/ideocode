@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(super) fn usage_percent_from_used_limit(used: f64, limit: f64) -> f32 {
     if !used.is_finite() || !limit.is_finite() || limit <= 0.0 {

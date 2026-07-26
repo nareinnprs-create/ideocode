@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::bus::BackgroundTaskStatus;
 use std::ffi::OsStr;
 

@@ -1,4 +1,4 @@
-﻿use chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc};
 
 use super::{
     OvernightManifest, OvernightPreflight, OvernightRunStatus, format_minutes, preflight_summary,

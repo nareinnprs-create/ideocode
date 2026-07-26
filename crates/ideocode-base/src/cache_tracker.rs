@@ -1,4 +1,4 @@
-﻿//! Client-side cache tracking for append-only validation
+//! Client-side cache tracking for append-only validation
 //!
 //! When providers don't report cache tokens, we can still detect cache violations
 //! by tracking the message prefix ourselves. If the prefix changes between requests,

@@ -1,4 +1,4 @@
-﻿//! Live onboarding simulator.
+//! Live onboarding simulator.
 //!
 //! A developer aid for reviewing the first-run onboarding experience without
 //! resetting real auth state or installing anything. Pressing the simulator

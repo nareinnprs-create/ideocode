@@ -1,4 +1,4 @@
-﻿//! Tests for plan proposal/approval cycle validation.
+//! Tests for plan proposal/approval cycle validation.
 //!
 //! `dag::seed`/`expand` already reject cyclic task graphs, but `propose_plan`
 //! (coordinator direct update) and `approve_plan` used to write `plan.items`

@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 #[test]
 fn centered_mode_centers_unstructured_messages_and_preserves_structured_left_blocks() {

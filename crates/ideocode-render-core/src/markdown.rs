@@ -1,4 +1,4 @@
-﻿//! Markdown -> backend-neutral [`Document`].
+//! Markdown -> backend-neutral [`Document`].
 //!
 //! This mirrors the *semantics* of the TUI markdown renderer
 //! (`IDEOCODE-tui-markdown`) but emits the neutral [`crate::model`] types instead

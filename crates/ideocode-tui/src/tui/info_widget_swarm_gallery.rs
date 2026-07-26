@@ -1,4 +1,4 @@
-﻿//! Adapter from swarm member status into the inline gallery layout.
+//! Adapter from swarm member status into the inline gallery layout.
 //!
 //! All presentation logic (status colors, role glyphs, age formatting, header,
 //! sorting, layout config) lives in the shared

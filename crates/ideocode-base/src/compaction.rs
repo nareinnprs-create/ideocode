@@ -1,4 +1,4 @@
-﻿//! Background compaction for conversation context management
+//! Background compaction for conversation context management
 //!
 //! When context reaches 80% of the limit, kicks off background summarization.
 //! User continues chatting while summary is generated. When ready, seamlessly

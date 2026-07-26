@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Safely reclaim disk space from the Cargo target directory.
 #
 # This is designed to be safe to run even while other builds are in progress on

@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 #[test]
 fn create_and_resume_goal_persists_project_goal() {

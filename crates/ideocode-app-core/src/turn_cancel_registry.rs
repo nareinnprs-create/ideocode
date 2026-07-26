@@ -1,4 +1,4 @@
-﻿//! Process-global registry of cancel signals for actively running turns.
+//! Process-global registry of cancel signals for actively running turns.
 //!
 //! Why this exists (issue #428): a cancel (Esc) is delivered through whatever
 //! `SessionControlHandle` the receiving connection happens to hold. That

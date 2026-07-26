@@ -1,4 +1,4 @@
-﻿//! Rank the repositories a user works in most, from the working directories
+//! Rank the repositories a user works in most, from the working directories
 //! recorded across their agent sessions (IDEOCODE + imported Claude/Codex/etc.).
 //!
 //! The motivating use case is one-time keybinding setup: during auto-import we

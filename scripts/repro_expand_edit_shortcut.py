@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 End-to-end verifier for the Alt+Shift+E "expand edit diff" shortcut.
 

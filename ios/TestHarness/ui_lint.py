@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Design-system discipline linter for the IDEOCODE iOS SwiftUI sources.
 
 Screenshots grade the *output*; this grades the *source*. A consistent UI comes

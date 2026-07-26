@@ -1,4 +1,4 @@
-﻿"""Shared data model for the interaction-cost engine.
+"""Shared data model for the interaction-cost engine.
 
 This is the ONLY module the interaction-engine workers share. It defines the
 user-behavior graph, the UI target geometry, and the HCI operator constants.

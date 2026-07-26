@@ -1,4 +1,4 @@
-﻿use super::{StdinInputRequest, Tool, ToolContext, ToolOutput};
+use super::{StdinInputRequest, Tool, ToolContext, ToolOutput};
 use crate::background::TaskResult;
 use crate::bus::{
     BackgroundTaskProgress, BackgroundTaskProgressKind, BackgroundTaskProgressSource,

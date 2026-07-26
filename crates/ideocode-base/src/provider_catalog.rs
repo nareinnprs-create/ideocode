@@ -1,4 +1,4 @@
-﻿pub use ideocode_provider_env::{
+pub use ideocode_provider_env::{
     load_api_key_from_env_or_config, load_env_value_from_config_file,
     load_env_value_from_env_or_config, register_api_key_fallback_resolver,
     save_env_value_to_env_file,

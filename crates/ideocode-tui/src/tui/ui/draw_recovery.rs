@@ -1,4 +1,4 @@
-﻿use ratatui::{prelude::*, widgets::Paragraph};
+use ratatui::{prelude::*, widgets::Paragraph};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use ideocode_core::panic_util::panic_payload_to_string;

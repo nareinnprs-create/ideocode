@@ -1,4 +1,4 @@
-﻿# Plan: Dynamic Skills and MCP Support
+# Plan: Dynamic Skills and MCP Support
 
 ## Goals
 1. Hot-reload skills without restart

@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::message::{ContentBlock, Role};
 use crate::session::{Session, StoredDisplayRole};
 use chrono::Duration;

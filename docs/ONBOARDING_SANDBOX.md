@@ -1,4 +1,4 @@
-﻿# Onboarding sandbox
+# Onboarding sandbox
 
 If you want to iterate on onboarding repeatedly without touching your real auth state, use a separate sandbox rooted under `IDEOCODE_HOME` and `IDEOCODE_RUNTIME_DIR`.
 

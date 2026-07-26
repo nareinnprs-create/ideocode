@@ -1,4 +1,4 @@
-﻿# Multi-Session Client Architecture (Proposed)
+# Multi-Session Client Architecture (Proposed)
 
 Status: Proposed
 

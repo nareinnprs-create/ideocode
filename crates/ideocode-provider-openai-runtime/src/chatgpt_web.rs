@@ -1,4 +1,4 @@
-﻿use anyhow::{Context, Result};
+use anyhow::{Context, Result};
 use ideocode_message_types::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
 use ideocode_provider_core::EventStream;
 use serde_json::{Value, json};

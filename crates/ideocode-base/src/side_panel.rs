@@ -1,4 +1,4 @@
-﻿use anyhow::{Context, Result};
+use anyhow::{Context, Result};
 pub use ideocode_side_panel_types::{
     PersistedSidePanelPage, PersistedSidePanelState, SidePanelPage, SidePanelPageFormat,
     SidePanelPageSource, SidePanelSnapshot, snapshot_is_empty,

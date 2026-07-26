@@ -1,4 +1,4 @@
-﻿use crate::test_support::*;
+use crate::test_support::*;
 use futures::future::join_all;
 use serde_json::json;
 use std::collections::HashSet;

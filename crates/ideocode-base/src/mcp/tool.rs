@@ -1,4 +1,4 @@
-﻿//! MCP Tool - wraps MCP server tools for IDEOCODE's tool system
+//! MCP Tool - wraps MCP server tools for IDEOCODE's tool system
 
 use super::manager::McpManager;
 use super::protocol::{ContentBlock, McpToolDef};

@@ -1,4 +1,4 @@
-﻿use crate::provider::activation::RuntimeProviderId;
+use crate::provider::activation::RuntimeProviderId;
 use crate::provider_catalog::{
     LoginProviderDescriptor, LoginProviderSurface, LoginProviderTarget, login_providers,
     resolve_login_provider,

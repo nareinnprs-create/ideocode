@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 /// Resolved per-million-token pricing for the active model, used to turn a
 /// single API call's token usage into a dollar cost. Shared by the local

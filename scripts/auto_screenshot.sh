@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # Autonomous screenshot capture for IDEOCODE documentation
 # Uses niri window management + screenshot capabilities
 #

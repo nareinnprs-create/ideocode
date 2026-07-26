@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Deterministic, local-only storefront for a safe checkout demo.
 
 This program never contacts a network service, accepts payment credentials, or

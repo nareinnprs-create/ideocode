@@ -1,4 +1,4 @@
-﻿mod animation;
+mod animation;
 mod desktop_app_driver;
 mod desktop_benchmark;
 mod desktop_branding;

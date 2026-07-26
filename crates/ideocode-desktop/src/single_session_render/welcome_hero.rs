@@ -1,4 +1,4 @@
-﻿//! Welcome hero and fresh-welcome ambient rendering: handwriting stroke reveal, runtime mask specs, aurora ribbons, gradient primitives, and welcome-timeline offsets.
+//! Welcome hero and fresh-welcome ambient rendering: handwriting stroke reveal, runtime mask specs, aurora ribbons, gradient primitives, and welcome-timeline offsets.
 
 use super::*;
 

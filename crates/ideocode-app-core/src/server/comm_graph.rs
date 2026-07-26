@@ -1,4 +1,4 @@
-﻿//! Server handlers for the task-DAG mutation ops (seed/expand/complete/inject).
+//! Server handlers for the task-DAG mutation ops (seed/expand/complete/inject).
 //!
 //! These are the live counterparts of the validated engine ops in
 //! `ideocode_plan::dag`. Each handler lifts the swarm's current `VersionedPlan` into

@@ -1,4 +1,4 @@
-﻿//! OpenRouter / OpenAI-compatible provider shared helpers (compatibility shim).
+//! OpenRouter / OpenAI-compatible provider shared helpers (compatibility shim).
 //!
 //! The OpenRouter provider *runtime* (`OpenRouterProvider`) now lives in the
 //! downstream `IDEOCODE-provider-openrouter-runtime` crate so provider edits do

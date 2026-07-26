@@ -1,4 +1,4 @@
-﻿//! Skill tool - load, list, reload, and read skills
+//! Skill tool - load, list, reload, and read skills
 
 use super::{Tool, ToolContext, ToolOutput};
 use crate::skill::SkillRegistry;

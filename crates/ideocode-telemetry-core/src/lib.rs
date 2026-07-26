@@ -1,4 +1,4 @@
-﻿use ideocode_logging as logging;
+use ideocode_logging as logging;
 use ideocode_storage as storage;
 mod lifecycle;
 mod state_support;

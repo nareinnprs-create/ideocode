@@ -1,4 +1,4 @@
-﻿//! Parity checks: the shared-core adapter vs. the legacy renderer.
+//! Parity checks: the shared-core adapter vs. the legacy renderer.
 //!
 //! The two renderers differ in spacing details and some decorative styling, so
 //! these tests assert *content* parity (the visible text, modulo blank-line

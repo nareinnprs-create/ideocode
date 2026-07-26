@@ -1,4 +1,4 @@
-﻿# Sponsor attribution benchmark
+# Sponsor attribution benchmark
 
 `scripts/benchmark_attribution.py` scores, per sponsor, whether a signup or
 install performed by an agent on the user's behalf is attributable to IDEOCODE.

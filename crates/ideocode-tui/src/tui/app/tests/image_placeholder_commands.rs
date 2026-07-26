@@ -1,4 +1,4 @@
-﻿// Pins how `[image N]` placeholders in the input buffer interact with
+// Pins how `[image N]` placeholders in the input buffer interact with
 // slash-command parsing in submit_input (crates/IDEOCODE-tui/src/tui/app/input.rs).
 //
 // Placeholders are plain text: expand_paste_placeholders only expands

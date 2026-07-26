@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Token-protected HTTP service that generates IDEOCODE pairing codes.
 
 GET /pair-code?t=<token> -> {"code": "123456", "host": "100.109.78.41", "port": 7643, "uri": "IDEOCODE://pair?..."}

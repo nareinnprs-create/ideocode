@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Benchmark and optionally regression-check IDEOCODE startup time.
 
 This script runs isolated startup measurements under a temporary IDEOCODE_HOME and

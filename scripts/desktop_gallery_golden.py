@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Golden-image regression checks for IDEOCODE Desktop gallery captures.
 
 Renders every gallery fixture state headlessly via

@@ -1,4 +1,4 @@
-﻿//! Pixel-parity probe for the Layout-tier cache (commit 72bd457b, see
+//! Pixel-parity probe for the Layout-tier cache (commit 72bd457b, see
 //! `mermaid_cache_render.rs`: `LAYOUT_CACHE`, `layout_cache_get`,
 //! `render_mermaid_sized_internal`).
 //!

@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use serde_json::{Map, Value};
 use std::io::Write;
 use std::sync::atomic::{AtomicBool, Ordering};

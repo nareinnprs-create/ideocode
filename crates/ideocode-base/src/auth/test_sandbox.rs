@@ -1,4 +1,4 @@
-﻿use std::path::{Path, PathBuf};
+use std::path::{Path, PathBuf};
 use std::sync::MutexGuard;
 
 use crate::provider_catalog::{OpenAiCompatibleProfile, openai_compatible_profiles};

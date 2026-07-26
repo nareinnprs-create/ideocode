@@ -1,4 +1,4 @@
-﻿{
+{
   "threshold_loc": 1200,
   "tracked_files": {
     "crates/IDEOCODE-app-core/src/agent_tests.rs": 1361,

@@ -1,4 +1,4 @@
-﻿use crate::desktop_config::env_flag_enabled;
+use crate::desktop_config::env_flag_enabled;
 use std::time::Instant;
 use winit::dpi::PhysicalSize;
 

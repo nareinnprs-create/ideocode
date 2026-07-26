@@ -1,4 +1,4 @@
-﻿use crate::bus::{BackgroundTaskProgress, BackgroundTaskProgressEvent, BackgroundTaskStatus};
+use crate::bus::{BackgroundTaskProgress, BackgroundTaskProgressEvent, BackgroundTaskStatus};
 use anyhow::Result;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};

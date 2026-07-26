@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::storage::lock_test_env;
 
 /// Shared process-wide lock: telemetry state is reached through env vars, which

@@ -1,4 +1,4 @@
-﻿#![cfg_attr(test, allow(clippy::items_after_test_module))]
+#![cfg_attr(test, allow(clippy::items_after_test_module))]
 
 use super::append_swarm_completion_report_instructions;
 use super::swarm::{

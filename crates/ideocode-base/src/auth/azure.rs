@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 
 use crate::provider_catalog::{
     load_api_key_from_env_or_config, load_env_value_from_env_or_config, normalize_api_base,

@@ -1,4 +1,4 @@
-﻿//! Rolling live-output tail for inline swarm workers.
+//! Rolling live-output tail for inline swarm workers.
 //!
 //! The coordinator's inline gallery/dock renders a small viewport of each
 //! worker's recent activity. Streaming only the in-progress assistant text

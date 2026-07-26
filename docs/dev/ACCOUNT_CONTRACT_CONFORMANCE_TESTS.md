@@ -1,4 +1,4 @@
-﻿# Account Contract Conformance Tests and Test Vectors
+# Account Contract Conformance Tests and Test Vectors
 
 Executable conformance design for the IDEOCODE subscription account contract:
 device login, browser approval/denial, account state (`/v1/me`), checkout,

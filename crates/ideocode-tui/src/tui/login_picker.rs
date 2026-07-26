@@ -1,4 +1,4 @@
-﻿use crate::auth::AuthState;
+use crate::auth::AuthState;
 use crate::provider_catalog::LoginProviderDescriptor;
 use crossterm::event::{KeyCode, KeyModifiers, MouseButton, MouseEvent, MouseEventKind};
 use ratatui::{

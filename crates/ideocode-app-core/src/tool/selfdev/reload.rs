@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 pub use ideocode_selfdev_types::ReloadRecoveryDirective;
 
 impl ReloadContext {

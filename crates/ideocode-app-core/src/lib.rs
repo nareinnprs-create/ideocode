@@ -1,4 +1,4 @@
-﻿#![allow(
+#![allow(
     unknown_lints,
     clippy::collapsible_match,
     clippy::manual_checked_ops,

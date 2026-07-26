@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Run IDEOCODE's CI-style test suites with timing and timeout reporting.
 
 This is intentionally split the same way as `.github/workflows/ci.yml` instead of

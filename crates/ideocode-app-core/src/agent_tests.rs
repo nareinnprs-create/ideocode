@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::agent::environment::EnvSnapshotDetail;
 use crate::message::{Message, StreamEvent, ToolDefinition};
 use crate::provider::{EventStream, Provider};

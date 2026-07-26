@@ -1,4 +1,4 @@
-﻿"""Scorer discovery + reward aggregation.
+"""Scorer discovery + reward aggregation.
 
 Finds every module under reward/scorers/ that exposes the scorer contract
 (NAME, CATEGORY, WEIGHT, score(ctx) -> CategoryScore), runs them over a matrix

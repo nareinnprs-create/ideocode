@@ -1,4 +1,4 @@
-﻿use crate::config::config;
+use crate::config::config;
 use crossterm::event::{KeyCode, KeyModifiers};
 
 pub use ideocode_tui_core::keybind::{

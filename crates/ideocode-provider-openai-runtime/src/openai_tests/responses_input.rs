@@ -1,4 +1,4 @@
-﻿fn assistant_tool_use(id: &str, name: &str, input: serde_json::Value) -> ChatMessage {
+fn assistant_tool_use(id: &str, name: &str, input: serde_json::Value) -> ChatMessage {
     ChatMessage {
         role: Role::Assistant,
         content: vec![ContentBlock::ToolUse {

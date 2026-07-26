@@ -1,4 +1,4 @@
-﻿#![cfg_attr(test, allow(clippy::items_after_test_module))]
+#![cfg_attr(test, allow(clippy::items_after_test_module))]
 
 //!
 //! Supports multiple widget types with priority ordering and side preferences.

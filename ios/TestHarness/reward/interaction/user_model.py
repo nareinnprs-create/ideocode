@@ -1,4 +1,4 @@
-﻿"""user_model.py - assemble the weighted user-behavior ActionGraph.
+"""user_model.py - assemble the weighted user-behavior ActionGraph.
 
 Combines the two grounded inputs into one model of how a real IDEOCODE-mobile user
 moves through the UI:

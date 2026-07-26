@@ -1,4 +1,4 @@
-﻿//! Tier 2: application and window management via System Events / NSWorkspace.
+//! Tier 2: application and window management via System Events / NSWorkspace.
 
 use super::osa;
 use anyhow::Result;

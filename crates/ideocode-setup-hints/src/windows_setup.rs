@@ -1,4 +1,4 @@
-﻿use super::{SetupHintsState, StartupHints, read_choice};
+use super::{SetupHintsState, StartupHints, read_choice};
 use crate::windows_hotkeys::{self, WindowsHotkey};
 use anyhow::{Context, Result};
 use ideocode_config_types::{LaunchHotkeyEntry, LaunchHotkeysConfig};

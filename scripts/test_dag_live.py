@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Live deep-mode task-DAG run via the debug socket. Hunts for problems."""
 import socket, json, os, sys
 

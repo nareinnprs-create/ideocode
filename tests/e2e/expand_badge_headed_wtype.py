@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Headed compositor smoke for Alt+Shift+E expand badge.
 
 Uses kitty remote control to launch a real IDEOCODE TUI window, prepares the same

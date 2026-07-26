@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use std::process::{ExitStatus, Stdio};
 use std::sync::Arc;
 use tokio::io::AsyncReadExt;

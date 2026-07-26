@@ -1,4 +1,4 @@
-﻿use crate::logging;
+use crate::logging;
 use base64::Engine as _;
 use ideocode_background_types::{
     BackgroundTaskCompleted, BackgroundTaskProgressEvent, BackgroundTaskStatus,

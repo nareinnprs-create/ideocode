@@ -1,4 +1,4 @@
-﻿use crate::{
+use crate::{
     desktop_rich_text, session_data,
     session_launch::{
         DesktopModelChoice, DesktopSessionEvent, DesktopSessionHandle, DesktopSessionStatus,

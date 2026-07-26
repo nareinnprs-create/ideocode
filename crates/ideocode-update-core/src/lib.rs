@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;

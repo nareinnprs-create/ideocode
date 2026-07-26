@@ -1,4 +1,4 @@
-﻿# Phone-server AWS IAM least-privilege assessment
+# Phone-server AWS IAM least-privilege assessment
 
 Assessment date: 2026-07-12
 Account: `302154194530`

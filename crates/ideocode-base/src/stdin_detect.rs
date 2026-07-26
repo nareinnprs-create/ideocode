@@ -1,1 +1,1 @@
-﻿pub use ideocode_core::stdin_detect::*;
+pub use ideocode_core::stdin_detect::*;

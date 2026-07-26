@@ -1,4 +1,4 @@
-﻿use anyhow::{Context, Result};
+use anyhow::{Context, Result};
 use serde_json::{Value, json};
 use std::io::{self, BufRead, BufReader, Read, Write};
 #[cfg(unix)]

@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Live end-to-end sandbox for the "current client, stale older server" fix.
 #
 #   Server: the REAL released v0.14.6 binary (downloaded from GitHub).

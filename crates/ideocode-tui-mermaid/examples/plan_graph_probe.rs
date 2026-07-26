@@ -1,4 +1,4 @@
-﻿//! Probe: render a swarm-plan-style flowchart (the exact shape
+//! Probe: render a swarm-plan-style flowchart (the exact shape
 //! `IDEOCODE-tui`'s `swarm_plan_graph` emits) through the real mermaid pipeline
 //! and report success/error. Useful when iterating on the renderer:
 //!   cargo run -p IDEOCODE-tui-mermaid --features renderer --example plan_graph_probe

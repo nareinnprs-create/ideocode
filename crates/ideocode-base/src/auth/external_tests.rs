@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use tempfile::TempDir;
 
 fn write_auth_file(path: &std::path::Path, value: serde_json::Value) {

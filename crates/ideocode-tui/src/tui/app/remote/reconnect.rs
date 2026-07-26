@@ -1,4 +1,4 @@
-﻿use super::{
+use super::{
     App, DisplayMessage, ProcessingStatus, handle_terminal_event_while_disconnected,
     process_remote_followups,
 };

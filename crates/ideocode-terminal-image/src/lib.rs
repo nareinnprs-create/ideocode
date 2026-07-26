@@ -1,4 +1,4 @@
-﻿//! Low-level terminal image primitives for IDEOCODE.
+//! Low-level terminal image primitives for IDEOCODE.
 //!
 //! This crate has no dependency on the rest of IDEOCODE; it provides:
 //! - [`display`]: terminal image rendering (Kitty / iTerm2 / Sixel) with a

@@ -1,4 +1,4 @@
-﻿# IDEOCODE Desktop Architecture Direction
+# IDEOCODE Desktop Architecture Direction
 
 Status: Proposed
 Updated: 2026-04-25

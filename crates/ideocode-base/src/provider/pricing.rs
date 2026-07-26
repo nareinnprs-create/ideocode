@@ -1,4 +1,4 @@
-﻿use super::{ALL_OPENAI_MODELS, openrouter};
+use super::{ALL_OPENAI_MODELS, openrouter};
 use crate::auth;
 use crate::provider::models::provider_for_model;
 use ideocode_provider_core::pricing as core_pricing;

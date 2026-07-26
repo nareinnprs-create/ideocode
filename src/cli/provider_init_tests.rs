@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 // These moved from cli::provider_init to crate::external_auth in the
 // tui->cli layering refactor (a9a82827); provider_init.rs only re-imports the
 // subset it uses, so `super::*` no longer re-exports them to this test module.

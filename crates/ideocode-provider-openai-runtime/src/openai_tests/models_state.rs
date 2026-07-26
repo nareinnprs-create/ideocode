@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_openai_supports_codex_models() {
     let _guard = ideocode_base::storage::lock_test_env();
     ideocode_base::auth::codex::set_active_account_override(Some(

@@ -1,4 +1,4 @@
-﻿# Proposal: native `computer` tool for macOS computer use
+# Proposal: native `computer` tool for macOS computer use
 
 ## Summary
 

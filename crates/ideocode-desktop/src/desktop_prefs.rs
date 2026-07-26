@@ -1,4 +1,4 @@
-﻿use crate::workspace::{DEFAULT_SPACE_HOLD_TOGGLE_MS, DesktopPreferences, PanelSizePreset};
+use crate::workspace::{DEFAULT_SPACE_HOLD_TOGGLE_MS, DesktopPreferences, PanelSizePreset};
 use anyhow::{Context, Result};
 use serde_json::{Value, json};
 use std::fs;

@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use std::io::{self, IsTerminal, Write};
 use std::panic;
 

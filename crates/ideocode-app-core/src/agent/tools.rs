@@ -1,4 +1,4 @@
-﻿use crate::message::{ContentBlock, ToolCall};
+use crate::message::{ContentBlock, ToolCall};
 use crate::terminal_println as println;
 use crate::tool::ToolOutput;
 

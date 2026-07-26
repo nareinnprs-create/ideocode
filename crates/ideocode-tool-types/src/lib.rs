@@ -1,4 +1,4 @@
-﻿#[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct ToolOutput {
     pub output: String,
     pub title: Option<String>,

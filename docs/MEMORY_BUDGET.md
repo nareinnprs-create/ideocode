@@ -1,4 +1,4 @@
-﻿# Memory Regression Budget
+# Memory Regression Budget
 
 Status: active guardrail
 Updated: 2026-04-18

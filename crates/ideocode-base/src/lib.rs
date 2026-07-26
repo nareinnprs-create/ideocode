@@ -1,4 +1,4 @@
-﻿//! `IDEOCODE-base`: foundational layer of the IDEOCODE application core.
+//! `IDEOCODE-base`: foundational layer of the IDEOCODE application core.
 //!
 //! This crate holds the downward-closed set of modules that the upper
 //! server/tool/agent layer (`IDEOCODE-app-core`) depends on: provider, auth,

@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # Tool call benchmarking script
 # Measures execution time for each tool with representative inputs
 # Run from the IDEOCODE repo root

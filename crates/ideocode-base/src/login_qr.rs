@@ -1,4 +1,4 @@
-﻿use qrcode::{Color, QrCode, types::QrError};
+use qrcode::{Color, QrCode, types::QrError};
 
 const QUIET_ZONE_WIDTH: usize = 2;
 

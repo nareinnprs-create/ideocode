@@ -1,4 +1,4 @@
-﻿use super::{Session, SessionStatus, active_pids_dir, session_exists};
+use super::{Session, SessionStatus, active_pids_dir, session_exists};
 use crate::id::extract_session_name;
 use crate::message::{ContentBlock, Role};
 use crate::storage;

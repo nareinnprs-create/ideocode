@@ -1,4 +1,4 @@
-﻿use super::openrouter_sse_stream::run_stream_with_retries;
+use super::openrouter_sse_stream::run_stream_with_retries;
 use super::*;
 use ideocode_base::provider::{ModelCatalogRefreshSummary, summarize_model_catalog_refresh};
 

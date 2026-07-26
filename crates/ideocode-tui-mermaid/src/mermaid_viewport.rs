@@ -1,4 +1,4 @@
-﻿use super::widget_render::set_cell_if_visible;
+use super::widget_render::set_cell_if_visible;
 use super::*;
 
 fn load_source_image(hash: u64, path: &Path) -> Option<Arc<DynamicImage>> {

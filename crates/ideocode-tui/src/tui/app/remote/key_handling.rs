@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::tui::app as app_mod;
 use crate::tui::app::PendingRemoteRewindNotice;
 use crate::tui::core;

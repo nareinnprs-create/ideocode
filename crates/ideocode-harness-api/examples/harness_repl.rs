@@ -1,4 +1,4 @@
-﻿//! Reference harness API client.
+//! Reference harness API client.
 //!
 //! Connects to a harness API endpoint over a Unix socket, performs the
 //! handshake, creates a session, sends one message, and prints streamed

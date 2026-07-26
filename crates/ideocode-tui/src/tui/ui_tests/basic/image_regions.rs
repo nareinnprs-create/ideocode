@@ -1,4 +1,4 @@
-﻿// ImageRegion offsetting across body-cache reuse paths.
+// ImageRegion offsetting across body-cache reuse paths.
 //
 // Inline plan-graph diagrams and anchored raster images bake placeholder
 // marker lines into the prepared body; `compute_image_regions` scans those

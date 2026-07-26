@@ -1,1 +1,1 @@
-﻿pub use ideocode_plan::*;
+pub use ideocode_plan::*;

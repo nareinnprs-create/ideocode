@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 #[test]
 fn server_logging_enabled_defaults_on_and_respects_falsey_env() {

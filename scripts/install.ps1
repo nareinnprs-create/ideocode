@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Install IDEOCODE on Windows.
 .DESCRIPTION

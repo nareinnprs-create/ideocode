@@ -1,4 +1,4 @@
-﻿# Provider, Session, and Shared-Contract Boundary Audit
+# Provider, Session, and Shared-Contract Boundary Audit
 
 Status: 2026-04-16 audit note
 

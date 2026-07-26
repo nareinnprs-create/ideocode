@@ -1,4 +1,4 @@
-﻿use std::path::Path;
+use std::path::Path;
 
 /// Set file permissions to owner read/write/execute (0o755).
 /// No-op on Windows (executability is determined by file extension).

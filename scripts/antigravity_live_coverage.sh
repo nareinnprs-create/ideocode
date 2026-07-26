@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Live provider test coverage for Antigravity models.
 # For each model: (1) chat smoke -> expect token, (2) multi-turn tool smoke
 # (two bash calls, exercises thought_signature replay) -> expect both outputs.

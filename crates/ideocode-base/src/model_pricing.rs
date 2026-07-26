@@ -1,4 +1,4 @@
-﻿//! Live model pricing catalog backed by <https://models.dev>.
+//! Live model pricing catalog backed by <https://models.dev>.
 //!
 //! IDEOCODE's static pricing tables (`ideocode_provider_core::pricing`) only cover
 //! first-party Anthropic/OpenAI models and go stale whenever a provider ships

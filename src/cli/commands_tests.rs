@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::auth::{AuthState, AuthStatus, ProviderAuth};
 use crate::message::{Message, StreamEvent, ToolDefinition};
 use crate::provider::ModelRoute;

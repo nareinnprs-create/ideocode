@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use ideocode_provider_openrouter::stream::OpenRouterStream;
 
 fn local_endpoint_troubleshooting_hint(api_base: &str, model: &str) -> &'static str {

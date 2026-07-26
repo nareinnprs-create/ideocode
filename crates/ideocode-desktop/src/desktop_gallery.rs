@@ -1,4 +1,4 @@
-﻿use super::DesktopApp;
+use super::DesktopApp;
 use super::session_launch;
 use super::single_session::{SingleSessionApp, SingleSessionMessage};
 use super::workspace::{self, KeyInput};

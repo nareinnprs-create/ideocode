@@ -1,4 +1,4 @@
-﻿//! Backend abstraction for TUI runtime transports.
+//! Backend abstraction for TUI runtime transports.
 //!
 //! This module provides a unified interface for message processing across
 //! local harnesses and server-backed remote clients.

@@ -1,4 +1,4 @@
-﻿pub(super) use ideocode_tui_style::theme::{
+pub(super) use ideocode_tui_style::theme::{
     accent_color, ai_color, ai_text, asap_color, blend_color, dim_color, file_link_color,
     header_icon_color, header_name_color, header_session_color, pending_color,
     prompt_entry_bg_color, prompt_entry_color, prompt_entry_shimmer_color, queued_color,

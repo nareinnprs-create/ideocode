@@ -1,4 +1,4 @@
-﻿//! Provider-agnostic streaming idle-timeout budgets.
+//! Provider-agnostic streaming idle-timeout budgets.
 //!
 //! Every streaming provider path shares these helpers so a slow reasoning model
 //! cannot trip a premature timeout on one transport but not another (issue

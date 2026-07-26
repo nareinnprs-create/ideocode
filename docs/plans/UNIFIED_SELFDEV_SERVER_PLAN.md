@@ -1,4 +1,4 @@
-﻿# Unified Self-Dev / Normal Server Plan
+# Unified Self-Dev / Normal Server Plan
 
 > Status: **Implemented.**
 >

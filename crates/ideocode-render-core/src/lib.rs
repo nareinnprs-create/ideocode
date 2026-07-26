@@ -1,4 +1,4 @@
-﻿//! # IDEOCODE-render-core
+//! # IDEOCODE-render-core
 //!
 //! Backend-neutral document/render model shared by IDEOCODE's front-ends (the
 //! ratatui TUI and the desktop GPU UI).

@@ -1,4 +1,4 @@
-﻿use crate::ambient_runner::AmbientRunnerHandle;
+use crate::ambient_runner::AmbientRunnerHandle;
 use crate::config::SafetyConfig;
 use crate::logging;
 use async_trait::async_trait;

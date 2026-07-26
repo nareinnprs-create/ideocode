@@ -1,4 +1,4 @@
-﻿// Scroll testing with rendering verification
+// Scroll testing with rendering verification
 // ====================================================================
 
 /// Extract plain text from a TestBackend buffer after rendering.

@@ -1,4 +1,4 @@
-﻿//! Background maintenance for the on-disk session store.
+//! Background maintenance for the on-disk session store.
 //!
 //! Session transcripts (`<id>.json`) are kept forever, but the atomic-write
 //! layer also leaves a single rolling `<id>.bak` next to each file as a

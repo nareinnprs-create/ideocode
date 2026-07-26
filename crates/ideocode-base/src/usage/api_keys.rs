@@ -1,4 +1,4 @@
-﻿//! API-key usage reporting for `/usage`.
+//! API-key usage reporting for `/usage`.
 //!
 //! OAuth subscriptions expose rich usage endpoints, but plain API keys mostly
 //! do not, so this module gathers the best available picture per key:

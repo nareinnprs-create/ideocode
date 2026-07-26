@@ -1,4 +1,4 @@
-﻿//! Light/dark terminal theme support.
+//! Light/dark terminal theme support.
 //!
 //! IDEOCODE's palette (`theme.rs` and the many ad hoc `rgb(...)` call sites) is
 //! designed for dark terminal backgrounds. Rather than maintaining a second

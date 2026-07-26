@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Visual reporting tool for IDEOCODE-desktop debug frames.
 
 Composes gallery frame captures into filmstrips, animated GIFs, and

@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 struct EnvVarGuard {
     key: &'static str,

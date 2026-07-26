@@ -1,4 +1,4 @@
-﻿use ideocode_message_types::{ContentBlock, Message, Role, ToolDefinition, sanitize_tool_id};
+use ideocode_message_types::{ContentBlock, Message, Role, ToolDefinition, sanitize_tool_id};
 use ideocode_provider_core::anthropic_map_tool_name_for_oauth as map_tool_name_for_oauth;
 use serde::Serialize;
 use serde_json::{Value, json};

@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 #[test]
 fn desired_nofile_soft_limit_only_raises_when_possible() {

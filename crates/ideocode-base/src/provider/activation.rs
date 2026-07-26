@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use ideocode_provider_core::{ActiveProvider, provider_key};
 
 /// Stable product/runtime identity selected by login or provider initialization.

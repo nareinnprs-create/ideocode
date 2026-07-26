@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::tui::session_picker::{self, OverlayAction, PickerResult, ResumeTarget, SessionPicker};
 use crate::tui::{
     AccountPickerAction, InlineInteractiveState, PickerAction, PickerEntry, PickerKind,

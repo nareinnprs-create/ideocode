@@ -1,4 +1,4 @@
-﻿//! Visual preview of the swarm gallery layout against mock streams.
+//! Visual preview of the swarm gallery layout against mock streams.
 //!
 //! Run with: `cargo run --profile selfdev -p IDEOCODE-tui-render --example swarm_gallery_preview`
 

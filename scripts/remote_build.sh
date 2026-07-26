@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Remote cargo runner (build/test/check/clippy) via SSH + rsync.
 #
 # Defaults:

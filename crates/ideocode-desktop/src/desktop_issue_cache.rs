@@ -1,4 +1,4 @@
-﻿#![cfg_attr(test, allow(dead_code))]
+#![cfg_attr(test, allow(dead_code))]
 
 use crate::desktop_log;
 use crate::single_session::{GitHubIssueBrowserState, GitHubIssuePreview, GitHubIssueVisualState};

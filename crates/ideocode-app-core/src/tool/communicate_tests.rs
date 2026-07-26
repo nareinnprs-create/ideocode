@@ -1,4 +1,4 @@
-﻿use super::{
+use super::{
     CommunicateInput, CommunicateTool, canonical_swarm_action, cleanup_candidate_session_ids,
     coordination_in_flight_count, default_await_target_statuses, default_cleanup_target_statuses,
     format_awaited_members, format_awaited_members_with_reports, format_members,

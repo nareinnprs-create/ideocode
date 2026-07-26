@@ -1,4 +1,4 @@
-﻿//! Human-friendly model name rendering.
+//! Human-friendly model name rendering.
 //!
 //! Model ids arrive as raw provider slugs (`claude-opus-4-8`, `gpt-5.1-codex-max`,
 //! `gemini-3.1-pro-preview`). Every user-facing surface (the `/model` picker,

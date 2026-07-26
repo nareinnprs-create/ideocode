@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_body_cache_state_keeps_multiple_width_entries() {
     let key_a = BodyCacheKey {
         width: 40,

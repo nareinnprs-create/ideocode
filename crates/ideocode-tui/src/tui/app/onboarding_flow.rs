@@ -1,4 +1,4 @@
-﻿//! First-run onboarding flow state machine.
+//! First-run onboarding flow state machine.
 //!
 //! After the user logs in / imports credentials on a fresh install, we walk
 //! them through a short guided flow:

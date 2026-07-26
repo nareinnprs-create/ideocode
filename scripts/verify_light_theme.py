@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Verify light-theme detection end to end.
 
 Spawns the freshly built IDEOCODE TUI in a PTY, replies to terminal queries

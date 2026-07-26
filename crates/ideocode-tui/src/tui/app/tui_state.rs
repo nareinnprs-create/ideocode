@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::tui::TuiState as _;
 use std::cell::RefCell;
 use std::sync::Mutex;

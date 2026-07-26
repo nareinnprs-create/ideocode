@@ -1,4 +1,4 @@
-﻿use crate::test_support::*;
+use crate::test_support::*;
 
 // ============================================================================
 // Binary Integration Tests

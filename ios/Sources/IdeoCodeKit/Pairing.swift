@@ -1,4 +1,4 @@
-﻿import Foundation
+import Foundation
 
 /// Exchanges a pairing code for a long-lived auth token via `POST /pair`.
 public struct PairingClient: Sendable {

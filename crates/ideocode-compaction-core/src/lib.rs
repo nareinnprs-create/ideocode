@@ -1,4 +1,4 @@
-﻿use ideocode_message_types::{ContentBlock, Message, Role};
+use ideocode_message_types::{ContentBlock, Message, Role};
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 

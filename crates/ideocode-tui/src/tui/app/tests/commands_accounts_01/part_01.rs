@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn session_picker_resume_action_keeps_overlay_open() {
     let mut app = create_test_app();
     app.session_picker_mode = SessionPickerMode::CatchUp;

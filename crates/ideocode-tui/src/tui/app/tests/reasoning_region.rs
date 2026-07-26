@@ -1,4 +1,4 @@
-﻿// Tests for the streaming reasoning region helpers.
+// Tests for the streaming reasoning region helpers.
 //
 // Reasoning text is rendered as dim, italic lines (no blockquote `│` gutter, no
 // header, no footer). Each complete line is wrapped in `*…*` with an invisible

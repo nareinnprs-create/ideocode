@@ -1,4 +1,4 @@
-﻿use std::collections::HashMap;
+use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
 pub(crate) const VIEWPORT_ANIMATION_DURATION: Duration = Duration::from_millis(150);

@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_build_turn_footer_combines_compact_duration_with_streaming_stats() {
     let mut app = create_test_app();
     app.streaming.streaming_input_tokens = 210_000;

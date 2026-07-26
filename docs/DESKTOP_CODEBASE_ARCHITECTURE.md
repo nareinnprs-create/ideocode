@@ -1,4 +1,4 @@
-﻿# Desktop Codebase Architecture from the Existing TUI
+# Desktop Codebase Architecture from the Existing TUI
 
 Status: Proposed
 Updated: 2026-04-25

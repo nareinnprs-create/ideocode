@@ -1,4 +1,4 @@
-﻿use crate::WrappedLineMap;
+use crate::WrappedLineMap;
 use ideocode_tui_markdown::CopyTargetKind;
 use ratatui::text::Line;
 use std::sync::Arc;

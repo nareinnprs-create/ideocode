@@ -1,4 +1,4 @@
-﻿// Realistic reproduction of David's `received fatal alert: BadRecordMac`.
+// Realistic reproduction of David's `received fatal alert: BadRecordMac`.
 //
 // Architecture (mimics a corrupting middlebox / flaky VPN):
 //

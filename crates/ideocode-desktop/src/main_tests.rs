@@ -1,4 +1,4 @@
-﻿use super::animation::{
+use super::animation::{
     APP_MODE_TRANSITION_DURATION, AnimatedRect, ColorTransition, DESKTOP_REDUCED_MOTION_ENV,
     DesktopReducedMotionEnvGuard, FOCUS_PULSE_DURATION, STATUS_COLOR_TRANSITION_DURATION,
     STATUS_TEXT_TRANSITION_DURATION, SURFACE_TRANSITION_DURATION, StatusTextTransition,

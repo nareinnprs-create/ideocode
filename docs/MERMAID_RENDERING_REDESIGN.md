@@ -1,4 +1,4 @@
-﻿# ADR: Mermaid Rendering Redesign
+# ADR: Mermaid Rendering Redesign
 
 Date: 2026-05-08
 Status: Proposed

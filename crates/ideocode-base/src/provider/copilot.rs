@@ -1,4 +1,4 @@
-﻿//! Copilot pure model-catalog data (compatibility shim).
+//! Copilot pure model-catalog data (compatibility shim).
 //!
 //! The GitHub Copilot provider *runtime* (`CopilotApiProvider`) now lives in
 //! the downstream `IDEOCODE-provider-copilot-runtime` crate so provider edits do

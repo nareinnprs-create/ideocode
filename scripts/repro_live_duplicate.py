@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Reproduction / detection harness for GitHub issue #314:
   "Live transcript duplicates assistant commentary and tool calls"

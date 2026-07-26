@@ -1,4 +1,4 @@
-﻿use super::ensure_swarm_prompt_edit_path;
+use super::ensure_swarm_prompt_edit_path;
 use super::parse_diff_mode_name;
 use super::parse_manual_subagent_spec;
 

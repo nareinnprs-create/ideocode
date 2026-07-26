@@ -1,4 +1,4 @@
-﻿use crate::message::ToolCall;
+use crate::message::ToolCall;
 use crate::side_panel::SidePanelSnapshot;
 use crate::todo::TodoItem;
 pub use ideocode_background_types::{

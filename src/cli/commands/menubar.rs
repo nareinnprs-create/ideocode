@@ -1,4 +1,4 @@
-﻿//! `IDEOCODE menubar` - a lightweight live indicator of how many IDEOCODE sessions
+//! `IDEOCODE menubar` - a lightweight live indicator of how many IDEOCODE sessions
 //! are running and how many are actively streaming a model response.
 //!
 //! On macOS this renders a native menu bar (`NSStatusItem`) item that updates

@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::tui::connection_type_icon;
 
 impl App {

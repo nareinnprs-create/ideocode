@@ -1,4 +1,4 @@
-﻿# IDEOCODE Telemetry
+# IDEOCODE Telemetry
 
 IDEOCODE collects **anonymous, minimal usage statistics** to help understand how many people use IDEOCODE, what providers/models are popular, whether onboarding works, which feature families are used, how often sessions succeed, and whether performance/regressions are improving. This data helps prioritize development without collecting prompts or code.
 

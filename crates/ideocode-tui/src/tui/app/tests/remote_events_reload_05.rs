@@ -1,4 +1,4 @@
-﻿// Regression tests for issue #391: a queued message must survive a reload or
+// Regression tests for issue #391: a queued message must survive a reload or
 // disconnect that races the turn-end dispatch, staying queued until the turn
 // naturally completes instead of silently disappearing.
 //

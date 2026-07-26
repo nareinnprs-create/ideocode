@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(crate) struct DesktopAsyncJobPermit<'a> {
     pub(crate) counter: &'a AtomicUsize,

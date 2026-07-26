@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 impl Agent {
     pub(super) fn note_compaction_applied(&mut self) {

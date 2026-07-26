@@ -1,4 +1,4 @@
-﻿//! Where a discovered key binding came from, and the binding record itself.
+//! Where a discovered key binding came from, and the binding record itself.
 
 use serde::{Deserialize, Serialize};
 

@@ -1,4 +1,4 @@
-﻿//! Text layout via Parley, rendered as Vello glyph runs.
+//! Text layout via Parley, rendered as Vello glyph runs.
 
 use parley::{
     Alignment, FontContext, GlyphRun, Layout, LayoutContext, PositionedLayoutItem, StyleProperty,

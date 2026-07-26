@@ -1,4 +1,4 @@
-﻿//! External-auth-source review and auto-import flow.
+//! External-auth-source review and auto-import flow.
 //!
 //! Discovers credentials left behind by other tools (Claude Code, Codex,
 //! Copilot, Cursor, Gemini CLI, ...), asks the user to approve trusting them,

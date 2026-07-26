@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use crate::plan::PlanItem;
 use crate::protocol::SwarmMemberStatus;
 use crate::session::{StoredReplayEvent, StoredReplayEventKind};

@@ -1,4 +1,4 @@
-﻿use super::swarm_channels::list_channels_for_swarm;
+use super::swarm_channels::list_channels_for_swarm;
 use super::{
     FileTouchService, ServerIdentity, SharedContext, SwarmMember, SwarmState, VersionedPlan,
     git_common_dir_for, swarm_id_for_dir,

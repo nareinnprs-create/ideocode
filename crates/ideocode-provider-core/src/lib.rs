@@ -1,4 +1,4 @@
-﻿pub mod anthropic;
+pub mod anthropic;
 pub mod attempt_tracker;
 pub mod auth_mode;
 pub mod catalog_refresh;

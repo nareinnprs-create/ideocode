@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Build a Linux x86_64 release artifact against the CentOS 7 / manylinux2014

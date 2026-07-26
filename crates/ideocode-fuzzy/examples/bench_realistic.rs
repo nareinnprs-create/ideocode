@@ -1,4 +1,4 @@
-﻿fn main() {
+fn main() {
     // realistic model picker filter_text: "name provider method detail"
     let names: Vec<String> = (0..9000)
         .map(|i| {

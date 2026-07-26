@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(crate) fn load_session_cards_for_desktop() -> Vec<workspace::SessionCard> {
     match session_data::load_recent_session_cards() {

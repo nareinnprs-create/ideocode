@@ -1,4 +1,4 @@
-﻿//! Guard against width-unstable glyphs in TUI source (issue seen 2026-07-02).
+//! Guard against width-unstable glyphs in TUI source (issue seen 2026-07-02).
 //!
 //! Unicode 16 reclassified several symbol ranges from narrow (1 cell) to wide
 //! (2 cells): U+2630..U+2637 (trigrams), U+268A..U+268F (monograms/digrams),

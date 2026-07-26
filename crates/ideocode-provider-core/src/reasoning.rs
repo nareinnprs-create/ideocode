@@ -1,4 +1,4 @@
-﻿//! Shared reasoning-effort ladders.
+//! Shared reasoning-effort ladders.
 //!
 //! Keep these in provider-core so provider runtimes and UI clients expose the
 //! same ordered values. `swarm` and `swarm-deep` are IDEOCODE UI sentinels rather

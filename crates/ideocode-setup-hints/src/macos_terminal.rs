@@ -1,4 +1,4 @@
-﻿use anyhow::Result;
+use anyhow::Result;
 use ideocode_storage as storage;
 use serde::{Deserialize, Serialize};
 use std::fmt;

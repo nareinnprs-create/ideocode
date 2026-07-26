@@ -1,4 +1,4 @@
-﻿/// Truncate a string at a valid UTF-8 character boundary.
+/// Truncate a string at a valid UTF-8 character boundary.
 ///
 /// Returns a slice of at most `max_bytes` bytes, ending at a valid char boundary.
 /// This prevents panics when truncating strings that contain multi-byte characters.

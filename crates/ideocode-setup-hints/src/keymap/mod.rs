@@ -1,4 +1,4 @@
-﻿//! Keymap discovery: snapshot the key bindings that exist on the machine
+//! Keymap discovery: snapshot the key bindings that exist on the machine
 //! (macOS system shortcuts + terminal emulator bindings) so IDEOCODE can detect
 //! when one of them intercepts a key IDEOCODE wants to use.
 //!

@@ -1,4 +1,4 @@
-﻿#[tokio::test]
+#[tokio::test]
 async fn communicate_list_and_await_members_work_end_to_end() {
     let _env_lock = crate::storage::lock_test_env();
     let runtime_dir = tempfile::TempDir::new().expect("runtime tempdir");

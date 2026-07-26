@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Benchmark single agent vs swarm on the Anthropic Performance Take-Home.
 

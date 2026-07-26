@@ -1,4 +1,4 @@
-﻿//! `/support` command: gather diagnostics and open a prefilled support email.
+//! `/support` command: gather diagnostics and open a prefilled support email.
 //!
 //! The diagnostics builder is a pure function over [`SupportDiagnostics`] so it
 //! can be unit-tested without an `App`. The command opens a `mailto:` URL via

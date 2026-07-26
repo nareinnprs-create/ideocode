@@ -1,4 +1,4 @@
-﻿"""Context passed to every reward scorer.
+"""Context passed to every reward scorer.
 
 A scorer reads only what it needs from this object. The aggregator builds one
 Context per matrix cell (device x scenario) and reuses it across all scorers,

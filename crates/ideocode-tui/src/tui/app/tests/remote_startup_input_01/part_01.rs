@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_finish_turn_without_followup_clears_visible_turn_started() {
     let mut app = create_test_app();
     app.is_processing = true;

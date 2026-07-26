@@ -1,4 +1,4 @@
-﻿//! Deprecated Claude CLI provider runtime (subprocess transport), moved out
+//! Deprecated Claude CLI provider runtime (subprocess transport), moved out
 //! of `IDEOCODE-base` so provider edits compile only this crate plus a binary
 //! relink instead of rebuilding the base -> app-core -> tui spine. The
 //! binary's composition root registers [`ClaudeProvider`] with

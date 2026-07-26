@@ -1,4 +1,4 @@
-﻿//! Pure JSON-to-JSON translation between the harness API and the legacy
+//! Pure JSON-to-JSON translation between the harness API and the legacy
 //! internal protocol. Kept side-effect free so it is trivially unit-testable.
 
 use ideocode_harness_api::{ApiEvent, ErrorCode, HistoryMessage, ServerFrame, SessionInfo};

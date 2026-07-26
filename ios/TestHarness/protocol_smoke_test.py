@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """End-to-end protocol smoke test against the mock gateway.
 
 Exercises: /health, /pair, ws upgrade, subscribe, get_history, message stream.

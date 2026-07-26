@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Benchmark interactive CLI startup using user-visible metrics.
 
 Measures two UX-focused metrics for interactive PTY launches:

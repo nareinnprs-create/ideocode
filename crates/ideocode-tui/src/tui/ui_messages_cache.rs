@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(super) use ideocode_tui_messages::{centered_wrap_width, left_pad_lines_for_centered_mode};
 

@@ -1,4 +1,4 @@
-﻿#![cfg_attr(
+#![cfg_attr(
     test,
     allow(clippy::await_holding_lock, clippy::items_after_test_module)
 )]

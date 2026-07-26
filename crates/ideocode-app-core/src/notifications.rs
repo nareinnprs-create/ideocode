@@ -1,4 +1,4 @@
-﻿//! Notification dispatcher for ambient mode.
+//! Notification dispatcher for ambient mode.
 //!
 //! Sends notifications via:
 //! - ntfy.sh (push notifications to phone)

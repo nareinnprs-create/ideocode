@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 /// Verify the default system prompt does NOT identify as "Claude Code"
 /// It's fine to say "powered by Claude" but not "Claude Code" (Anthropic's product)

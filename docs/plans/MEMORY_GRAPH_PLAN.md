@@ -1,4 +1,4 @@
-﻿# Plan: Making the Memory Graph Earn Its Keep
+# Plan: Making the Memory Graph Earn Its Keep
 
 > Status: Proposal. Companion to MEMORY_ARCHITECTURE.md. Goal: best recall accuracy.
 

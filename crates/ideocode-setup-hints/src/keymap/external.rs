@@ -1,4 +1,4 @@
-﻿//! Discover global key bindings declared by third-party apps that grab hotkeys
+//! Discover global key bindings declared by third-party apps that grab hotkeys
 //! *before* the terminal (and therefore IDEOCODE) ever sees them.
 //!
 //! macOS lets window managers and automation tools register system-wide hotkeys.

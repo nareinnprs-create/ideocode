@@ -1,4 +1,4 @@
-﻿//! Logging infrastructure for IDEOCODE
+//! Logging infrastructure for IDEOCODE
 //!
 //! Logs to ~/.IDEOCODE/logs/ with automatic rotation
 //!

@@ -1,4 +1,4 @@
-﻿use super::{
+use super::{
     maybe_run_pending_restart_restore_on_startup, run_restart_clear_command,
     run_restart_save_command,
 };

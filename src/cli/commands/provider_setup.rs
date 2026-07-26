@@ -1,4 +1,4 @@
-﻿use anyhow::{Context, Result};
+use anyhow::{Context, Result};
 use serde::Serialize;
 use std::io::Read;
 use std::path::PathBuf;

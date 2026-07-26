@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Thin wrapper used by the test/refactor helper scripts (test_fast.sh,

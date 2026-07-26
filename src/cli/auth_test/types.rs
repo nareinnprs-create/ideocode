@@ -1,4 +1,4 @@
-﻿#[expect(
+#[expect(
     clippy::large_enum_variant,
     reason = "Generic auth-test targets carry provider descriptors until this CLI path is refactored"
 )]

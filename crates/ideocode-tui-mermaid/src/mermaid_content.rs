@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 /// Estimate the height needed for an image in terminal rows
 pub fn estimate_image_height(width: u32, height: u32, max_width: u16) -> u16 {

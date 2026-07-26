@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 fn sanitize_fenced_block(text: &str) -> String {
     text.replace("```", "``\u{200b}`")

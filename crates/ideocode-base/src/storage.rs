@@ -1,4 +1,4 @@
-﻿#![cfg_attr(test, allow(clippy::items_after_test_module))]
+#![cfg_attr(test, allow(clippy::items_after_test_module))]
 
 pub use ideocode_storage::*;
 

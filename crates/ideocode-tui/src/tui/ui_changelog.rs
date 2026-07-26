@@ -1,4 +1,4 @@
-﻿use std::sync::OnceLock;
+use std::sync::OnceLock;
 
 /// A changelog entry: hash, optional version tag, and commit subject.
 #[derive(Clone, Copy)]

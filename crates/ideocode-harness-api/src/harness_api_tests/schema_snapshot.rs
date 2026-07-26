@@ -1,4 +1,4 @@
-﻿//! Schema snapshot tests: fail if the wire shape changes accidentally.
+//! Schema snapshot tests: fail if the wire shape changes accidentally.
 
 use crate::*;
 

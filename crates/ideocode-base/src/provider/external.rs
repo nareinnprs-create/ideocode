@@ -1,4 +1,4 @@
-﻿//! Composition-root registry for externally-implemented provider runtimes.
+//! Composition-root registry for externally-implemented provider runtimes.
 //!
 //! Provider runtime implementations are being moved out of `IDEOCODE-base` into
 //! downstream crates (e.g. `IDEOCODE-provider-gemini-runtime`) so that editing a

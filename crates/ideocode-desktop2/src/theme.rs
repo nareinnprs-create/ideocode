@@ -1,4 +1,4 @@
-﻿//! Theme-agnostic design tokens.
+//! Theme-agnostic design tokens.
 //!
 //! The scene code only speaks semantic roles (`background`, `text`,
 //! `muted`, `rule`, ...), never literal colors. Concrete themes are plain

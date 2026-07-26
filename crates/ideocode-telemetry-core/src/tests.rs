@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use std::sync::{Mutex, OnceLock};
 
 // All of these tests mutate process-global state: the env-var opt-out tests

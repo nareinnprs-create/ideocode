@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Test OAuth usage comparison between Claude Code CLI and IDEOCODE direct API.
 

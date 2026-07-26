@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # setup_friction_eval.sh - deterministic install / setup / retention friction
 # scorecard.
 #

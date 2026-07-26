@@ -1,4 +1,4 @@
-﻿//! Transcript scanning with an on-disk incremental cache.
+//! Transcript scanning with an on-disk incremental cache.
 //!
 //! Scanning is the expensive part: there can be ~100k JSON transcripts totaling
 //! several GB. We keep a sidecar cache (`~/.IDEOCODE/cache/productivity/summaries.json`)

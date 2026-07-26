@@ -1,4 +1,4 @@
-﻿# OpenAI-compatible provider `/models` audit
+# OpenAI-compatible provider `/models` audit
 
 Scope: built-in `OpenAiCompatibleProfile` entries in `crates/IDEOCODE-provider-metadata/src/lib.rs`.
 

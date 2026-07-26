@@ -1,4 +1,4 @@
-﻿// Tests for the SwarmPlan -> inline chat plan-graph pipeline and the
+// Tests for the SwarmPlan -> inline chat plan-graph pipeline and the
 // plan-scope notification quieting (status line only, no chat card).
 //
 // Mermaid enablement is consulted through

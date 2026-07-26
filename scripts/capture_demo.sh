@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # Full autonomous demo capture for IDEOCODE
 # Captures screenshots of various UI states using niri + wtype
 #

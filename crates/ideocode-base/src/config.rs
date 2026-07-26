@@ -1,4 +1,4 @@
-﻿//! Configuration file support for IDEOCODE
+//! Configuration file support for IDEOCODE
 //!
 //! Config is loaded from `~/.IDEOCODE/config.toml` (or `$IDEOCODE_HOME/config.toml`)
 //! Environment variables override config file settings.

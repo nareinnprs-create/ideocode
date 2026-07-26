@@ -1,4 +1,4 @@
-﻿#![cfg_attr(test, allow(clippy::items_after_test_module))]
+#![cfg_attr(test, allow(clippy::items_after_test_module))]
 
 use crate::agent::Agent;
 use crate::auth::lifecycle::{AuthActivationRequest, AuthActivationResult};

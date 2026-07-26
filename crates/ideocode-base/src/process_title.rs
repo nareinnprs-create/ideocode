@@ -1,4 +1,4 @@
-﻿const LINUX_PROCESS_TITLE_LIMIT: usize = 15;
+const LINUX_PROCESS_TITLE_LIMIT: usize = 15;
 #[cfg(target_os = "linux")]
 const KILLALL_PROCESS_NAME: &str = "IDEOCODE";
 

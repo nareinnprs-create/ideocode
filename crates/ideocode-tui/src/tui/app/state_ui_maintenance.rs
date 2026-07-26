@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 impl App {
     fn client_maintenance_busy_message(

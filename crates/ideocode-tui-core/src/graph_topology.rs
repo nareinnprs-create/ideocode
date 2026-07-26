@@ -1,4 +1,4 @@
-﻿#[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct GraphNode {
     /// Stable node ID from memory graph (mem:*, tag:*, cluster:*)
     pub id: String,

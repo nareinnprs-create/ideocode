@@ -1,4 +1,4 @@
-﻿#[test]
+#[test]
 fn test_provider_for_model_claude() {
     assert_eq!(provider_for_model("claude-opus-4-6"), Some("claude"));
     assert_eq!(provider_for_model("claude-opus-4-6[1m]"), Some("claude"));

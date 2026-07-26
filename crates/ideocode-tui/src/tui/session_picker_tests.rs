@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 use chrono::{Duration as ChronoDuration, Utc};
 use std::io::Write;
 use std::time::{Duration as StdDuration, SystemTime};

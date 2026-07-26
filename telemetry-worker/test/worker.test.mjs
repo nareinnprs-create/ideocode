@@ -1,4 +1,4 @@
-﻿// Tests for the telemetry worker's dual-write + D1 self-defense behavior.
+// Tests for the telemetry worker's dual-write + D1 self-defense behavior.
 // Run with: node --test test/
 //
 // The worker module is plain ESM with injected bindings (env.DB, env.FIREHOSE),

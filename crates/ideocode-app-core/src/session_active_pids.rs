@@ -1,4 +1,4 @@
-﻿use super::*;
+use super::*;
 
 pub(super) fn active_pids_dir() -> Option<std::path::PathBuf> {
     storage::ideocode_dir().ok().map(|d| d.join("active_pids"))

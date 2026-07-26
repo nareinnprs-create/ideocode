@@ -1,4 +1,4 @@
-﻿//! Tests for the macos_computer_use tool. Pure-logic tests run anywhere on macOS; live
+//! Tests for the macos_computer_use tool. Pure-logic tests run anywhere on macOS; live
 //! tests that synthesize events / capture the screen are `#[ignore]`d.
 
 use super::*;

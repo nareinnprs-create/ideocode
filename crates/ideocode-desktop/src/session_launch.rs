@@ -1,4 +1,4 @@
-﻿use anyhow::{Context, Result};
+use anyhow::{Context, Result};
 use serde_json::json;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};

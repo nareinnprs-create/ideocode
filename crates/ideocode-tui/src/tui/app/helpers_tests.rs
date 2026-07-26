@@ -1,4 +1,4 @@
-﻿use super::{
+use super::{
     build_resume_command, effort_display_label, extract_bracketed_system_message,
     format_countdown_until, gather_ambient_info_inner, inferred_reasoning_efforts,
     partition_queued_messages, resume_invocation_args,

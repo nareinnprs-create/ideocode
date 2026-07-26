@@ -1,4 +1,4 @@
-﻿//! Direct Anthropic Messages API provider runtime (OAuth subscription + API
+//! Direct Anthropic Messages API provider runtime (OAuth subscription + API
 //! key, SSE streaming, service tiers, reasoning efforts), moved out of
 //! `IDEOCODE-base` so provider edits compile only this crate plus a binary
 //! relink instead of rebuilding the base -> app-core -> tui spine. The

@@ -1,4 +1,4 @@
-﻿let cachedEventColumns = null;
+let cachedEventColumns = null;
 let cachedSessionDetailColumns = null;
 let cachedTurnDetailColumns = null;
 let cachedWebDetailColumns = null;

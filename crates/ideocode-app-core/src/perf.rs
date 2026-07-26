@@ -1,4 +1,4 @@
-﻿use std::sync::OnceLock;
+use std::sync::OnceLock;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PerformanceTier {

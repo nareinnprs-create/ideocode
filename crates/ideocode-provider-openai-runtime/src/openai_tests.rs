@@ -1,4 +1,4 @@
-﻿#![allow(clippy::collapsible_match)]
+#![allow(clippy::collapsible_match)]
 
 use super::*;
 use anyhow::Result;

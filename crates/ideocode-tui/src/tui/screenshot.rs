@@ -1,4 +1,4 @@
-﻿//! Screenshot Automation Support
+//! Screenshot Automation Support
 //!
 //! Provides hooks for autonomous screenshot capture by emitting signals
 //! that external capture scripts can watch for.

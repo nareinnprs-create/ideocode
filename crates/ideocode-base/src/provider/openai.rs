@@ -1,4 +1,4 @@
-﻿//! OpenAI provider shared helpers (compatibility shim).
+//! OpenAI provider shared helpers (compatibility shim).
 //!
 //! The OpenAI provider *runtime* (`OpenAIProvider`: Codex OAuth + API key,
 //! Responses API over SSE and persistent WebSocket) now lives in the

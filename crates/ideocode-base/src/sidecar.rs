@@ -1,4 +1,4 @@
-﻿//! Lightweight sidecar client for fast, cheap model calls.
+//! Lightweight sidecar client for fast, cheap model calls.
 //!
 //! Used for memory relevance verification and other quick tasks that don't
 //! need the full Agent SDK infrastructure.
