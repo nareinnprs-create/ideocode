@@ -4,10 +4,10 @@ use std::path::PathBuf;
 use crate::{platform, storage};
 
 const GITHUB_API_LATEST: &str =
-    "https://api.github.com/repos/1jehuang/firefox-agent-bridge/releases/latest";
+    "https://api.github.com/repos/nareinnprs-create/firefox-agent-bridge/releases/latest";
 
 const NATIVE_HOST_NAME: &str = "firefox_agent_bridge";
-const EXTENSION_ID_LISTED: &str = "browser-agent-bridge@1jehuang.github.io";
+const EXTENSION_ID_LISTED: &str = "browser-agent-bridge@nareinnprs-create.github.io";
 const EXTENSION_ID_LOCAL: &str = "firefox-agent-bridge@local";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
