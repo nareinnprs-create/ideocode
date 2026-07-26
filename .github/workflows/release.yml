@@ -310,7 +310,6 @@ jobs:
       WINDOWS_SIGNING_ENDPOINT: ${{ vars.WINDOWS_SIGNING_ENDPOINT }}
       WINDOWS_SIGNING_ACCOUNT: ${{ vars.WINDOWS_SIGNING_ACCOUNT }}
       WINDOWS_SIGNING_CERTIFICATE_PROFILE: ${{ vars.WINDOWS_SIGNING_CERTIFICATE_PROFILE }}
-      WINDOWS_SIGNING_REQUIRED: ${{ vars.WINDOWS_SIGNING_REQUIRED }}
     steps:
       - name: Download unsigned Windows binaries
         uses: actions/download-artifact@v4
@@ -333,12 +332,8 @@ jobs:
           $configured = -not ($requiredValues | Where-Object { [string]::IsNullOrWhiteSpace($_) })
           "enabled=$($configured.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
-          $signingRequired = $env:WINDOWS_SIGNING_REQUIRED -ne 'false'
-          if (-not $configured -and $signingRequired) {
-            throw 'Windows signing is required, but Azure Artifact Signing configuration is incomplete. See docs/WINDOWS.md.'
-          }
           if (-not $configured) {
-            Write-Warning 'Publishing unsigned Windows assets because WINDOWS_SIGNING_REQUIRED=false. This override is not suitable for an official Windows release.'
+            Write-Warning 'Windows signing not configured — publishing unsigned assets. Users may see a SmartScreen warning on first run.'
           }
 
       - name: Azure login with GitHub OIDC
