@@ -454,7 +454,7 @@ jobs:
             export IDEOCODE_BUILD_SEMVER="${{ github.ref_name }}"
 
             echo "::group::cargo build (ideocode binary)"
-            cargo build --locked --release -p ideocode --bin ideocode
+            cargo build --release -p ideocode --bin ideocode
             echo "::endgroup::"
 
             echo "::group::Verify binary launches"
