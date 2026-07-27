@@ -49,6 +49,8 @@ const REGISTERED_COMMANDS: &[RegisteredCommand] = &[
     RegisteredCommand::hidden("/model-status", "Alias for /provider-test-coverage"),
     RegisteredCommand::public("/provider", "Open provider manager / add custom providers"),
     RegisteredCommand::hidden("/providers", "Alias for /provider"),
+    RegisteredCommand::public("/attach", "Attach an image/PDF file to your next message"),
+    RegisteredCommand::hidden("/image", "Alias for /attach"),
     RegisteredCommand::public("/refresh-model-list", "Refresh provider model catalogs"),
     RegisteredCommand::public("/agents", "Configure models for agent roles"),
     RegisteredCommand::public(

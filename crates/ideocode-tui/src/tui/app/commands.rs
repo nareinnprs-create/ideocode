@@ -3449,6 +3449,107 @@ pub(super) fn handle_provider_command(app: &mut App, trimmed: &str) -> bool {
     false
 }
 
+pub(super) fn handle_attach_command(app: &mut App, trimmed: &str) -> bool {
+    let rest = if let Some(r) = trimmed.strip_prefix("/attach") {
+        r.trim()
+    } else if let Some(r) = trimmed.strip_prefix("/image") {
+        r.trim()
+    } else {
+        return false;
+    };
+
+    if rest.is_empty() {
+        app.push_display_message(DisplayMessage::system(
+            "Usage: /attach <file_path>\n\n\
+             Attaches an image (PNG, JPG, GIF, WebP) or PDF file to your next message.\n\
+             The file will be sent as a multimodal content block to the AI.\n\n\
+             Examples:\n\
+               /attach screenshot.png\n\
+               /attach ./diagram.jpg\n\
+               /attach /tmp/flow.pdf"
+        ));
+        return true;
+    }
+
+    let file_path = std::path::Path::new(rest);
+    if !file_path.exists() {
+        app.push_display_message(DisplayMessage::error(
+            format!("File not found: {}", rest)
+        ));
+        return true;
+    }
+
+    let ext = file_path.extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("")
+        .to_ascii_lowercase();
+
+    let (media_type, is_binary) = match ext.as_str() {
+        "png" => ("image/png", true),
+        "jpg" | "jpeg" => ("image/jpeg", true),
+        "gif" => ("image/gif", true),
+        "webp" => ("image/webp", true),
+        "pdf" => ("application/pdf", true),
+        "bmp" => ("image/bmp", true),
+        "svg" => ("image/svg+xml", false),
+        _ => {
+            app.push_display_message(DisplayMessage::error(
+                format!("Unsupported file type: .{}\nSupported: png, jpg, jpeg, gif, webp, pdf, bmp, svg", ext)
+            ));
+            return true;
+        }
+    };
+
+    if is_binary {
+        use base64::Engine;
+        match std::fs::read(file_path) {
+            Ok(data) => {
+                if data.len() > 20 * 1024 * 1024 {
+                    app.push_display_message(DisplayMessage::error(
+                        "File too large (max 20MB for multimodal content)".to_string()
+                    ));
+                    return true;
+                }
+                let b64 = base64::engine::general_purpose::STANDARD.encode(&data);
+                app.pending_images.push((media_type.to_string(), b64));
+                let placeholder = format!("[image {}]", app.pending_images.len());
+                app.input.push_str(&placeholder);
+                app.cursor_pos = app.input.len();
+                let display_name = file_path.file_name()
+                    .and_then(|n| n.to_str())
+                    .unwrap_or(rest);
+                app.push_display_message(DisplayMessage::system(
+                    format!("Attached: {} ({}, {} KB)\nSend with Enter or add more text first.",
+                        display_name, media_type, data.len() / 1024)
+                ));
+                app.set_status_notice(format!("📎 Attached: {}", display_name));
+            }
+            Err(e) => {
+                app.push_display_message(DisplayMessage::error(
+                    format!("Failed to read file: {}", e)
+                ));
+            }
+        }
+    } else {
+        match std::fs::read_to_string(file_path) {
+            Ok(content) => {
+                app.input.push_str(&content);
+                app.cursor_pos = app.input.len();
+                app.push_display_message(DisplayMessage::system(
+                    format!("Loaded {} ({} chars) into input.", rest, content.len())
+                ));
+            }
+            Err(e) => {
+                app.push_display_message(DisplayMessage::error(
+                    format!("Failed to read file: {}", e)
+                ));
+            }
+        }
+    }
+
+    true
+}
+
 pub(super) fn handle_usage_command(app: &mut App, trimmed: &str) -> bool {
     let Some(rest) = trimmed.strip_prefix("/usage") else {
         return false;
