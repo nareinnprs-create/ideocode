@@ -795,6 +795,310 @@ pub fn init_all() {
     init();
 }
 
+// ════════════════════════════════════════════════════════════════════════
+// BATCH 1: Wire standalone modules into draw loop
+// ════════════════════════════════════════════════════════════════════════
+
+// ── I2: Quick Actions Bar ─────────────────────────────────────────────
+
+pub fn render_quick_actions(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
+    let ctx = if app.is_processing() {
+        super::ui_quick_actions::ActionContext::Processing
+    } else {
+        super::ui_quick_actions::ActionContext::Idle
+    };
+    let actions = super::ui_quick_actions::get_quick_actions(&ctx);
+    let line = super::ui_quick_actions::render_quick_actions_compact(&actions);
+    let bar_area = Rect {
+        x: area.x,
+        y: area.y + area.height.saturating_sub(2),
+        width: area.width,
+        height: 1,
+    };
+    frame.render_widget(Paragraph::new(line), bar_area);
+}
+
+// ── H2: Scroll Position Indicator ─────────────────────────────────────
+
+pub fn render_scroll_position(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
+    let total = app.display_messages().len();
+    let visible = area.height as usize;
+    let scroll = app.scroll_offset();
+    let line = super::ui_scrollbar::render_scroll_position(total, visible, scroll);
+    let pos_area = Rect {
+        x: area.x + area.width.saturating_sub(14),
+        y: area.y + area.height.saturating_sub(1),
+        width: 14,
+        height: 1,
+    };
+    frame.render_widget(Paragraph::new(line), pos_area);
+}
+
+// ── H4: Memory Usage Visual ───────────────────────────────────────────
+
+pub fn render_memory_visual(frame: &mut Frame, area: Rect) {
+    let (used_mb, total_mb) = get_process_memory_mb();
+    if total_mb > 0.0 {
+        let line = super::ui_memory_visual::render_memory_usage(used_mb, total_mb);
+        let mem_area = Rect {
+            x: area.x + area.width.saturating_sub(40),
+            y: area.y,
+            width: 40,
+            height: 1,
+        };
+        frame.render_widget(Paragraph::new(line), mem_area);
+    }
+}
+
+// ── H8: Performance Dashboard ─────────────────────────────────────────
+
+pub fn render_performance_overlay(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
+    let visible = OVERLAY_STATE.with(|s| s.borrow().profiler_visible);
+    if !visible { return; }
+
+    let _elapsed = app.elapsed().unwrap_or(Duration::ZERO);
+    let (_tokens_in, _tokens_out) = app.streaming_tokens();
+    let tps = app.output_tps().unwrap_or(0.0);
+    let (used_mb, _) = get_process_memory_mb();
+
+    let metrics = super::ui_performance::PerformanceMetrics {
+        tokens_per_second: tps,
+        latency_ms: 0.0,
+        cost_usd: 0.0,
+        memory_mb: used_mb,
+        cpu_percent: 0.0,
+        network_in_kb: 0.0,
+        network_out_kb: 0.0,
+    };
+    let lines = super::ui_performance::render_performance_dashboard(&metrics, true);
+    if lines.is_empty() { return; }
+
+    let panel_height = (lines.len() as u16 + 2).min(area.height / 2);
+    let panel_area = Rect {
+        x: area.x + area.width.saturating_sub(35),
+        y: area.y + 1,
+        width: 35,
+        height: panel_height,
+    };
+    frame.render_widget(Paragraph::new(lines), panel_area);
+}
+
+// ── F1: Custom Widgets ────────────────────────────────────────────────
+
+pub fn render_custom_widgets(frame: &mut Frame, area: Rect) {
+    let widgets = get_default_widgets();
+    if widgets.is_empty() { return; }
+
+    let mut all_lines = Vec::new();
+    for widget in &widgets {
+        all_lines.extend(super::ui_widgets::render_custom_widget(widget));
+    }
+
+    let panel_height = (all_lines.len() as u16 + 1).min(area.height / 3);
+    let panel_area = Rect {
+        x: area.x,
+        y: area.y + area.height.saturating_sub(panel_height + 1),
+        width: 25,
+        height: panel_height,
+    };
+    frame.render_widget(Paragraph::new(all_lines), panel_area);
+}
+
+// ── F3: Theme API Preview ─────────────────────────────────────────────
+
+thread_local! {
+    static THEME_API_STATE: RefCell<ThemeApiState> = RefCell::new(ThemeApiState::new());
+}
+
+struct ThemeApiState {
+    visible: bool,
+    current_theme: super::ui_theme_api::ThemeAPI,
+}
+
+impl ThemeApiState {
+    fn new() -> Self {
+        Self {
+            visible: false,
+            current_theme: super::ui_theme_api::ThemeAPI::new("Default"),
+        }
+    }
+}
+
+pub fn toggle_theme_api() { THEME_API_STATE.with(|s| s.borrow_mut().visible = !s.borrow().visible); }
+pub fn theme_api_visible() -> bool { THEME_API_STATE.with(|s| s.borrow().visible) }
+
+pub fn render_theme_api_overlay(frame: &mut Frame, area: Rect) {
+    THEME_API_STATE.with(|s| {
+        let st = s.borrow();
+        if !st.visible { return; }
+
+        let lines = super::ui_theme_api::render_theme_api_preview(&st.current_theme);
+        let panel_height = (lines.len() as u16 + 2).min(area.height / 2);
+        let panel_area = Rect {
+            x: area.x + area.width.saturating_sub(40),
+            y: area.y + 2,
+            width: 40,
+            height: panel_height,
+        };
+        frame.render_widget(Paragraph::new(lines), panel_area);
+    });
+}
+
+// ── F4: Macro Recording ───────────────────────────────────────────────
+
+thread_local! {
+    static MACRO_STATE: RefCell<MacroState> = RefCell::new(MacroState::new());
+}
+
+struct MacroState {
+    recording: bool,
+    macro_name: String,
+    action_count: usize,
+    visible: bool,
+}
+
+impl MacroState {
+    fn new() -> Self {
+        Self { recording: false, macro_name: String::new(), action_count: 0, visible: false }
+    }
+}
+
+pub fn toggle_macro_recorder() {
+    MACRO_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.recording = !st.recording;
+        st.visible = true;
+        if st.recording { st.action_count = 0; }
+    });
+}
+pub fn toggle_macro_list() { MACRO_STATE.with(|s| s.borrow_mut().visible = !s.borrow().visible); }
+pub fn macro_recording() -> bool { MACRO_STATE.with(|s| s.borrow().recording) }
+
+pub fn render_macro_overlay(frame: &mut Frame, area: Rect) {
+    MACRO_STATE.with(|s| {
+        let st = s.borrow();
+        if !st.visible { return; }
+
+        let lines = if st.recording {
+            super::ui_macros::render_macro_recorder(true, &st.macro_name, st.action_count)
+        } else {
+            super::ui_macros::render_macro_list(&[], 0)
+        };
+        let panel_height = (lines.len() as u16 + 2).min(area.height / 3);
+        let panel_area = Rect {
+            x: area.x,
+            y: area.y + 2,
+            width: 30,
+            height: panel_height,
+        };
+        frame.render_widget(Paragraph::new(lines), panel_area);
+    });
+}
+
+// ── I7: Command Palette ───────────────────────────────────────────────
+
+thread_local! {
+    static PALETTE_STATE: RefCell<PaletteState> = RefCell::new(PaletteState::new());
+}
+
+struct PaletteState {
+    visible: bool,
+    selected: usize,
+    filter: String,
+    category_index: usize,
+}
+
+impl PaletteState {
+    fn new() -> Self {
+        Self { visible: false, selected: 0, filter: String::new(), category_index: 0 }
+    }
+}
+
+pub fn toggle_command_palette() {
+    PALETTE_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.visible = !st.visible;
+        st.selected = 0;
+        st.filter.clear();
+    });
+}
+pub fn command_palette_visible() -> bool { PALETTE_STATE.with(|s| s.borrow().visible) }
+
+pub fn palette_navigate_up() {
+    PALETTE_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = st.selected.saturating_sub(1); });
+}
+pub fn palette_navigate_down() {
+    PALETTE_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = (st.selected + 1).min(15); });
+}
+pub fn palette_next_category() {
+    PALETTE_STATE.with(|s| { let mut st = s.borrow_mut(); st.category_index = (st.category_index + 1) % 5; });
+}
+pub fn palette_prev_category() {
+    PALETTE_STATE.with(|s| { let mut st = s.borrow_mut(); st.category_index = if st.category_index == 0 { 4 } else { st.category_index - 1 }; });
+}
+
+pub fn render_command_palette_overlay(frame: &mut Frame, area: Rect) {
+    PALETTE_STATE.with(|s| {
+        let st = s.borrow();
+        if !st.visible { return; }
+
+        let commands = super::ui_palette::all_commands();
+        let category = match st.category_index {
+            0 => super::ui_palette::CommandCategory::Recent,
+            1 => super::ui_palette::CommandCategory::Frequent,
+            2 => super::ui_palette::CommandCategory::All,
+            3 => super::ui_palette::CommandCategory::Settings,
+            _ => super::ui_palette::CommandCategory::Files,
+        };
+        let lines = super::ui_palette::render_command_palette(&commands, st.selected, &st.filter, &category);
+        let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
+        let panel_width = 50.min(area.width);
+        let panel_area = Rect {
+            x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+            y: area.y,
+            width: panel_width,
+            height: panel_height,
+        };
+        frame.render_widget(Paragraph::new(lines), panel_area);
+    });
+}
+
+// ── Helper: process memory ────────────────────────────────────────────
+
+#[cfg(target_os = "linux")]
+fn get_process_memory_mb() -> (f32, f32) {
+    if let Ok(status) = std::fs::read_to_string("/proc/self/status") {
+        for line in status.lines() {
+            if line.starts_with("VmRSS:") {
+                let kb: f32 = line.split_whitespace().nth(1).unwrap_or("0").parse().unwrap_or(0.0);
+                return (kb / 1024.0, 4096.0);
+            }
+        }
+    }
+    (0.0, 0.0)
+}
+
+#[cfg(not(target_os = "linux"))]
+fn get_process_memory_mb() -> (f32, f32) {
+    (0.0, 0.0)
+}
+
+// ── Helper: default widgets ───────────────────────────────────────────
+
+fn get_default_widgets() -> Vec<super::ui_widgets::CustomWidget> {
+    use super::ui_widgets::{CustomWidget, WidgetType, WidgetStyle, WidgetPosition};
+    let now = chrono::Local::now();
+    vec![
+        CustomWidget {
+            name: "clock".to_string(),
+            widget_type: WidgetType::Clock,
+            position: WidgetPosition::BottomLeft,
+            style: WidgetStyle::default(),
+            content: now.format("%H:%M:%S").to_string(),
+        },
+    ]
+}
+
 // ── Keyboard Wizard ─────────────────────────────────────────────────
 
 thread_local! {
@@ -827,6 +1131,9 @@ pub fn render_keyboard_wizard_tip(frame: &mut Frame, area: Rect) {
             "Alt+P toggles profiler",
             "Alt+O toggles build output",
             "Alt+Z toggles search panel",
+            "Alt+8 opens command palette",
+            "Alt+9 toggles theme preview",
+            "Alt+0 toggles macro recorder",
             "Alt+1 docker, Alt+2 CI/CD, Alt+3 logs",
             "Alt+4 toggles debugger",
         ];

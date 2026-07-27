@@ -3472,6 +3472,31 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
 
     // Profiler panel
     crate::tui::ui_integration::render_profiler_panel(frame, area, app);
+
+    // ── BATCH 1: Standalone module wiring ─────────────────────────────
+
+    // Quick actions bar (bottom)
+    crate::tui::ui_integration::render_quick_actions(frame, area, app);
+
+    // Scroll position indicator
+    crate::tui::ui_integration::render_scroll_position(frame, area, app);
+
+    // Memory usage visual (top-right)
+    crate::tui::ui_integration::render_memory_visual(frame, area);
+
+    // Performance dashboard overlay (enhances profiler)
+    crate::tui::ui_integration::render_performance_overlay(frame, area, app);
+
+    // Theme API preview overlay
+    crate::tui::ui_integration::render_theme_api_overlay(frame, area);
+
+    // Macro recording overlay
+    crate::tui::ui_integration::render_macro_overlay(frame, area);
+
+    // Command palette overlay
+    crate::tui::ui_integration::render_command_palette_overlay(frame, area);
+
+    // ── END BATCH 1 ──────────────────────────────────────────────────
     // ── END NEW UI MODULES ──────────────────────────────────────────
 
     // Session facts use actual final-frame cells for collision detection. They

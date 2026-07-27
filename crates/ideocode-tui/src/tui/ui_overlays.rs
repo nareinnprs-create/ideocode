@@ -563,6 +563,9 @@ pub(super) fn draw_help_overlay(frame: &mut Frame, area: Rect, scroll: usize, ap
     lines.push(key_entry("Alt+2", "CI/CD runs"));
     lines.push(key_entry("Alt+P", "Performance profiler"));
     lines.push(key_entry("Alt+4", "Debugger"));
+    lines.push(key_entry("Alt+8", "Command palette"));
+    lines.push(key_entry("Alt+9", "Theme API preview"));
+    lines.push(key_entry("Alt+0", "Macro recorder"));
     lines.push(key_entry(
         &crate::tui::keybind::effort_switch_keys_label(),
         "Cycle effort (reasoning + swarm)",

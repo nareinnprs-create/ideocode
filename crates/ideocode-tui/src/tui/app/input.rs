@@ -1932,6 +1932,21 @@ pub(super) fn handle_alt_key(app: &mut App, code: KeyCode) -> bool {
             crate::tui::ui_integration::toggle_debugger();
             true
         }
+        // Alt+8: command palette
+        KeyCode::Char('8') => {
+            crate::tui::ui_integration::toggle_command_palette();
+            true
+        }
+        // Alt+9: theme API preview
+        KeyCode::Char('9') => {
+            crate::tui::ui_integration::toggle_theme_api();
+            true
+        }
+        // Alt+0: macro recorder
+        KeyCode::Char('0') => {
+            crate::tui::ui_integration::toggle_macro_recorder();
+            true
+        }
         _ => false,
     }
 }
@@ -1987,6 +2002,39 @@ fn gesture_activate_item(index: usize) {
         6 => toggle_cicd(),
         7 => toggle_profiler(),
         _ => {}
+    }
+}
+
+/// Handle keys while the command palette overlay is visible.
+fn handle_command_palette_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
+    if !crate::tui::ui_integration::command_palette_visible() { return false; }
+
+    match code {
+        KeyCode::Esc => {
+            crate::tui::ui_integration::toggle_command_palette();
+            true
+        }
+        KeyCode::Up | KeyCode::Char('k') => {
+            crate::tui::ui_integration::palette_navigate_up();
+            true
+        }
+        KeyCode::Down | KeyCode::Char('j') => {
+            crate::tui::ui_integration::palette_navigate_down();
+            true
+        }
+        KeyCode::Tab => {
+            crate::tui::ui_integration::palette_next_category();
+            true
+        }
+        KeyCode::BackTab => {
+            crate::tui::ui_integration::palette_prev_category();
+            true
+        }
+        KeyCode::Enter => {
+            crate::tui::ui_integration::toggle_command_palette();
+            true
+        }
+        _ => false,
     }
 }
 
@@ -2745,6 +2793,11 @@ impl App {
 
         // Gesture pad overlay: intercepts keys while the quick-action grid is visible.
         if handle_gesture_pad_keys(code, modifiers) {
+            return Ok(());
+        }
+
+        // Command palette overlay: intercepts keys while palette is visible.
+        if handle_command_palette_keys(code, modifiers) {
             return Ok(());
         }
 
