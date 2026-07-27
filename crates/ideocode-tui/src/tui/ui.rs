@@ -3421,6 +3421,45 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
         height: 1,
     };
     crate::tui::ui_integration::render_achievement_progress(frame, achievement_area);
+
+    // Render session timer in status bar area (left of achievement bar)
+    let timer_area = Rect {
+        x: area.x + area.width.saturating_sub(50),
+        y: area.y + area.height.saturating_sub(1),
+        width: 12,
+        height: 1,
+    };
+    crate::tui::ui_integration::render_session_timer(frame, timer_area);
+
+    // Render pomodoro if active (right of timer)
+    let pomodoro_area = Rect {
+        x: area.x + area.width.saturating_sub(65),
+        y: area.y + area.height.saturating_sub(1),
+        width: 14,
+        height: 1,
+    };
+    crate::tui::ui_integration::render_pomodoro(frame, pomodoro_area);
+
+    // Render network indicator in status bar area
+    let network_area = Rect {
+        x: area.x + area.width.saturating_sub(85),
+        y: area.y + area.height.saturating_sub(1),
+        width: 18,
+        height: 1,
+    };
+    crate::tui::ui_integration::render_network_indicator(frame, network_area);
+
+    // Render word count in status bar area
+    let wordcount_area = Rect {
+        x: area.x + area.width.saturating_sub(105),
+        y: area.y + area.height.saturating_sub(1),
+        width: 18,
+        height: 1,
+    };
+    crate::tui::ui_integration::render_wordcount(frame, wordcount_area);
+
+    // Render gesture pad overlay if visible
+    crate::tui::ui_integration::render_gesture_pad(frame, area);
     // ── END NEW UI MODULES ──────────────────────────────────────────
 
     // Session facts use actual final-frame cells for collision detection. They

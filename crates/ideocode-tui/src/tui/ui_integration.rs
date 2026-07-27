@@ -441,3 +441,279 @@ pub fn init() {
     // Push a welcome toast on startup
     push_toast_info("Welcome to IDEOCODE! 🚀");
 }
+
+// ── Session Timer State ──────────────────────────────────────────────
+
+thread_local! {
+    static TIMER_STATE: RefCell<TimerState> = RefCell::new(TimerState::new());
+    static NETWORK_STATE: RefCell<NetworkState> = RefCell::new(NetworkState::new());
+    static WORDCOUNT_STATE: RefCell<WordCountState> = RefCell::new(WordCountState::new());
+    static GESTURE_STATE: RefCell<GestureState> = RefCell::new(GestureState::new());
+}
+
+#[derive(Debug)]
+struct TimerState {
+    started_at: Instant,
+    pomodoro_remaining: Option<Duration>,
+    pomodoro_is_break: bool,
+}
+
+impl TimerState {
+    fn new() -> Self {
+        Self {
+            started_at: Instant::now(),
+            pomodoro_remaining: None,
+            pomodoro_is_break: false,
+        }
+    }
+}
+
+#[derive(Debug)]
+struct NetworkState {
+    connected: bool,
+    latency_ms: Option<u64>,
+    api_calls: u64,
+}
+
+impl NetworkState {
+    fn new() -> Self {
+        Self {
+            connected: true,
+            latency_ms: None,
+            api_calls: 0,
+        }
+    }
+}
+
+#[derive(Debug, Default)]
+struct WordCountState {
+    input_words: usize,
+    input_chars: usize,
+    session_words: usize,
+    session_chars: usize,
+}
+
+impl WordCountState {
+    fn new() -> Self {
+        Self::default()
+    }
+}
+
+#[derive(Debug)]
+struct GestureState {
+    visible: bool,
+    selected: usize,
+}
+
+impl GestureState {
+    fn new() -> Self {
+        Self { visible: false, selected: 0 }
+    }
+}
+
+// ── Timer API ────────────────────────────────────────────────────────
+
+/// Render session timer in the status bar area.
+pub fn render_session_timer(frame: &mut Frame, area: Rect) {
+    TIMER_STATE.with(|state| {
+        let s = state.borrow();
+        let elapsed = s.started_at.elapsed();
+        let h = elapsed.as_secs() / 3600;
+        let m = (elapsed.as_secs() % 3600) / 60;
+        let sec = elapsed.as_secs() % 60;
+
+        let line = Line::from(vec![
+            Span::styled("⏱️ ", Style::default().fg(neon_cyan())),
+            Span::styled(
+                format!("{:02}:{:02}:{:02}", h, m, sec),
+                Style::default().fg(neon_green()).add_modifier(Modifier::BOLD),
+            ),
+        ]);
+        frame.render_widget(Paragraph::new(line), area);
+    });
+}
+
+/// Start a pomodoro timer.
+pub fn start_pomodoro(focus_secs: u64) {
+    TIMER_STATE.with(|state| {
+        let mut s = state.borrow_mut();
+        s.pomodoro_remaining = Some(Duration::from_secs(focus_secs));
+        s.pomodoro_is_break = false;
+    });
+}
+
+/// Render pomodoro indicator if active.
+pub fn render_pomodoro(frame: &mut Frame, area: Rect) {
+    TIMER_STATE.with(|state| {
+        let s = state.borrow();
+        if let Some(remaining) = s.pomodoro_remaining {
+            let mins = remaining.as_secs() / 60;
+            let secs = remaining.as_secs() % 60;
+            let (label, color) = if s.pomodoro_is_break {
+                ("☕ Break", neon_blue())
+            } else {
+                ("🍅 Focus", rgb(255, 80, 80))
+            };
+            let line = Line::from(vec![
+                Span::styled(format!("{} ", label), Style::default().fg(color)),
+                Span::styled(
+                    format!("{:02}:{:02}", mins, secs),
+                    Style::default().fg(color).add_modifier(Modifier::BOLD),
+                ),
+            ]);
+            frame.render_widget(Paragraph::new(line), area);
+        }
+    });
+}
+
+// ── Network API ──────────────────────────────────────────────────────
+
+/// Update network state.
+pub fn update_network(connected: bool, latency_ms: Option<u64>, api_calls: u64) {
+    NETWORK_STATE.with(|state| {
+        let mut s = state.borrow_mut();
+        s.connected = connected;
+        s.latency_ms = latency_ms;
+        s.api_calls = api_calls;
+    });
+}
+
+/// Render network indicator in the status bar area.
+pub fn render_network_indicator(frame: &mut Frame, area: Rect) {
+    NETWORK_STATE.with(|state| {
+        let s = state.borrow();
+        let (icon, color) = if s.connected {
+            match s.latency_ms {
+                Some(ms) if ms < 100 => ("🟢", neon_green()),
+                Some(ms) if ms < 500 => ("🟡", neon_yellow()),
+                Some(_) => ("🟠", neon_orange()),
+                None => ("🟢", neon_green()),
+            }
+        } else {
+            ("🔴", rgb(255, 80, 80))
+        };
+
+        let latency_str = match s.latency_ms {
+            Some(ms) => format!(" {}ms", ms),
+            None => String::new(),
+        };
+
+        let line = Line::from(vec![
+            Span::styled(icon, Style::default()),
+            Span::styled(
+                format!("{}{}", if s.api_calls > 0 { format!("{} API ", s.api_calls) } else { String::new() }, latency_str),
+                Style::default().fg(color),
+            ),
+        ]);
+        frame.render_widget(Paragraph::new(line), area);
+    });
+}
+
+// ── Word Count API ───────────────────────────────────────────────────
+
+/// Update input word count.
+pub fn update_input_wordcount(words: usize, chars: usize) {
+    WORDCOUNT_STATE.with(|state| {
+        let mut s = state.borrow_mut();
+        s.input_words = words;
+        s.input_chars = chars;
+    });
+}
+
+/// Update session word count.
+pub fn update_session_wordcount(words: usize, chars: usize) {
+    WORDCOUNT_STATE.with(|state| {
+        let mut s = state.borrow_mut();
+        s.session_words = words;
+        s.session_chars = chars;
+    });
+}
+
+/// Render word count in the status bar area.
+pub fn render_wordcount(frame: &mut Frame, area: Rect) {
+    WORDCOUNT_STATE.with(|state| {
+        let s = state.borrow();
+        let line = Line::from(vec![
+            Span::styled("📝 ", Style::default().fg(neon_cyan())),
+            Span::styled(
+                format!("{}w {}c", s.session_words, s.session_chars),
+                Style::default().fg(dim_color()),
+            ),
+        ]);
+        frame.render_widget(Paragraph::new(line), area);
+    });
+}
+
+// ── Gesture Pad API ──────────────────────────────────────────────────
+
+/// Show the gesture pad overlay.
+pub fn show_gesture_pad() {
+    GESTURE_STATE.with(|state| {
+        state.borrow_mut().visible = true;
+    });
+}
+
+/// Hide the gesture pad overlay.
+pub fn hide_gesture_pad() {
+    GESTURE_STATE.with(|state| {
+        state.borrow_mut().visible = false;
+    });
+}
+
+/// Render gesture pad overlay if visible.
+pub fn render_gesture_pad(frame: &mut Frame, area: Rect) {
+    GESTURE_STATE.with(|state| {
+        let s = state.borrow();
+        if !s.visible {
+            return;
+        }
+
+        let actions = [
+            ("1", "Quick Actions"),
+            ("2", "Command Palette"),
+            ("3", "Theme Picker"),
+            ("4", "Export"),
+            ("5", "Templates"),
+            ("6", "Settings"),
+        ];
+
+        let pad_width = 28.min(area.width as usize);
+        let pad_height = (actions.len() + 2) as u16;
+        let x = area.x + area.width.saturating_sub(pad_width as u16);
+        let y = area.y + area.height.saturating_sub(pad_height + 1);
+
+        let mut lines = Vec::new();
+        lines.push(Line::from(Span::styled(
+            "⚡ Quick Actions",
+            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+        )));
+
+        for (i, (key, label)) in actions.iter().enumerate() {
+            let is_selected = i == s.selected;
+            lines.push(Line::from(vec![
+                Span::styled(
+                    if is_selected { "▸ " } else { "  " },
+                    Style::default().fg(if is_selected { neon_green() } else { dim_color() }),
+                ),
+                Span::styled(
+                    format!("[{}] ", key),
+                    Style::default().fg(neon_yellow()),
+                ),
+                Span::styled(
+                    label.to_string(),
+                    Style::default()
+                        .fg(if is_selected { neon_cyan() } else { dim_color() })
+                        .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                ),
+            ]));
+        }
+
+        let pad_area = Rect {
+            x,
+            y,
+            width: pad_width as u16,
+            height: pad_height,
+        };
+        frame.render_widget(Paragraph::new(lines), pad_area);
+    });
+}
