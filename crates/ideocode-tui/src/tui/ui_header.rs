@@ -6,6 +6,7 @@ use super::{
 use crate::auth::{AuthState, AuthStatus};
 use crate::tui::color_support::rgb;
 use crate::tui::connection_type_icon;
+use ideocode_tui_style::theme::{gradient_line, neon_cyan, neon_magenta, emoji};
 use ratatui::prelude::*;
 #[cfg(test)]
 use std::sync::OnceLock;
@@ -354,13 +355,20 @@ fn auth_full_specs(auth: &AuthStatus) -> Vec<(String, AuthState)> {
 /// Vertical auth inventory: one line per provider. Configured providers get
 /// green/yellow dots; unconfigured ones get a dim hollow dot so they read as
 /// available-to-add without cluttering the `/login` heading.
+/// V6: Uses emoji for auth status indicators.
 pub(super) fn build_auth_status_lines(auth: &AuthStatus) -> Vec<Line<'static>> {
     auth_full_specs(auth)
         .into_iter()
         .map(|(label, state)| {
+            // V6: Emoji-enhanced auth indicators
+            let indicator = match state {
+                AuthState::Available => emoji::CONNECTED,
+                AuthState::Expired => emoji::WARNING,
+                AuthState::NotConfigured => "○",
+            };
             Line::from(vec![
                 Span::styled(
-                    auth_dot_char(state),
+                    indicator,
                     Style::default().fg(auth_dot_color(state)),
                 ),
                 Span::styled(format!(" {}", label), Style::default().fg(dim_color())),
@@ -617,10 +625,21 @@ fn build_persistent_header_with_auth(
     // First line: `IDEOCODE` (+ `self-dev` when running a dev/canary build),
     // followed by any remaining status badges rendered dimly.
     {
-        let mut spans = vec![Span::styled(
-            "IDEOCODE".to_string(),
-            Style::default().fg(header_name_color()).bold(),
-        )];
+        // V2: Gradient text for "IDEOCODE" branding
+        let ideocode_spans: Vec<Span<'static>> = "IDEOCODE"
+            .chars()
+            .enumerate()
+            .map(|(i, c)| {
+                let total = "IDEOCODE".len();
+                Span::styled(
+                    c.to_string(),
+                    Style::default()
+                        .fg(ideocode_tui_style::theme::gradient_color(i, total))
+                        .add_modifier(Modifier::BOLD),
+                )
+            })
+            .collect();
+        let mut spans = ideocode_spans;
         if is_canary {
             spans.push(Span::styled(
                 " self-dev".to_string(),
@@ -673,13 +692,9 @@ fn build_persistent_header_with_auth(
         }
         lines.push(Line::from(spans).alignment(align));
     } else if server_name.is_none() {
-        lines.push(
-            Line::from(Span::styled(
-                "IDEOCODE".to_string(),
-                Style::default().fg(header_name_color()),
-            ))
-            .alignment(align),
-        );
+        // V2: Gradient text for standalone IDEOCODE branding
+        let gradient = gradient_line("IDEOCODE");
+        lines.push(Line::from(gradient).alignment(align));
     }
 
     // Single model line: dim active-route method on the left, styled model
@@ -725,10 +740,11 @@ fn build_persistent_header_with_auth(
         }
     }
     model_spans.push(Span::styled(
-        nice_model.clone(),
-        // Match the info widget's model accent (pink, bold) instead of plain
-        // white so the model reads as a distinct, styled element.
-        Style::default().fg(rgb(255, 150, 200)).bold(),
+        format!("{} {}", emoji::LIGHTNING, nice_model),
+        // V5: Neon glow on model name (magenta + bold)
+        Style::default()
+            .fg(neon_magenta())
+            .add_modifier(Modifier::BOLD),
     ));
     if let Some(upstream) = upstream.as_deref() {
         let suffix = format!(" via {}", upstream);
@@ -746,12 +762,12 @@ fn build_persistent_header_with_auth(
         let version_text = if is_running_stable_release() {
             let tag = ideocode_build_meta::git_tag();
             if tag.is_empty() || tag.contains('-') {
-                format!("{} · release", semver())
+                format!("{} {} · release", emoji::ROCKET, semver())
             } else {
-                format!("{} · release {}", semver(), tag)
+                format!("{} {} · release {}", emoji::ROCKET, semver(), tag)
             }
         } else {
-            semver().to_string()
+            format!("{} {}", emoji::ROCKET, semver())
         };
         lines.push(
             Line::from(Span::styled(version_text, Style::default().fg(dim_color())))
@@ -780,7 +796,8 @@ fn build_header_lines_with_auth(
     // Auth inventory: `/login` heading, then one provider per line (dim
     // hollow dot for unconfigured providers).
     let auth_lines = build_auth_status_lines(auth);
-    let login_heading = "/login to add provider".to_string();
+    // V6: Emoji-enhanced login heading
+    let login_heading = format!("{} /login to add provider", emoji::LINK);
     lines.push(
         Line::from(Span::styled(
             login_heading,
@@ -806,12 +823,13 @@ fn build_header_lines_with_auth(
                 }
             })
             .collect();
-        let mut mcp_text = format!("mcp: {}", shown.join(", "));
+        // V6: Emoji-enhanced MCP display
+        let mut mcp_text = format!("{} mcp: {}", emoji::GEAR, shown.join(", "));
         if mcps.len() > MAX_MCPS {
             mcp_text.push_str(&format!(" +{} more", mcps.len() - MAX_MCPS));
         }
         if mcp_text.chars().count() > w {
-            mcp_text = format!("mcp: {} servers", mcps.len());
+            mcp_text = format!("{} mcp: {} servers", emoji::GEAR, mcps.len());
         }
         lines.push(
             Line::from(Span::styled(mcp_text, Style::default().fg(dim_color()))).alignment(align),
@@ -826,12 +844,13 @@ fn build_header_lines_with_auth(
             .take(MAX_SKILLS)
             .map(|s| format!("/{}", s))
             .collect();
-        let mut skills_text = format!("skills: {}", shown.join(" "));
+        // V6: Emoji-enhanced skills display
+        let mut skills_text = format!("{} skills: {}", emoji::PAINT, shown.join(" "));
         if skills.len() > MAX_SKILLS {
             skills_text.push_str(&format!(" +{} more", skills.len() - MAX_SKILLS));
         }
         if skills_text.chars().count() > w {
-            skills_text = format!("skills: {} loaded", skills.len());
+            skills_text = format!("{} skills: {} loaded", emoji::PAINT, skills.len());
         }
         lines.push(
             Line::from(Span::styled(skills_text, Style::default().fg(dim_color())))
@@ -848,6 +867,8 @@ fn build_header_lines_with_auth(
                 text = with_branch;
             }
         }
+        // V6: Emoji-enhanced working directory
+        let text = format!("{} {}", emoji::FOLDER, text);
         lines.push(
             Line::from(Span::styled(text, Style::default().fg(dim_color()))).alignment(align),
         );

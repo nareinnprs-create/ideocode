@@ -17,6 +17,7 @@ use super::animations;
 use super::dim_color;
 use crate::tui::TuiState;
 use crate::tui::color_support::rgb;
+use ideocode_tui_style::theme::{gradient_line, neon_cyan, emoji};
 use ratatui::{prelude::*, widgets::Paragraph};
 
 const DONUT_HEIGHT: u16 = 18;
@@ -383,14 +384,24 @@ fn telemetry_header_lines(width: u16) -> Vec<Line<'static>> {
 }
 
 /// Welcome title line, rendered just above the donut.
+/// V2: Uses gradient text for "IDEOCODE" branding.
 fn welcome_title_line() -> Line<'static> {
-    Line::from(Span::styled(
-        "Welcome to IDEOCODE onboarding",
+    // V2: Gradient text for "IDEOCODE" + emoji
+    let gradient = gradient_line("IDEOCODE");
+    let mut spans: Vec<Span<'static>> = vec![
+        Span::styled(
+            format!("{} ", emoji::CRYSTAL),
+            Style::default().fg(neon_cyan()),
+        ),
+    ];
+    spans.extend(gradient.spans);
+    spans.push(Span::styled(
+        " onboarding",
         Style::default()
-            .fg(welcome_accent())
+            .fg(neon_cyan())
             .add_modifier(Modifier::BOLD),
-    ))
-    .alignment(Alignment::Center)
+    ));
+    Line::from(spans).alignment(Alignment::Center)
 }
 
 /// Short keyboard hint rendered just below the donut on guided phases. Replaces

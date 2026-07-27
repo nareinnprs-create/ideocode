@@ -2,50 +2,74 @@ use crate::color;
 use crate::color::rgb;
 use ratatui::prelude::*;
 
+// ── NEON CYBERPUNK PALETTE ──────────────────────────────────────────
+// Inspired by: Cyberpunk 2077, synthwave, neon-lit cityscapes.
+// Primary triad: Cyan #00f0ff · Magenta #ff00ff · Purple #8b5cf6
+// Background: deep dark #0a0a0f with subtle blue undertone.
+
+/// Neon Cyan — primary accent, AI color, links, active elements.
+pub fn neon_cyan() -> Color { rgb(0, 240, 255) }
+/// Neon Magenta — secondary accent, user messages, highlights.
+pub fn neon_magenta() -> Color { rgb(255, 0, 255) }
+/// Neon Purple — tertiary accent, tool calls, decorative.
+pub fn neon_purple() -> Color { rgb(139, 92, 246) }
+/// Neon Pink — system messages, warnings, personality.
+pub fn neon_pink() -> Color { rgb(255, 107, 157) }
+/// Neon Green — success, completed, git clean.
+pub fn neon_green() -> Color { rgb(0, 255, 136) }
+/// Neon Yellow — queued, pending, attention.
+pub fn neon_yellow() -> Color { rgb(255, 234, 0) }
+/// Neon Orange — warnings, in-progress, streaks.
+pub fn neon_orange() -> Color { rgb(255, 159, 67) }
+/// Neon Blue — info, connection status, secondary actions.
+pub fn neon_blue() -> Color { rgb(59, 130, 246) }
+
+// ── SEMANTIC COLORS (Neon Cyberpunk) ────────────────────────────────
+
 pub fn user_color() -> Color {
-    rgb(138, 180, 248)
+    neon_magenta()
 }
 pub fn ai_color() -> Color {
-    rgb(129, 199, 132)
+    neon_cyan()
 }
 pub fn tool_color() -> Color {
-    rgb(120, 120, 120)
+    neon_purple()
 }
 pub fn file_link_color() -> Color {
-    rgb(180, 200, 255)
+    rgb(100, 200, 255)
 }
 pub fn dim_color() -> Color {
-    rgb(80, 80, 80)
+    rgb(80, 80, 100)
 }
 pub fn accent_color() -> Color {
-    rgb(186, 139, 255)
+    neon_purple()
 }
 pub fn system_message_color() -> Color {
-    rgb(255, 170, 220)
+    neon_pink()
 }
 pub fn queued_color() -> Color {
-    rgb(255, 193, 7)
+    neon_yellow()
 }
 pub fn asap_color() -> Color {
-    rgb(110, 210, 255)
+    neon_cyan()
 }
 pub fn pending_color() -> Color {
-    rgb(140, 140, 140)
+    rgb(100, 100, 120)
 }
 pub fn user_text() -> Color {
-    rgb(245, 245, 255)
+    rgb(255, 200, 240)
 }
 pub fn user_bg() -> Color {
-    rgb(35, 40, 50)
+    rgb(30, 15, 35)
 }
 pub fn ai_text() -> Color {
-    rgb(220, 220, 215)
+    rgb(200, 255, 255)
 }
 pub fn header_icon_color() -> Color {
-    rgb(120, 210, 230)
+    neon_cyan()
 }
 pub fn header_name_color() -> Color {
-    rgb(190, 210, 235)
+    neon_cyan()
 }
 pub fn header_session_color() -> Color {
     rgb(255, 255, 255)
@@ -207,12 +231,131 @@ pub fn animated_tool_color(elapsed: f32, enable_decorative_animations: bool) -> 
     // Cycle period of ~1.5 seconds
     let t = (elapsed * 2.0).sin() * 0.5 + 0.5; // 0.0 to 1.0
 
-    // Interpolate between cyan and purple
-    let r = (80.0 + t * 106.0) as u8; // 80 -> 186
-    let g = (200.0 - t * 61.0) as u8; // 200 -> 139
-    let b = (220.0 + t * 35.0) as u8; // 220 -> 255
+    // Neon Cyberpunk: pulse between cyan and magenta
+    let r = (0.0 + t * 255.0) as u8; // 0 -> 255 (cyan to magenta)
+    let g = (240.0 - t * 240.0) as u8; // 240 -> 0
+    let b = (255.0 + t * 0.0) as u8; // 255 -> 255
 
     rgb(r, g, b)
+}
+
+// ── V2: GRADIENT TEXT ───────────────────────────────────────────────
+// Char-by-char color transition for headers and important text.
+
+/// Neon Cyberpunk gradient: Cyan → Magenta → Purple → Cyan (cycles)
+/// Use `gradient_color(index, total)` for each character position.
+pub fn gradient_color(index: usize, total: usize) -> Color {
+    if total <= 1 {
+        return neon_cyan();
+    }
+    // Cycle through neon triad: cyan → magenta → purple → cyan
+    const GRADIENT: [(u8, u8, u8); 3] = [
+        (0, 240, 255),   // Cyan
+        (255, 0, 255),   // Magenta
+        (139, 92, 246),  // Purple
+    ];
+    let t = index as f32 / (total - 1) as f32;
+    let segment = t * (GRADIENT.len() - 1) as f32;
+    let i = segment.floor() as usize;
+    let frac = segment - i as f32;
+    let c0 = GRADIENT[i.min(GRADIENT.len() - 1)];
+    let c1 = GRADIENT[(i + 1).min(GRADIENT.len() - 1)];
+    let r = (c0.0 as f32 + (c1.0 as f32 - c0.0 as f32) * frac) as u8;
+    let g = (c0.1 as f32 + (c1.1 as f32 - c0.1 as f32) * frac) as u8;
+    let b = (c0.2 as f32 + (c1.2 as f32 - c0.2 as f32) * frac) as u8;
+    rgb(r, g, b)
+}
+
+/// Create a gradient-styled Line from text (for headers, titles, branding).
+pub fn gradient_line(text: &str) -> Line<'static> {
+    let chars: Vec<char> = text.chars().collect();
+    let total = chars.len();
+    let spans: Vec<Span<'static>> = chars
+        .into_iter()
+        .enumerate()
+        .map(|(i, c)| {
+            Span::styled(
+                c.to_string(),
+                Style::default().fg(gradient_color(i, total)).bold(),
+            )
+        })
+        .collect();
+    Line::from(spans)
+}
+
+// ── V3: ANIMATED BORDERS ────────────────────────────────────────────
+// Borders that slowly shift color over time. Like RGB gaming keyboard.
+
+/// Animated border color that cycles through the neon triad.
+/// `elapsed` = seconds since start, `speed` = cycles per second (default 0.1).
+pub fn animated_border_color(elapsed: f32, speed: f32) -> Color {
+    let t = (elapsed * speed * 2.0 * std::f32::consts::PI).sin() * 0.5 + 0.5;
+    blend_color(neon_cyan(), neon_magenta(), t)
+}
+
+/// Animated border style that cycles through neon colors.
+pub fn animated_border_style(elapsed: f32) -> Style {
+    Style::default().fg(animated_border_color(elapsed, 0.1))
+}
+
+// ── V5: NEON GLOW EFFECTS ──────────────────────────────────────────
+// Bright + bold variants for active/focused elements.
+
+/// Neon glow style for active/focused elements (bright + bold).
+pub fn neon_glow(color: Color) -> Style {
+    Style::default().fg(color).add_modifier(Modifier::BOLD)
+}
+
+/// Neon glow for the header name (always glowing cyan).
+pub fn header_glow_style() -> Style {
+    neon_glow(neon_cyan())
+}
+
+/// Neon glow for active model name (magenta + bold).
+pub fn model_glow_style() -> Style {
+    neon_glow(neon_magenta())
+}
+
+/// Neon glow for tool calls (purple + bold).
+pub fn tool_glow_style() -> Style {
+    neon_glow(neon_purple())
+}
+
+// ── V6: EMOJI ENHANCED CHROME ──────────────────────────────────────
+// Strategic emoji usage throughout the UI.
+
+/// Emoji prefixes for different UI elements.
+pub mod emoji {
+    pub const ROCKET: &str = "🚀";
+    pub const BRAIN: &str = "🧠";
+    pub const LIGHTNING: &str = "⚡";
+    pub const PAINT: &str = "🎨";
+    pub const CRYSTAL: &str = "🔮";
+    pub const SPARKLE: &str = "💫";
+    pub const FIRE: &str = "🔥";
+    pub const CHECK: &str = "✅";
+    pub const WARNING: &str = "⚠️";
+    pub const ERROR: &str = "❌";
+    pub const INFO: &str = "ℹ️";
+    pub const TROPHY: &str = "🏆";
+    pub const STAR: &str = "⭐";
+    pub const GEAR: &str = "⚙️";
+    pub const LINK: &str = "🔗";
+    pub const CHART: &str = "📊";
+    pub const CLOCK: &str = "⏱️";
+    pub const CASH: &str = "💰";
+    pub const MEMORY: &str = "🧠";
+    pub const TARGET: &str = "🎯";
+    pub const SCROLL: &str = "📜";
+    pub const PENCIL: &str = "✏️";
+    pub const COPY: &str = "📋";
+    pub const REFRESH: &str = "🔄";
+    pub const SEARCH: &str = "🔍";
+    pub const FOLDER: &str = "📁";
+    pub const GIT: &str = "🌿";
+    pub const CONNECTED: &str = "🟢";
+    pub const RECONNECTING: &str = "🟡";
+    pub const OFFLINE: &str = "🔴";
 }
 
 #[cfg(test)]
