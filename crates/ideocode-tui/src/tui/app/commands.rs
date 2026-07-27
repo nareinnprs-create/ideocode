@@ -3550,6 +3550,59 @@ pub(super) fn handle_attach_command(app: &mut App, trimmed: &str) -> bool {
     true
 }
 
+pub(super) fn handle_save_image_command(app: &mut App, trimmed: &str) -> bool {
+    let rest = if let Some(r) = trimmed.strip_prefix("/save-image") {
+        r.trim()
+    } else {
+        return false;
+    };
+
+    if app.pending_images.is_empty() {
+        app.push_display_message(DisplayMessage::system(
+            "No images attached to save.\n\
+             Use /attach <file> to attach an image first."
+        ));
+        return true;
+    }
+
+    let index: usize = if rest.is_empty() {
+        app.pending_images.len() - 1
+    } else {
+        match rest.parse::<usize>() {
+            Ok(n) if n > 0 && n <= app.pending_images.len() => n - 1,
+            _ => {
+                app.push_display_message(DisplayMessage::error(
+                    format!("Invalid image number: {}. Use 1-{}.", rest, app.pending_images.len())
+                ));
+                return true;
+            }
+        }
+    };
+
+    let (media_type, data) = &app.pending_images[index];
+    let preview = crate::tui::ui_image_preview::ImagePreview::new(
+        media_type.clone(),
+        data.clone(),
+    );
+
+    let filename = format!("ideocode_image_{}", index + 1);
+    match crate::tui::ui_image_preview::save_image_to_desktop(&preview, &filename) {
+        Ok(path) => {
+            app.push_display_message(DisplayMessage::system(
+                format!("Image saved to: {}", path)
+            ));
+            app.set_status_notice(format!("Image saved → {}", path));
+        }
+        Err(e) => {
+            app.push_display_message(DisplayMessage::error(
+                format!("Failed to save image: {}", e)
+            ));
+        }
+    }
+
+    true
+}
+
 pub(super) fn handle_usage_command(app: &mut App, trimmed: &str) -> bool {
     let Some(rest) = trimmed.strip_prefix("/usage") else {
         return false;

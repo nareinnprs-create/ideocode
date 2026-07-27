@@ -3911,6 +3911,7 @@ impl App {
             || super::commands::handle_usage_command(self, trimmed)
             || super::commands::handle_provider_command(self, trimmed)
             || super::commands::handle_attach_command(self, trimmed)
+            || super::commands::handle_save_image_command(self, trimmed)
             || super::productivity::handle_productivity_command(self, trimmed)
             || super::commands::handle_feedback_command(self, trimmed)
             || super::commands::handle_telemetry_command(self, trimmed)

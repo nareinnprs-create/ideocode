@@ -57,8 +57,17 @@ fn stored_message_visible_text(message: &crate::session::StoredMessage) -> Strin
                     parts.push(content.trim().to_string());
                 }
             }
-            ContentBlock::Image { media_type, .. } => {
-                parts.push(format!("[image:{}]", media_type));
+            ContentBlock::Image { media_type, data } => {
+                let preview = crate::tui::ui_image_preview::ImagePreview::new(
+                    media_type.clone(),
+                    data.clone(),
+                );
+                parts.push(format!(
+                    "[🖼 {} {} {} KB]",
+                    preview.label,
+                    preview.dimensions_str(),
+                    preview.size_bytes() / 1024
+                ));
             }
             ContentBlock::OpenAICompaction { .. } => {}
         }
