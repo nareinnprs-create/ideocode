@@ -201,9 +201,39 @@ pub fn set_personality(mode: PersonalityMode) { OVERLAY_STATE.with(|s| s.borrow_
 
 pub fn show_gesture_pad() { OVERLAY_STATE.with(|s| s.borrow_mut().gesture_visible = true); }
 pub fn hide_gesture_pad() { OVERLAY_STATE.with(|s| s.borrow_mut().gesture_visible = false); }
+pub fn toggle_gesture_pad() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.gesture_visible = !st.gesture_visible; st.gesture_selected = 0; }); }
 pub fn gesture_move_up() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); if st.gesture_selected > 0 { st.gesture_selected -= 1; } }); }
 pub fn gesture_move_down() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.gesture_selected = (st.gesture_selected + 1).min(7); }); }
 pub fn gesture_selected() -> usize { OVERLAY_STATE.with(|s| s.borrow().gesture_selected) }
+pub fn gesture_pad_visible() -> bool { OVERLAY_STATE.with(|s| s.borrow().gesture_visible) }
+
+pub fn gesture_navigate_up() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.gesture_selected = st.gesture_selected.saturating_sub(1);
+    });
+}
+pub fn gesture_navigate_down() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.gesture_selected = (st.gesture_selected + 1).min(7);
+    });
+}
+pub fn gesture_activate() {
+    let index = OVERLAY_STATE.with(|s| s.borrow().gesture_selected);
+    OVERLAY_STATE.with(|s| { s.borrow_mut().gesture_visible = false; });
+    match index {
+        0 => toggle_file_explorer(),
+        1 => toggle_git_panel(),
+        2 => toggle_search_panel(),
+        3 => toggle_build_panel(),
+        4 => toggle_log_viewer(),
+        5 => toggle_docker(),
+        6 => toggle_cicd(),
+        7 => toggle_profiler(),
+        _ => {}
+    }
+}
 
 pub fn toggle_file_explorer() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.file_explorer_visible = !st.file_explorer_visible; }); }
 pub fn toggle_git_panel() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.git_panel_visible = !st.git_panel_visible; }); }
@@ -791,8 +821,14 @@ pub fn render_keyboard_wizard_tip(frame: &mut Frame, area: Rect) {
             "Press ↑/↓ for command history",
             "Ctrl+L clears the screen",
             "Ctrl+S stashes input",
-            "Alt+G opens gesture pad",
-            "Alt+F toggles file explorer",
+            "Alt+Q opens gesture pad",
+            "Alt+E toggles file explorer",
+            "Alt+W toggles git panel",
+            "Alt+P toggles profiler",
+            "Alt+O toggles build output",
+            "Alt+Z toggles search panel",
+            "Alt+1 docker, Alt+2 CI/CD, Alt+3 logs",
+            "Alt+4 toggles debugger",
         ];
         let tip = tips[st.current_tip_index % tips.len()];
         let line = Line::from(vec![

@@ -1881,7 +1881,112 @@ pub(super) fn handle_alt_key(app: &mut App, code: KeyCode) -> bool {
             app.copy_chat_viewport_context_to_clipboard();
             true
         }
+        // ── IDEOCODE panel overlays ────────────────────────────────────
+        // Alt+Q: gesture pad (quick-access grid of all panels)
+        KeyCode::Char('q') => {
+            crate::tui::ui_integration::toggle_gesture_pad();
+            true
+        }
+        // Alt+E: file explorer
+        KeyCode::Char('e') => {
+            crate::tui::ui_integration::toggle_file_explorer();
+            true
+        }
+        // Alt+W: git panel
+        KeyCode::Char('w') => {
+            crate::tui::ui_integration::toggle_git_panel();
+            true
+        }
+        // Alt+P: profiler
+        KeyCode::Char('p') => {
+            crate::tui::ui_integration::toggle_profiler();
+            true
+        }
+        // Alt+O: build panel
+        KeyCode::Char('o') => {
+            crate::tui::ui_integration::toggle_build_panel();
+            true
+        }
+        // Alt+Z: search panel
+        KeyCode::Char('z') => {
+            crate::tui::ui_integration::toggle_search_panel();
+            true
+        }
+        // Alt+1: docker panel
+        KeyCode::Char('1') => {
+            crate::tui::ui_integration::toggle_docker();
+            true
+        }
+        // Alt+2: CI/CD panel
+        KeyCode::Char('2') => {
+            crate::tui::ui_integration::toggle_cicd();
+            true
+        }
+        // Alt+3: log viewer
+        KeyCode::Char('3') => {
+            crate::tui::ui_integration::toggle_log_viewer();
+            true
+        }
+        // Alt+4: debugger
+        KeyCode::Char('4') => {
+            crate::tui::ui_integration::toggle_debugger();
+            true
+        }
         _ => false,
+    }
+}
+
+/// Handle keys while the gesture pad overlay is visible.
+/// Up/Down or j/k navigate, Enter or number keys 1-8 activate, Escape closes.
+fn handle_gesture_pad_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
+    if !crate::tui::ui_integration::gesture_pad_visible() { return false; }
+
+    match code {
+        KeyCode::Esc => {
+            crate::tui::ui_integration::toggle_gesture_pad();
+            true
+        }
+        KeyCode::Up | KeyCode::Char('k') => {
+            crate::tui::ui_integration::gesture_navigate_up();
+            true
+        }
+        KeyCode::Down | KeyCode::Char('j') => {
+            crate::tui::ui_integration::gesture_navigate_down();
+            true
+        }
+        KeyCode::Enter => {
+            crate::tui::ui_integration::gesture_activate();
+            true
+        }
+        KeyCode::Char('1') => { gesture_activate_item(0); true }
+        KeyCode::Char('2') => { gesture_activate_item(1); true }
+        KeyCode::Char('3') => { gesture_activate_item(2); true }
+        KeyCode::Char('4') => { gesture_activate_item(3); true }
+        KeyCode::Char('5') => { gesture_activate_item(4); true }
+        KeyCode::Char('6') => { gesture_activate_item(5); true }
+        KeyCode::Char('7') => { gesture_activate_item(6); true }
+        KeyCode::Char('8') => { gesture_activate_item(7); true }
+        _ => false,
+    }
+}
+
+fn gesture_activate_item(index: usize) {
+    use crate::tui::ui_integration::{toggle_file_explorer, toggle_git_panel,
+        toggle_search_panel, toggle_build_panel, toggle_log_viewer, toggle_docker,
+        toggle_cicd, toggle_profiler};
+    // Close gesture pad
+    crate::tui::ui_integration::toggle_gesture_pad();
+    // Activate the selected action
+    match index {
+        0 => toggle_file_explorer(),
+        1 => toggle_git_panel(),
+        2 => toggle_search_panel(),
+        3 => toggle_build_panel(),
+        4 => toggle_log_viewer(),
+        5 => toggle_docker(),
+        6 => toggle_cicd(),
+        7 => toggle_profiler(),
+        _ => {}
     }
 }
 
@@ -2635,6 +2740,11 @@ impl App {
         }
 
         if handle_modal_key(self, code, modifiers)? {
+            return Ok(());
+        }
+
+        // Gesture pad overlay: intercepts keys while the quick-action grid is visible.
+        if handle_gesture_pad_keys(code, modifiers) {
             return Ok(());
         }
 

@@ -548,6 +548,21 @@ pub(super) fn draw_help_overlay(frame: &mut Frame, area: Rect, scroll: usize, ap
     lines.push(key_entry("Alt+S", "Toggle typing scroll lock"));
     lines.push(key_entry("Ctrl+P", "Toggle auto-poke for incomplete todos"));
     lines.push(key_entry("Alt+X", "Show/dismiss todo list card in chat"));
+    lines.push(Line::from(""));
+    lines.push(Line::from(Span::styled(
+        "  IDEOCODE Panels",
+        Style::default().fg(rgb(0, 255, 255)).add_modifier(Modifier::BOLD),
+    )));
+    lines.push(key_entry("Alt+Q", "Gesture pad (quick-access panel grid)"));
+    lines.push(key_entry("Alt+E", "File explorer"));
+    lines.push(key_entry("Alt+W", "Git panel"));
+    lines.push(key_entry("Alt+Z", "Search panel"));
+    lines.push(key_entry("Alt+O", "Build output"));
+    lines.push(key_entry("Alt+3", "Log viewer"));
+    lines.push(key_entry("Alt+1", "Docker containers"));
+    lines.push(key_entry("Alt+2", "CI/CD runs"));
+    lines.push(key_entry("Alt+P", "Performance profiler"));
+    lines.push(key_entry("Alt+4", "Debugger"));
     lines.push(key_entry(
         &crate::tui::keybind::effort_switch_keys_label(),
         "Cycle effort (reasoning + swarm)",
