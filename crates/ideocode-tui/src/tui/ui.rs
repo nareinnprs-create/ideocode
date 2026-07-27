@@ -3397,13 +3397,12 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
         overlays::draw_debug_overlay(frame, &placements, &chunks);
     }
 
-    // ── NEW UI MODULES INTEGRATION ──────────────────────────────────
-    // Render toast notifications in top-right corner
+    // ── NEW UI MODULES INTEGRATION (wired to real TuiState) ─────────
+    // Toast notifications (top-right)
     crate::tui::ui_integration::render_toasts(frame, area);
 
-    // Render keyboard wizard tip in notification area (chunk[4])
+    // Keyboard wizard tip
     if notification_height == 0 {
-        // Only show if no other notification is active
         let wizard_area = Rect {
             x: area.x,
             y: area.y + area.height.saturating_sub(3),
@@ -3413,53 +3412,66 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
         crate::tui::ui_integration::render_keyboard_wizard_tip(frame, wizard_area);
     }
 
-    // Render achievement progress next to status bar
-    let achievement_area = Rect {
-        x: area.x + area.width.saturating_sub(25),
-        y: area.y + area.height.saturating_sub(1),
-        width: 25,
-        height: 1,
-    };
-    crate::tui::ui_integration::render_achievement_progress(frame, achievement_area);
+    // Mood indicator (top-left)
+    let mood_area = Rect { x: area.x + 1, y: area.y, width: 8, height: 1 };
+    crate::tui::ui_integration::render_mood_indicator(frame, mood_area, app);
 
-    // Render session timer in status bar area (left of achievement bar)
+    // Session timer in status bar
     let timer_area = Rect {
-        x: area.x + area.width.saturating_sub(50),
+        x: area.x + area.width.saturating_sub(115),
         y: area.y + area.height.saturating_sub(1),
         width: 12,
         height: 1,
     };
-    crate::tui::ui_integration::render_session_timer(frame, timer_area);
+    crate::tui::ui_integration::render_session_timer(frame, timer_area, app);
 
-    // Render pomodoro if active (right of timer)
-    let pomodoro_area = Rect {
-        x: area.x + area.width.saturating_sub(65),
-        y: area.y + area.height.saturating_sub(1),
-        width: 14,
-        height: 1,
-    };
-    crate::tui::ui_integration::render_pomodoro(frame, pomodoro_area);
-
-    // Render network indicator in status bar area
+    // Network indicator (real provider data)
     let network_area = Rect {
         x: area.x + area.width.saturating_sub(85),
         y: area.y + area.height.saturating_sub(1),
-        width: 18,
+        width: 25,
         height: 1,
     };
-    crate::tui::ui_integration::render_network_indicator(frame, network_area);
+    crate::tui::ui_integration::render_network_indicator(frame, network_area, app);
 
-    // Render word count in status bar area
+    // Word count (real input + messages)
     let wordcount_area = Rect {
-        x: area.x + area.width.saturating_sub(105),
+        x: area.x + area.width.saturating_sub(50),
         y: area.y + area.height.saturating_sub(1),
-        width: 18,
+        width: 30,
         height: 1,
     };
-    crate::tui::ui_integration::render_wordcount(frame, wordcount_area);
+    crate::tui::ui_integration::render_wordcount(frame, wordcount_area, app);
 
-    // Render gesture pad overlay if visible
+    // Gesture pad overlay
     crate::tui::ui_integration::render_gesture_pad(frame, area);
+
+    // File explorer sidebar (left panel)
+    crate::tui::ui_integration::render_file_explorer(frame, area, app);
+
+    // Git panel (top overlay)
+    crate::tui::ui_integration::render_git_panel(frame, area, app);
+
+    // Search results panel
+    crate::tui::ui_integration::render_search_panel(frame, area);
+
+    // Log viewer (bottom overlay)
+    crate::tui::ui_integration::render_log_viewer(frame, area);
+
+    // Build output (bottom overlay)
+    crate::tui::ui_integration::render_build_panel(frame, area);
+
+    // Docker panel
+    crate::tui::ui_integration::render_docker_panel(frame, area);
+
+    // CI/CD panel
+    crate::tui::ui_integration::render_cicd_panel(frame, area);
+
+    // Debugger panel
+    crate::tui::ui_integration::render_debugger_panel(frame, area);
+
+    // Profiler panel
+    crate::tui::ui_integration::render_profiler_panel(frame, area, app);
     // ── END NEW UI MODULES ──────────────────────────────────────────
 
     // Session facts use actual final-frame cells for collision detection. They
