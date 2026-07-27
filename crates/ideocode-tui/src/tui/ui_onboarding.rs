@@ -385,6 +385,7 @@ fn telemetry_header_lines(width: u16) -> Vec<Line<'static>> {
 
 /// Welcome title line, rendered just above the donut.
 /// V2: Uses gradient text for "IDEOCODE" branding.
+/// V4: Uses ASCII art logo on wider terminals.
 fn welcome_title_line() -> Line<'static> {
     // V2: Gradient text for "IDEOCODE" + emoji
     let gradient = gradient_line("IDEOCODE");
@@ -402,6 +403,16 @@ fn welcome_title_line() -> Line<'static> {
             .add_modifier(Modifier::BOLD),
     ));
     Line::from(spans).alignment(Alignment::Center)
+}
+
+/// ASCII art logo for wider terminals (V4).
+fn ascii_logo_lines() -> Vec<Line<'static>> {
+    crate::tui::ui_personality::ideocode_ascii_logo()
+}
+
+/// Quote of the day for the welcome screen (D9).
+fn quote_lines() -> Vec<Line<'static>> {
+    crate::tui::ui_personality::render_quote()
 }
 
 /// Short keyboard hint rendered just below the donut on guided phases. Replaces
@@ -683,7 +694,7 @@ fn welcome_body_lines(app: &dyn TuiState) -> Vec<Line<'static>> {
 /// Draw the full onboarding welcome screen into `area`.
 ///
 /// Vertical structure (top to bottom):
-///   telemetry header, gap, title, donut, keyboard hint, gap, phase body.
+///   telemetry header, gap, ASCII logo (V4), title, donut, keyboard hint, gap, quote (D9), phase body.
 /// The title sits directly above the donut and a one-line keyboard hint sits
 /// directly below it, so the phase body underneath can stay lean.
 pub(super) fn draw_onboarding_welcome(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
@@ -697,7 +708,17 @@ pub(super) fn draw_onboarding_welcome(frame: &mut Frame, app: &dyn TuiState, are
 
     let telemetry = telemetry_header_lines(area.width);
     let body = welcome_body_lines(app);
+    // V4: ASCII art logo on wider terminals
+    let ascii_logo = if area.width >= 60 {
+        ascii_logo_lines()
+    } else {
+        vec![]
+    };
+    // D9: Quote of the day
+    let quote = quote_lines();
     let telemetry_h = (telemetry.len() as u16).min(TELEMETRY_LINES);
+    let ascii_h = ascii_logo.len() as u16;
+    let quote_h = quote.len() as u16;
     let body_h = body.len() as u16;
     // Title above the donut, keyboard hint below it. Both are single lines and
     // only shown when there is room for the donut treatment.
@@ -708,12 +729,12 @@ pub(super) fn draw_onboarding_welcome(frame: &mut Frame, app: &dyn TuiState, are
     // title + hint lines that hug the donut are part of the reserved chrome.
     let donut_h = DONUT_HEIGHT.min(
         area.height
-            .saturating_sub(telemetry_h + TITLE_H + HINT_H + body_h + GAP * 2 + 1),
+            .saturating_sub(telemetry_h + ascii_h + TITLE_H + HINT_H + quote_h + body_h + GAP * 3),
     );
     let show_donut_block = donut_h > 0;
 
     let used = if show_donut_block {
-        telemetry_h + GAP + TITLE_H + donut_h + HINT_H + GAP + body_h
+        telemetry_h + GAP + ascii_h + TITLE_H + donut_h + HINT_H + GAP + quote_h + GAP + body_h
     } else {
         telemetry_h + GAP + body_h
     };
@@ -721,12 +742,22 @@ pub(super) fn draw_onboarding_welcome(frame: &mut Frame, app: &dyn TuiState, are
 
     let mut constraints = vec![Constraint::Length(pad_top), Constraint::Length(telemetry_h)];
     if show_donut_block {
+        // V4: ASCII logo above the title
+        if ascii_h > 0 {
+            constraints.push(Constraint::Length(GAP));
+            constraints.push(Constraint::Length(ascii_h));
+        }
         constraints.push(Constraint::Length(GAP));
         constraints.push(Constraint::Length(TITLE_H));
         constraints.push(Constraint::Length(donut_h));
         constraints.push(Constraint::Length(HINT_H));
     }
     constraints.push(Constraint::Length(GAP));
+    // D9: Quote of the day
+    if quote_h > 0 {
+        constraints.push(Constraint::Length(quote_h));
+        constraints.push(Constraint::Length(GAP));
+    }
     constraints.push(Constraint::Length(body_h));
     constraints.push(Constraint::Min(0));
 
@@ -735,8 +766,8 @@ pub(super) fn draw_onboarding_welcome(frame: &mut Frame, app: &dyn TuiState, are
         .constraints(constraints)
         .split(area);
 
-    // chunks[0] = top pad, [1] = telemetry, then optional gap/title/donut/hint,
-    // gap, body.
+    // chunks[0] = top pad, [1] = telemetry, then optional gap/ascii/title/donut/hint,
+    // gap, quote, gap, body.
     frame.render_widget(
         Paragraph::new(telemetry).alignment(Alignment::Center),
         chunks[1],
@@ -744,6 +775,15 @@ pub(super) fn draw_onboarding_welcome(frame: &mut Frame, app: &dyn TuiState, are
 
     let mut idx = 2;
     if show_donut_block {
+        // V4: ASCII logo
+        if ascii_h > 0 {
+            idx += 1; // skip gap chunk
+            frame.render_widget(
+                Paragraph::new(ascii_logo).alignment(Alignment::Center),
+                chunks[idx],
+            );
+            idx += 1; // ascii -> gap before title
+        }
         idx += 1; // skip gap chunk
         frame.render_widget(
             Paragraph::new(welcome_title_line()).alignment(Alignment::Center),
@@ -759,6 +799,15 @@ pub(super) fn draw_onboarding_welcome(frame: &mut Frame, app: &dyn TuiState, are
         idx += 1; // hint -> gap
     }
     idx += 1; // skip gap chunk
+    // D9: Quote of the day
+    if quote_h > 0 {
+        frame.render_widget(
+            Paragraph::new(quote).alignment(Alignment::Center),
+            chunks[idx],
+        );
+        idx += 1; // quote -> gap
+        idx += 1; // skip gap chunk
+    }
     frame.render_widget(
         Paragraph::new(body).alignment(Alignment::Center),
         chunks[idx],
