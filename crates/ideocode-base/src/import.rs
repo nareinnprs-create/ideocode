@@ -623,6 +623,7 @@ pub fn imported_session_id_for_target(
     }
 }
 
+#[allow(non_snake_case)]
 pub fn resolve_resume_target_to_IDEOCODE(
     target: &ideocode_session_types::ResumeTarget,
 ) -> Result<ideocode_session_types::ResumeTarget> {

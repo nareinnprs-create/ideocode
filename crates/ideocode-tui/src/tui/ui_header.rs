@@ -278,6 +278,7 @@ fn auth_dot_color(state: AuthState) -> Color {
     }
 }
 
+#[allow(dead_code)]
 fn auth_dot_char(state: AuthState) -> &'static str {
     match state {
         AuthState::Available => "●",

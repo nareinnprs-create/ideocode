@@ -8,7 +8,7 @@
 //! 4. Memory-efficient image data management
 
 use std::collections::HashMap;
-use std::sync::{Arc, OnceLock, RwLock};
+use std::sync::{OnceLock, RwLock};
 use std::time::{Duration, Instant};
 
 // ── Streaming Token Buffer ──────────────────────────────────────────
@@ -333,6 +333,7 @@ pub struct RequestTimingTracker {
 
 struct RequestTiming {
     provider: String,
+    #[allow(dead_code)]
     model: String,
     start: Instant,
     end: Option<Instant>,

@@ -310,6 +310,7 @@ impl SkillRegistry {
 
     fn load_project_local_dirs(&mut self, working_dir: Option<&Path>) -> Result<()> {
         // Load from ./.IDEOCODE/skills/ (project-local IDEOCODE skills)
+        #[allow(non_snake_case)]
         let local_IDEOCODE = Self::project_local_dir(working_dir, ".IDEOCODE");
         if local_IDEOCODE.exists() {
             self.load_from_dir(&local_IDEOCODE)?;

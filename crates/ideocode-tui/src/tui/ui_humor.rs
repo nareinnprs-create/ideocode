@@ -49,7 +49,7 @@ pub fn get_contextual_humor(context: &HumorContext) -> &'static str {
         ],
     };
 
-    comments.choose(&mut rand::thread_rng()).unwrap_or(&"")
+    comments.choose(&mut rand::rng()).unwrap_or(&"")
 }
 
 #[derive(Debug)]
@@ -95,7 +95,7 @@ pub fn fact() -> &'static str {
         "The average programmer writes 50 lines of production code per day.",
     ];
 
-    facts.choose(&mut rand::thread_rng()).unwrap_or(&"")
+    facts.choose(&mut rand::rng()).unwrap_or(&"")
 }
 
 /// Easter egg responses.

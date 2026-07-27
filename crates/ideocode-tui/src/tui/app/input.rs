@@ -1873,10 +1873,6 @@ pub(super) fn handle_alt_key(app: &mut App, code: KeyCode) -> bool {
             delete_input_word_back(app);
             true
         }
-        KeyCode::Char('v') => {
-            paste_from_clipboard(app);
-            true
-        }
         KeyCode::Char('a') if app.input.is_empty() => {
             app.copy_chat_viewport_context_to_clipboard();
             true

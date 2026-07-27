@@ -100,7 +100,7 @@ pub fn toggle_provider_panel(state: &mut ProviderPanelState) {
     }
 }
 
-pub fn handle_provider_keys(state: &mut ProviderPanelState, code: KeyCode, modifiers: KeyModifiers) -> bool {
+pub fn handle_provider_keys(state: &mut ProviderPanelState, code: KeyCode, _modifiers: KeyModifiers) -> bool {
     if !state.visible {
         return false;
     }
@@ -343,7 +343,7 @@ fn draw_tab_bar(f: &mut Frame, area: Rect, state: &ProviderPanelState) {
 }
 
 fn draw_provider_list(f: &mut Frame, area: Rect, state: &ProviderPanelState) {
-    let visible_rows = area.height as usize;
+    let _visible_rows = area.height as usize;
 
     match state.tab {
         ProviderTab::Core => {
@@ -477,7 +477,7 @@ fn draw_provider_list(f: &mut Frame, area: Rect, state: &ProviderPanelState) {
             let items: Vec<ListItem> = COMPATIBLE_PROVIDERS
                 .iter()
                 .enumerate()
-                .map(|(i, (id, name, model, env))| {
+                .map(|(i, (id, name, model, _env))| {
                     let style = if i == state.selected {
                         Style::default().fg(ACTIVE_FG).add_modifier(Modifier::BOLD)
                     } else {

@@ -26,6 +26,7 @@ struct OverlayState {
     gesture_selected: usize,
     file_explorer_visible: bool,
     file_explorer_selected: usize,
+    #[allow(dead_code)]
     file_explorer_cwd: String,
     git_panel_visible: bool,
     search_panel_visible: bool,
@@ -47,9 +48,13 @@ struct OverlayState {
     provider_panel_state: crate::tui::ui_providers::ProviderPanelState,
     mood: AIMood,
     personality_mode: PersonalityMode,
+    #[allow(dead_code)]
     active_theme: usize,
+    #[allow(dead_code)]
     achievements_unlocked: usize,
+    #[allow(dead_code)]
     achievements_total: usize,
+    #[allow(dead_code)]
     session_started_at: Option<Instant>,
 }
 
@@ -782,7 +787,7 @@ pub fn render_profiler_panel(frame: &mut Frame, area: Rect, app: &dyn TuiState) 
 
 pub fn render_provider_panel(frame: &mut Frame, area: Rect) {
     OVERLAY_STATE.with(|s| {
-        let mut st = s.borrow_mut();
+        let st = s.borrow();
         if !st.provider_panel_visible { return; }
         // Calculate panel area - full width, 70% height centered
         let panel_w = (area.width * 80 / 100).max(60);

@@ -6,6 +6,7 @@
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;
+use crate::tui::color_support::rgb;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum VoiceState {
@@ -61,40 +62,68 @@ pub fn render_voice_indicator(state: &VoiceState) -> Line<'static> {
     ])
 }
 
-/// Render voice mode placeholder message.
+/// Render voice mode status panel.
 pub fn render_voice_placeholder() -> Vec<Line<'static>> {
-    vec![
+    let cfg = crate::config::config().dictation.clone();
+    let command = cfg.command.trim();
+    let configured = !command.is_empty();
+
+    let mut lines = vec![
         Line::from(Span::styled(
-            "🎤 Voice Mode",
+            "🎤 Voice Mode (Dictation)",
             Style::default()
                 .fg(neon_cyan())
                 .add_modifier(Modifier::BOLD),
         )),
         Line::from(""),
-        Line::from(Span::styled(
-            "Coming soon!",
-            Style::default().fg(neon_yellow()),
-        )),
-        Line::from(""),
-        Line::from("Voice interaction will let you:"),
-        Line::from(Span::styled(
-            "  • Talk to IDEOCODE naturally",
-            Style::default().fg(dim_color()),
-        )),
-        Line::from(Span::styled(
-            "  • Get spoken responses",
-            Style::default().fg(dim_color()),
-        )),
-        Line::from(Span::styled(
-            "  • Code hands-free",
-            Style::default().fg(dim_color()),
-        )),
-        Line::from(""),
-        Line::from(Span::styled(
-            "For now, use text input!",
+    ];
+
+    if configured {
+        lines.push(Line::from(Span::styled(
+            format!("Status: {}", "Configured"),
             Style::default().fg(neon_green()),
-        )),
-    ]
+        )));
+        lines.push(Line::from(Span::styled(
+            format!("Command: {}", command),
+            Style::default().fg(dim_color()),
+        )));
+    } else {
+        lines.push(Line::from(Span::styled(
+            "Status: Not configured",
+            Style::default().fg(rgb(255, 100, 100)),
+        )));
+        lines.push(Line::from(Span::styled(
+            "Set `[dictation].command` in ~/.IDEOCODE/config.toml",
+            Style::default().fg(dim_color()),
+        )));
+    }
+
+    lines.push(Line::from(""));
+    lines.push(Line::from(Span::styled(
+        "How to use:",
+        Style::default()
+            .fg(neon_yellow())
+            .add_modifier(Modifier::BOLD),
+    )));
+    lines.push(Line::from(Span::styled(
+        "  • Press F5 or run /dictate to start voice input",
+        Style::default().fg(dim_color()),
+    )));
+    lines.push(Line::from(Span::styled(
+        "  • Press F5 again to stop recording",
+        Style::default().fg(dim_color()),
+    )));
+    lines.push(Line::from(Span::styled(
+        "  • Transcript is inserted into the input buffer",
+        Style::default().fg(dim_color()),
+    )));
+    lines.push(Line::from(""));
+    lines.push(Line::from(Span::styled(
+        "Supported backends: macOS say, whisper.cpp, dictation.py, etc.",
+        Style::default().fg(dim_color()),
+    )));
+
+    lines
 }
 
 /// Render voice wave visualization (placeholder).

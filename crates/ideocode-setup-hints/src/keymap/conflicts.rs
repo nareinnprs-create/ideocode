@@ -34,6 +34,7 @@ pub struct IDEOCODEBinding {
 
 /// A detected conflict between a IDEOCODE binding and something on the machine.
 #[derive(Debug, Clone)]
+#[allow(non_snake_case)]
 pub struct Conflict {
     /// The IDEOCODE binding that may not reach the app.
     pub IDEOCODE: IDEOCODEBinding,
@@ -291,6 +292,7 @@ pub fn detect_conflicts(cfg: &KeybindingsConfig, snapshot: &KeymapSnapshot) -> V
         std::collections::HashSet::new();
     let mut conflicts = Vec::new();
 
+    #[allow(non_snake_case)]
     for IDEOCODE in ideocode_bindings(cfg) {
         let Some(interceptors) = by_chord.get(&IDEOCODE.chord) else {
             continue;

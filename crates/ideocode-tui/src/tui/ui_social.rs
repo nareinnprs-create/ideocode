@@ -60,32 +60,56 @@ pub fn render_leaderboard(entries: &[LeaderboardEntry]) -> Vec<Line<'static>> {
     lines
 }
 
-/// Render team features placeholder.
+/// Render team and sharing features panel.
 pub fn render_team_placeholder() -> Vec<Line<'static>> {
     vec![
         Line::from(Span::styled(
-            "👥 Team Features",
+            "👥 Team & Sharing Features",
             Style::default()
                 .fg(neon_cyan())
                 .add_modifier(Modifier::BOLD),
         )),
         Line::from(""),
-        Line::from("Coming soon! Team features will include:"),
+        Line::from(Span::styled(
+            "Available features:",
+            Style::default()
+                .fg(neon_green())
+                .add_modifier(Modifier::BOLD),
+        )),
         Line::from(""),
         Line::from(Span::styled(
-            "  • Shared configurations",
+            "  /share     - Export & share your config with others",
             Style::default().fg(dim_color()),
         )),
         Line::from(Span::styled(
-            "  • Team leaderboards",
+            "  /export    - Export session transcript or config",
             Style::default().fg(dim_color()),
         )),
         Line::from(Span::styled(
-            "  • Collaborative coding sessions",
+            "  /import    - Import configs from Claude Code / Cursor / Codex",
             Style::default().fg(dim_color()),
         )),
         Line::from(Span::styled(
-            "  • Achievement sharing",
+            "  /template  - Save & load prompt templates",
+            Style::default().fg(dim_color()),
+        )),
+        Line::from(""),
+        Line::from(Span::styled(
+            "Config sharing:",
+            Style::default()
+                .fg(neon_yellow())
+                .add_modifier(Modifier::BOLD),
+        )),
+        Line::from(Span::styled(
+            "  • Share ~/.IDEOCODE/config.toml with teammates",
+            Style::default().fg(dim_color()),
+        )),
+        Line::from(Span::styled(
+            "  • Use ./.IDEOCODE/ for project-local settings",
+            Style::default().fg(dim_color()),
+        )),
+        Line::from(Span::styled(
+            "  • Export prompts via /template save <name>",
             Style::default().fg(dim_color()),
         )),
     ]

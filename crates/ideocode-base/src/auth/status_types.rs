@@ -11,6 +11,7 @@ use serde::Serialize;
 /// `AuthStatus::assessment_for_provider`, which normalizes these raw fields into
 /// the canonical provider auth contract (`ProviderAuthAssessment`).
 #[derive(Debug, Clone, Default)]
+#[allow(non_snake_case)]
 pub struct AuthStatus {
     /// IDEOCODE subscription router credentials
     pub IDEOCODE: AuthState,
