@@ -72,17 +72,17 @@ jobs:
             fi
 
             echo "::group::cargo build (IDEOCODE binary)"
-            cargo build --locked $PROFILE_FLAG -p IDEOCODE --bin IDEOCODE
+            cargo build --locked $PROFILE_FLAG -p ideocode --bin ideocode
             echo "::endgroup::"
 
             echo "::group::Verify binary launches"
-            ./target/$TARGET_DIR/IDEOCODE --version
+            ./target/$TARGET_DIR/ideocode --version
             echo "::endgroup::"
 
             echo "::group::Compile platform unit tests"
-            cargo test --locked $PROFILE_FLAG -p IDEOCODE-base --lib --no-run
+            cargo test --locked $PROFILE_FLAG -p ideocode-base --lib --no-run
             echo "::endgroup::"
 
             echo "::group::Run platform unit tests"
-            cargo test --locked $PROFILE_FLAG -p IDEOCODE-base --lib -- --nocapture platform
+            cargo test --locked $PROFILE_FLAG -p ideocode-base --lib -- --nocapture platform
             echo "::endgroup::"

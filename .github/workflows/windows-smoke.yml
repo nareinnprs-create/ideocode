@@ -138,7 +138,7 @@ jobs:
       - name: Verify built binary launches
         shell: pwsh
         run: |
-          & "target/x86_64-pc-windows-msvc/release/IDEOCODE.exe" --version
+          & "target/x86_64-pc-windows-msvc/release/ideocode.exe" --version
           if ($LASTEXITCODE -ne 0) {
             throw 'Built Windows binary failed to run --version'
           }
@@ -153,7 +153,7 @@ jobs:
 
           $version = 'v' + $cargoVersion.Matches[0].Groups[1].Value
           & ./.github/scripts/verify_windows_install.ps1 `
-            -ArtifactExePath 'target/x86_64-pc-windows-msvc/release/IDEOCODE.exe' `
+            -ArtifactExePath 'target/x86_64-pc-windows-msvc/release/ideocode.exe' `
             -Version $version
 
   smoke-arm64:
@@ -197,7 +197,7 @@ jobs:
       - name: Verify built binary launches
         shell: pwsh
         run: |
-          & "target/aarch64-pc-windows-msvc/release/IDEOCODE.exe" --version
+          & "target/aarch64-pc-windows-msvc/release/ideocode.exe" --version
           if ($LASTEXITCODE -ne 0) {
             throw 'Built Windows ARM64 binary failed to run --version'
           }
@@ -212,5 +212,5 @@ jobs:
 
           $version = 'v' + $cargoVersion.Matches[0].Groups[1].Value
           & ./.github/scripts/verify_windows_install.ps1 `
-            -ArtifactExePath 'target/aarch64-pc-windows-msvc/release/IDEOCODE.exe' `
+            -ArtifactExePath 'target/aarch64-pc-windows-msvc/release/ideocode.exe' `
             -Version $version

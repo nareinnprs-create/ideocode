@@ -199,7 +199,7 @@ jobs:
           # cohort itself runs in under a second once the lib test is built.
           python3 .github/scripts/run_with_timeout.py 600 \
             "$(rustup which cargo)" test --target ${{ matrix.target }} \
-            -p IDEOCODE-app-core --lib retention_readiness -- --nocapture
+            -p ideocode-app-core --lib retention_readiness -- --nocapture
 
       - name: Run TUI library tests (Linux only)
         if: runner.os == 'Linux'
@@ -224,7 +224,7 @@ jobs:
         run: |
           python3 .github/scripts/run_with_timeout.py 600 \
             "$(rustup which cargo)" test --target ${{ matrix.target }} \
-            -p IDEOCODE-tui --lib -- --test-threads=1 \
+            -p ideocode-tui --lib -- --test-threads=1 \
             --skip copy_badge_shortcut \
             --skip test_prompt_entry_shimmer_color_moves_across_positions \
             --skip right_fact_stack_uses_neutral_gray_except_for_context_usage
@@ -366,12 +366,12 @@ jobs:
           & ./scripts/invoke_cargo_with_timeout.ps1 `
             -Name 'Windows setup-hints tests' `
             -TimeoutSeconds 300 `
-            -CargoArgs @('test', '--locked', '--target', 'x86_64-pc-windows-msvc', '-p', 'IDEOCODE-setup-hints', '--lib', '--', '--nocapture')
+              -CargoArgs @('test', '--locked', '--target', 'x86_64-pc-windows-msvc', '-p', 'ideocode-setup-hints', '--lib', '--', '--nocapture')
 
           & ./scripts/invoke_cargo_with_timeout.ps1 `
             -Name 'Windows power-inhibit tests' `
             -TimeoutSeconds 900 `
-            -CargoArgs @('test', '--locked', '--target', 'x86_64-pc-windows-msvc', '-p', 'IDEOCODE-base', '--no-default-features', '--lib', 'power_inhibit::tests::windows_', '--', '--nocapture')
+              -CargoArgs @('test', '--locked', '--target', 'x86_64-pc-windows-msvc', '-p', 'ideocode-base', '--no-default-features', '--lib', 'power_inhibit::tests::windows_', '--', '--nocapture')
 
       - name: Run Windows e2e smoke tests
         shell: pwsh
@@ -416,7 +416,7 @@ jobs:
       - name: Verify built binary launches
         shell: pwsh
         run: |
-          & "target/x86_64-pc-windows-msvc/release/IDEOCODE.exe" --version
+          & "target/x86_64-pc-windows-msvc/release/ideocode.exe" --version
           if ($LASTEXITCODE -ne 0) {
             throw 'Built Windows binary failed to run --version'
           }
@@ -439,7 +439,7 @@ jobs:
           # this identity from the root package version and appends `-dev`.
           $version = 'v' + $cargoVersion.Matches[0].Groups[1].Value + '-dev'
           & ./.github/scripts/verify_windows_install.ps1 `
-            -ArtifactExePath 'target/x86_64-pc-windows-msvc/release/IDEOCODE.exe' `
+            -ArtifactExePath 'target/x86_64-pc-windows-msvc/release/ideocode.exe' `
             -Version $version
 
   fmt:
