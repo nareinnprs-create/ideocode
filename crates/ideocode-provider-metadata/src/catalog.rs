@@ -239,6 +239,50 @@ pub const STACKIT_PROFILE: OpenAiCompatibleProfile = OpenAiCompatibleProfile {
     requires_api_key: true,
 };
 
+pub const GITHUB_MODELS_PROFILE: OpenAiCompatibleProfile = OpenAiCompatibleProfile {
+    id: "github-models",
+    display_name: "GitHub Models",
+    api_base: "https://models.inference.ai.azure.com",
+    api_key_env: "GITHUB_TOKEN",
+    env_file: "github-models.env",
+    setup_url: "https://docs.github.com/en/github-models/quickstart",
+    default_model: Some("gpt-4o"),
+    requires_api_key: true,
+};
+
+pub const SAMBANOVA_PROFILE: OpenAiCompatibleProfile = OpenAiCompatibleProfile {
+    id: "sambanova",
+    display_name: "SambaNova",
+    api_base: "https://api.sambanova.ai/v1",
+    api_key_env: "SAMBANOVA_API_KEY",
+    env_file: "sambanova.env",
+    setup_url: "https://docs.sambanova.ai/docs/getting-started",
+    default_model: Some("Meta-Llama-3.1-8B-Instruct"),
+    requires_api_key: true,
+};
+
+pub const REPLICATE_PROFILE: OpenAiCompatibleProfile = OpenAiCompatibleProfile {
+    id: "replicate",
+    display_name: "Replicate",
+    api_base: "https://api.replicate.com/v1",
+    api_key_env: "REPLICATE_API_TOKEN",
+    env_file: "replicate.env",
+    setup_url: "https://replicate.com/docs/reference/http",
+    default_model: Some("meta/meta-llama-3.1-8b-instruct"),
+    requires_api_key: true,
+};
+
+pub const ZHIPU_DIRECT_PROFILE: OpenAiCompatibleProfile = OpenAiCompatibleProfile {
+    id: "zhipu",
+    display_name: "Zhipu AI",
+    api_base: "https://open.bigmodel.cn/api/paas/v4",
+    api_key_env: "ZHIPU_DIRECT_API_KEY",
+    env_file: "zhipu.env",
+    setup_url: "https://open.bigmodel.cn/dev/api",
+    default_model: Some("glm-4-plus"),
+    requires_api_key: true,
+};
+
 pub const GROQ_PROFILE: OpenAiCompatibleProfile = OpenAiCompatibleProfile {
     id: "groq",
     display_name: "Groq",
@@ -432,7 +476,7 @@ pub const OPENAI_COMPAT_PROFILE: OpenAiCompatibleProfile = OpenAiCompatibleProfi
     requires_api_key: true,
 };
 
-pub(crate) const OPENAI_COMPAT_PROFILES: [OpenAiCompatibleProfile; 37] = [
+pub(crate) const OPENAI_COMPAT_PROFILES: [OpenAiCompatibleProfile; 41] = [
     OPENCODE_PROFILE,
     OPENCODE_GO_PROFILE,
     ZAI_PROFILE,
@@ -469,6 +513,10 @@ pub(crate) const OPENAI_COMPAT_PROFILES: [OpenAiCompatibleProfile; 37] = [
     CELERIS_PROFILE,
     LMSTUDIO_PROFILE,
     OLLAMA_PROFILE,
+    GITHUB_MODELS_PROFILE,
+    SAMBANOVA_PROFILE,
+    REPLICATE_PROFILE,
+    ZHIPU_DIRECT_PROFILE,
     OPENAI_COMPAT_PROFILE,
 ];
 
@@ -1099,6 +1147,58 @@ pub const CELERIS_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescrip
     order: LoginProviderSurfaceOrder::new(Some(38), Some(38), Some(38), Some(38), Some(38)),
 };
 
+pub const GITHUB_MODELS_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescriptor {
+    id: "github-models",
+    display_name: "GitHub Models",
+    auth_kind: LoginProviderAuthKind::ApiKey,
+    auth_state_key: LoginProviderAuthStateKey::OpenRouterLike,
+    auth_status_method: "API key",
+    aliases: &["github", "gh-models"],
+    menu_detail: "Free tier via GitHub PAT, 100+ models",
+    recommended: true,
+    target: LoginProviderTarget::OpenAiCompatible(GITHUB_MODELS_PROFILE),
+    order: LoginProviderSurfaceOrder::new(Some(5), Some(5), Some(5), Some(5), Some(5)),
+};
+
+pub const SAMBANOVA_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescriptor {
+    id: "sambanova",
+    display_name: "SambaNova",
+    auth_kind: LoginProviderAuthKind::ApiKey,
+    auth_state_key: LoginProviderAuthStateKey::OpenRouterLike,
+    auth_status_method: "API key",
+    aliases: &["samba", "sambanova-cloud"],
+    menu_detail: "Fast inference, free tier available",
+    recommended: false,
+    target: LoginProviderTarget::OpenAiCompatible(SAMBANOVA_PROFILE),
+    order: LoginProviderSurfaceOrder::new(Some(39), Some(39), Some(39), Some(39), Some(39)),
+};
+
+pub const REPLICATE_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescriptor {
+    id: "replicate",
+    display_name: "Replicate",
+    auth_kind: LoginProviderAuthKind::ApiKey,
+    auth_state_key: LoginProviderAuthStateKey::OpenRouterLike,
+    auth_status_method: "API token",
+    aliases: &["replicate-ai"],
+    menu_detail: "Open-source models, pay-per-use",
+    recommended: false,
+    target: LoginProviderTarget::OpenAiCompatible(REPLICATE_PROFILE),
+    order: LoginProviderSurfaceOrder::new(Some(40), Some(40), Some(40), Some(40), Some(40)),
+};
+
+pub const ZHIPU_DIRECT_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescriptor {
+    id: "zhipu-direct",
+    display_name: "Zhipu AI (Direct)",
+    auth_kind: LoginProviderAuthKind::ApiKey,
+    auth_state_key: LoginProviderAuthStateKey::OpenRouterLike,
+    auth_status_method: "API key",
+    aliases: &["zhipu", "bigmodel"],
+    menu_detail: "GLM models, direct from Zhipu",
+    recommended: false,
+    target: LoginProviderTarget::OpenAiCompatible(ZHIPU_DIRECT_PROFILE),
+    order: LoginProviderSurfaceOrder::new(Some(41), Some(41), Some(41), Some(41), Some(41)),
+};
+
 pub const GOOGLE_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescriptor {
     id: "google",
     display_name: "Google/Gmail",
@@ -1112,7 +1212,7 @@ pub const GOOGLE_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescript
     order: LoginProviderSurfaceOrder::new(Some(13), None, None, None, None),
 };
 
-pub(crate) const LOGIN_PROVIDERS: [LoginProviderDescriptor; 48] = [
+pub(crate) const LOGIN_PROVIDERS: [LoginProviderDescriptor; 52] = [
     AUTO_IMPORT_LOGIN_PROVIDER,
     CLAUDE_LOGIN_PROVIDER,
     ANTHROPIC_API_LOGIN_PROVIDER,
@@ -1152,6 +1252,10 @@ pub(crate) const LOGIN_PROVIDERS: [LoginProviderDescriptor; 48] = [
     NVIDIA_NIM_LOGIN_PROVIDER,
     XIAOMI_MIMO_LOGIN_PROVIDER,
     CELERIS_LOGIN_PROVIDER,
+    GITHUB_MODELS_LOGIN_PROVIDER,
+    SAMBANOVA_LOGIN_PROVIDER,
+    REPLICATE_LOGIN_PROVIDER,
+    ZHIPU_DIRECT_LOGIN_PROVIDER,
     LMSTUDIO_LOGIN_PROVIDER,
     OLLAMA_LOGIN_PROVIDER,
     OPENAI_COMPAT_LOGIN_PROVIDER,

@@ -1982,6 +1982,11 @@ pub(super) fn handle_alt_key(app: &mut App, code: KeyCode) -> bool {
             crate::tui::ui_integration::toggle_big_mode();
             true
         }
+        // Alt+v: provider manager
+        KeyCode::Char('v') => {
+            crate::tui::ui_integration::toggle_provider_panel();
+            true
+        }
         _ => false,
     }
 }
@@ -2947,6 +2952,11 @@ impl App {
             return Ok(());
         }
 
+        // Provider manager overlay: intercepts keys while provider panel is visible.
+        if crate::tui::ui_integration::handle_provider_panel_keys(code, modifiers) {
+            return Ok(());
+        }
+
         // Workspace profiles overlay: intercepts keys while workspace list is visible.
         if handle_workspace_keys(code, modifiers) {
             return Ok(());
@@ -3899,6 +3909,7 @@ impl App {
             || super::debug::handle_debug_command(self, trimmed)
             || super::model_context::handle_model_command(self, trimmed)
             || super::commands::handle_usage_command(self, trimmed)
+            || super::commands::handle_provider_command(self, trimmed)
             || super::productivity::handle_productivity_command(self, trimmed)
             || super::commands::handle_feedback_command(self, trimmed)
             || super::commands::handle_telemetry_command(self, trimmed)

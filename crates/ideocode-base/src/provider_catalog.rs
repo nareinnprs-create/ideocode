@@ -525,6 +525,59 @@ pub fn openai_compatible_profile_static_models(profile: OpenAiCompatibleProfile)
             push("gemini-2.0-flash");
             push("gemini-2.0-flash-lite");
         }
+        "github-models" => {
+            push("gpt-4o");
+            push("gpt-4o-mini");
+            push("gpt-4.1");
+            push("gpt-4.1-mini");
+            push("gpt-4.1-nano");
+            push("o3-mini");
+            push("o4-mini");
+            push("Phi-4");
+            push("Phi-4-mini");
+            push("Llama-3.3-70B-Instruct");
+            push("Llama-3.1-8B-Instruct");
+            push("Mistral-Large-2411");
+            push("Cohere-c4ai-Command-R-plus");
+            push("DeepSeek-R1");
+            push("Jamba-1.5-Large");
+            push("jamba-1.5-mini");
+            push("aisearch");
+        }
+        "sambanova" => {
+            push("Meta-Llama-3.1-8B-Instruct");
+            push("Meta-Llama-3.1-70B-Instruct");
+            push("Meta-Llama-3.1-405B-Instruct");
+            push("DeepSeek-R1-Distill-Llama-70B");
+            push("DeepSeek-V3-0324");
+            push("QwQ-32B");
+            push("Qwen2.5-Coder-32B-Instruct");
+            push("Qwen2.5-72B-Instruct");
+        }
+        "replicate" => {
+            push("meta/meta-llama-3.1-8b-instruct");
+            push("meta/meta-llama-3.1-70b-instruct");
+            push("meta/meta-llama-3.1-405b-instruct");
+            push("mistralai/mistral-7b-instruct-v0.3");
+            push("mistralai/mixtral-8x7b-instruct-v0.1");
+            push("google/gemma-2-9b-it");
+            push("deepseek/deepseek-r1");
+            push("codellama/codellama-70b-instruct");
+        }
+        "zhipu" => {
+            push("glm-4-plus");
+            push("glm-4-flash");
+            push("glm-4-long");
+            push("glm-4-air");
+            push("glm-4-airx");
+            push("glm-4-flashx");
+            push("glm-4v-plus");
+            push("glm-4v-flash");
+            push("glm-4v-air");
+            push("glm-4-alltools");
+            push("glm-4-0520");
+            push("codegeex-4");
+        }
         _ => {}
     }
 

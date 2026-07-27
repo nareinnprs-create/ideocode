@@ -81,6 +81,67 @@ pub const ALL_OPENAI_MODELS: &[&str] = &[
     "gpt-5",
 ];
 
+/// Available GitHub Models (free tier via GitHub PAT).
+pub const ALL_GITHUB_MODELS: &[&str] = &[
+    "gpt-4o",
+    "gpt-4o-mini",
+    "gpt-4.1",
+    "gpt-4.1-mini",
+    "gpt-4.1-nano",
+    "o3-mini",
+    "o4-mini",
+    "Phi-4",
+    "Phi-4-mini",
+    "Llama-3.3-70B-Instruct",
+    "Llama-3.1-8B-Instruct",
+    "Mistral-Large-2411",
+    "Cohere-c4ai-Command-R-plus",
+    "DeepSeek-R1",
+    "Jamba-1.5-Large",
+    "jamba-1.5-mini",
+    "aisearch",
+];
+
+/// Available SambaNova models.
+pub const ALL_SAMBANOVA_MODELS: &[&str] = &[
+    "Meta-Llama-3.1-8B-Instruct",
+    "Meta-Llama-3.1-70B-Instruct",
+    "Meta-Llama-3.1-405B-Instruct",
+    "DeepSeek-R1-Distill-Llama-70B",
+    "DeepSeek-V3-0324",
+    "QwQ-32B",
+    "Qwen2.5-Coder-32B-Instruct",
+    "Qwen2.5-72B-Instruct",
+];
+
+/// Available Replicate models.
+pub const ALL_REPLICATE_MODELS: &[&str] = &[
+    "meta/meta-llama-3.1-8b-instruct",
+    "meta/meta-llama-3.1-70b-instruct",
+    "meta/meta-llama-3.1-405b-instruct",
+    "mistralai/mistral-7b-instruct-v0.3",
+    "mistralai/mixtral-8x7b-instruct-v0.1",
+    "google/gemma-2-9b-it",
+    "deepseek/deepseek-r1",
+    "codellama/codellama-70b-instruct",
+];
+
+/// Available Zhipu AI models (direct API).
+pub const ALL_ZHIPU_DIRECT_MODELS: &[&str] = &[
+    "glm-4-plus",
+    "glm-4-flash",
+    "glm-4-long",
+    "glm-4-air",
+    "glm-4-airx",
+    "glm-4-flashx",
+    "glm-4v-plus",
+    "glm-4v-flash",
+    "glm-4v-air",
+    "glm-4-alltools",
+    "glm-4-0520",
+    "codegeex-4",
+];
+
 /// Default context window size when model-specific data isn't known.
 pub const DEFAULT_CONTEXT_LIMIT: usize = 200_000;
 

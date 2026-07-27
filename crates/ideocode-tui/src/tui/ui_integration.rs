@@ -43,6 +43,8 @@ struct OverlayState {
     docker_visible: bool,
     cicd_visible: bool,
     profiler_visible: bool,
+    provider_panel_visible: bool,
+    provider_panel_state: crate::tui::ui_providers::ProviderPanelState,
     mood: AIMood,
     personality_mode: PersonalityMode,
     active_theme: usize,
@@ -61,6 +63,7 @@ impl OverlayState {
             log_viewer_visible: false, log_lines: Vec::new(), log_scroll: 0,
             build_panel_visible: false, build_output: Vec::new(), build_scroll: 0, build_running: false,
             debugger_visible: false, docker_visible: false, cicd_visible: false, profiler_visible: false,
+            provider_panel_visible: false, provider_panel_state: crate::tui::ui_providers::ProviderPanelState::default(),
             mood: AIMood::Chill, personality_mode: PersonalityMode::Professional,
             active_theme: 0, achievements_unlocked: 0, achievements_total: 16,
             session_started_at: Some(Instant::now()),
@@ -250,6 +253,8 @@ pub fn toggle_debugger() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut();
 pub fn toggle_docker() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.docker_visible = !st.docker_visible; }); }
 pub fn toggle_cicd() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.cicd_visible = !st.cicd_visible; }); }
 pub fn toggle_profiler() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.profiler_visible = !st.profiler_visible; }); }
+pub fn toggle_provider_panel() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.provider_panel_visible = !st.provider_panel_visible; }); }
+pub fn provider_panel_visible() -> bool { OVERLAY_STATE.with(|s| s.borrow().provider_panel_visible) }
 
 pub fn set_search_results(results: Vec<SearchResult>) {
     OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.search_results = results; st.search_selected = 0; });
@@ -773,6 +778,28 @@ pub fn render_profiler_panel(frame: &mut Frame, area: Rect, app: &dyn TuiState) 
 
         frame.render_widget(Paragraph::new(lines), panel_area);
     });
+}
+
+pub fn render_provider_panel(frame: &mut Frame, area: Rect) {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        if !st.provider_panel_visible { return; }
+        // Calculate panel area - full width, 70% height centered
+        let panel_w = (area.width * 80 / 100).max(60);
+        let panel_h = (area.height * 70 / 100).max(20);
+        let x = area.x + (area.width.saturating_sub(panel_w)) / 2;
+        let y = area.y + (area.height.saturating_sub(panel_h)) / 2;
+        let panel_area = Rect { x, y, width: panel_w, height: panel_h };
+        crate::tui::ui_providers::draw_provider_panel(frame, panel_area, &st.provider_panel_state);
+    });
+}
+
+pub fn handle_provider_panel_keys(code: crossterm::event::KeyCode, modifiers: crossterm::event::KeyModifiers) -> bool {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        if !st.provider_panel_visible { return false; }
+        crate::tui::ui_providers::handle_provider_keys(&mut st.provider_panel_state, code, modifiers)
+    })
 }
 
 // ── Helper: run shell commands ───────────────────────────────────────

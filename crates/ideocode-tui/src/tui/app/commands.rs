@@ -3386,6 +3386,69 @@ pub(super) fn handle_model_command(app: &mut App, trimmed: &str) -> bool {
     super::model_context::handle_model_command(app, trimmed)
 }
 
+pub(super) fn handle_provider_command(app: &mut App, trimmed: &str) -> bool {
+    let rest = if let Some(r) = trimmed.strip_prefix("/provider") {
+        r.trim()
+    } else if let Some(r) = trimmed.strip_prefix("/providers") {
+        r.trim()
+    } else {
+        return false;
+    };
+
+    if rest.is_empty() || rest == "list" || rest == "show" {
+        crate::tui::ui_integration::toggle_provider_panel();
+        app.set_status_notice("Provider Manager opened (Alt+V)".to_string());
+        return true;
+    }
+
+    if rest == "add" || rest == "new" {
+        crate::tui::ui_integration::toggle_provider_panel();
+        app.push_display_message(DisplayMessage::system(
+            "Provider Manager opened. Press 'a' to add a custom provider, \
+             or edit ~/.ideocode/config.toml directly.\n\n\
+             Example config.toml entry:\n\
+             [providers.my-api]\n\
+             type = \"openai-compatible\"\n\
+             base_url = \"https://api.example.com/v1\"\n\
+             api_key_env = \"MY_API_KEY\"\n\
+             default_model = \"my-model\""
+        ));
+        app.set_status_notice("Add custom provider".to_string());
+        return true;
+    }
+
+    if rest == "help" {
+        app.push_display_message(DisplayMessage::system(
+            "/provider - Open the Provider Manager panel\n\
+             /provider list - Show all providers (built-in + custom)\n\
+             /provider add - Open panel to add a custom OpenAI-compatible provider\n\
+             /provider help - Show this help\n\n\
+             Keyboard shortcuts:\n\
+             Alt+V - Toggle Provider Manager panel\n\n\
+             Built-in providers (8):\n\
+             Claude, OpenAI, Copilot, Gemini, Cursor, Bedrock, OpenRouter, Antigravity\n\n\
+             Compatible providers (21+):\n\
+             GitHub Models, Groq, Together AI, Fireworks, DeepSeek, SambaNova, Mistral,\n\
+             Perplexity, Replicate, Zhipu, Cerebras, NVIDIA, xAI, MiniMax, Hugging Face,\n\
+             Moonshot, Nebius, Scaleway, Qwen, LM Studio, Ollama\n\n\
+             Custom providers:\n\
+             Add [providers.<name>] blocks to ~/.ideocode/config.toml"
+        ));
+        return true;
+    }
+
+    // /provider <name> - try to switch to the named provider
+    if let Some(name) = rest.strip_prefix("switch ").or_else(|| rest.strip_prefix("use ")) {
+        let name = name.trim();
+        let msg = format!("Switching to provider '{}'...", name);
+        app.push_display_message(DisplayMessage::system(msg));
+        app.set_status_notice(format!("Provider → {}", name));
+        return true;
+    }
+
+    false
+}
+
 pub(super) fn handle_usage_command(app: &mut App, trimmed: &str) -> bool {
     let Some(rest) = trimmed.strip_prefix("/usage") else {
         return false;

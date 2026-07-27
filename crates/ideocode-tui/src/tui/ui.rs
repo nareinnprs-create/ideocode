@@ -3472,6 +3472,7 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
 
     // Profiler panel
     crate::tui::ui_integration::render_profiler_panel(frame, area, app);
+    crate::tui::ui_integration::render_provider_panel(frame, area);
 
     // ── BATCH 1: Standalone module wiring ─────────────────────────────
 
