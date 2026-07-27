@@ -96,7 +96,7 @@ impl std::fmt::Display for PersonalityMode {
 /// Get personality mode from string (for commands).
 pub fn parse_personality_mode(s: &str) -> Option<PersonalityMode> {
     match s.to_lowercase().as_str() {
-        "professional" | "prof" | "formal" => Some(PersonalityMode::Professional),
+        "professional" | "prof" => Some(PersonalityMode::Professional),
         "casual" | "chill" | "relaxed" => Some(PersonalityMode::Casual),
         "genz" | "gen-z" | "gen_z" | "slay" | "fire" => Some(PersonalityMode::GenZ),
         "academic" | "scholar" | "formal" | "research" => Some(PersonalityMode::Academic),

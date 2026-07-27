@@ -60,6 +60,7 @@ pub mod ui_share;
 pub mod ui_quiz;
 pub mod ui_voice;
 pub mod ui_social;
+pub mod ui_integration;
 pub mod usage_overlay;
 pub mod visual_debug;
 pub mod workspace_client;

@@ -3397,6 +3397,32 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
         overlays::draw_debug_overlay(frame, &placements, &chunks);
     }
 
+    // ── NEW UI MODULES INTEGRATION ──────────────────────────────────
+    // Render toast notifications in top-right corner
+    crate::tui::ui_integration::render_toasts(frame, area);
+
+    // Render keyboard wizard tip in notification area (chunk[4])
+    if notification_height == 0 {
+        // Only show if no other notification is active
+        let wizard_area = Rect {
+            x: area.x,
+            y: area.y + area.height.saturating_sub(3),
+            width: area.width,
+            height: 1,
+        };
+        crate::tui::ui_integration::render_keyboard_wizard_tip(frame, wizard_area);
+    }
+
+    // Render achievement progress next to status bar
+    let achievement_area = Rect {
+        x: area.x + area.width.saturating_sub(25),
+        y: area.y + area.height.saturating_sub(1),
+        width: 25,
+        height: 1,
+    };
+    crate::tui::ui_integration::render_achievement_progress(frame, achievement_area);
+    // ── END NEW UI MODULES ──────────────────────────────────────────
+
     // Session facts use actual final-frame cells for collision detection. They
     // prefer the composer chrome and may climb into a few transcript-tail rows
     // only when the right suffix is genuinely unused.
