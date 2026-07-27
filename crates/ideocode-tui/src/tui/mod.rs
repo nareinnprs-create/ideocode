@@ -70,6 +70,8 @@ pub mod ui_templates;
 pub mod ui_performance;
 pub mod ui_theme_api;
 pub mod ui_macros;
+pub mod ui_import;
+pub mod ui_plugins;
 pub mod ui_widgets;
 pub mod ui_workspace;
 pub mod ui_memory_visual;

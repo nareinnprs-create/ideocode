@@ -574,8 +574,8 @@ pub(super) fn draw_help_overlay(frame: &mut Frame, area: Rect, scroll: usize, ap
     lines.push(key_entry("Alt+T", "Compact mode"));
     lines.push(key_entry("Alt+Y", "Big mode (presentations)"));
     lines.push(key_entry(
-        "Gesture pad 8-10",
-        "Meme generator / Theme picker / Templates",
+        "Gesture pad 8-12",
+        "Meme / Theme / Templates / Import / Plugins",
     ));
     lines.push(key_entry(
         &crate::tui::keybind::effort_switch_keys_label(),

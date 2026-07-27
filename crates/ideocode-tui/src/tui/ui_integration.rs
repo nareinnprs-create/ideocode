@@ -204,7 +204,7 @@ pub fn show_gesture_pad() { OVERLAY_STATE.with(|s| s.borrow_mut().gesture_visibl
 pub fn hide_gesture_pad() { OVERLAY_STATE.with(|s| s.borrow_mut().gesture_visible = false); }
 pub fn toggle_gesture_pad() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.gesture_visible = !st.gesture_visible; st.gesture_selected = 0; }); }
 pub fn gesture_move_up() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); if st.gesture_selected > 0 { st.gesture_selected -= 1; } }); }
-pub fn gesture_move_down() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.gesture_selected = (st.gesture_selected + 1).min(10); }); }
+pub fn gesture_move_down() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.gesture_selected = (st.gesture_selected + 1).min(12); }); }
 pub fn gesture_selected() -> usize { OVERLAY_STATE.with(|s| s.borrow().gesture_selected) }
 pub fn gesture_pad_visible() -> bool { OVERLAY_STATE.with(|s| s.borrow().gesture_visible) }
 
@@ -217,7 +217,7 @@ pub fn gesture_navigate_up() {
 pub fn gesture_navigate_down() {
     OVERLAY_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        st.gesture_selected = (st.gesture_selected + 1).min(10);
+        st.gesture_selected = (st.gesture_selected + 1).min(12);
     });
 }
 pub fn gesture_activate() {
@@ -235,6 +235,8 @@ pub fn gesture_activate() {
         8 => toggle_meme_generator(),
         9 => toggle_theme_picker(),
         10 => toggle_templates(),
+        11 => toggle_import(),
+        12 => toggle_plugins(),
         _ => {}
     }
 }
@@ -362,6 +364,8 @@ pub fn render_gesture_pad(frame: &mut Frame, area: Rect) {
             ("9", "Meme Generator", "🎭"),
             ("0", "Theme Picker", "🎨"),
             ("=", "Templates", "📋"),
+            ("-", "Import Sessions", "📥"),
+            ("_", "Plugin System", "🧩"),
         ];
 
         let pad_width = 32.min(area.width as usize);
@@ -1516,6 +1520,135 @@ pub fn render_big_mode_overlay(frame: &mut Frame, area: Rect) {
     frame.render_widget(Paragraph::new(toggle_line), pos);
 }
 
+// ════════════════════════════════════════════════════════════════════════
+// BATCH 4: Import from Competitors + Plugin System
+// ════════════════════════════════════════════════════════════════════════
+
+// ── Import from Competitors ───────────────────────────────────────────
+
+thread_local! {
+    static IMPORT_STATE: RefCell<ImportOverlayState> = RefCell::new(ImportOverlayState::new());
+}
+
+struct ImportOverlayState {
+    visible: bool,
+    selected: usize,
+}
+
+impl ImportOverlayState {
+    fn new() -> Self { Self { visible: false, selected: 0 } }
+}
+
+pub fn toggle_import() {
+    IMPORT_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.visible = !st.visible;
+        st.selected = 0;
+    });
+}
+
+pub fn import_visible() -> bool { IMPORT_STATE.with(|s| s.borrow().visible) }
+
+pub fn import_navigate_up() {
+    IMPORT_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = st.selected.saturating_sub(1); });
+}
+
+pub fn import_navigate_down() {
+    IMPORT_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        let max = super::ui_import::detect_competitor_tools().len().saturating_sub(1);
+        st.selected = (st.selected + 1).min(max);
+    });
+}
+
+pub fn render_import_overlay(frame: &mut Frame, area: Rect) {
+    IMPORT_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        if !st.visible { return; }
+
+        let tools = super::ui_import::detect_competitor_tools();
+        if st.selected >= tools.len() { st.selected = tools.len().saturating_sub(1); }
+
+        let lines = super::ui_import::render_import_selector(&tools, st.selected);
+        let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
+        let panel_width = 50.min(area.width);
+        let panel_area = Rect {
+            x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+            y: area.y + 1,
+            width: panel_width,
+            height: panel_height,
+        };
+        let block = Block::default()
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(glass_border_color()))
+            .style(Style::default().bg(rgb(10, 10, 20)));
+        frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+    });
+}
+
+// ── Plugin System ─────────────────────────────────────────────────────
+
+thread_local! {
+    static PLUGIN_STATE: RefCell<PluginOverlayState> = RefCell::new(PluginOverlayState::new());
+}
+
+struct PluginOverlayState {
+    visible: bool,
+    selected: usize,
+    filter: String,
+}
+
+impl PluginOverlayState {
+    fn new() -> Self { Self { visible: false, selected: 0, filter: String::new() } }
+}
+
+pub fn toggle_plugins() {
+    PLUGIN_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.visible = !st.visible;
+        st.selected = 0;
+    });
+}
+
+pub fn plugin_visible() -> bool { PLUGIN_STATE.with(|s| s.borrow().visible) }
+
+pub fn plugin_navigate_up() {
+    PLUGIN_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = st.selected.saturating_sub(1); });
+}
+
+pub fn plugin_navigate_down() {
+    PLUGIN_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        let max = super::ui_plugins::get_available_plugins().len().saturating_sub(1);
+        st.selected = (st.selected + 1).min(max);
+    });
+}
+
+pub fn render_plugin_overlay(frame: &mut Frame, area: Rect) {
+    PLUGIN_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        if !st.visible { return; }
+
+        let plugins = super::ui_plugins::get_available_plugins();
+        if st.selected >= plugins.len() { st.selected = plugins.len().saturating_sub(1); }
+
+        let lines = super::ui_plugins::render_plugin_list(&plugins, st.selected, &st.filter);
+        let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
+        let panel_width = 55.min(area.width);
+        let panel_area = Rect {
+            x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+            y: area.y + 1,
+            width: panel_width,
+            height: panel_height,
+        };
+        let block = Block::default()
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(glass_border_color()))
+            .style(Style::default().bg(rgb(10, 10, 20)));
+        frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+    });
+}
+
 // ── Keyboard Wizard ─────────────────────────────────────────────────
 
 thread_local! {
@@ -1560,6 +1693,7 @@ pub fn render_keyboard_wizard_tip(frame: &mut Frame, area: Rect) {
             "Alt+I export session",
             "Alt+T compact mode",
             "Alt+Y big/presentation mode",
+            "Gesture pad: - import, _ plugins",
         ];
         let tip = tips[st.current_tip_index % tips.len()];
         let line = Line::from(vec![

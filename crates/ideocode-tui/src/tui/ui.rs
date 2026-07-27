@@ -3531,6 +3531,16 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     // Big mode toggle indicator
     crate::tui::ui_integration::render_big_mode_overlay(frame, area);
 
+    // ── BATCH 4: Import + Plugins ─────────────────────────────────────
+
+    // Import from competitors overlay
+    crate::tui::ui_integration::render_import_overlay(frame, area);
+
+    // Plugin system overlay
+    crate::tui::ui_integration::render_plugin_overlay(frame, area);
+
+    // ── END BATCH 4 ──────────────────────────────────────────────────
+
     // ── END BATCH 3 ──────────────────────────────────────────────────
 
     // ── END BATCH 2 ──────────────────────────────────────────────────

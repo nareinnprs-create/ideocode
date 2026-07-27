@@ -2019,6 +2019,8 @@ fn handle_gesture_pad_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
         KeyCode::Char('9') => { gesture_activate_item(8); true }
         KeyCode::Char('0') => { gesture_activate_item(9); true }
         KeyCode::Char('=') | KeyCode::Char('+') => { gesture_activate_item(10); true }
+        KeyCode::Char('-') => { gesture_activate_item(11); true }
+        KeyCode::Char('_') => { gesture_activate_item(12); true }
         _ => false,
     }
 }
@@ -2027,7 +2029,7 @@ fn gesture_activate_item(index: usize) {
     use crate::tui::ui_integration::{toggle_file_explorer, toggle_git_panel,
         toggle_search_panel, toggle_build_panel, toggle_log_viewer, toggle_docker,
         toggle_cicd, toggle_profiler, toggle_meme_generator, toggle_theme_picker,
-        toggle_templates};
+        toggle_templates, toggle_import, toggle_plugins};
     // Close gesture pad
     crate::tui::ui_integration::toggle_gesture_pad();
     // Activate the selected action
@@ -2043,6 +2045,8 @@ fn gesture_activate_item(index: usize) {
         8 => toggle_meme_generator(),
         9 => toggle_theme_picker(),
         10 => toggle_templates(),
+        11 => toggle_import(),
+        12 => toggle_plugins(),
         _ => {}
     }
 }
@@ -2124,6 +2128,56 @@ fn handle_export_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
         }
         KeyCode::Enter => {
             crate::tui::ui_integration::toggle_export();
+            true
+        }
+        _ => false,
+    }
+}
+
+/// Handle keys while the import overlay is visible.
+fn handle_import_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
+    if !crate::tui::ui_integration::import_visible() { return false; }
+
+    match code {
+        KeyCode::Esc => {
+            crate::tui::ui_integration::toggle_import();
+            true
+        }
+        KeyCode::Up | KeyCode::Char('k') => {
+            crate::tui::ui_integration::import_navigate_up();
+            true
+        }
+        KeyCode::Down | KeyCode::Char('j') => {
+            crate::tui::ui_integration::import_navigate_down();
+            true
+        }
+        KeyCode::Enter => {
+            crate::tui::ui_integration::toggle_import();
+            true
+        }
+        _ => false,
+    }
+}
+
+/// Handle keys while the plugin overlay is visible.
+fn handle_plugin_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
+    if !crate::tui::ui_integration::plugin_visible() { return false; }
+
+    match code {
+        KeyCode::Esc => {
+            crate::tui::ui_integration::toggle_plugins();
+            true
+        }
+        KeyCode::Up | KeyCode::Char('k') => {
+            crate::tui::ui_integration::plugin_navigate_up();
+            true
+        }
+        KeyCode::Down | KeyCode::Char('j') => {
+            crate::tui::ui_integration::plugin_navigate_down();
+            true
+        }
+        KeyCode::Enter => {
+            crate::tui::ui_integration::toggle_plugins();
             true
         }
         _ => false,
@@ -2900,6 +2954,16 @@ impl App {
 
         // Export format overlay: intercepts keys while export list is visible.
         if handle_export_keys(code, modifiers) {
+            return Ok(());
+        }
+
+        // Import overlay: intercepts keys while import list is visible.
+        if handle_import_keys(code, modifiers) {
+            return Ok(());
+        }
+
+        // Plugin overlay: intercepts keys while plugin list is visible.
+        if handle_plugin_keys(code, modifiers) {
             return Ok(());
         }
 
