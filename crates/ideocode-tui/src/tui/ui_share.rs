@@ -3,7 +3,6 @@
 //! Export/import theme and personality configs as JSON.
 //! Share configs with the community.
 
-use crate::tui::color_support::rgb;
 use crate::tui::ui_glass::glass_border_color;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;

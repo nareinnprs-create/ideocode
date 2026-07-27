@@ -3,11 +3,9 @@
 //! Progressive keyboard tips that appear after repeated mouse usage.
 //! "Did you know? Press Ctrl+X for this shortcut"
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;
-use ratatui::widgets::Paragraph;
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
 

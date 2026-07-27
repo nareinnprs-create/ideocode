@@ -3,7 +3,6 @@
 //! Bottom bar with context-sensitive actions.
 //! Shows relevant actions based on current state.
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;

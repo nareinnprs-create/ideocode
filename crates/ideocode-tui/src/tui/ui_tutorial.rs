@@ -3,7 +3,6 @@
 //! Step-by-step onboarding that teaches users how to use the tool.
 //! Shows keyboard shortcuts, features, and tips as they navigate.
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;

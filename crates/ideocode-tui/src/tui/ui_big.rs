@@ -104,7 +104,7 @@ pub fn render_big_message(
 }
 
 /// Render big input.
-pub fn render_big_input(input: &str, cursor_pos: usize) -> Vec<Line<'static>> {
+pub fn render_big_input(input: &str, _cursor_pos: usize) -> Vec<Line<'static>> {
     let mut lines = Vec::new();
     lines.push(Line::from(Span::styled(
         "You:",

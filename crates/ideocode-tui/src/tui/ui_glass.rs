@@ -12,8 +12,8 @@ use ratatui::text::Line;
 /// Render a glassmorphism panel.
 pub fn glass_panel<'a>(
     title: &'a str,
-    width: u16,
-    height: u16,
+    _width: u16,
+    _height: u16,
 ) -> Block<'a> {
     Block::default()
         .borders(Borders::ALL)

@@ -3,7 +3,6 @@
 //! ASCII art mascot that appears in onboarding, gives tips, celebrates wins.
 //! Like Clippy but cool and helpful.
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;

@@ -3,7 +3,6 @@
 //! User-defined widgets in status bar. Like Conky for the terminal.
 //! Write in TOML format.
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;

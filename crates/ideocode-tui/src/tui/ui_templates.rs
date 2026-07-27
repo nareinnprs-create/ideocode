@@ -3,7 +3,6 @@
 //! Pre-built project templates to get started quickly.
 //! Web App, CLI Tool, Library, Data Science, etc.
 
-use crate::tui::color_support::rgb;
 use crate::tui::ui_glass::glass_border_color;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;

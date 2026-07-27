@@ -3539,6 +3539,29 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     // Plugin system overlay
     crate::tui::ui_integration::render_plugin_overlay(frame, area);
 
+    // ── BATCH A: Wire 20 dead modules ─────────────────────────────────
+
+    // Status bar indicators (new — mood/timer/network/wordcount already wired above)
+    crate::tui::ui_integration::render_progressive_indicator(frame, area);
+    crate::tui::ui_integration::render_voice_indicator(frame, area);
+    crate::tui::ui_integration::render_streak(frame, area);
+
+    // Overlay panels
+    crate::tui::ui_integration::render_tutorial_overlay(frame, area);
+    crate::tui::ui_integration::render_achievements_overlay(frame, area);
+    crate::tui::ui_integration::render_reactions_overlay(frame, area);
+    crate::tui::ui_integration::render_humor_overlay(frame, area);
+    crate::tui::ui_integration::render_completion_overlay(frame, area, &app.input());
+    crate::tui::ui_integration::render_social_overlay(frame, area);
+    crate::tui::ui_integration::render_quiz_overlay(frame, area);
+    crate::tui::ui_integration::render_share_overlay(frame, area);
+    crate::tui::ui_integration::render_preview_overlay(frame, area);
+    crate::tui::ui_integration::render_theme_browser_overlay(frame, area);
+    crate::tui::ui_integration::render_personality_overlay(frame, area);
+    crate::tui::ui_integration::render_cinematic_overlay(frame, area);
+
+    // ── END BATCH A ──────────────────────────────────────────────────
+
     // ── END BATCH 4 ──────────────────────────────────────────────────
 
     // ── END BATCH 3 ──────────────────────────────────────────────────

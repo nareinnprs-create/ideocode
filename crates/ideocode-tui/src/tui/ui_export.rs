@@ -2,7 +2,6 @@
 //!
 //! Export as: Markdown, HTML, PDF, JSON, terminal recording (asciinema).
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;

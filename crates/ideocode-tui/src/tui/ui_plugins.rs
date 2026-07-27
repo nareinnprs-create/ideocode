@@ -3,7 +3,6 @@
 //! Community plugins: linters, formatters, deployers, themes.
 //! Install with `/plugin install <name>`, list with `/plugin list`.
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;
@@ -144,7 +143,7 @@ pub fn render_plugin_list(
         })
         .collect();
 
-    for (display_idx, (real_idx, plugin)) in filtered.iter().enumerate() {
+    for (display_idx, (_real_idx, plugin)) in filtered.iter().enumerate() {
         let is_selected = display_idx == selected;
         let install_badge = if plugin.installed {
             Span::styled(" [installed]", Style::default().fg(neon_green()))

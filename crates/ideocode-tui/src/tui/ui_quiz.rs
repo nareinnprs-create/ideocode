@@ -3,7 +3,6 @@
 //! First-run quiz to determine optimal personality mode.
 //! 5 questions about coding style and preferences.
 
-use crate::tui::color_support::rgb;
 use crate::tui::ui_personality_modes::PersonalityMode;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;

@@ -1,12 +1,12 @@
 use super::box_utils::render_rounded_box;
 use super::changelog::get_unseen_changelog_entries;
 use super::{
-    TuiState, dim_color, header_name_color, is_running_stable_release, semver, shorten_model_name,
+    TuiState, dim_color, is_running_stable_release, semver, shorten_model_name,
 };
 use crate::auth::{AuthState, AuthStatus};
 use crate::tui::color_support::rgb;
 use crate::tui::connection_type_icon;
-use ideocode_tui_style::theme::{gradient_line, neon_cyan, neon_magenta, emoji};
+use ideocode_tui_style::theme::{gradient_line, neon_magenta, emoji};
 use ratatui::prelude::*;
 #[cfg(test)]
 use std::sync::OnceLock;

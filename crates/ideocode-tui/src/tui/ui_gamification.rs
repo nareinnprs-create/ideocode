@@ -4,11 +4,10 @@
 //! - D6: Celebration moments (fireworks on task completion)
 //! - D2: Welcome particle burst (first response celebration)
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 // ── D3: STREAK COUNTER ──────────────────────────────────────────────
 

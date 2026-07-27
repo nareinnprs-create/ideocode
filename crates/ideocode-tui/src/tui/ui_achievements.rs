@@ -3,12 +3,11 @@
 //! Unlock badges for milestones. Toast notification on unlock.
 //! Tracks: messages, sessions, lines generated, streaks, tools used, etc.
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;
 use std::collections::HashMap;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Achievement definition.
 #[derive(Debug, Clone, PartialEq)]

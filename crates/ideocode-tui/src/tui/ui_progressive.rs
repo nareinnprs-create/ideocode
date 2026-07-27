@@ -3,7 +3,6 @@
 //! Show advanced features only when user is ready.
 //! Tracks usage patterns and unlocks features gradually.
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;

@@ -4,7 +4,6 @@
 //! Runs actual git commands and renders results.
 
 use crate::tui::color_support::rgb;
-use crate::tui::TuiState;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::{Line, Span};

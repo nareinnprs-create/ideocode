@@ -2,7 +2,6 @@
 //!
 //! Leaderboards, team features, social sharing, and achievement sharing.
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;

@@ -3,7 +3,6 @@
 //! Mini scrollbar on right edge showing position in conversation.
 //! Like VS Code's minimap but for the terminal.
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;

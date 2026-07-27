@@ -3,7 +3,6 @@
 //! Placeholder for future voice interaction features.
 //! Shows UI elements but doesn't actually process audio yet.
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;

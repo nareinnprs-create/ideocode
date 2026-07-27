@@ -2,7 +2,6 @@
 //!
 //! Real grep/ripgrep search with results display and jump-to-line.
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::{Line, Span};

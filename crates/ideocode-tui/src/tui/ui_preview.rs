@@ -3,7 +3,6 @@
 //! Preview files, tools, and completions without opening them.
 //! Uses popup panels for rich previews.
 
-use crate::tui::color_support::rgb;
 use crate::tui::ui_glass::glass_border_color;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;

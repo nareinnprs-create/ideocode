@@ -10,7 +10,6 @@
 //! - Current time / session duration
 
 use crate::tui::TuiState;
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;

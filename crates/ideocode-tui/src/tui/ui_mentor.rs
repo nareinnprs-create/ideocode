@@ -3,7 +3,6 @@
 //! AI explains WHY it does things, not just WHAT.
 //! Educational annotations with code explanations.
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;

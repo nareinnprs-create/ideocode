@@ -3,7 +3,6 @@
 //! Six modes that change the AI's tone, humor, and response style:
 //! Professional, Casual, GenZ, Academic, Witty, Zen
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;

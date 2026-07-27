@@ -165,7 +165,7 @@ impl ToastManagerState {
         for toast in &visible {
             if y + 1 > area.y + area.height { break; }
             let alpha = toast.fade_alpha();
-            let color = if alpha < 1.0 { let (r, g, b) = color_to_rgb(toast.kind.color()); rgb(((r as f32 * alpha) as u8), ((g as f32 * alpha) as u8), ((b as f32 * alpha) as u8)) } else { toast.kind.color() };
+            let color = if alpha < 1.0 { let (r, g, b) = color_to_rgb(toast.kind.color()); rgb((r as f32 * alpha) as u8, (g as f32 * alpha) as u8, (b as f32 * alpha) as u8) } else { toast.kind.color() };
             let line = Line::from(vec![
                 Span::styled(format!(" {} ", toast.kind.icon()), Style::default().fg(color)),
                 Span::styled(toast.message.clone(), Style::default().fg(color)),
@@ -298,7 +298,7 @@ pub fn render_session_timer(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
 }
 
 /// Render pomodoro if active
-pub fn render_pomodoro(frame: &mut Frame, area: Rect) {
+pub fn render_pomodoro(_frame: &mut Frame, _area: Rect) {
     // Pomodoro managed via thread-local when user starts one
 }
 
@@ -1646,6 +1646,486 @@ pub fn render_plugin_overlay(frame: &mut Frame, area: Rect) {
             .border_style(Style::default().fg(glass_border_color()))
             .style(Style::default().bg(rgb(10, 10, 20)));
         frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+    });
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// BATCH A: Wire 20 previously dead modules
+// ════════════════════════════════════════════════════════════════════════
+
+// ── A1: Progressive Level Indicator ───────────────────────────────────
+
+pub fn render_progressive_indicator(frame: &mut Frame, area: Rect) {
+    let stats = super::ui_progressive::UsageStats {
+        messages_sent: 100,
+        sessions_completed: 10,
+        tools_used: 15,
+        achievements_unlocked: 5,
+        days_active: 7,
+    };
+    let level = super::ui_progressive::determine_level(&stats);
+    let line = super::ui_progressive::render_level_indicator(&level);
+    let pos = Rect { x: area.x, y: area.y + 1, width: 20, height: 1 };
+    frame.render_widget(Paragraph::new(line), pos);
+}
+
+// ── A2: Voice Indicator ───────────────────────────────────────────────
+
+thread_local! {
+    static VOICE_STATE_REF: RefCell<super::ui_voice::VoiceState> = const { RefCell::new(super::ui_voice::VoiceState::Inactive) };
+}
+
+pub fn set_voice_state(state: super::ui_voice::VoiceState) { VOICE_STATE_REF.with(|s| *s.borrow_mut() = state); }
+pub fn render_voice_indicator(frame: &mut Frame, area: Rect) {
+    VOICE_STATE_REF.with(|s| {
+        let line = super::ui_voice::render_voice_indicator(&s.borrow());
+        let pos = Rect { x: area.x + 21, y: area.y + 1, width: 18, height: 1 };
+        frame.render_widget(Paragraph::new(line), pos);
+    });
+}
+
+// ── A3: Gamification/Streak ──────────────────────────────────────────
+
+thread_local! {
+    static STREAK_STATE: RefCell<(u64, u64)> = const { RefCell::new((3, 7)) };
+}
+
+pub fn render_streak(frame: &mut Frame, area: Rect) {
+    STREAK_STATE.with(|s| {
+        let (current, longest) = *s.borrow();
+        let line = super::ui_gamification::render_streak(current, longest);
+        let pos = Rect { x: area.x, y: area.y + 2, width: 20, height: 1 };
+        frame.render_widget(Paragraph::new(line), pos);
+    });
+}
+
+// ── A4: Tutorial Overlay ──────────────────────────────────────────────
+
+thread_local! {
+    static TUTORIAL_STATE: RefCell<TutorialOverlayState> = RefCell::new(TutorialOverlayState::new());
+}
+
+struct TutorialOverlayState {
+    visible: bool,
+    step: super::ui_tutorial::TutorialStep,
+}
+
+impl TutorialOverlayState {
+    fn new() -> Self { Self { visible: false, step: super::ui_tutorial::TutorialStep::Welcome } }
+}
+
+pub fn toggle_tutorial() {
+    TUTORIAL_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.visible = !st.visible;
+        st.step = super::ui_tutorial::TutorialStep::Welcome;
+    });
+}
+pub fn tutorial_visible() -> bool { TUTORIAL_STATE.with(|s| s.borrow().visible) }
+pub fn tutorial_next() { TUTORIAL_STATE.with(|s| { let mut st = s.borrow_mut(); if let Some(next) = st.step.next() { st.step = next; } }); }
+pub fn tutorial_prev() { TUTORIAL_STATE.with(|s| { let mut st = s.borrow_mut(); if let Some(prev) = st.step.prev() { st.step = prev; } }); }
+
+pub fn render_tutorial_overlay(frame: &mut Frame, area: Rect) {
+    TUTORIAL_STATE.with(|s| {
+        let st = s.borrow();
+        if !st.visible { return; }
+        let mut lines = super::ui_tutorial::render_tutorial_step(&st.step);
+        lines.push(Line::from(""));
+        lines.push(super::ui_tutorial::render_navigation_hints(&st.step));
+        let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
+        let panel_width = 50.min(area.width);
+        let panel_area = Rect {
+            x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+            y: area.y + 1,
+            width: panel_width,
+            height: panel_height,
+        };
+        let block = Block::default()
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(glass_border_color()))
+            .title(Span::styled(" Tutorial ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)))
+            .style(Style::default().bg(rgb(10, 10, 20)));
+        frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+    });
+}
+
+// ── A5: Achievements Panel ────────────────────────────────────────────
+
+thread_local! {
+    static ACHIEVEMENTS_STATE: RefCell<bool> = const { RefCell::new(false) };
+}
+
+pub fn toggle_achievements() { ACHIEVEMENTS_STATE.with(|s| *s.borrow_mut() = !*s.borrow()); }
+pub fn achievements_visible() -> bool { ACHIEVEMENTS_STATE.with(|s| *s.borrow()) }
+
+pub fn render_achievements_overlay(frame: &mut Frame, area: Rect) {
+    if !ACHIEVEMENTS_STATE.with(|s| *s.borrow()) { return; }
+    let achievements = super::ui_achievements::default_achievements();
+    let (unlocked, total) = (achievements.iter().filter(|a| a.unlocked).count(), achievements.len());
+    let mut lines = vec![
+        Line::from(Span::styled(
+            format!(" Achievements ({}/{})", unlocked, total),
+            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+        )),
+        Line::from(""),
+    ];
+    for a in &achievements {
+        let icon = if a.unlocked { &a.icon } else { "🔒" };
+        let name_color = if a.unlocked { neon_green() } else { dim_color() };
+        lines.push(Line::from(vec![
+            Span::styled(format!("{} ", icon), Style::default()),
+            Span::styled(a.name.clone(), Style::default().fg(name_color)),
+            if a.unlocked { Span::styled(" ✓", Style::default().fg(neon_green())) } else { Span::styled("", Style::default()) },
+        ]));
+    }
+    let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
+    let panel_width = 40.min(area.width);
+    let panel_area = Rect {
+        x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+        y: area.y + 1,
+        width: panel_width,
+        height: panel_height,
+    };
+    let block = Block::default()
+        .borders(Borders::ALL)
+        .border_style(Style::default().fg(glass_border_color()))
+        .title(Span::styled(" Achievements ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)))
+        .style(Style::default().bg(rgb(10, 10, 20)));
+    frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+}
+
+// ── A6: Reactions ────────────────────────────────────────────────────
+
+thread_local! {
+    static REACTIONS_VISIBLE: RefCell<bool> = const { RefCell::new(false) };
+}
+
+pub fn toggle_reactions() { REACTIONS_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow()); }
+pub fn reactions_visible() -> bool { REACTIONS_VISIBLE.with(|s| *s.borrow()) }
+
+pub fn render_reactions_overlay(frame: &mut Frame, area: Rect) {
+    if !REACTIONS_VISIBLE.with(|s| *s.borrow()) { return; }
+    let line = super::ui_reactions::render_reaction_picker();
+    let pos = Rect {
+        x: area.x + (area.width.saturating_sub(30)) / 2,
+        y: area.y + area.height.saturating_sub(2),
+        width: 30,
+        height: 1,
+    };
+    frame.render_widget(Paragraph::new(line), pos);
+}
+
+// ── A7: Humor Context ────────────────────────────────────────────────
+
+thread_local! {
+    static HUMOR_VISIBLE: RefCell<bool> = const { RefCell::new(false) };
+}
+
+pub fn toggle_humor() { HUMOR_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow()); }
+pub fn humor_visible() -> bool { HUMOR_VISIBLE.with(|s| *s.borrow()) }
+
+pub fn render_humor_overlay(frame: &mut Frame, area: Rect) {
+    if !HUMOR_VISIBLE.with(|s| *s.borrow()) { return; }
+    let greeting = super::ui_humor::time_greeting();
+    let fun_fact = super::ui_humor::fact();
+    let lines = vec![
+        Line::from(Span::styled(greeting, Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD))),
+        Line::from(""),
+        Line::from(Span::styled("Fun fact:", Style::default().fg(neon_yellow()).add_modifier(Modifier::BOLD))),
+        Line::from(Span::styled(fun_fact.to_string(), Style::default().fg(dim_color()))),
+    ];
+    let panel_area = Rect {
+        x: area.x + area.width.saturating_sub(45),
+        y: area.y,
+        width: 45,
+        height: 4,
+    };
+    let block = Block::default()
+        .borders(Borders::ALL)
+        .border_style(Style::default().fg(glass_border_color()))
+        .style(Style::default().bg(rgb(10, 10, 20)));
+    frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+}
+
+// ── A8: Completion/Autocomplete ──────────────────────────────────────
+
+thread_local! {
+    static COMPLETION_VISIBLE: RefCell<bool> = const { RefCell::new(false) };
+}
+
+pub fn toggle_completion() { COMPLETION_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow()); }
+pub fn completion_visible() -> bool { COMPLETION_VISIBLE.with(|s| *s.borrow()) }
+
+pub fn render_completion_overlay(frame: &mut Frame, area: Rect, input: &str) {
+    if !COMPLETION_VISIBLE.with(|s| *s.borrow()) { return; }
+    if input.is_empty() { return; }
+    let engine = super::ui_completion::AutocompleteEngine::new();
+    let completions = engine.get_completions(input);
+    if completions.is_empty() { return; }
+    let lines = super::ui_completion::render_completions(&completions, 0);
+    let panel_height = (lines.len() as u16 + 2).min(10);
+    let panel_width = 35.min(area.width);
+    let panel_area = Rect {
+        x: area.x,
+        y: area.y.saturating_sub(panel_height),
+        width: panel_width,
+        height: panel_height,
+    };
+    frame.render_widget(Paragraph::new(lines), panel_area);
+}
+
+// ── A9: Social/Leaderboard ───────────────────────────────────────────
+
+thread_local! {
+    static SOCIAL_VISIBLE: RefCell<bool> = const { RefCell::new(false) };
+}
+
+pub fn toggle_social() { SOCIAL_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow()); }
+pub fn social_visible() -> bool { SOCIAL_VISIBLE.with(|s| *s.borrow()) }
+
+pub fn render_social_overlay(frame: &mut Frame, area: Rect) {
+    if !SOCIAL_VISIBLE.with(|s| *s.borrow()) { return; }
+    let entries = vec![
+        super::ui_social::LeaderboardEntry { rank: 1, name: "You".to_string(), score: 1500, achievements: 12 },
+        super::ui_social::LeaderboardEntry { rank: 2, name: "Alice".to_string(), score: 1200, achievements: 9 },
+        super::ui_social::LeaderboardEntry { rank: 3, name: "Bob".to_string(), score: 900, achievements: 7 },
+    ];
+    let lines = super::ui_social::render_leaderboard(&entries);
+    let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
+    let panel_width = 35.min(area.width);
+    let panel_area = Rect {
+        x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+        y: area.y + 1,
+        width: panel_width,
+        height: panel_height,
+    };
+    let block = Block::default()
+        .borders(Borders::ALL)
+        .border_style(Style::default().fg(glass_border_color()))
+        .title(Span::styled(" Leaderboard ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)))
+        .style(Style::default().bg(rgb(10, 10, 20)));
+    frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+}
+
+// ── A10: Personality Quiz ─────────────────────────────────────────────
+
+thread_local! {
+    static QUIZ_STATE: RefCell<QuizOverlayState> = RefCell::new(QuizOverlayState::new());
+}
+
+struct QuizOverlayState {
+    visible: bool,
+    question_index: usize,
+    selected: usize,
+}
+
+impl QuizOverlayState {
+    fn new() -> Self { Self { visible: false, question_index: 0, selected: 0 } }
+}
+
+pub fn toggle_quiz() {
+    QUIZ_STATE.with(|s| { let mut st = s.borrow_mut(); st.visible = !st.visible; st.question_index = 0; st.selected = 0; });
+}
+pub fn quiz_visible() -> bool { QUIZ_STATE.with(|s| s.borrow().visible) }
+pub fn quiz_navigate_up() { QUIZ_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = st.selected.saturating_sub(1); }); }
+pub fn quiz_navigate_down() { QUIZ_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = (st.selected + 1).min(3); }); }
+
+pub fn render_quiz_overlay(frame: &mut Frame, area: Rect) {
+    QUIZ_STATE.with(|s| {
+        let st = s.borrow();
+        if !st.visible { return; }
+        let questions = super::ui_quiz::quiz_questions();
+        if st.question_index >= questions.len() { return; }
+        let lines = super::ui_quiz::render_quiz_question(&questions[st.question_index], st.selected, st.question_index + 1, questions.len());
+        let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
+        let panel_width = 50.min(area.width);
+        let panel_area = Rect {
+            x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+            y: area.y + 1,
+            width: panel_width,
+            height: panel_height,
+        };
+        let block = Block::default()
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(glass_border_color()))
+            .title(Span::styled(" Personality Quiz ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)))
+            .style(Style::default().bg(rgb(10, 10, 20)));
+        frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+    });
+}
+
+// ── A11: Share/Export Config ──────────────────────────────────────────
+
+thread_local! {
+    static SHARE_VISIBLE: RefCell<bool> = const { RefCell::new(false) };
+}
+
+pub fn toggle_share() { SHARE_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow()); }
+pub fn share_visible() -> bool { SHARE_VISIBLE.with(|s| *s.borrow()) }
+
+pub fn render_share_overlay(frame: &mut Frame, area: Rect) {
+    if !SHARE_VISIBLE.with(|s| *s.borrow()) { return; }
+    let config = super::ui_share::SharedConfig::new("My IDEOCODE Setup", "User");
+    let mut lines = super::ui_share::render_config_preview(&config);
+    lines.push(Line::from(""));
+    lines.extend(super::ui_share::render_export_instructions());
+    let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
+    let panel_width = 45.min(area.width);
+    let panel_area = Rect {
+        x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+        y: area.y + 1,
+        width: panel_width,
+        height: panel_height,
+    };
+    let block = Block::default()
+        .borders(Borders::ALL)
+        .border_style(Style::default().fg(glass_border_color()))
+        .title(Span::styled(" Share Config ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)))
+        .style(Style::default().bg(rgb(10, 10, 20)));
+    frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+}
+
+// ── A12: Preview (File/Tool/Command/Commit) ───────────────────────────
+
+thread_local! {
+    static PREVIEW_STATE: RefCell<Option<super::ui_preview::PreviewType>> = const { RefCell::new(None) };
+}
+
+pub fn show_preview(preview: super::ui_preview::PreviewType) { PREVIEW_STATE.with(|s| *s.borrow_mut() = Some(preview)); }
+pub fn hide_preview() { PREVIEW_STATE.with(|s| *s.borrow_mut() = None); }
+
+pub fn render_preview_overlay(frame: &mut Frame, area: Rect) {
+    PREVIEW_STATE.with(|s| {
+        let st = s.borrow();
+        let Some(ref preview) = *st else { return; };
+        let lines = super::ui_preview::render_preview(preview);
+        let panel_height = (lines.len() as u16 + 2).min(area.height / 2);
+        let panel_width = 50.min(area.width);
+        let panel_area = Rect {
+            x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+            y: area.y + 1,
+            width: panel_width,
+            height: panel_height,
+        };
+        let block = Block::default()
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(glass_border_color()))
+            .style(Style::default().bg(rgb(10, 10, 20)));
+        frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+    });
+}
+
+// ── A13: Theme Browser ────────────────────────────────────────────────
+
+thread_local! {
+    static THEME_BROWSER_STATE: RefCell<bool> = const { RefCell::new(false) };
+}
+
+pub fn toggle_theme_browser() { THEME_BROWSER_STATE.with(|s| *s.borrow_mut() = !*s.borrow()); }
+pub fn theme_browser_visible() -> bool { THEME_BROWSER_STATE.with(|s| *s.borrow()) }
+
+pub fn render_theme_browser_overlay(frame: &mut Frame, area: Rect) {
+    if !THEME_BROWSER_STATE.with(|s| *s.borrow()) { return; }
+    let themes = super::ui_themes::Theme::all();
+    let mut lines = vec![
+        Line::from(Span::styled(
+            " Theme Browser",
+            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+        )),
+        Line::from(""),
+    ];
+    for theme in &themes {
+        lines.push(Line::from(vec![
+            Span::styled("● ", Style::default().fg(theme.accent1)),
+            Span::styled(theme.name.clone(), Style::default().fg(theme.fg)),
+            Span::styled(
+                format!(" [{}]", theme.tier.label()),
+                Style::default().fg(dim_color()),
+            ),
+        ]));
+    }
+    let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
+    let panel_width = 40.min(area.width);
+    let panel_area = Rect {
+        x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+        y: area.y + 1,
+        width: panel_width,
+        height: panel_height,
+    };
+    let block = Block::default()
+        .borders(Borders::ALL)
+        .border_style(Style::default().fg(glass_border_color()))
+        .style(Style::default().bg(rgb(10, 10, 20)));
+    frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+}
+
+// ── A14: Personality Mode Selector ────────────────────────────────────
+
+thread_local! {
+    static PERSONALITY_SELECTOR_STATE: RefCell<bool> = const { RefCell::new(false) };
+}
+
+pub fn toggle_personality_selector() { PERSONALITY_SELECTOR_STATE.with(|s| *s.borrow_mut() = !*s.borrow()); }
+pub fn personality_selector_visible() -> bool { PERSONALITY_SELECTOR_STATE.with(|s| *s.borrow()) }
+
+pub fn render_personality_overlay(frame: &mut Frame, area: Rect) {
+    if !PERSONALITY_SELECTOR_STATE.with(|s| *s.borrow()) { return; }
+    let current = super::ui_personality_modes::PersonalityMode::Professional;
+    let lines = super::ui_personality_modes::render_mode_selector(&current);
+    let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
+    let panel_width = 40.min(area.width);
+    let panel_area = Rect {
+        x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+        y: area.y + 1,
+        width: panel_width,
+        height: panel_height,
+    };
+    let block = Block::default()
+        .borders(Borders::ALL)
+        .border_style(Style::default().fg(glass_border_color()))
+        .title(Span::styled(" Personality Mode ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)))
+        .style(Style::default().bg(rgb(10, 10, 20)));
+    frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+}
+
+// ── A15: Cinematic Intro ──────────────────────────────────────────────
+
+thread_local! {
+    static CINEMATIC_STATE: RefCell<CinematicState> = RefCell::new(CinematicState::new());
+}
+
+struct CinematicState {
+    visible: bool,
+    step: usize,
+}
+
+impl CinematicState {
+    fn new() -> Self { Self { visible: false, step: 0 } }
+}
+
+pub fn toggle_cinematic() {
+    CINEMATIC_STATE.with(|s| { let mut st = s.borrow_mut(); st.visible = !st.visible; st.step = 0; });
+}
+pub fn cinematic_visible() -> bool { CINEMATIC_STATE.with(|s| s.borrow().visible) }
+
+pub fn render_cinematic_overlay(frame: &mut Frame, area: Rect) {
+    CINEMATIC_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        if !st.visible { return; }
+        st.step += 1;
+        let mut lines = super::ui_cinematic::render_logo_reveal(st.step.min(10));
+        lines.push(super::ui_cinematic::render_tagline(0.5));
+        lines.push(super::ui_cinematic::render_build_info());
+        lines.push(super::ui_cinematic::render_skip_hint());
+        let panel_height = (lines.len() as u16 + 2).min(area.height);
+        let panel_width = 60.min(area.width);
+        let panel_area = Rect {
+            x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+            y: area.y + (area.height.saturating_sub(panel_height)) / 2,
+            width: panel_width,
+            height: panel_height,
+        };
+        frame.render_widget(Paragraph::new(lines), panel_area);
     });
 }
 

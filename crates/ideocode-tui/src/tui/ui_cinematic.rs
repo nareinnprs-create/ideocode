@@ -2,7 +2,6 @@
 //!
 //! ASCII art logo with glow, sequential reveal, typing animation.
 
-use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::{Line, Span};
@@ -39,7 +38,7 @@ pub fn render_logo() -> Vec<Line<'static>> {
 
 /// Render logo with sequential color reveal effect.
 pub fn render_logo_reveal(step: usize) -> Vec<Line<'static>> {
-    let colors = [
+    let _colors = [
         neon_cyan(),
         neon_cyan(),
         neon_magenta(),
