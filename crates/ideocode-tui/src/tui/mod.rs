@@ -84,6 +84,7 @@ pub mod ui_wordcount;
 pub mod ui_timer;
 pub mod ui_network;
 pub mod ui_theme_picker;
+pub mod ui_cinematic;
 pub mod usage_overlay;
 pub mod visual_debug;
 pub mod workspace_client;
