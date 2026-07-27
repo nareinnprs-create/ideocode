@@ -3024,7 +3024,7 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     // Use packed layout when content fits, scrolling layout otherwise
     let use_packed = !swarm_page_active && content_height + fixed_height <= available_height;
 
-    // Layout: messages (includes header), queued, status, notification, inline UI, gap, input, donut
+    // Layout: messages (includes header), queued, status, notification, inline UI, gap, input, donut, statusbar
     // All vertical chunks are within the chat_area (left column).
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -3040,6 +3040,7 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
                 Constraint::Length(input_height),          // 7 Input
                 Constraint::Length(overscroll_height),     // 8 Overscroll status line
                 Constraint::Length(donut_height),          // 9 Donut animation
+                Constraint::Length(1),                     // 10 Bottom status bar (H1)
             ]
         } else {
             vec![
@@ -3053,6 +3054,7 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
                 Constraint::Length(input_height),         // 7 Input
                 Constraint::Length(overscroll_height),    // 8 Overscroll status line
                 Constraint::Length(donut_height),         // 9 Donut animation
+                Constraint::Length(1),                    // 10 Bottom status bar (H1)
             ]
         })
         .split(chat_area);
@@ -3300,6 +3302,12 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     if donut_height > 0 {
         animations::draw_idle_animation(frame, app, chunks[9]);
     }
+
+    // H1: Bottom status bar — always visible at the very bottom
+    if let Some(statusbar_chunk) = chunks.get(10) {
+        crate::tui::ui_statusbar::draw_status_bar(frame, app, *statusbar_chunk);
+    }
+
     let chrome_elapsed = chrome_start.elapsed();
 
     // Draw info widget overlays (skip during idle animation - they look out of place)
