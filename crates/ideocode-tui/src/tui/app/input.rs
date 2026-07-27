@@ -1947,6 +1947,21 @@ pub(super) fn handle_alt_key(app: &mut App, code: KeyCode) -> bool {
             crate::tui::ui_integration::toggle_macro_recorder();
             true
         }
+        // Alt+5: mentor mode
+        KeyCode::Char('5') => {
+            crate::tui::ui_integration::toggle_mentor_mode();
+            true
+        }
+        // Alt+6: mascot
+        KeyCode::Char('6') => {
+            crate::tui::ui_integration::toggle_mascot();
+            true
+        }
+        // Alt+7: daily challenge
+        KeyCode::Char('7') => {
+            crate::tui::ui_integration::toggle_daily_challenge();
+            true
+        }
         _ => false,
     }
 }
@@ -1981,6 +1996,9 @@ fn handle_gesture_pad_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
         KeyCode::Char('6') => { gesture_activate_item(5); true }
         KeyCode::Char('7') => { gesture_activate_item(6); true }
         KeyCode::Char('8') => { gesture_activate_item(7); true }
+        KeyCode::Char('9') => { gesture_activate_item(8); true }
+        KeyCode::Char('0') => { gesture_activate_item(9); true }
+        KeyCode::Char('=') | KeyCode::Char('+') => { gesture_activate_item(10); true }
         _ => false,
     }
 }
@@ -1988,7 +2006,8 @@ fn handle_gesture_pad_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
 fn gesture_activate_item(index: usize) {
     use crate::tui::ui_integration::{toggle_file_explorer, toggle_git_panel,
         toggle_search_panel, toggle_build_panel, toggle_log_viewer, toggle_docker,
-        toggle_cicd, toggle_profiler};
+        toggle_cicd, toggle_profiler, toggle_meme_generator, toggle_theme_picker,
+        toggle_templates};
     // Close gesture pad
     crate::tui::ui_integration::toggle_gesture_pad();
     // Activate the selected action
@@ -2001,6 +2020,9 @@ fn gesture_activate_item(index: usize) {
         5 => toggle_docker(),
         6 => toggle_cicd(),
         7 => toggle_profiler(),
+        8 => toggle_meme_generator(),
+        9 => toggle_theme_picker(),
+        10 => toggle_templates(),
         _ => {}
     }
 }

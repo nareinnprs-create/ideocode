@@ -203,7 +203,7 @@ pub fn show_gesture_pad() { OVERLAY_STATE.with(|s| s.borrow_mut().gesture_visibl
 pub fn hide_gesture_pad() { OVERLAY_STATE.with(|s| s.borrow_mut().gesture_visible = false); }
 pub fn toggle_gesture_pad() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.gesture_visible = !st.gesture_visible; st.gesture_selected = 0; }); }
 pub fn gesture_move_up() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); if st.gesture_selected > 0 { st.gesture_selected -= 1; } }); }
-pub fn gesture_move_down() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.gesture_selected = (st.gesture_selected + 1).min(7); }); }
+pub fn gesture_move_down() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.gesture_selected = (st.gesture_selected + 1).min(10); }); }
 pub fn gesture_selected() -> usize { OVERLAY_STATE.with(|s| s.borrow().gesture_selected) }
 pub fn gesture_pad_visible() -> bool { OVERLAY_STATE.with(|s| s.borrow().gesture_visible) }
 
@@ -216,7 +216,7 @@ pub fn gesture_navigate_up() {
 pub fn gesture_navigate_down() {
     OVERLAY_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        st.gesture_selected = (st.gesture_selected + 1).min(7);
+        st.gesture_selected = (st.gesture_selected + 1).min(10);
     });
 }
 pub fn gesture_activate() {
@@ -231,6 +231,9 @@ pub fn gesture_activate() {
         5 => toggle_docker(),
         6 => toggle_cicd(),
         7 => toggle_profiler(),
+        8 => toggle_meme_generator(),
+        9 => toggle_theme_picker(),
+        10 => toggle_templates(),
         _ => {}
     }
 }
@@ -355,6 +358,9 @@ pub fn render_gesture_pad(frame: &mut Frame, area: Rect) {
             ("6", "Docker", "🐳"),
             ("7", "CI/CD", "🚀"),
             ("8", "Profiler", "📊"),
+            ("9", "Meme Generator", "🎭"),
+            ("0", "Theme Picker", "🎨"),
+            ("=", "Templates", "📋"),
         ];
 
         let pad_width = 32.min(area.width as usize);
@@ -1099,6 +1105,255 @@ fn get_default_widgets() -> Vec<super::ui_widgets::CustomWidget> {
     ]
 }
 
+// ════════════════════════════════════════════════════════════════════════
+// BATCH 2: Personality + Social Modules
+// ════════════════════════════════════════════════════════════════════════
+
+// ── P3: Mentor Mode ───────────────────────────────────────────────────
+
+thread_local! {
+    static MENTOR_STATE: RefCell<MentorState> = RefCell::new(MentorState::new());
+}
+
+struct MentorState {
+    visible: bool,
+    level: super::ui_mentor::MentorLevel,
+}
+
+impl MentorState {
+    fn new() -> Self {
+        Self { visible: false, level: super::ui_mentor::MentorLevel::Beginner }
+    }
+}
+
+pub fn toggle_mentor_mode() {
+    MENTOR_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.visible = !st.visible;
+    });
+}
+pub fn mentor_mode_visible() -> bool { MENTOR_STATE.with(|s| s.borrow().visible) }
+
+pub fn render_mentor_overlay(frame: &mut Frame, area: Rect) {
+    MENTOR_STATE.with(|s| {
+        let st = s.borrow();
+        if !st.visible { return; }
+        let line = super::ui_mentor::render_mentor_indicator(&st.level);
+        let pos = Rect {
+            x: area.x + 1,
+            y: area.y,
+            width: 25,
+            height: 1,
+        };
+        frame.render_widget(Paragraph::new(line), pos);
+    });
+}
+
+// ── P5: Mascot System ─────────────────────────────────────────────────
+
+thread_local! {
+    static MASCOT_STATE: RefCell<MascotState> = RefCell::new(MascotState::new());
+}
+
+struct MascotState {
+    visible: bool,
+    mood: super::ui_mascot::MascotMood,
+}
+
+impl MascotState {
+    fn new() -> Self {
+        Self { visible: false, mood: super::ui_mascot::MascotMood::Happy }
+    }
+}
+
+pub fn toggle_mascot() {
+    MASCOT_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.visible = !st.visible;
+    });
+}
+
+pub fn render_mascot_overlay(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
+    MASCOT_STATE.with(|s| {
+        let st = s.borrow();
+        if !st.visible { return; }
+
+        let mood = if app.is_processing() {
+            super::ui_mascot::MascotMood::Thinking
+        } else {
+            st.mood.clone()
+        };
+        let tip = super::ui_mascot::get_random_tip(&mood);
+        let lines = super::ui_mascot::render_mascot_with_speech(&mood, tip);
+
+        let panel_height = (lines.len() as u16 + 1).min(area.height / 3);
+        let panel_area = Rect {
+            x: area.x + area.width.saturating_sub(32),
+            y: area.y + area.height.saturating_sub(panel_height + 2),
+            width: 32,
+            height: panel_height,
+        };
+        frame.render_widget(Paragraph::new(lines), panel_area);
+    });
+}
+
+// ── S5: Daily Challenge ───────────────────────────────────────────────
+
+thread_local! {
+    static CHALLENGE_STATE: RefCell<ChallengeState> = RefCell::new(ChallengeState::new());
+}
+
+struct ChallengeState {
+    visible: bool,
+}
+
+impl ChallengeState {
+    fn new() -> Self { Self { visible: false } }
+}
+
+pub fn toggle_daily_challenge() {
+    CHALLENGE_STATE.with(|s| { s.borrow_mut().visible = !s.borrow().visible; });
+}
+
+pub fn render_daily_challenge_overlay(frame: &mut Frame, area: Rect) {
+    CHALLENGE_STATE.with(|s| {
+        let st = s.borrow();
+        if !st.visible { return; }
+
+        let challenge = super::ui_challenge::get_daily_challenge();
+        let lines = super::ui_challenge::render_daily_challenge(&challenge);
+        let panel_height = (lines.len() as u16 + 2).min(area.height / 2);
+        let panel_width = 45.min(area.width);
+        let panel_area = Rect {
+            x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+            y: area.y + 2,
+            width: panel_width,
+            height: panel_height,
+        };
+        frame.render_widget(Paragraph::new(lines), panel_area);
+    });
+}
+
+// ── S6: Meme Generator ────────────────────────────────────────────────
+
+thread_local! {
+    static MEME_STATE: RefCell<MemeState> = RefCell::new(MemeState::new());
+}
+
+struct MemeState {
+    visible: bool,
+}
+
+impl MemeState {
+    fn new() -> Self { Self { visible: false } }
+}
+
+pub fn toggle_meme_generator() {
+    MEME_STATE.with(|s| { s.borrow_mut().visible = !s.borrow().visible; });
+}
+
+pub fn render_meme_overlay(frame: &mut Frame, area: Rect) {
+    MEME_STATE.with(|s| {
+        let st = s.borrow();
+        if !st.visible { return; }
+
+        let lines = super::ui_meme::render_meme_generator();
+        let panel_height = (lines.len() as u16 + 2).min(area.height / 2);
+        let panel_width = 40.min(area.width);
+        let panel_area = Rect {
+            x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+            y: area.y + 2,
+            width: panel_width,
+            height: panel_height,
+        };
+        frame.render_widget(Paragraph::new(lines), panel_area);
+    });
+}
+
+// ── O3: Theme Picker ──────────────────────────────────────────────────
+
+thread_local! {
+    static THEME_PICKER_STATE: RefCell<ThemePickerState> = RefCell::new(ThemePickerState::new());
+}
+
+struct ThemePickerState {
+    visible: bool,
+    selected: usize,
+}
+
+impl ThemePickerState {
+    fn new() -> Self { Self { visible: false, selected: 0 } }
+}
+
+pub fn toggle_theme_picker() {
+    THEME_PICKER_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.visible = !st.visible;
+        st.selected = 0;
+    });
+}
+
+pub fn render_theme_picker_overlay(frame: &mut Frame, area: Rect) {
+    THEME_PICKER_STATE.with(|s| {
+        let st = s.borrow();
+        if !st.visible { return; }
+
+        let themes = super::ui_theme_picker::get_builtin_themes();
+        let lines = super::ui_theme_picker::render_theme_list(&themes, st.selected);
+        let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
+        let panel_width = 45.min(area.width);
+        let panel_area = Rect {
+            x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+            y: area.y,
+            width: panel_width,
+            height: panel_height,
+        };
+        frame.render_widget(Paragraph::new(lines), panel_area);
+    });
+}
+
+// ── O4: Quick Start Templates ─────────────────────────────────────────
+
+thread_local! {
+    static TEMPLATE_STATE: RefCell<TemplateState> = RefCell::new(TemplateState::new());
+}
+
+struct TemplateState {
+    visible: bool,
+    selected: usize,
+}
+
+impl TemplateState {
+    fn new() -> Self { Self { visible: false, selected: 0 } }
+}
+
+pub fn toggle_templates() {
+    TEMPLATE_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.visible = !st.visible;
+        st.selected = 0;
+    });
+}
+
+pub fn render_template_overlay(frame: &mut Frame, area: Rect) {
+    TEMPLATE_STATE.with(|s| {
+        let st = s.borrow();
+        if !st.visible { return; }
+
+        let templates = super::ui_templates::get_templates();
+        let lines = super::ui_templates::render_template_selector(&templates, st.selected);
+        let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
+        let panel_width = 45.min(area.width);
+        let panel_area = Rect {
+            x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+            y: area.y,
+            width: panel_width,
+            height: panel_height,
+        };
+        frame.render_widget(Paragraph::new(lines), panel_area);
+    });
+}
+
 // ── Keyboard Wizard ─────────────────────────────────────────────────
 
 thread_local! {
@@ -1136,6 +1391,9 @@ pub fn render_keyboard_wizard_tip(frame: &mut Frame, area: Rect) {
             "Alt+0 toggles macro recorder",
             "Alt+1 docker, Alt+2 CI/CD, Alt+3 logs",
             "Alt+4 toggles debugger",
+            "Alt+5 toggles mentor mode",
+            "Alt+6 toggles mascot",
+            "Alt+7 daily challenge",
         ];
         let tip = tips[st.current_tip_index % tips.len()];
         let line = Line::from(vec![

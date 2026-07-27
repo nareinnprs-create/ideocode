@@ -3496,6 +3496,28 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     // Command palette overlay
     crate::tui::ui_integration::render_command_palette_overlay(frame, area);
 
+    // ── BATCH 2: Personality + Social ─────────────────────────────────
+
+    // Mentor mode indicator (top-left)
+    crate::tui::ui_integration::render_mentor_overlay(frame, area);
+
+    // Mascot (bottom-right area)
+    crate::tui::ui_integration::render_mascot_overlay(frame, area, app);
+
+    // Daily challenge overlay
+    crate::tui::ui_integration::render_daily_challenge_overlay(frame, area);
+
+    // Meme generator overlay
+    crate::tui::ui_integration::render_meme_overlay(frame, area);
+
+    // Theme picker overlay
+    crate::tui::ui_integration::render_theme_picker_overlay(frame, area);
+
+    // Quick start templates overlay
+    crate::tui::ui_integration::render_template_overlay(frame, area);
+
+    // ── END BATCH 2 ──────────────────────────────────────────────────
+
     // ── END BATCH 1 ──────────────────────────────────────────────────
     // ── END NEW UI MODULES ──────────────────────────────────────────
 
