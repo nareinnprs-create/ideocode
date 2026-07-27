@@ -1,13 +1,14 @@
 //! IDEOCODE Macro Recording (F4)
 //!
 //! Record sequences of actions. Replay with one key. Share macros.
+//! Macros are saved to ~/.ideocode/macros/ as JSON files.
 
 use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Macro {
     pub name: String,
     pub actions: Vec<MacroAction>,
@@ -15,19 +16,66 @@ pub struct Macro {
     pub author: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct MacroAction {
     pub kind: ActionKind,
     pub data: String,
     pub delay_ms: u64,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum ActionKind {
     KeyPress,
     Type,
     Wait,
     Command,
+}
+
+/// Get macros directory path.
+fn macros_dir() -> Option<std::path::PathBuf> {
+    let home = std::env::var("HOME")
+        .or_else(|_| std::env::var("USERPROFILE"))
+        .ok()?;
+    let dir = std::path::PathBuf::from(home).join(".ideocode").join("macros");
+    std::fs::create_dir_all(&dir).ok()?;
+    Some(dir)
+}
+
+/// Save a macro to disk.
+pub fn save_macromac(m: &Macro) -> Result<(), String> {
+    let dir = macros_dir().ok_or("Cannot determine macros directory")?;
+    let filename = format!("{}.json", m.name.replace(' ', "_").to_lowercase());
+    let path = dir.join(filename);
+    let json = serde_json::to_string_pretty(m).map_err(|e| e.to_string())?;
+    std::fs::write(&path, json).map_err(|e| format!("Failed to save: {}", e))
+}
+
+/// Load all macros from disk.
+pub fn load_macros() -> Vec<Macro> {
+    let Some(dir) = macros_dir() else { return Vec::new() };
+    let mut macros = Vec::new();
+    if let Ok(entries) = std::fs::read_dir(&dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.extension().and_then(|e| e.to_str()) == Some("json") {
+                if let Ok(content) = std::fs::read_to_string(&path) {
+                    if let Ok(m) = serde_json::from_str::<Macro>(&content) {
+                        macros.push(m);
+                    }
+                }
+            }
+        }
+    }
+    macros.sort_by(|a, b| a.name.cmp(&b.name));
+    macros
+}
+
+/// Delete a macro from disk.
+pub fn delete_macro(name: &str) -> Result<(), String> {
+    let dir = macros_dir().ok_or("Cannot determine macros directory")?;
+    let filename = format!("{}.json", name.replace(' ', "_").to_lowercase());
+    let path = dir.join(filename);
+    std::fs::remove_file(&path).map_err(|e| format!("Failed to delete: {}", e))
 }
 
 /// Render macro recorder UI.
