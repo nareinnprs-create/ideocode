@@ -8,7 +8,7 @@ use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct ProjectTemplate {
     pub name: String,
     pub description: String,
@@ -18,8 +18,39 @@ pub struct ProjectTemplate {
     pub commands: Vec<String>,
 }
 
-/// Get available project templates.
+/// Get available project templates — built-in + user templates from ~/.ideocode/templates/
 pub fn get_templates() -> Vec<ProjectTemplate> {
+    let mut templates = built_in_templates();
+    // Load user-defined templates from ~/.ideocode/templates/
+    if let Some(user_templates) = load_user_templates() {
+        templates.extend(user_templates);
+    }
+    templates
+}
+
+fn load_user_templates() -> Option<Vec<ProjectTemplate>> {
+    let home = std::env::var("HOME")
+        .or_else(|_| std::env::var("USERPROFILE"))
+        .ok()?;
+    let templates_dir = std::path::PathBuf::from(home).join(".ideocode").join("templates");
+    if !templates_dir.exists() { return None; }
+
+    let mut templates = Vec::new();
+    for entry in std::fs::read_dir(&templates_dir).ok()? {
+        let entry = entry.ok()?;
+        let path = entry.path();
+        if path.extension().and_then(|e| e.to_str()) == Some("json") {
+            if let Ok(content) = std::fs::read_to_string(&path) {
+                if let Ok(t) = serde_json::from_str::<ProjectTemplate>(&content) {
+                    templates.push(t);
+                }
+            }
+        }
+    }
+    Some(templates)
+}
+
+fn built_in_templates() -> Vec<ProjectTemplate> {
     vec![
         ProjectTemplate {
             name: "Web App".to_string(),

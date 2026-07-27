@@ -16,8 +16,96 @@ pub struct WorkspaceProfile {
     pub auto_switch: bool,
 }
 
-/// Get workspace profiles.
+/// Get workspace profiles from config file, falling back to defaults.
 pub fn get_workspace_profiles() -> Vec<WorkspaceProfile> {
+    if let Some(profiles) = load_profiles_from_config() {
+        return profiles;
+    }
+    // Auto-detect common project types from CWD
+    let cwd = std::env::current_dir()
+        .map(|p| p.to_string_lossy().to_string())
+        .unwrap_or_default();
+    let mut profiles = detect_project_profiles(&cwd);
+    if profiles.is_empty() {
+        profiles = default_profiles();
+    }
+    profiles
+}
+
+fn load_profiles_from_config() -> Option<Vec<WorkspaceProfile>> {
+    let home = std::env::var("HOME")
+        .or_else(|_| std::env::var("USERPROFILE"))
+        .ok()?;
+    let config_path = std::path::PathBuf::from(home).join(".ideocode").join("workspaces.json");
+    let content = std::fs::read_to_string(&config_path).ok()?;
+    let parsed: Vec<ConfigProfile> = serde_json::from_str(&content).ok()?;
+    Some(parsed.into_iter().map(|p| p.into()).collect())
+}
+
+#[derive(serde::Deserialize)]
+struct ConfigProfile {
+    name: String,
+    directory: String,
+    #[serde(default = "default_theme")]
+    theme: String,
+    #[serde(default = "default_personality")]
+    personality: String,
+    #[serde(default)]
+    tools: Vec<String>,
+    #[serde(default = "default_true")]
+    auto_switch: bool,
+}
+
+fn default_theme() -> String { "neon_city".to_string() }
+fn default_personality() -> String { "professional".to_string() }
+fn default_true() -> bool { true }
+
+impl From<ConfigProfile> for WorkspaceProfile {
+    fn from(p: ConfigProfile) -> Self {
+        WorkspaceProfile { name: p.name, directory: p.directory, theme: p.theme, personality: p.personality, tools: p.tools, auto_switch: p.auto_switch }
+    }
+}
+
+fn detect_project_profiles(cwd: &str) -> Vec<WorkspaceProfile> {
+    let mut profiles = Vec::new();
+    let path = std::path::Path::new(cwd);
+    // Detect Rust project
+    if path.join("Cargo.toml").exists() {
+        profiles.push(WorkspaceProfile {
+            name: "Rust Project".to_string(),
+            directory: cwd.to_string(),
+            theme: "neon_city".to_string(),
+            personality: "professional".to_string(),
+            tools: vec!["cargo".to_string(), "clippy".to_string(), "rustfmt".to_string()],
+            auto_switch: true,
+        });
+    }
+    // Detect Node.js project
+    if path.join("package.json").exists() {
+        profiles.push(WorkspaceProfile {
+            name: "Node.js Project".to_string(),
+            directory: cwd.to_string(),
+            theme: "dracula".to_string(),
+            personality: "casual".to_string(),
+            tools: vec!["npm".to_string(), "eslint".to_string(), "prettier".to_string()],
+            auto_switch: true,
+        });
+    }
+    // Detect Python project
+    if path.join("pyproject.toml").exists() || path.join("setup.py").exists() || path.join("requirements.txt").exists() {
+        profiles.push(WorkspaceProfile {
+            name: "Python Project".to_string(),
+            directory: cwd.to_string(),
+            theme: "nord".to_string(),
+            personality: "academic".to_string(),
+            tools: vec!["python".to_string(), "ruff".to_string(), "mypy".to_string()],
+            auto_switch: true,
+        });
+    }
+    profiles
+}
+
+fn default_profiles() -> Vec<WorkspaceProfile> {
     vec![
         WorkspaceProfile {
             name: "Frontend".to_string(),
