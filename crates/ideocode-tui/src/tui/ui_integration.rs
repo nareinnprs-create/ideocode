@@ -5,10 +5,11 @@
 
 use crate::tui::TuiState;
 use crate::tui::color_support::rgb;
+use crate::tui::ui_glass::glass_border_color;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;
-use ratatui::widgets::Paragraph;
+use ratatui::widgets::{Block, Borders, Paragraph};
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::time::{Duration, Instant};
@@ -1354,6 +1355,167 @@ pub fn render_template_overlay(frame: &mut Frame, area: Rect) {
     });
 }
 
+// ════════════════════════════════════════════════════════════════════════
+// BATCH 3: Workspace Profiles, Export, Compact, Big Mode
+// ════════════════════════════════════════════════════════════════════════
+
+// ── P1: Workspace Profiles ────────────────────────────────────────────
+
+thread_local! {
+    static WORKSPACE_STATE: RefCell<WorkspaceOverlayState> = RefCell::new(WorkspaceOverlayState::new());
+}
+
+struct WorkspaceOverlayState {
+    visible: bool,
+    selected: usize,
+}
+
+impl WorkspaceOverlayState {
+    fn new() -> Self { Self { visible: false, selected: 0 } }
+}
+
+pub fn toggle_workspace_profiles() {
+    WORKSPACE_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.visible = !st.visible;
+        st.selected = 0;
+    });
+}
+
+pub fn render_workspace_overlay(frame: &mut Frame, area: Rect, current_dir: &str) {
+    WORKSPACE_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        if !st.visible { return; }
+
+        let profiles = super::ui_workspace::get_workspace_profiles();
+        // Clamp selection
+        if st.selected >= profiles.len() { st.selected = profiles.len().saturating_sub(1); }
+
+        let lines = super::ui_workspace::render_workspace_profiles(&profiles, st.selected, current_dir);
+        let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
+        let panel_width = 50.min(area.width);
+        let panel_area = Rect {
+            x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+            y: area.y + 1,
+            width: panel_width,
+            height: panel_height,
+        };
+        let block = Block::default()
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(glass_border_color()))
+            .style(Style::default().bg(rgb(10, 10, 20)));
+        frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+    });
+}
+
+pub fn workspace_visible() -> bool { WORKSPACE_STATE.with(|s| s.borrow().visible) }
+pub fn workspace_navigate_up() {
+    WORKSPACE_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = st.selected.saturating_sub(1); });
+}
+pub fn workspace_navigate_down() {
+    WORKSPACE_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        let max = super::ui_workspace::get_workspace_profiles().len().saturating_sub(1);
+        st.selected = (st.selected + 1).min(max);
+    });
+}
+
+// ── P2: Export Formats ────────────────────────────────────────────────
+
+thread_local! {
+    static EXPORT_STATE: RefCell<ExportOverlayState> = RefCell::new(ExportOverlayState::new());
+}
+
+struct ExportOverlayState {
+    visible: bool,
+    selected: usize,
+}
+
+impl ExportOverlayState {
+    fn new() -> Self { Self { visible: false, selected: 0 } }
+}
+
+pub fn toggle_export() {
+    EXPORT_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.visible = !st.visible;
+        st.selected = 0;
+    });
+}
+
+pub fn render_export_overlay(frame: &mut Frame, area: Rect) {
+    EXPORT_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        if !st.visible { return; }
+
+        let formats = super::ui_export::get_export_formats();
+        if st.selected >= formats.len() { st.selected = formats.len().saturating_sub(1); }
+
+        let lines = super::ui_export::render_export_selector(&formats, st.selected);
+        let panel_height = (lines.len() as u16 + 2).min(area.height / 2);
+        let panel_width = 40.min(area.width);
+        let panel_area = Rect {
+            x: area.x + (area.width.saturating_sub(panel_width)) / 2,
+            y: area.y + 2,
+            width: panel_width,
+            height: panel_height,
+        };
+        let block = Block::default()
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(glass_border_color()))
+            .style(Style::default().bg(rgb(10, 10, 20)));
+        frame.render_widget(Paragraph::new(lines).block(block), panel_area);
+    });
+}
+
+pub fn export_visible() -> bool { EXPORT_STATE.with(|s| s.borrow().visible) }
+pub fn export_navigate_up() {
+    EXPORT_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = st.selected.saturating_sub(1); });
+}
+pub fn export_navigate_down() {
+    EXPORT_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        let max = super::ui_export::get_export_formats().len().saturating_sub(1);
+        st.selected = (st.selected + 1).min(max);
+    });
+}
+
+// ── S7: Compact Mode ──────────────────────────────────────────────────
+
+thread_local! {
+    static COMPACT_STATE: RefCell<bool> = const { RefCell::new(false) };
+}
+
+pub fn toggle_compact_mode() {
+    COMPACT_STATE.with(|s| { *s.borrow_mut() = !*s.borrow(); });
+}
+pub fn is_compact_mode() -> bool { COMPACT_STATE.with(|s| *s.borrow()) }
+
+pub fn render_compact_mode_overlay(frame: &mut Frame, area: Rect) {
+    if !is_compact_mode() { return; }
+    let toggle_line = super::ui_compact::render_compact_mode_toggle(true);
+    let pos = Rect { x: area.x, y: area.y + area.height.saturating_sub(1), width: 25, height: 1 };
+    frame.render_widget(Paragraph::new(toggle_line), pos);
+}
+
+// ── S8: Big Mode ──────────────────────────────────────────────────────
+
+thread_local! {
+    static BIG_STATE: RefCell<bool> = const { RefCell::new(false) };
+}
+
+pub fn toggle_big_mode() {
+    BIG_STATE.with(|s| { *s.borrow_mut() = !*s.borrow(); });
+}
+pub fn is_big_mode() -> bool { BIG_STATE.with(|s| *s.borrow()) }
+
+pub fn render_big_mode_overlay(frame: &mut Frame, area: Rect) {
+    if !is_big_mode() { return; }
+    let toggle_line = super::ui_big::render_big_mode_toggle(true);
+    let pos = Rect { x: area.x + area.width.saturating_sub(25), y: area.y + area.height.saturating_sub(1), width: 25, height: 1 };
+    frame.render_widget(Paragraph::new(toggle_line), pos);
+}
+
 // ── Keyboard Wizard ─────────────────────────────────────────────────
 
 thread_local! {
@@ -1394,6 +1556,10 @@ pub fn render_keyboard_wizard_tip(frame: &mut Frame, area: Rect) {
             "Alt+5 toggles mentor mode",
             "Alt+6 toggles mascot",
             "Alt+7 daily challenge",
+            "Alt+U workspace profiles",
+            "Alt+I export session",
+            "Alt+T compact mode",
+            "Alt+Y big/presentation mode",
         ];
         let tip = tips[st.current_tip_index % tips.len()];
         let line = Line::from(vec![

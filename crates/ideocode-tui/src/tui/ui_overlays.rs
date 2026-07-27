@@ -569,6 +569,10 @@ pub(super) fn draw_help_overlay(frame: &mut Frame, area: Rect, scroll: usize, ap
     lines.push(key_entry("Alt+5", "Mentor mode"));
     lines.push(key_entry("Alt+6", "Mascot"));
     lines.push(key_entry("Alt+7", "Daily challenge"));
+    lines.push(key_entry("Alt+U", "Workspace profiles"));
+    lines.push(key_entry("Alt+I", "Export session"));
+    lines.push(key_entry("Alt+T", "Compact mode"));
+    lines.push(key_entry("Alt+Y", "Big mode (presentations)"));
     lines.push(key_entry(
         "Gesture pad 8-10",
         "Meme generator / Theme picker / Templates",

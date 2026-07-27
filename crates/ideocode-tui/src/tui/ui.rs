@@ -3516,6 +3516,23 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     // Quick start templates overlay
     crate::tui::ui_integration::render_template_overlay(frame, area);
 
+    // ── BATCH 3: Workspace, Export, Compact, Big ──────────────────────
+
+    // Workspace profiles overlay
+    let dir = app.working_dir().unwrap_or_default();
+    crate::tui::ui_integration::render_workspace_overlay(frame, area, &dir);
+
+    // Export format selector overlay
+    crate::tui::ui_integration::render_export_overlay(frame, area);
+
+    // Compact mode toggle indicator
+    crate::tui::ui_integration::render_compact_mode_overlay(frame, area);
+
+    // Big mode toggle indicator
+    crate::tui::ui_integration::render_big_mode_overlay(frame, area);
+
+    // ── END BATCH 3 ──────────────────────────────────────────────────
+
     // ── END BATCH 2 ──────────────────────────────────────────────────
 
     // ── END BATCH 1 ──────────────────────────────────────────────────

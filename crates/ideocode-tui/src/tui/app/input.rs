@@ -1962,6 +1962,26 @@ pub(super) fn handle_alt_key(app: &mut App, code: KeyCode) -> bool {
             crate::tui::ui_integration::toggle_daily_challenge();
             true
         }
+        // Alt+u: workspace profiles
+        KeyCode::Char('u') => {
+            crate::tui::ui_integration::toggle_workspace_profiles();
+            true
+        }
+        // Alt+i: export formats
+        KeyCode::Char('i') => {
+            crate::tui::ui_integration::toggle_export();
+            true
+        }
+        // Alt+t: compact mode (when not used by diagram)
+        KeyCode::Char('t') => {
+            crate::tui::ui_integration::toggle_compact_mode();
+            true
+        }
+        // Alt+y: big mode
+        KeyCode::Char('y') => {
+            crate::tui::ui_integration::toggle_big_mode();
+            true
+        }
         _ => false,
     }
 }
@@ -2054,6 +2074,56 @@ fn handle_command_palette_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool 
         }
         KeyCode::Enter => {
             crate::tui::ui_integration::toggle_command_palette();
+            true
+        }
+        _ => false,
+    }
+}
+
+/// Handle keys while the workspace profiles overlay is visible.
+fn handle_workspace_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
+    if !crate::tui::ui_integration::workspace_visible() { return false; }
+
+    match code {
+        KeyCode::Esc => {
+            crate::tui::ui_integration::toggle_workspace_profiles();
+            true
+        }
+        KeyCode::Up | KeyCode::Char('k') => {
+            crate::tui::ui_integration::workspace_navigate_up();
+            true
+        }
+        KeyCode::Down | KeyCode::Char('j') => {
+            crate::tui::ui_integration::workspace_navigate_down();
+            true
+        }
+        KeyCode::Enter => {
+            crate::tui::ui_integration::toggle_workspace_profiles();
+            true
+        }
+        _ => false,
+    }
+}
+
+/// Handle keys while the export overlay is visible.
+fn handle_export_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
+    if !crate::tui::ui_integration::export_visible() { return false; }
+
+    match code {
+        KeyCode::Esc => {
+            crate::tui::ui_integration::toggle_export();
+            true
+        }
+        KeyCode::Up | KeyCode::Char('k') => {
+            crate::tui::ui_integration::export_navigate_up();
+            true
+        }
+        KeyCode::Down | KeyCode::Char('j') => {
+            crate::tui::ui_integration::export_navigate_down();
+            true
+        }
+        KeyCode::Enter => {
+            crate::tui::ui_integration::toggle_export();
             true
         }
         _ => false,
@@ -2820,6 +2890,16 @@ impl App {
 
         // Command palette overlay: intercepts keys while palette is visible.
         if handle_command_palette_keys(code, modifiers) {
+            return Ok(());
+        }
+
+        // Workspace profiles overlay: intercepts keys while workspace list is visible.
+        if handle_workspace_keys(code, modifiers) {
+            return Ok(());
+        }
+
+        // Export format overlay: intercepts keys while export list is visible.
+        if handle_export_keys(code, modifiers) {
             return Ok(());
         }
 
