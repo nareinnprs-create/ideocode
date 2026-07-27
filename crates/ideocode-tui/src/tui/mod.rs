@@ -74,6 +74,7 @@ pub mod ui_import;
 pub mod ui_plugins;
 pub mod ui_providers;
 pub mod ui_image_preview;
+pub mod performance;
 pub mod ui_widgets;
 pub mod ui_workspace;
 pub mod ui_memory_visual;
