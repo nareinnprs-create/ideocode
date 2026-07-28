@@ -20,7 +20,7 @@ set -euo pipefail
 #   resize      shrink and regrow the window via niri
 #
 # Env:
-#   IDEOCODE_DESKTOP_BIN              binary (default target/debug/IDEOCODE-desktop)
+#   IDEOCODE_DESKTOP_BIN              binary (default target/debug/ideocode-desktop)
 #   IDEOCODE_JOURNEY_TIMEOUT_SECS     per-wait timeout (default 15)
 #   IDEOCODE_JOURNEY_GAP_BUDGET_MS    max acceptable no-paint gap (default 1000)
 #   IDEOCODE_JOURNEY_SCREENSHOT_DIR   if set, save a grim screenshot per step
@@ -28,7 +28,7 @@ set -euo pipefail
 # Requirements: niri, jq, wtype, a Wayland session; grim for screenshots.
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BIN="${IDEOCODE_DESKTOP_BIN:-$ROOT_DIR/target/debug/IDEOCODE-desktop}"
+BIN="${IDEOCODE_DESKTOP_BIN:-$ROOT_DIR/target/debug/ideocode-desktop}"
 TIMEOUT_SECS="${IDEOCODE_JOURNEY_TIMEOUT_SECS:-15}"
 GAP_BUDGET_MS="${IDEOCODE_JOURNEY_GAP_BUDGET_MS:-1000}"
 SCREENSHOT_DIR="${IDEOCODE_JOURNEY_SCREENSHOT_DIR:-}"
@@ -37,7 +37,7 @@ PERF_LOG="${XDG_CACHE_HOME:-$HOME/.cache}/IDEOCODE/desktop/performance.log"
 
 if [[ ! -x "$BIN" ]]; then
   echo "desktop binary not found: $BIN" >&2
-  echo "hint: cargo build -p IDEOCODE-desktop --bin IDEOCODE-desktop" >&2
+  echo "hint: cargo build -p ideocode-desktop --bin ideocode-desktop" >&2
   exit 2
 fi
 for tool in niri jq wtype; do

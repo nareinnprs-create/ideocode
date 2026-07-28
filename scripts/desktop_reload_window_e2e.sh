@@ -12,13 +12,13 @@ set -euo pipefail
 # Requirements: niri, jq, wtype, a Wayland session, and a built IDEOCODE-desktop.
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BIN="${IDEOCODE_DESKTOP_BIN:-$ROOT_DIR/target/debug/IDEOCODE-desktop}"
+BIN="${IDEOCODE_DESKTOP_BIN:-$ROOT_DIR/target/debug/ideocode-desktop}"
 TIMEOUT_SECS="${IDEOCODE_DESKTOP_RELOAD_E2E_TIMEOUT_SECS:-15}"
 LOG_FILE="${IDEOCODE_DESKTOP_RELOAD_E2E_LOG:-$(mktemp -t IDEOCODE-desktop-reload-e2e.XXXXXX.log)}"
 
 if [[ ! -x "$BIN" ]]; then
   echo "desktop binary not found or not executable: $BIN" >&2
-  echo "hint: cargo build -p IDEOCODE-desktop --bin IDEOCODE-desktop" >&2
+  echo "hint: cargo build -p ideocode-desktop --bin ideocode-desktop" >&2
   exit 2
 fi
 for tool in niri jq wtype; do

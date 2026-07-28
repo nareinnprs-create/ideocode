@@ -182,8 +182,8 @@ ensure_release_draft() {
 
 if [[ "$MODE" == "prepare-fast" ]]; then
     echo "▸ Refreshing the warm selfdev Linux build before the version bump..."
-    IDEOCODE_REMOTE_CARGO=0 scripts/dev_cargo.sh build --profile selfdev -p IDEOCODE --bin IDEOCODE
-    source_bin="target/selfdev/IDEOCODE"
+    IDEOCODE_REMOTE_CARGO=0 scripts/dev_cargo.sh build --profile selfdev -p ideocode --bin ideocode
+    source_bin="target/selfdev/ideocode"
     [[ -x "$source_bin" ]] || { echo "Error: selfdev binary not found: $source_bin" >&2; exit 1; }
     prepared_marker="target/selfdev/fast-release-prepared"
     {
@@ -216,7 +216,7 @@ fi
 if [[ "$MODE" == "fast-local" ]]; then
     echo "▸ Validating the prepared selfdev Linux build..."
     build_start=$(date +%s)
-    source_bin="target/selfdev/IDEOCODE"
+    source_bin="target/selfdev/ideocode"
     [[ -x "$source_bin" ]] || { echo "Error: selfdev binary not found: $source_bin" >&2; exit 1; }
     prepared_marker="target/selfdev/fast-release-prepared"
     [[ -f "$prepared_marker" ]] || {
@@ -237,7 +237,7 @@ if [[ "$MODE" == "fast-local" ]]; then
     }
     actual_sha256="$(sha256sum "$source_bin" | cut -d' ' -f1)"
     [[ "$prepared_sha256" == "$actual_sha256" ]] || {
-        echo "Error: target/selfdev/IDEOCODE changed after fast-release preparation." >&2
+        echo "Error: target/selfdev/ideocode changed after fast-release preparation." >&2
         exit 1
     }
     unexpected_release_files="$(git diff-tree --no-commit-id --name-only -r HEAD | grep -Ev '^(Cargo\.toml|Cargo\.lock|changelog/)' || true)"
@@ -306,8 +306,8 @@ LINUX_PID=$!
 (
     IDEOCODE_RELEASE_BUILD=1 IDEOCODE_BUILD_SEMVER="$VERSION_NUM" \
         CARGO_INCREMENTAL=0 CARGO_BUILD_JOBS="${CARGO_BUILD_JOBS:-1}" \
-        cargo build --release --target aarch64-apple-darwin --bin IDEOCODE 2>/dev/null
-    cp target/aarch64-apple-darwin/release/IDEOCODE "$DIST/IDEOCODE-macos-aarch64"
+        cargo build --release --target aarch64-apple-darwin --bin ideocode 2>/dev/null
+    cp target/aarch64-apple-darwin/release/ideocode "$DIST/IDEOCODE-macos-aarch64"
     chmod +x "$DIST/IDEOCODE-macos-aarch64"
     (cd "$DIST" && tar czf IDEOCODE-macos-aarch64.tar.gz IDEOCODE-macos-aarch64)
     echo "  ✅ macOS done ($(elapsed)s)"

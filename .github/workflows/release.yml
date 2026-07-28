@@ -745,7 +745,7 @@ jobs:
                 sha256 "${LINUX_SHA}"
 
                 def install
-                  libexec.install "IDEOCODE-linux-x86_64", "IDEOCODE-linux-x86_64.bin"
+                  libexec.install "IDEOCODE-linux-x86_64"
                   libexec.install Dir["libssl.so*"], Dir["libcrypto.so*"] unless Dir["libssl.so*", "libcrypto.so*"].empty?
                   (bin/"IDEOCODE").write <<~SH
                     #!/bin/sh

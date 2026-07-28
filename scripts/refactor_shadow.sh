@@ -15,8 +15,8 @@ ref_socket="${IDEOCODE_REF_SOCKET:-$default_socket}"
 ref_profile="${IDEOCODE_REF_PROFILE:-debug}"
 
 case "$ref_profile" in
-  debug) default_bin="$repo_root/target/debug/IDEOCODE" ;;
-  release) default_bin="$repo_root/target/release/IDEOCODE" ;;
+  debug) default_bin="$repo_root/target/debug/ideocode" ;;
+  release) default_bin="$repo_root/target/release/ideocode" ;;
   *)
     printf 'error: unsupported IDEOCODE_REF_PROFILE: %s (expected debug or release)\n' "$ref_profile" >&2
     exit 1

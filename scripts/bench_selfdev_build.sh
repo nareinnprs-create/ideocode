@@ -14,7 +14,7 @@
 #                          (base, app-core, tui, setup-hints, telemetry-core, root)
 #
 # Touches are reverted after each run. Requires a clean-enough tree that
-# `scripts/dev_cargo.sh build --profile selfdev -p IDEOCODE --bin IDEOCODE` succeeds.
+# `scripts/dev_cargo.sh build --profile selfdev -p ideocode --bin ideocode` succeeds.
 #
 # Usage: scripts/bench_selfdev_build.sh [--skip-warmup]
 
@@ -23,7 +23,7 @@ set -euo pipefail
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
 
-build_cmd=(scripts/dev_cargo.sh build --profile selfdev -p IDEOCODE --bin IDEOCODE)
+build_cmd=(scripts/dev_cargo.sh build --profile selfdev -p ideocode --bin ideocode)
 
 run_build() {
     # Per-phase logs survive later phases, so a mid-benchmark failure (often a
@@ -83,13 +83,13 @@ touch_file "$leaf_file"
 run_build "leaf" || true
 revert_file "$leaf_file"
 
-tui_file="crates/IDEOCODE-tui/src/lib.rs"
+tui_file="crates/ideocode-tui/src/lib.rs"
 echo "3. tui touch (${tui_file}):"
 touch_file "$tui_file"
 run_build "tui" || true
 revert_file "$tui_file"
 
-core_file="crates/IDEOCODE-app-core/src/lib.rs"
+core_file="crates/ideocode-app-core/src/lib.rs"
 echo "4. core touch (${core_file}):"
 touch_file "$core_file"
 run_build "core" || true

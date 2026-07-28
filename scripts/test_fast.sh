@@ -20,12 +20,12 @@ echo "Feature profile: $IDEOCODE_DEV_FEATURE_PROFILE"
 # Only the primary `IDEOCODE` binary contains unit tests. `test_api` and
 # `IDEOCODE-harness` are executable smoke tools with no #[test] functions, so
 # `--bins` needlessly builds and links two additional copies of the full graph.
-run_cargo test --lib --bin IDEOCODE "$@"
+run_cargo test --lib --bin ideocode "$@"
 
 echo ""
-if [[ -x "$repo_root/target/release/IDEOCODE" ]]; then
+if [[ -x "$repo_root/target/release/ideocode" ]]; then
   echo "=== Startup regression check (release binary) ==="
-  "$repo_root/scripts/check_startup_budget.sh" "$repo_root/target/release/IDEOCODE"
+  "$repo_root/scripts/check_startup_budget.sh" "$repo_root/target/release/ideocode"
   echo ""
 else
   echo "Skipping startup regression check: build release first with cargo build --release"

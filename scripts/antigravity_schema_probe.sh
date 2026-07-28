@@ -7,7 +7,7 @@
 # rejection) / OTHER. Requires a valid Antigravity OAuth session.
 set -uo pipefail
 
-JC="${JC:-./target/selfdev/IDEOCODE}"
+JC="${JC:-./target/selfdev/ideocode}"
 MODEL="${MODEL:-claude-sonnet-4-6}"
 PROMPT="${PROMPT:-Run 'echo PROBE_OK' with the bash tool and report the output.}"
 TIMEOUT="${TIMEOUT:-120}"

@@ -31,7 +31,7 @@ echo "[1/5] Launching IDEOCODE..."
 kitten @ --to unix:$SOCK launch --type=os-window \
     --cwd "$DEMO_DIR" \
     --title "IDEOCODE-demo-$DEMO_NAME" \
-    "$repo_root/target/release/IDEOCODE"
+    "$repo_root/target/release/ideocode"
 
 sleep 3  # Let IDEOCODE fully start
 

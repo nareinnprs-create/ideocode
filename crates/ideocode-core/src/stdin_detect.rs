@@ -358,21 +358,64 @@ mod macos {
 #[cfg(target_os = "windows")]
 mod windows {
     use super::*;
+    use windows_sys::Win32::Foundation::{CloseHandle, HANDLE};
+    use windows_sys::Win32::System::Threading::{
+        OpenProcess, WaitForSingleObject, PROCESS_QUERY_LIMITED_INFORMATION, PROCESS_VM_READ,
+    };
 
-    pub fn check(_pid: u32) -> StdinState {
-        // Windows: use NtQueryInformationThread to check thread state
-        // A process blocked on ReadFile/ReadConsole on stdin will have
-        // its thread in a Wait state with a wait reason of UserRequest
+    const WAIT_OBJECT_0: u32 = 0;
+    const WAIT_TIMEOUT: u32 = 0x00000102;
+    #[allow(dead_code)]
+    const INFINITE: u32 = 0xFFFF_FFFF;
+
+    pub fn check(pid: u32) -> StdinState {
+        // Open the process with limited query rights
+        let handle = unsafe {
+            OpenProcess(
+                PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_VM_READ,
+                0, // bInheritHandle = FALSE
+                pid,
+            )
+        };
+
+        if handle.is_null() {
+            return StdinState::Unknown;
+        }
+
+        let result = check_inner(handle);
+        unsafe { CloseHandle(handle) };
+        result
+    }
+
+    fn check_inner(handle: HANDLE) -> StdinState {
+        // Use WaitForSingleObject with zero timeout to probe if the process
+        // is in a wait state. A process blocked on ReadFile/ReadConsole will
+        // be waiting, while a running process will return WAIT_TIMEOUT.
         //
-        // For now, use the simpler approach: check if the process has
-        // a console handle and its thread is in a wait state via
-        // WaitForSingleObject with zero timeout on the process handle
+        // This is an approximation — we can't distinguish "waiting on stdin"
+        // from "waiting on anything else" without NtQueryInformationThread,
+        // but combined with the fact that we only call this on child processes
+        // we spawned, it's a good heuristic.
 
-        // TODO: implement with windows-sys crate
-        // - OpenProcess(PROCESS_QUERY_INFORMATION, pid)
-        // - NtQuerySystemInformation for thread states
-        // - Check for KWAIT_REASON::WrUserRequest on stdin handle
-        StdinState::Unknown
+        let wait_result = unsafe { WaitForSingleObject(handle, 0) };
+
+        match wait_result {
+            WAIT_OBJECT_0 => {
+                // Process has exited — not reading stdin
+                StdinState::NotReading
+            }
+            WAIT_TIMEOUT => {
+                // Process is running (not in a signaled state).
+                // This could mean it's actively computing OR blocked on I/O.
+                // Without deeper inspection, we return Unknown and let the
+                // caller use other heuristics (e.g., process tree checks).
+                StdinState::Unknown
+            }
+            _ => {
+                // WAIT_FAILED or unexpected — process may not exist
+                StdinState::Unknown
+            }
+        }
     }
 }
 

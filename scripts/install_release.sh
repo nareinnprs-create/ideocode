@@ -36,7 +36,7 @@ case "$profile" in
 esac
 
 cargo build --profile "$profile" --manifest-path "$repo_root/Cargo.toml"
-bin="$repo_root/target/$profile/IDEOCODE"
+bin="$repo_root/target/$profile/ideocode"
 
 if [[ ! -x "$bin" ]]; then
   echo "Release binary not found: $bin" >&2

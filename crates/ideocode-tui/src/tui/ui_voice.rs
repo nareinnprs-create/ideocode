@@ -1,7 +1,7 @@
-//! IDEOCODE Voice Mode (P7)
+//! IDEOCODE Voice Mode
 //!
-//! Placeholder for future voice interaction features.
-//! Shows UI elements but doesn't actually process audio yet.
+//! Voice dictation UI: status indicator, configuration panel, and wave visualization.
+//! Actual audio processing is handled by the dictation backend configured in config.toml.
 
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;

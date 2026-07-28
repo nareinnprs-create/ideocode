@@ -12,8 +12,8 @@ Usage:
 Targets:
   check            Run cargo check --quiet
   build            Run cargo build --quiet
-  release-IDEOCODE    Run scripts/dev_cargo.sh build --release -p IDEOCODE --bin IDEOCODE --quiet
-  selfdev-IDEOCODE    Run scripts/dev_cargo.sh build --profile selfdev -p IDEOCODE --bin IDEOCODE --quiet
+  release-ideocode    Run scripts/dev_cargo.sh build --release -p ideocode --bin ideocode --quiet
+  selfdev-ideocode    Run scripts/dev_cargo.sh build --profile selfdev -p ideocode --bin ideocode --quiet
 
 Options:
   --cold                 Run cargo clean before timing the first run
@@ -120,10 +120,10 @@ case "$target" in
     cmd=(cargo build --quiet)
     ;;
   release-IDEOCODE)
-    cmd=(scripts/dev_cargo.sh build --release -p IDEOCODE --bin IDEOCODE --quiet)
+    cmd=(scripts/dev_cargo.sh build --release -p ideocode --bin ideocode --quiet)
     ;;
-  selfdev-IDEOCODE)
-    cmd=(scripts/dev_cargo.sh build --profile selfdev -p IDEOCODE --bin IDEOCODE --quiet)
+  selfdev-ideocode)
+    cmd=(scripts/dev_cargo.sh build --profile selfdev -p ideocode --bin ideocode --quiet)
     ;;
   *)
     printf 'error: unsupported target: %s\n' "$target" >&2

@@ -87,13 +87,13 @@ copy_dir_contents() {
 }
 
 run_IDEOCODE() {
-  local binary_path="$repo_root/target/debug/IDEOCODE"
+  local binary_path="$repo_root/target/debug/ideocode"
   (
     cd "$repo_root"
     if [[ -x "$binary_path" ]]; then
       env IDEOCODE_HOME="$IDEOCODE_home" IDEOCODE_RUNTIME_DIR="$runtime_dir" "$binary_path" "$@"
     else
-      env IDEOCODE_HOME="$IDEOCODE_home" IDEOCODE_RUNTIME_DIR="$runtime_dir" cargo run --bin IDEOCODE -- "$@"
+      env IDEOCODE_HOME="$IDEOCODE_home" IDEOCODE_RUNTIME_DIR="$runtime_dir" cargo run --bin ideocode -- "$@"
     fi
   )
 }

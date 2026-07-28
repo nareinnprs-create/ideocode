@@ -43,11 +43,11 @@ if [ -n "$stray" ]; then
 fi
 
 echo "== fast invariants (geometry, typography, theme)"
-cargo test --profile selfdev -p IDEOCODE-desktop2 --quiet || status=1
+cargo test --profile selfdev -p ideocode-desktop2 --quiet || status=1
 
 if [ "${1:-}" = "--gpu" ]; then
   echo "== pixel-level visual invariants"
-  cargo test --profile selfdev -p IDEOCODE-desktop2 --quiet -- --ignored || status=1
+  cargo test --profile selfdev -p ideocode-desktop2 --quiet -- --ignored || status=1
 fi
 
 if [ "$status" -eq 0 ]; then

@@ -160,6 +160,7 @@ pub(crate) struct AuthLifecycleResult {
     pub credential_location: Option<String>,
 }
 
+#[cfg(test)]
 impl AuthLifecycleResult {
     pub(crate) fn assert_success(&self, spec: &AuthLifecycleSpec) {
         let transcript = self.transcript_text();

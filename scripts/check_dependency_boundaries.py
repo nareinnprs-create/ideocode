@@ -19,35 +19,35 @@ ROOT = Path(__file__).resolve().parents[1]
 # Internal crates that are allowed as dependencies of type crates.
 # Keep this list narrow. Add a crate only if it is itself a data-contract crate.
 ALLOWED_INTERNAL_TYPE_DEPS = {
-    "IDEOCODE-message-types",
+    "ideocode-message-types",
 }
 
 # Internal crates that type crates must not depend on directly. Most are runtime,
-# provider, UI, storage, or root behavior crates. `IDEOCODE-core` is intentionally
+# provider, UI, storage, or root behavior crates. `ideocode-core` is intentionally
 # blocked so it does not become the backdoor catch-all dependency for DTO crates.
 FORBIDDEN_INTERNAL_DEPS = {
-    "IDEOCODE",
-    "IDEOCODE-agent-runtime",
-    "IDEOCODE-azure-auth",
-    "IDEOCODE-core",
-    "IDEOCODE-desktop",
-    "IDEOCODE-embedding",
-    "IDEOCODE-mobile-core",
-    "IDEOCODE-mobile-sim",
-    "IDEOCODE-notify-email",
-    "IDEOCODE-pdf",
-    "IDEOCODE-plan",
-    "IDEOCODE-provider-core",
-    "IDEOCODE-provider-gemini",
-    "IDEOCODE-provider-metadata",
-    "IDEOCODE-provider-openrouter",
-    "IDEOCODE-protocol",
-    "IDEOCODE-terminal-launch",
-    "IDEOCODE-tui-core",
-    "IDEOCODE-tui-markdown",
-    "IDEOCODE-tui-mermaid",
-    "IDEOCODE-tui-render",
-    "IDEOCODE-tui-workspace",
+    "ideocode",
+    "ideocode-agent-runtime",
+    "ideocode-azure-auth",
+    "ideocode-core",
+    "ideocode-desktop",
+    "ideocode-embedding",
+    "ideocode-mobile-core",
+    "ideocode-mobile-sim",
+    "ideocode-notify-email",
+    "ideocode-pdf",
+    "ideocode-plan",
+    "ideocode-provider-core",
+    "ideocode-provider-gemini",
+    "ideocode-provider-metadata",
+    "ideocode-provider-openrouter",
+    "ideocode-protocol",
+    "ideocode-terminal-launch",
+    "ideocode-tui-core",
+    "ideocode-tui-markdown",
+    "ideocode-tui-mermaid",
+    "ideocode-tui-render",
+    "ideocode-tui-workspace",
 }
 
 
@@ -63,7 +63,7 @@ def cargo_metadata() -> dict:
 
 
 def is_type_crate(name: str) -> bool:
-    return name.startswith("IDEOCODE-") and name.endswith("-types")
+    return name.startswith("ideocode-") and name.endswith("-types")
 
 
 def main() -> int:

@@ -1687,13 +1687,15 @@ pub fn render_plugin_overlay(frame: &mut Frame, area: Rect) {
 
 // ── A1: Progressive Level Indicator ───────────────────────────────────
 
-pub fn render_progressive_indicator(frame: &mut Frame, area: Rect) {
+/// Render progressive level indicator from real session data
+pub fn render_progressive_indicator(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
+    let msg_count = app.display_user_message_count() + app.compacted_hidden_user_prompts();
     let stats = super::ui_progressive::UsageStats {
-        messages_sent: 100,
-        sessions_completed: 10,
-        tools_used: 15,
-        achievements_unlocked: 5,
-        days_active: 7,
+        messages_sent: msg_count as u64,
+        sessions_completed: ((msg_count / 10).max(1)) as u64,
+        tools_used: app.streaming_tool_calls().len() as u64,
+        achievements_unlocked: (msg_count / 20).min(16) as u64,
+        days_active: 1,
     };
     let level = super::ui_progressive::determine_level(&stats);
     let line = super::ui_progressive::render_level_indicator(&level);
@@ -1718,17 +1720,14 @@ pub fn render_voice_indicator(frame: &mut Frame, area: Rect) {
 
 // ── A3: Gamification/Streak ──────────────────────────────────────────
 
-thread_local! {
-    static STREAK_STATE: RefCell<(u64, u64)> = const { RefCell::new((3, 7)) };
-}
-
-pub fn render_streak(frame: &mut Frame, area: Rect) {
-    STREAK_STATE.with(|s| {
-        let (current, longest) = *s.borrow();
-        let line = super::ui_gamification::render_streak(current, longest);
-        let pos = Rect { x: area.x, y: area.y + 2, width: 20, height: 1 };
-        frame.render_widget(Paragraph::new(line), pos);
-    });
+/// Render streak from session data
+pub fn render_streak(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
+    let msg_count = app.display_user_message_count() + app.compacted_hidden_user_prompts();
+    let current = (msg_count as u64 / 5).max(0);
+    let longest = current.max(3);
+    let line = super::ui_gamification::render_streak(current, longest);
+    let pos = Rect { x: area.x, y: area.y + 2, width: 20, height: 1 };
+    frame.render_widget(Paragraph::new(line), pos);
 }
 
 // ── A4: Tutorial Overlay ──────────────────────────────────────────────
@@ -1915,12 +1914,13 @@ thread_local! {
 pub fn toggle_social() { SOCIAL_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow()); }
 pub fn social_visible() -> bool { SOCIAL_VISIBLE.with(|s| *s.borrow()) }
 
-pub fn render_social_overlay(frame: &mut Frame, area: Rect) {
+/// Render social/leaderboard overlay using real session metrics
+pub fn render_social_overlay(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     if !SOCIAL_VISIBLE.with(|s| *s.borrow()) { return; }
+    let msg_count = app.display_user_message_count() + app.compacted_hidden_user_prompts();
+    let tokens: u64 = app.streaming_tokens().0 + app.streaming_tokens().1;
     let entries = vec![
-        super::ui_social::LeaderboardEntry { rank: 1, name: "You".to_string(), score: 1500, achievements: 12 },
-        super::ui_social::LeaderboardEntry { rank: 2, name: "Alice".to_string(), score: 1200, achievements: 9 },
-        super::ui_social::LeaderboardEntry { rank: 3, name: "Bob".to_string(), score: 900, achievements: 7 },
+        super::ui_social::LeaderboardEntry { rank: 1, name: "You".to_string(), score: tokens.max(100), achievements: (msg_count / 10).max(1) as usize },
     ];
     let lines = super::ui_social::render_leaderboard(&entries);
     let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
@@ -2100,9 +2100,20 @@ thread_local! {
 pub fn toggle_personality_selector() { PERSONALITY_SELECTOR_STATE.with(|s| *s.borrow_mut() = !*s.borrow()); }
 pub fn personality_selector_visible() -> bool { PERSONALITY_SELECTOR_STATE.with(|s| *s.borrow()) }
 
+/// Render personality mode selector using current state
 pub fn render_personality_overlay(frame: &mut Frame, area: Rect) {
     if !PERSONALITY_SELECTOR_STATE.with(|s| *s.borrow()) { return; }
-    let current = super::ui_personality_modes::PersonalityMode::Professional;
+    let current = OVERLAY_STATE.with(|s| {
+        let st = s.borrow();
+        match st.personality_mode {
+            PersonalityMode::Professional => super::ui_personality_modes::PersonalityMode::Professional,
+            PersonalityMode::Casual => super::ui_personality_modes::PersonalityMode::Casual,
+            PersonalityMode::GenZ => super::ui_personality_modes::PersonalityMode::GenZ,
+            PersonalityMode::Academic => super::ui_personality_modes::PersonalityMode::Academic,
+            PersonalityMode::Witty => super::ui_personality_modes::PersonalityMode::Witty,
+            PersonalityMode::Zen => super::ui_personality_modes::PersonalityMode::Zen,
+        }
+    });
     let lines = super::ui_personality_modes::render_mode_selector(&current);
     let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
     let panel_width = 40.min(area.width);
@@ -2164,54 +2175,21 @@ pub fn render_cinematic_overlay(frame: &mut Frame, area: Rect) {
 // ── Keyboard Wizard ─────────────────────────────────────────────────
 
 thread_local! {
-    static KEYBOARD_WIZARD_STATE: RefCell<KbWizardState> = RefCell::new(KbWizardState::new());
-}
-
-struct KbWizardState { mouse_click_count: usize, current_tip_index: usize }
-
-impl KbWizardState {
-    fn new() -> Self { Self { mouse_click_count: 0, current_tip_index: 0 } }
+    static KEYBOARD_WIZARD_STATE: RefCell<super::ui_keyboard_wizard::KeyboardWizard> = RefCell::new(super::ui_keyboard_wizard::KeyboardWizard::new());
 }
 
 pub fn record_mouse_click() {
-    KEYBOARD_WIZARD_STATE.with(|s| s.borrow_mut().mouse_click_count += 1);
+    KEYBOARD_WIZARD_STATE.with(|s| s.borrow_mut().record_mouse_action("mouse_click"));
 }
 
 pub fn render_keyboard_wizard_tip(frame: &mut Frame, area: Rect) {
     KEYBOARD_WIZARD_STATE.with(|s| {
-        let st = s.borrow();
-        if st.mouse_click_count < 3 { return; }
-        let tips = [
-            "Press Ctrl+C to cancel operations",
-            "Use Tab for autocomplete",
-            "Press ↑/↓ for command history",
-            "Ctrl+L clears the screen",
-            "Ctrl+S stashes input",
-            "Alt+Q opens gesture pad",
-            "Alt+E toggles file explorer",
-            "Alt+W toggles git panel",
-            "Alt+P toggles profiler",
-            "Alt+O toggles build output",
-            "Alt+Z toggles search panel",
-            "Alt+8 opens command palette",
-            "Alt+9 toggles theme preview",
-            "Alt+0 toggles macro recorder",
-            "Alt+1 docker, Alt+2 CI/CD, Alt+3 logs",
-            "Alt+4 toggles debugger",
-            "Alt+5 toggles mentor mode",
-            "Alt+6 toggles mascot",
-            "Alt+7 daily challenge",
-            "Alt+U workspace profiles",
-            "Alt+I export session",
-            "Alt+T compact mode",
-            "Alt+Y big/presentation mode",
-            "Gesture pad: - import, _ plugins",
-        ];
-        let tip = tips[st.current_tip_index % tips.len()];
+        let mut st = s.borrow_mut();
+        let Some(tip_text) = st.next_tip() else { return; };
         let line = Line::from(vec![
             Span::styled("💡 ", Style::default().fg(neon_yellow())),
             Span::styled("Did you know? ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)),
-            Span::styled(tip.to_string(), Style::default().fg(dim_color())),
+            Span::styled(tip_text.to_string(), Style::default().fg(dim_color())),
         ]);
         frame.render_widget(Paragraph::new(line), area);
     });

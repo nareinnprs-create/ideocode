@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-binary=${1:-"$repo_root/target/release/IDEOCODE"}
+binary=${1:-"$repo_root/target/release/ideocode"}
 
 if [[ ! -x "$binary" ]]; then
   echo "Binary not found or not executable: $binary" >&2

@@ -29,15 +29,15 @@ fi
 echo ""
 echo "Test 2: Tool harness (network tools enabled)"
 if [[ "${IDEOCODE_REMOTE_CARGO:-0}" == "1" ]]; then
-  (cd "$repo_root" && "$cargo_exec" build --bin IDEOCODE-harness)
-  (cd "$repo_root" && ./target/debug/IDEOCODE-harness -- --include-network)
+  (cd "$repo_root" && "$cargo_exec" build --bin ideocode-harness)
+  (cd "$repo_root" && ./target/debug/ideocode-harness -- --include-network)
 else
-  (cd "$repo_root" && cargo run --bin IDEOCODE-harness -- --include-network)
+  (cd "$repo_root" && cargo run --bin ideocode-harness -- --include-network)
 fi
 
 echo ""
 echo "Test 3: End-to-end trace"
-if [[ ! -x "$repo_root/target/release/IDEOCODE" ]]; then
+if [[ ! -x "$repo_root/target/release/ideocode" ]]; then
   (cd "$repo_root" && "$cargo_exec" build --release)
 fi
 

@@ -24,7 +24,7 @@ Options:
   --configured          Test only configured providers (default)
   --provider NAME       Test one provider. Can be repeated.
   --out DIR             Report directory (default: target/auth-test-reports)
-  --bin PATH            IDEOCODE binary to run (default: cargo run --bin IDEOCODE --)
+  --bin PATH            ideocode binary to run (default: cargo run --bin ideocode --)
   --login               Run login before validation for each provider
   --no-smoke            Skip runtime model smoke
   --no-tool-smoke       Skip tool-enabled runtime smoke
@@ -47,7 +47,7 @@ Environment equivalents:
 Examples:
   scripts/auth_regression_matrix.sh --configured --no-smoke
   scripts/auth_regression_matrix.sh --provider deepseek --provider zai
-  IDEOCODE_AUTH_MATRIX_BIN=target/selfdev/IDEOCODE scripts/auth_regression_matrix.sh --all
+  IDEOCODE_AUTH_MATRIX_BIN=target/selfdev/ideocode scripts/auth_regression_matrix.sh --all
 EOF
 }
 
@@ -137,7 +137,7 @@ run_IDEOCODE() {
   if [[ -n "$bin" ]]; then
     timeout "$per_command_timeout" "$bin" "$@"
   else
-    timeout "$per_command_timeout" cargo run --quiet --bin IDEOCODE -- "$@"
+    timeout "$per_command_timeout" cargo run --quiet --bin ideocode -- "$@"
   fi
 }
 

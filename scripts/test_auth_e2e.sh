@@ -28,7 +28,7 @@ if [[ "${IDEOCODE_AUTH_TEST_JSON:-0}" == "1" ]]; then
   args+=(--json)
 fi
 
-(cd "$repo_root" && cargo run --bin IDEOCODE -- "${args[@]}")
+(cd "$repo_root" && cargo run --bin ideocode -- "${args[@]}")
 
 echo ""
 echo "=== Auth E2E OK ==="

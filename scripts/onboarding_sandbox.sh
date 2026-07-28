@@ -178,11 +178,11 @@ run_IDEOCODE() {
     echo "IDEOCODE_SANDBOX_BIN=$IDEOCODE_SANDBOX_BIN is not executable" >&2
     return 1
   fi
-  local binary_path="$repo_root/target/debug/IDEOCODE"
+  local binary_path="$repo_root/target/debug/ideocode"
   if [[ -x "$binary_path" ]]; then
     run_in_sandbox "$binary_path" "${prefix[@]}" "$@"
   else
-    run_in_sandbox cargo run --bin IDEOCODE -- "${prefix[@]}" "$@"
+    run_in_sandbox cargo run --bin ideocode -- "${prefix[@]}" "$@"
   fi
 }
 

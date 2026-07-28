@@ -2,7 +2,7 @@
 # Live end-to-end sandbox for the "current client, stale older server" fix.
 #
 #   Server: the REAL released v0.14.6 binary (downloaded from GitHub).
-#   Client: the freshly built current binary (target/debug/IDEOCODE, has the fix).
+#   Client: the freshly built current binary (target/debug/ideocode, has the fix).
 #   Field state: shared-server channel pinned to OLD (v0.14.6); stable -> NEW.
 #
 # It starts the real old daemon, then runs the NEW client's `IDEOCODE server reload`
@@ -10,19 +10,19 @@
 # the resulting daemon is running v0.22.x.
 #
 # Usage:
-#   cargo build -p IDEOCODE --bin IDEOCODE
+#   cargo build -p ideocode --bin ideocode
 #   scripts/stale_server_upgrade_sandbox.sh
 #
 # Linux x86_64 only (uses the published IDEOCODE-linux-x86_64 release asset).
 set -uo pipefail
 
 REPO_ROOT="$(cd -- "$(dirname -- "$0")/.." && pwd)"
-NEW_BIN="${NEW_BIN:-$REPO_ROOT/target/debug/IDEOCODE}"
+NEW_BIN="${NEW_BIN:-$REPO_ROOT/target/debug/ideocode}"
 OLD_VERSION="${OLD_VERSION:-v0.14.6}"
 OLD_DIR="${OLD_DIR:-/tmp/IDEOCODE-sandbox}"
 OLD_WRAP="$OLD_DIR/IDEOCODE-linux-x86_64"
 
-[ -x "$NEW_BIN" ] || { echo "missing new client binary: $NEW_BIN (run: cargo build -p IDEOCODE --bin IDEOCODE)"; exit 2; }
+[ -x "$NEW_BIN" ] || { echo "missing new client binary: $NEW_BIN (run: cargo build -p ideocode --bin ideocode)"; exit 2; }
 
 # Fetch + extract the real old release binary if it is not already present.
 if [ ! -x "$OLD_WRAP" ]; then
