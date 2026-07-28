@@ -106,6 +106,26 @@ pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
         ));
     }
 
+    // Tokens per second
+    if let Some(tps) = app.output_tps() {
+        if tps > 0.0 {
+            if !line2_spans.is_empty() {
+                line2_spans.push(sep.clone());
+            }
+            let tps_color = if tps > 80.0 {
+                neon_green()
+            } else if tps > 40.0 {
+                neon_yellow()
+            } else {
+                dim_color()
+            };
+            line2_spans.push(Span::styled(
+                format!("⚡{:.0} tok/s", tps),
+                Style::default().fg(tps_color),
+            ));
+        }
+    }
+
     // Session duration
     if elapsed > 0 {
         if !line2_spans.is_empty() {
@@ -135,24 +155,6 @@ pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
     // Render both lines
     let lines = vec![line1, line2];
     frame.render_widget(Paragraph::new(lines), area);
-}
-
-#[allow(dead_code)]
-struct StatusSegment {
-    icon: String,
-    text: String,
-    color: Color,
-}
-
-#[allow(dead_code)]
-impl StatusSegment {
-    fn new(icon: &str, text: &str, color: Color) -> Self {
-        Self {
-            icon: icon.to_string(),
-            text: text.to_string(),
-            color,
-        }
-    }
 }
 
 fn format_tokens(n: u64) -> String {

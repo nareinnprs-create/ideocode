@@ -176,12 +176,14 @@ impl ToastManager {
 
             // Fade color based on remaining time
             let faded_color = if alpha < 1.0 {
-                let (r, g, b) = color_to_floats(color, (128.0, 128.0, 128.0));
-                rgb(
-                    (r * alpha) as u8,
-                    (g * alpha) as u8,
-                    (b * alpha) as u8,
-                )
+                match color {
+                    Color::Rgb(r, g, b) => rgb(
+                        ((r as f32) * alpha) as u8,
+                        ((g as f32) * alpha) as u8,
+                        ((b as f32) * alpha) as u8,
+                    ),
+                    _ => color,
+                }
             } else {
                 color
             };
