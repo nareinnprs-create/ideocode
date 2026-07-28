@@ -1993,6 +1993,16 @@ pub(super) fn handle_alt_key(app: &mut App, code: KeyCode) -> bool {
             crate::tui::ui_integration::toggle_sidebar();
             true
         }
+        // Alt+r: enter reaction mode for last assistant message
+        KeyCode::Char('r') => {
+            // Find the last assistant message index
+            let msg_count = app.display_messages().len();
+            if msg_count > 0 {
+                let last_assistant = app.display_messages().iter().rposition(|m| m.role == "assistant").unwrap_or(msg_count - 1);
+                crate::tui::ui_integration::enter_reaction_mode(last_assistant);
+            }
+            true
+        }
         _ => false,
     }
 }
@@ -3033,6 +3043,24 @@ impl App {
         if code == KeyCode::F(3) && !crate::tui::ui_integration::sidebar_visible() {
             crate::tui::ui_integration::toggle_chat_search();
             return Ok(());
+        }
+
+        // Reaction mode: l/t/i/f/e/h toggles reactions, Esc exits
+        if crate::tui::ui_integration::reaction_mode_active() {
+            match code {
+                KeyCode::Esc => {
+                    crate::tui::ui_integration::exit_reaction_mode();
+                    return Ok(());
+                }
+                KeyCode::Char(c) => {
+                    if let Some(reaction) = crate::tui::ui_reactions::parse_reaction(c) {
+                        crate::tui::ui_integration::toggle_message_reaction(reaction);
+                        crate::tui::ui_integration::exit_reaction_mode();
+                        return Ok(());
+                    }
+                }
+                _ => {}
+            }
         }
 
         // Gesture pad overlay: intercepts keys while the quick-action grid is visible.

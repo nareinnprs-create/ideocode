@@ -3090,6 +3090,17 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
         crate::tui::ui_integration::render_chat_search_bar(frame, chunks[0]);
     }
 
+    // Reaction picker (renders at bottom when reaction mode is active)
+    if crate::tui::ui_integration::reaction_mode_active() {
+        let reaction_area = Rect {
+            x: area.x,
+            y: area.y + area.height.saturating_sub(1),
+            width: area.width,
+            height: 1,
+        };
+        crate::tui::ui_integration::render_reaction_picker(frame, reaction_area);
+    }
+
     // Capture layout info for visual debug
     if let Some(ref mut capture) = debug_capture {
         capture.layout.use_packed = use_packed;

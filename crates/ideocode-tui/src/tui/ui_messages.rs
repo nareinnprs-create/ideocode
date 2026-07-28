@@ -3937,6 +3937,15 @@ pub(crate) fn render_tool_message(
         Span::styled(format!("  {} ", icon), Style::default().fg(icon_color)),
         Span::styled(display_name, Style::default().fg(tool_color())),
     ];
+    // Collapse indicator (▼ expanded / ▶ collapsed)
+    if !tc.id.is_empty() {
+        let collapsed = crate::tui::ui_tool_collapse::is_collapsed(&tc.id);
+        let indicator = if collapsed { " ▶ " } else { " ▾ " };
+        tool_line.push(Span::styled(
+            indicator.to_string(),
+            Style::default().fg(dim_color()),
+        ));
+    }
     if let Some(intent) = intent {
         tool_line.push(Span::styled(" · ", Style::default().fg(dim_color())));
         tool_line.push(Span::styled(

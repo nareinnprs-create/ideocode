@@ -1200,6 +1200,47 @@ pub fn render_chat_search_bar(frame: &mut Frame, area: Rect) {
     });
 }
 
+// ── Message Reactions ─────────────────────────────────────────────────
+
+thread_local! {
+    static REACTION_STATE: RefCell<super::ui_reactions::ReactionState> =
+        RefCell::new(super::ui_reactions::ReactionState::new());
+}
+
+pub fn enter_reaction_mode(message_index: usize) {
+    REACTION_STATE.with(|s| s.borrow_mut().enter_mode(message_index));
+}
+
+pub fn exit_reaction_mode() {
+    REACTION_STATE.with(|s| s.borrow_mut().exit_mode());
+}
+
+pub fn reaction_mode_active() -> bool {
+    REACTION_STATE.with(|s| s.borrow().is_active())
+}
+
+pub fn reaction_active_message() -> usize {
+    REACTION_STATE.with(|s| s.borrow().active_message_index())
+}
+
+pub fn toggle_message_reaction(reaction: super::ui_reactions::Reaction) {
+    REACTION_STATE.with(|s| s.borrow_mut().toggle_reaction(reaction));
+}
+
+pub fn get_message_reactions(message_index: usize) -> Vec<super::ui_reactions::Reaction> {
+    REACTION_STATE.with(|s| s.borrow().get_reactions(message_index).to_vec())
+}
+
+pub fn render_reaction_picker(frame: &mut Frame, area: Rect) {
+    REACTION_STATE.with(|s| {
+        let st = s.borrow();
+        if st.is_active() {
+            let line = super::ui_reactions::render_reaction_picker(st.active_message_index());
+            frame.render_widget(Paragraph::new(line), area);
+        }
+    });
+}
+
 // ── Helper: process memory ────────────────────────────────────────────
 
 #[cfg(target_os = "linux")]
@@ -1919,25 +1960,17 @@ pub fn render_achievements_overlay(frame: &mut Frame, area: Rect) {
     frame.render_widget(Paragraph::new(lines).block(block), panel_area);
 }
 
-// ── A6: Reactions ────────────────────────────────────────────────────
+// ── A6: Reactions (legacy compat) ────────────────────────────────────
 
-thread_local! {
-    static REACTIONS_VISIBLE: RefCell<bool> = const { RefCell::new(false) };
+// Reactions are now managed by REACTION_STATE above.
+// This section kept for any callers of the old API.
+pub fn toggle_reactions() {
+    // No-op: reactions are now per-message via reaction_mode
 }
-
-pub fn toggle_reactions() { REACTIONS_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow()); }
-pub fn reactions_visible() -> bool { REACTIONS_VISIBLE.with(|s| *s.borrow()) }
+pub fn reactions_visible() -> bool { reaction_mode_active() }
 
 pub fn render_reactions_overlay(frame: &mut Frame, area: Rect) {
-    if !REACTIONS_VISIBLE.with(|s| *s.borrow()) { return; }
-    let line = super::ui_reactions::render_reaction_picker();
-    let pos = Rect {
-        x: area.x + (area.width.saturating_sub(30)) / 2,
-        y: area.y + area.height.saturating_sub(2),
-        width: 30,
-        height: 1,
-    };
-    frame.render_widget(Paragraph::new(line), pos);
+    render_reaction_picker(frame, area);
 }
 
 // ── A7: Humor Context ────────────────────────────────────────────────
