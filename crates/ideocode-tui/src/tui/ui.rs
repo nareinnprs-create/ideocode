@@ -3414,6 +3414,51 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     }
 
     // ── NEW UI MODULES INTEGRATION (wired to real TuiState) ─────────
+
+    // Premium top header bar (2 lines, branded)
+    {
+        let header_height = 2u16;
+        let header_area = Rect {
+            x: area.x,
+            y: area.y,
+            width: area.width,
+            height: header_height.min(area.height),
+        };
+        let model = app.provider_model();
+        let provider = app.provider_name();
+        let is_processing = app.is_processing();
+
+        let status_icon = if is_processing { "⚡" } else { "●" };
+        let status_color = if is_processing { rgb(0, 240, 255) } else { rgb(0, 230, 118) };
+        let status_text = if is_processing { "thinking" } else { "ready" };
+
+        let short_model = if model.len() > 28 {
+            format!("{}…", &model[..27])
+        } else {
+            model.clone()
+        };
+
+        let line1 = Line::from(vec![
+            Span::styled(" IDEOCODE ", Style::default().fg(rgb(139, 92, 246)).add_modifier(Modifier::BOLD)),
+            Span::styled("│", Style::default().fg(dim_color())),
+            Span::styled(format!(" {} ", status_icon), Style::default().fg(status_color)),
+            Span::styled(status_text, Style::default().fg(status_color).add_modifier(Modifier::BOLD)),
+            Span::styled(" │ ", Style::default().fg(dim_color())),
+            Span::styled(format!("🧠 {}", short_model), Style::default().fg(rgb(255, 0, 255))),
+            if !provider.is_empty() {
+                Span::styled(format!(" │ 🔗 {}", provider), Style::default().fg(rgb(139, 92, 246)))
+            } else {
+                Span::styled("", Style::default())
+            },
+        ]);
+
+        let line2_spans = vec![
+            Span::styled("─".repeat(header_area.width as usize), Style::default().fg(dim_color())),
+        ];
+
+        frame.render_widget(Paragraph::new(vec![line1, Line::from(line2_spans)]), header_area);
+    }
+
     // Toast notifications (top-right)
     crate::tui::ui_integration::render_toasts(frame, area);
 
