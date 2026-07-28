@@ -828,6 +828,13 @@ fn run_git_command(args: &str) -> Vec<String> {
 
 /// Initialize
 pub fn init_all() {
+    // Restore persisted UI preferences
+    if super::app::ui_prefs::compact_mode() {
+        COMPACT_STATE.with(|s| *s.borrow_mut() = true);
+    }
+    if super::app::ui_prefs::big_mode() {
+        BIG_STATE.with(|s| *s.borrow_mut() = true);
+    }
     init();
 }
 
@@ -1668,7 +1675,11 @@ thread_local! {
 }
 
 pub fn toggle_compact_mode() {
-    COMPACT_STATE.with(|s| { *s.borrow_mut() = !*s.borrow(); });
+    COMPACT_STATE.with(|s| {
+        let new = !*s.borrow();
+        *s.borrow_mut() = new;
+        super::app::ui_prefs::save_compact_mode(new);
+    });
 }
 pub fn is_compact_mode() -> bool { COMPACT_STATE.with(|s| *s.borrow()) }
 
@@ -1686,7 +1697,11 @@ thread_local! {
 }
 
 pub fn toggle_big_mode() {
-    BIG_STATE.with(|s| { *s.borrow_mut() = !*s.borrow(); });
+    BIG_STATE.with(|s| {
+        let new = !*s.borrow();
+        *s.borrow_mut() = new;
+        super::app::ui_prefs::save_big_mode(new);
+    });
 }
 pub fn is_big_mode() -> bool { BIG_STATE.with(|s| *s.borrow()) }
 
@@ -2401,9 +2416,23 @@ struct SidebarState {
 
 impl SidebarState {
     fn new() -> Self {
+        let panel_name = super::app::ui_prefs::sidebar_panel();
+        let active_panel = match panel_name.as_str() {
+            "Git" => super::ui_sidebar::SidebarPanel::Git,
+            "Search" => super::ui_sidebar::SidebarPanel::Search,
+            "Build" => super::ui_sidebar::SidebarPanel::Build,
+            "Log" => super::ui_sidebar::SidebarPanel::Log,
+            "Docker" => super::ui_sidebar::SidebarPanel::Docker,
+            "CI/CD" => super::ui_sidebar::SidebarPanel::Cicd,
+            "Provider" => super::ui_sidebar::SidebarPanel::Provider,
+            "Profiler" => super::ui_sidebar::SidebarPanel::Profiler,
+            "Debugger" => super::ui_sidebar::SidebarPanel::Debugger,
+            "Split" => super::ui_sidebar::SidebarPanel::Split,
+            _ => super::ui_sidebar::SidebarPanel::FileExplorer,
+        };
         Self {
             visible: false,
-            active_panel: super::ui_sidebar::SidebarPanel::FileExplorer,
+            active_panel,
         }
     }
 }
@@ -2423,6 +2452,7 @@ pub fn sidebar_next_panel() {
     SIDEBAR_STATE.with(|s| {
         let mut st = s.borrow_mut();
         st.active_panel = st.active_panel.next();
+        super::app::ui_prefs::save_sidebar_panel(st.active_panel.label());
     });
 }
 
@@ -2430,6 +2460,7 @@ pub fn sidebar_prev_panel() {
     SIDEBAR_STATE.with(|s| {
         let mut st = s.borrow_mut();
         st.active_panel = st.active_panel.prev();
+        super::app::ui_prefs::save_sidebar_panel(st.active_panel.label());
     });
 }
 
@@ -2439,6 +2470,7 @@ pub fn sidebar_set_panel(panel: super::ui_sidebar::SidebarPanel) {
         st.active_panel = panel;
         st.visible = true;
     });
+    super::app::ui_prefs::save_sidebar_panel(panel.label());
 }
 
 pub fn render_sidebar(frame: &mut Frame, area: Rect) {

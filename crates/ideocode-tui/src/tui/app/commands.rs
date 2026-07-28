@@ -1612,6 +1612,94 @@ fn handle_transcript_command(app: &mut App, trimmed: &str) -> bool {
     true
 }
 
+fn handle_export_command(app: &mut App, trimmed: &str) {
+    let parts: Vec<&str> = trimmed.split_whitespace().collect();
+    let format_arg = parts.get(1).copied();
+    match format_arg {
+        Some("markdown") | Some("md") => {
+            do_export(app, &crate::tui::ui_export::ExportFormat::Markdown);
+        }
+        Some("html") => {
+            do_export(app, &crate::tui::ui_export::ExportFormat::Html);
+        }
+        Some("json") => {
+            do_export(app, &crate::tui::ui_export::ExportFormat::Json);
+        }
+        Some("asciinema") | Some("cast") => {
+            do_export(app, &crate::tui::ui_export::ExportFormat::Asciinema);
+        }
+        Some("clipboard") | Some("copy") => {
+            export_to_clipboard(app);
+        }
+        Some("help") | Some("--help") | Some("-h") => {
+            app.push_display_message(DisplayMessage::system(
+                "Usage: /export [format]\n  markdown|md  - Export as Markdown\n  html         - Export as HTML\n  json         - Export as JSON\n  asciinema    - Export as asciinema .cast\n  clipboard    - Copy to clipboard\n  (no args)    - Open export picker (Alt+I)".to_string(),
+            ));
+        }
+        None => {
+            crate::tui::ui_integration::toggle_export();
+            app.set_status_notice("Export picker");
+        }
+        Some(other) => {
+            app.push_display_message(DisplayMessage::error(
+                format!("Unknown export format: '{}'. Use /export help to see options.", other),
+            ));
+        }
+    }
+}
+
+fn do_export(app: &mut App, format: &crate::tui::ui_export::ExportFormat) {
+    let messages: Vec<(String, String)> = app.display_messages()
+        .iter()
+        .map(|m| (m.role.clone(), m.content.clone()))
+        .collect();
+    let filename = crate::tui::ui_export::default_export_filename(format);
+    match crate::tui::ui_export::export_session(format, &filename, &messages) {
+        Ok(path) => {
+            app.push_display_message(DisplayMessage::system(format!(
+                "Exported session to {}", path
+            )));
+            app.set_status_notice(format!("Exported ({})", format.label()));
+        }
+        Err(error) => {
+            app.push_display_message(DisplayMessage::error(format!(
+                "Export failed: {}", error
+            )));
+        }
+    }
+}
+
+fn export_to_clipboard(app: &mut App) {
+    let messages: Vec<(String, String)> = app.display_messages()
+        .iter()
+        .map(|m| (m.role.clone(), m.content.clone()))
+        .collect();
+    let md = crate::tui::ui_export::export_session(
+        &crate::tui::ui_export::ExportFormat::Markdown,
+        "",
+        &messages,
+    );
+    match md {
+        Ok(content) => {
+            if super::helpers::copy_to_clipboard(&content) {
+                app.push_display_message(DisplayMessage::system(
+                    "Session copied to clipboard".to_string(),
+                ));
+                app.set_status_notice("Copied to clipboard");
+            } else {
+                app.push_display_message(DisplayMessage::error(
+                    "Failed to copy to clipboard".to_string(),
+                ));
+            }
+        }
+        Err(error) => {
+            app.push_display_message(DisplayMessage::error(format!(
+                "Export failed: {}", error
+            )));
+        }
+    }
+}
+
 pub(super) fn handle_git_status_completed(app: &mut App, completed: GitStatusCompleted) {
     if completed.session_id != active_session_id(app) {
         return;
@@ -1646,6 +1734,11 @@ pub(super) fn handle_session_command(app: &mut App, trimmed: &str) -> bool {
         || handle_judge_command_local(app, trimmed)
         || handle_selfdev_command(app, trimmed)
     {
+        return true;
+    }
+
+    if trimmed.starts_with("/export") {
+        handle_export_command(app, trimmed);
         return true;
     }
 

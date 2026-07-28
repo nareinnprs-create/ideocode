@@ -89,6 +89,10 @@ const REGISTERED_COMMANDS: &[RegisteredCommand] = &[
         "Triage new GitHub issues and autonomously fix the safe ones",
     ),
     RegisteredCommand::public("/transcript", "Open the current session transcript file"),
+    RegisteredCommand::public(
+        "/export",
+        "Export session: /export [markdown|html|json|asciinema|clipboard]",
+    ),
     RegisteredCommand::public("/subagent-model", "Show/change subagent model policy"),
     RegisteredCommand::public("/autoreview", "Show/toggle automatic end-of-turn review"),
     RegisteredCommand::public("/autojudge", "Show/toggle automatic end-of-turn judging"),
@@ -707,6 +711,20 @@ impl App {
                 "/transcript path".into(),
                 "Print transcript path without opening",
             )];
+        }
+
+        if prefix.starts_with("/export ") || prefix_trimmed == "/export" {
+            return self.rank_suggestions(
+                input,
+                vec![
+                    ("/export markdown".into(), "Export as Markdown (.md)"),
+                    ("/export html".into(), "Export as HTML"),
+                    ("/export json".into(), "Export as JSON"),
+                    ("/export asciinema".into(), "Export as terminal recording"),
+                    ("/export clipboard".into(), "Copy session to clipboard"),
+                    ("/export help".into(), "Show export usage"),
+                ],
+            );
         }
 
         if prefix.starts_with("/effort ") {

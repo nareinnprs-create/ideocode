@@ -16,6 +16,16 @@ pub(crate) struct UiPreferences {
     /// user never toggled it; default to visible.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub inline_images_visible: Option<bool>,
+    /// Last active sidebar panel name (e.g. "Git", "Build", "FileExplorer").
+    /// `None` means sidebar was never opened; default to FileExplorer.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sidebar_panel: Option<String>,
+    /// Whether compact mode was active when the session ended.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub compact_mode: Option<bool>,
+    /// Whether big mode was active when the session ended.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub big_mode: Option<bool>,
 }
 
 fn prefs_path() -> Option<std::path::PathBuf> {
@@ -54,6 +64,54 @@ pub(crate) fn save_inline_images_visible(visible: bool) {
             error
         ));
     }
+}
+
+/// Last active sidebar panel name, defaulting to "FileExplorer".
+pub(crate) fn sidebar_panel() -> String {
+    load().sidebar_panel.unwrap_or_else(|| "FileExplorer".to_string())
+}
+
+/// Persist the sidebar panel preference.
+pub(crate) fn save_sidebar_panel(panel: &str) {
+    let Some(path) = prefs_path() else { return; };
+    let mut prefs = load();
+    prefs.sidebar_panel = Some(panel.to_string());
+    if let Some(parent) = path.parent() {
+        let _ = std::fs::create_dir_all(parent);
+    }
+    let _ = crate::storage::write_json(&path, &prefs);
+}
+
+/// Persisted compact mode state, defaulting to off.
+pub(crate) fn compact_mode() -> bool {
+    load().compact_mode.unwrap_or(false)
+}
+
+/// Persist the compact mode toggle.
+pub(crate) fn save_compact_mode(enabled: bool) {
+    let Some(path) = prefs_path() else { return; };
+    let mut prefs = load();
+    prefs.compact_mode = Some(enabled);
+    if let Some(parent) = path.parent() {
+        let _ = std::fs::create_dir_all(parent);
+    }
+    let _ = crate::storage::write_json(&path, &prefs);
+}
+
+/// Persisted big mode state, defaulting to off.
+pub(crate) fn big_mode() -> bool {
+    load().big_mode.unwrap_or(false)
+}
+
+/// Persist the big mode toggle.
+pub(crate) fn save_big_mode(enabled: bool) {
+    let Some(path) = prefs_path() else { return; };
+    let mut prefs = load();
+    prefs.big_mode = Some(enabled);
+    if let Some(parent) = path.parent() {
+        let _ = std::fs::create_dir_all(parent);
+    }
+    let _ = crate::storage::write_json(&path, &prefs);
 }
 
 #[cfg(test)]
