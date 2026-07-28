@@ -86,6 +86,7 @@ pub mod ui_big;
 pub mod ui_split;
 pub mod ui_shell_cache;
 pub mod ui_sidebar;
+pub mod ui_chat_search;
 pub mod ui_wordcount;
 pub mod ui_timer;
 pub mod ui_network;

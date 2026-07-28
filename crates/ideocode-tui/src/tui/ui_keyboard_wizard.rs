@@ -81,11 +81,11 @@ impl KeyboardWizard {
         );
         tips.insert(
             "find".to_string(),
-            KeyboardTip::new("find", "Ctrl+F", "Find in conversation"),
+            KeyboardTip::new("find", "Alt+Z", "Search code"),
         );
         tips.insert(
             "command_palette".to_string(),
-            KeyboardTip::new("command_palette", "Ctrl+P", "Open command palette"),
+            KeyboardTip::new("command_palette", "Alt+8", "Open command palette"),
         );
         tips.insert(
             "model_switch".to_string(),

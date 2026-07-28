@@ -3085,6 +3085,11 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
         frame.render_widget(Paragraph::new(swarm_strip_lines.clone()), chunks[2]);
     }
 
+    // Chat transcript search bar (renders at top of messages area when active)
+    if crate::tui::ui_integration::chat_search_visible() {
+        crate::tui::ui_integration::render_chat_search_bar(frame, chunks[0]);
+    }
+
     // Capture layout info for visual debug
     if let Some(ref mut capture) = debug_capture {
         capture.layout.use_packed = use_packed;

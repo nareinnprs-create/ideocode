@@ -2063,7 +2063,7 @@ fn gesture_activate_item(index: usize) {
 }
 
 /// Handle keys while the command palette overlay is visible.
-fn handle_command_palette_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
+fn handle_command_palette_keys(app: &mut App, code: KeyCode, _modifiers: KeyModifiers) -> bool {
     if !crate::tui::ui_integration::command_palette_visible() { return false; }
 
     match code {
@@ -2087,11 +2087,61 @@ fn handle_command_palette_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool 
             crate::tui::ui_integration::palette_prev_category();
             true
         }
+        KeyCode::Backspace => {
+            crate::tui::ui_integration::palette_backspace();
+            true
+        }
+        KeyCode::Char(c) => {
+            crate::tui::ui_integration::palette_type_char(c);
+            true
+        }
         KeyCode::Enter => {
-            crate::tui::ui_integration::toggle_command_palette();
+            if let Some(cmd_name) = crate::tui::ui_integration::palette_selected_command() {
+                crate::tui::ui_integration::toggle_command_palette();
+                if cmd_name.starts_with('/') {
+                    // Slash commands: inject into input so user can review and press Enter
+                    app.input = cmd_name;
+                    app.cursor_pos = app.input.len();
+                } else {
+                    // Tool commands: execute immediately
+                    execute_palette_tool_command(&cmd_name);
+                }
+            } else {
+                crate::tui::ui_integration::toggle_command_palette();
+            }
             true
         }
         _ => false,
+    }
+}
+
+/// Execute a tool command selected from the palette.
+fn execute_palette_tool_command(cmd: &str) {
+    match cmd {
+        "Toggle Sidebar" => crate::tui::ui_integration::toggle_sidebar(),
+        "Toggle Git Panel" => {
+            crate::tui::ui_integration::toggle_sidebar();
+            crate::tui::ui_integration::sidebar_set_panel(crate::tui::ui_sidebar::SidebarPanel::Git);
+        }
+        "Toggle Build Panel" => {
+            crate::tui::ui_integration::toggle_sidebar();
+            crate::tui::ui_integration::sidebar_set_panel(crate::tui::ui_sidebar::SidebarPanel::Build);
+        }
+        "Toggle Search Panel" => {
+            crate::tui::ui_integration::toggle_sidebar();
+            crate::tui::ui_integration::sidebar_set_panel(crate::tui::ui_sidebar::SidebarPanel::Search);
+        }
+        "Toggle Docker Panel" => {
+            crate::tui::ui_integration::toggle_sidebar();
+            crate::tui::ui_integration::sidebar_set_panel(crate::tui::ui_sidebar::SidebarPanel::Docker);
+        }
+        "Toggle CI/CD Panel" => {
+            crate::tui::ui_integration::toggle_sidebar();
+            crate::tui::ui_integration::sidebar_set_panel(crate::tui::ui_sidebar::SidebarPanel::Cicd);
+        }
+        "Provider Manager" => crate::tui::ui_integration::toggle_provider_panel(),
+        "Split Terminal" => crate::tui::ui_integration::toggle_split_terminal(),
+        _ => {}
     }
 }
 
@@ -2953,13 +3003,45 @@ impl App {
             return Ok(());
         }
 
+        // Chat transcript search (F3 to open, type to filter, F3/Enter next, Esc close)
+        if crate::tui::ui_integration::chat_search_visible() {
+            match code {
+                KeyCode::Esc => {
+                    crate::tui::ui_integration::chat_search_close();
+                    return Ok(());
+                }
+                KeyCode::F(3) => {
+                    crate::tui::ui_integration::chat_search_next();
+                    return Ok(());
+                }
+                KeyCode::Enter => {
+                    crate::tui::ui_integration::chat_search_next();
+                    return Ok(());
+                }
+                KeyCode::Backspace => {
+                    crate::tui::ui_integration::chat_search_backspace();
+                    return Ok(());
+                }
+                KeyCode::Char(c) if !modifiers.contains(KeyModifiers::CONTROL) => {
+                    crate::tui::ui_integration::chat_search_type_char(c);
+                    return Ok(());
+                }
+                _ => {}
+            }
+        }
+        // F3 opens chat search when not already open
+        if code == KeyCode::F(3) && !crate::tui::ui_integration::sidebar_visible() {
+            crate::tui::ui_integration::toggle_chat_search();
+            return Ok(());
+        }
+
         // Gesture pad overlay: intercepts keys while the quick-action grid is visible.
         if handle_gesture_pad_keys(code, modifiers) {
             return Ok(());
         }
 
         // Command palette overlay: intercepts keys while palette is visible.
-        if handle_command_palette_keys(code, modifiers) {
+        if handle_command_palette_keys(self, code, modifiers) {
             return Ok(());
         }
 

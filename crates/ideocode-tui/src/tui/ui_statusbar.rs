@@ -118,7 +118,7 @@ pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
     }
 
     // Right-align: keyboard shortcut hints
-    let hints = "Ctrl+/ help │ Alt+Q panels │ Ctrl+F search";
+    let hints = "Ctrl+/ help │ Alt+8 palette │ Alt+X sidebar";
     let used_width: usize = line2_spans.iter().map(|s| s.content.chars().count()).sum();
     let padding = w.saturating_sub(used_width + hints.len());
     line2_spans.push(Span::styled(

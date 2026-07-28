@@ -1048,6 +1048,20 @@ impl PaletteState {
     fn new() -> Self {
         Self { visible: false, selected: 0, filter: String::new(), category_index: 0 }
     }
+
+    fn filtered_commands(&self) -> Vec<super::ui_palette::PaletteCommand> {
+        let all = super::ui_palette::all_commands();
+        let category = match self.category_index {
+            0 => super::ui_palette::CommandCategory::Recent,
+            1 => super::ui_palette::CommandCategory::Frequent,
+            2 => super::ui_palette::CommandCategory::All,
+            3 => super::ui_palette::CommandCategory::Settings,
+            4 => super::ui_palette::CommandCategory::Files,
+            _ => super::ui_palette::CommandCategory::Tools,
+        };
+        let by_category: Vec<_> = all.into_iter().filter(|cmd| cmd.category == category).collect();
+        super::ui_palette::filter_commands(&by_category, &self.filter)
+    }
 }
 
 pub fn toggle_command_palette() {
@@ -1066,11 +1080,32 @@ pub fn palette_navigate_up() {
 pub fn palette_navigate_down() {
     PALETTE_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = (st.selected + 1).min(15); });
 }
+pub fn palette_type_char(c: char) {
+    PALETTE_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.filter.push(c);
+        st.selected = 0;
+    });
+}
+pub fn palette_backspace() {
+    PALETTE_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.filter.pop();
+        st.selected = 0;
+    });
+}
+pub fn palette_selected_command() -> Option<String> {
+    PALETTE_STATE.with(|s| {
+        let st = s.borrow();
+        let cmds = st.filtered_commands();
+        cmds.get(st.selected).map(|cmd| cmd.name.clone())
+    })
+}
 pub fn palette_next_category() {
-    PALETTE_STATE.with(|s| { let mut st = s.borrow_mut(); st.category_index = (st.category_index + 1) % 5; });
+    PALETTE_STATE.with(|s| { let mut st = s.borrow_mut(); st.category_index = (st.category_index + 1) % 6; });
 }
 pub fn palette_prev_category() {
-    PALETTE_STATE.with(|s| { let mut st = s.borrow_mut(); st.category_index = if st.category_index == 0 { 4 } else { st.category_index - 1 }; });
+    PALETTE_STATE.with(|s| { let mut st = s.borrow_mut(); st.category_index = if st.category_index == 0 { 5 } else { st.category_index - 1 }; });
 }
 
 pub fn render_command_palette_overlay(frame: &mut Frame, area: Rect) {
@@ -1078,14 +1113,15 @@ pub fn render_command_palette_overlay(frame: &mut Frame, area: Rect) {
         let st = s.borrow();
         if !st.visible { return; }
 
-        let commands = super::ui_palette::all_commands();
         let category = match st.category_index {
             0 => super::ui_palette::CommandCategory::Recent,
             1 => super::ui_palette::CommandCategory::Frequent,
             2 => super::ui_palette::CommandCategory::All,
             3 => super::ui_palette::CommandCategory::Settings,
-            _ => super::ui_palette::CommandCategory::Files,
+            4 => super::ui_palette::CommandCategory::Files,
+            _ => super::ui_palette::CommandCategory::Tools,
         };
+        let commands = st.filtered_commands();
         let lines = super::ui_palette::render_command_palette(&commands, st.selected, &st.filter, &category);
         let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
         let panel_width = 50.min(area.width);
@@ -1096,6 +1132,71 @@ pub fn render_command_palette_overlay(frame: &mut Frame, area: Rect) {
             height: panel_height,
         };
         frame.render_widget(Paragraph::new(lines), panel_area);
+    });
+}
+
+// ── Chat Transcript Search ────────────────────────────────────────────
+
+thread_local! {
+    static CHAT_SEARCH_STATE: RefCell<super::ui_chat_search::ChatSearchState> =
+        RefCell::new(super::ui_chat_search::ChatSearchState::new());
+}
+
+pub fn toggle_chat_search() {
+    CHAT_SEARCH_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        if st.visible {
+            st.close();
+        } else {
+            st.open();
+        }
+    });
+}
+
+pub fn chat_search_visible() -> bool {
+    CHAT_SEARCH_STATE.with(|s| s.borrow().visible)
+}
+
+pub fn chat_search_type_char(c: char) {
+    CHAT_SEARCH_STATE.with(|s| s.borrow_mut().type_char(c));
+}
+
+pub fn chat_search_backspace() {
+    CHAT_SEARCH_STATE.with(|s| s.borrow_mut().backspace());
+}
+
+pub fn chat_search_next() {
+    CHAT_SEARCH_STATE.with(|s| s.borrow_mut().next_match());
+}
+
+pub fn chat_search_prev() {
+    CHAT_SEARCH_STATE.with(|s| s.borrow_mut().prev_match());
+}
+
+pub fn chat_search_close() {
+    CHAT_SEARCH_STATE.with(|s| s.borrow_mut().close());
+}
+
+pub fn chat_search_query() -> String {
+    CHAT_SEARCH_STATE.with(|s| s.borrow().query.clone())
+}
+
+pub fn chat_search_current_match() -> usize {
+    CHAT_SEARCH_STATE.with(|s| s.borrow().current_match)
+}
+
+pub fn chat_search_set_matches(total: usize, current: usize) {
+    CHAT_SEARCH_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.total_matches = total;
+        st.current_match = current;
+    });
+}
+
+pub fn render_chat_search_bar(frame: &mut Frame, area: Rect) {
+    CHAT_SEARCH_STATE.with(|s| {
+        let st = s.borrow();
+        super::ui_chat_search::render_search_bar(&st, frame, area);
     });
 }
 

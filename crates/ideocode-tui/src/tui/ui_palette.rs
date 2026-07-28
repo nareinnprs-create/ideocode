@@ -110,6 +110,63 @@ pub fn all_commands() -> Vec<PaletteCommand> {
             shortcut: None,
             preview: Some("Switch between provider accounts".to_string()),
         },
+        // Panel toggles
+        PaletteCommand {
+            name: "Toggle Sidebar".to_string(),
+            description: "Toggle sidebar panel".to_string(),
+            category: CommandCategory::Tools,
+            shortcut: Some("Alt+X".to_string()),
+            preview: Some("Show/hide the right sidebar with tools and panels".to_string()),
+        },
+        PaletteCommand {
+            name: "Toggle Git Panel".to_string(),
+            description: "Open Git status panel".to_string(),
+            category: CommandCategory::Tools,
+            shortcut: Some("Alt+G".to_string()),
+            preview: Some("View git branch, status, and recent commits".to_string()),
+        },
+        PaletteCommand {
+            name: "Toggle Build Panel".to_string(),
+            description: "Open build output".to_string(),
+            category: CommandCategory::Tools,
+            shortcut: Some("Alt+O".to_string()),
+            preview: Some("View cargo build output and errors".to_string()),
+        },
+        PaletteCommand {
+            name: "Toggle Search Panel".to_string(),
+            description: "Search codebase".to_string(),
+            category: CommandCategory::Tools,
+            shortcut: Some("Alt+Z".to_string()),
+            preview: Some("Grep through project files".to_string()),
+        },
+        PaletteCommand {
+            name: "Toggle Docker Panel".to_string(),
+            description: "View containers".to_string(),
+            category: CommandCategory::Tools,
+            shortcut: None,
+            preview: Some("Show running Docker containers and their status".to_string()),
+        },
+        PaletteCommand {
+            name: "Toggle CI/CD Panel".to_string(),
+            description: "View pipeline status".to_string(),
+            category: CommandCategory::Tools,
+            shortcut: None,
+            preview: Some("Show GitHub Actions pipeline status".to_string()),
+        },
+        PaletteCommand {
+            name: "Provider Manager".to_string(),
+            description: "Manage API keys".to_string(),
+            category: CommandCategory::Settings,
+            shortcut: Some("Alt+V".to_string()),
+            preview: Some("Configure API keys and switch between providers".to_string()),
+        },
+        PaletteCommand {
+            name: "Split Terminal".to_string(),
+            description: "Toggle split view".to_string(),
+            category: CommandCategory::Tools,
+            shortcut: Some("Alt+S".to_string()),
+            preview: Some("Multi-pane editing with side-by-side terminals".to_string()),
+        },
     ]
 }
 
@@ -142,6 +199,7 @@ pub fn render_command_palette(
         CommandCategory::All,
         CommandCategory::Settings,
         CommandCategory::Files,
+        CommandCategory::Tools,
     ];
 
     let cat_spans: Vec<Span> = categories
