@@ -1301,7 +1301,17 @@ impl MentorState {
 pub fn toggle_mentor_mode() {
     MENTOR_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        st.visible = !st.visible;
+        if !st.visible {
+            st.visible = true;
+        } else {
+            // Cycle: Beginner → Intermediate → Advanced → off
+            use super::ui_mentor::MentorLevel;
+            match st.level {
+                MentorLevel::Beginner => st.level = MentorLevel::Intermediate,
+                MentorLevel::Intermediate => st.level = MentorLevel::Advanced,
+                MentorLevel::Advanced => { st.visible = false; }
+            }
+        }
     });
 }
 pub fn mentor_mode_visible() -> bool { MENTOR_STATE.with(|s| s.borrow().visible) }
@@ -1825,11 +1835,13 @@ pub fn render_plugin_overlay(frame: &mut Frame, area: Rect) {
 /// Render progressive level indicator from real session data
 pub fn render_progressive_indicator(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     let msg_count = app.display_user_message_count() + app.compacted_hidden_user_prompts();
+    let (tokens_in, tokens_out) = app.streaming_tokens();
+    let tool_count = app.streaming_tool_calls().len() as u64;
     let stats = super::ui_progressive::UsageStats {
         messages_sent: msg_count as u64,
         sessions_completed: ((msg_count / 10).max(1)) as u64,
-        tools_used: app.streaming_tool_calls().len() as u64,
-        achievements_unlocked: (msg_count / 20).min(16) as u64,
+        tools_used: tool_count,
+        achievements_unlocked: ((tokens_in + tokens_out) / 10000).min(16) as u64,
         days_active: 1,
     };
     let level = super::ui_progressive::determine_level(&stats);
@@ -1845,12 +1857,20 @@ thread_local! {
 }
 
 pub fn set_voice_state(state: super::ui_voice::VoiceState) { VOICE_STATE_REF.with(|s| *s.borrow_mut() = state); }
-pub fn render_voice_indicator(frame: &mut Frame, area: Rect) {
-    VOICE_STATE_REF.with(|s| {
-        let line = super::ui_voice::render_voice_indicator(&s.borrow());
-        let pos = Rect { x: area.x + 21, y: area.y + 1, width: 18, height: 1 };
-        frame.render_widget(Paragraph::new(line), pos);
-    });
+pub fn render_voice_indicator(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
+    let line = if let Some(key_label) = app.dictation_key_label() {
+        Line::from(vec![
+            Span::styled("🎤 ", Style::default().fg(neon_cyan())),
+            Span::styled(
+                format!("{} to dictate", key_label),
+                Style::default().fg(neon_cyan()).add_modifier(Modifier::ITALIC),
+            ),
+        ])
+    } else {
+        VOICE_STATE_REF.with(|s| super::ui_voice::render_voice_indicator(&s.borrow()))
+    };
+    let pos = Rect { x: area.x + 21, y: area.y + 1, width: 22, height: 1 };
+    frame.render_widget(Paragraph::new(line), pos);
 }
 
 // ── A3: Gamification/Streak ──────────────────────────────────────────
@@ -1858,7 +1878,10 @@ pub fn render_voice_indicator(frame: &mut Frame, area: Rect) {
 /// Render streak from session data
 pub fn render_streak(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     let msg_count = app.display_user_message_count() + app.compacted_hidden_user_prompts();
-    let current = (msg_count as u64 / 5).max(0);
+    let (tokens_in, tokens_out) = app.streaming_tokens();
+    let tool_count = app.streaming_tool_calls().len() as u64;
+    let activity_score = msg_count as u64 + tool_count + ((tokens_in + tokens_out) / 1000);
+    let current = activity_score / 5;
     let longest = current.max(3);
     let line = super::ui_gamification::render_streak(current, longest);
     let pos = Rect { x: area.x, y: area.y + 2, width: 20, height: 1 };

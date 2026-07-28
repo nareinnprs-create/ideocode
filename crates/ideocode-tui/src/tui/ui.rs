@@ -3642,7 +3642,7 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
 
     // Status bar indicators (new — mood/timer/network/wordcount already wired above)
     crate::tui::ui_integration::render_progressive_indicator(frame, area, app);
-    crate::tui::ui_integration::render_voice_indicator(frame, area);
+    crate::tui::ui_integration::render_voice_indicator(frame, area, app);
     crate::tui::ui_integration::render_streak(frame, area, app);
 
     // Overlay panels

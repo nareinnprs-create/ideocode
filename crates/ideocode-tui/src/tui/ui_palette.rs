@@ -122,7 +122,7 @@ pub fn all_commands() -> Vec<PaletteCommand> {
             name: "Toggle Git Panel".to_string(),
             description: "Open Git status panel".to_string(),
             category: CommandCategory::Tools,
-            shortcut: Some("Alt+G".to_string()),
+            shortcut: Some("Alt+W".to_string()),
             preview: Some("View git branch, status, and recent commits".to_string()),
         },
         PaletteCommand {
@@ -143,14 +143,14 @@ pub fn all_commands() -> Vec<PaletteCommand> {
             name: "Toggle Docker Panel".to_string(),
             description: "View containers".to_string(),
             category: CommandCategory::Tools,
-            shortcut: None,
+            shortcut: Some("Alt+1".to_string()),
             preview: Some("Show running Docker containers and their status".to_string()),
         },
         PaletteCommand {
             name: "Toggle CI/CD Panel".to_string(),
             description: "View pipeline status".to_string(),
             category: CommandCategory::Tools,
-            shortcut: None,
+            shortcut: Some("Alt+2".to_string()),
             preview: Some("Show GitHub Actions pipeline status".to_string()),
         },
         PaletteCommand {
@@ -166,6 +166,27 @@ pub fn all_commands() -> Vec<PaletteCommand> {
             category: CommandCategory::Tools,
             shortcut: Some("Alt+S".to_string()),
             preview: Some("Multi-pane editing with side-by-side terminals".to_string()),
+        },
+        PaletteCommand {
+            name: "Toggle Humor".to_string(),
+            description: "Fun facts and jokes".to_string(),
+            category: CommandCategory::Tools,
+            shortcut: Some("Alt+G".to_string()),
+            preview: Some("Show contextual humor, fun facts, and time-based greetings".to_string()),
+        },
+        PaletteCommand {
+            name: "Toggle Challenge".to_string(),
+            description: "Daily coding challenge".to_string(),
+            category: CommandCategory::Tools,
+            shortcut: Some("Alt+N".to_string()),
+            preview: Some("View today's daily coding challenge and leaderboard".to_string()),
+        },
+        PaletteCommand {
+            name: "Toggle Mentor Mode".to_string(),
+            description: "AI explanations".to_string(),
+            category: CommandCategory::Settings,
+            shortcut: Some("Alt+5".to_string()),
+            preview: Some("Toggle mentor mode: cycles Beginner → Intermediate → Advanced".to_string()),
         },
     ]
 }

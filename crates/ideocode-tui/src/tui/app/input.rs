@@ -2003,6 +2003,26 @@ pub(super) fn handle_alt_key(app: &mut App, code: KeyCode) -> bool {
             }
             true
         }
+        // Alt+g: humor overlay (fun facts & jokes)
+        KeyCode::Char('g') => {
+            crate::tui::ui_integration::toggle_humor();
+            true
+        }
+        // Alt+n: daily coding challenge
+        KeyCode::Char('n') => {
+            crate::tui::ui_integration::toggle_daily_challenge();
+            true
+        }
+        // Alt+l: share session config
+        KeyCode::Char('l') => {
+            crate::tui::ui_integration::toggle_share();
+            true
+        }
+        // Alt+c: cinematic intro replay
+        KeyCode::Char('c') if !app.input.is_empty() => {
+            crate::tui::ui_integration::toggle_cinematic();
+            true
+        }
         _ => false,
     }
 }
@@ -2151,6 +2171,9 @@ fn execute_palette_tool_command(cmd: &str) {
         }
         "Provider Manager" => crate::tui::ui_integration::toggle_provider_panel(),
         "Split Terminal" => crate::tui::ui_integration::toggle_split_terminal(),
+        "Toggle Humor" => crate::tui::ui_integration::toggle_humor(),
+        "Toggle Challenge" => crate::tui::ui_integration::toggle_daily_challenge(),
+        "Toggle Mentor Mode" => crate::tui::ui_integration::toggle_mentor_mode(),
         _ => {}
     }
 }
