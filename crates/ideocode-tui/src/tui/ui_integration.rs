@@ -56,6 +56,8 @@ struct OverlayState {
     achievements_total: usize,
     #[allow(dead_code)]
     session_started_at: Option<Instant>,
+    split_visible: bool,
+    split_layout: super::ui_split::SplitLayout,
 }
 
 impl OverlayState {
@@ -72,6 +74,7 @@ impl OverlayState {
             mood: AIMood::Chill, personality_mode: PersonalityMode::Professional,
             active_theme: 0, achievements_unlocked: 0, achievements_total: 16,
             session_started_at: Some(Instant::now()),
+            split_visible: false, split_layout: super::ui_split::default_split(),
         }
     }
 }
@@ -2192,5 +2195,48 @@ pub fn render_keyboard_wizard_tip(frame: &mut Frame, area: Rect) {
             Span::styled(tip_text.to_string(), Style::default().fg(dim_color())),
         ]);
         frame.render_widget(Paragraph::new(line), area);
+    });
+}
+
+// ── Split Terminal (F10) ────────────────────────────────────────────
+
+pub fn toggle_split_terminal() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.split_visible = !st.split_visible;
+    });
+}
+
+pub fn split_terminal_visible() -> bool {
+    OVERLAY_STATE.with(|s| s.borrow().split_visible)
+}
+
+pub fn split_activate_next() {
+    OVERLAY_STATE.with(|s| s.borrow_mut().split_layout.activate_next());
+}
+
+pub fn split_activate_prev() {
+    OVERLAY_STATE.with(|s| s.borrow_mut().split_layout.activate_prev());
+}
+
+pub fn split_add_pane(label: &str) {
+    OVERLAY_STATE.with(|s| s.borrow_mut().split_layout.add_pane(label));
+}
+
+pub fn split_push_to_active(line: String) {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        let idx = st.split_layout.active_pane;
+        if idx < st.split_layout.panes.len() {
+            st.split_layout.panes[idx].push_line(line);
+        }
+    });
+}
+
+pub fn render_split_overlay(frame: &mut Frame, area: Rect) {
+    OVERLAY_STATE.with(|s| {
+        let st = s.borrow();
+        if !st.split_visible { return; }
+        super::ui_split::render_split_layout(&st.split_layout, frame, area);
     });
 }

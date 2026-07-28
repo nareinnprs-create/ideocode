@@ -3542,6 +3542,9 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
 
     // ── BATCH A: Wire 20 dead modules ─────────────────────────────────
 
+    // Split terminal overlay (F10)
+    crate::tui::ui_integration::render_split_overlay(frame, area);
+
     // Status bar indicators (new — mood/timer/network/wordcount already wired above)
     crate::tui::ui_integration::render_progressive_indicator(frame, area, app);
     crate::tui::ui_integration::render_voice_indicator(frame, area);

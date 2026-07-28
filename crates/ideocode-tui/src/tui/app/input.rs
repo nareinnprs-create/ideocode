@@ -1978,6 +1978,11 @@ pub(super) fn handle_alt_key(app: &mut App, code: KeyCode) -> bool {
             crate::tui::ui_integration::toggle_big_mode();
             true
         }
+        // Alt+s: split terminal (F10)
+        KeyCode::Char('s') => {
+            crate::tui::ui_integration::toggle_split_terminal();
+            true
+        }
         // Alt+v: provider manager
         KeyCode::Char('v') => {
             crate::tui::ui_integration::toggle_provider_panel();

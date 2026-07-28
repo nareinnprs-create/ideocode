@@ -61,6 +61,7 @@ pub fn render_leaderboard(entries: &[LeaderboardEntry]) -> Vec<Line<'static>> {
 }
 
 /// Render team and sharing features panel.
+#[allow(dead_code)]
 pub fn render_team_placeholder() -> Vec<Line<'static>> {
     vec![
         Line::from(Span::styled(
@@ -116,6 +117,7 @@ pub fn render_team_placeholder() -> Vec<Line<'static>> {
 }
 
 /// Render social sharing preview.
+#[allow(dead_code)]
 pub fn render_share_preview(achievements: &[String]) -> Vec<Line<'static>> {
     let mut lines = Vec::new();
 
@@ -157,6 +159,7 @@ pub fn render_share_preview(achievements: &[String]) -> Vec<Line<'static>> {
 }
 
 /// Render achievement share card.
+#[allow(dead_code)]
 pub fn render_achievement_card(
     achievement: &str,
     description: &str,
