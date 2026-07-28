@@ -2230,3 +2230,73 @@ pub fn render_split_overlay(frame: &mut Frame, area: Rect) {
         super::ui_split::render_split_layout(&st.split_layout, frame, area);
     });
 }
+
+// ── Sidebar Panel System ────────────────────────────────────────────
+
+thread_local! {
+    static SIDEBAR_STATE: RefCell<SidebarState> = RefCell::new(SidebarState::new());
+}
+
+struct SidebarState {
+    visible: bool,
+    active_panel: super::ui_sidebar::SidebarPanel,
+}
+
+impl SidebarState {
+    fn new() -> Self {
+        Self {
+            visible: false,
+            active_panel: super::ui_sidebar::SidebarPanel::FileExplorer,
+        }
+    }
+}
+
+pub fn toggle_sidebar() {
+    SIDEBAR_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.visible = !st.visible;
+    });
+}
+
+pub fn sidebar_visible() -> bool {
+    SIDEBAR_STATE.with(|s| s.borrow().visible)
+}
+
+pub fn sidebar_next_panel() {
+    SIDEBAR_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.active_panel = st.active_panel.next();
+    });
+}
+
+pub fn sidebar_prev_panel() {
+    SIDEBAR_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.active_panel = st.active_panel.prev();
+    });
+}
+
+pub fn sidebar_set_panel(panel: super::ui_sidebar::SidebarPanel) {
+    SIDEBAR_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.active_panel = panel;
+        st.visible = true;
+    });
+}
+
+pub fn render_sidebar(frame: &mut Frame, area: Rect) {
+    SIDEBAR_STATE.with(|s| {
+        let st = s.borrow();
+        if !st.visible { return; }
+        let sidebar_area = super::ui_sidebar::compute_sidebar_area(area);
+        super::ui_sidebar::render_sidebar_chrome(frame, sidebar_area, st.active_panel);
+    });
+}
+
+pub fn sidebar_chat_area(area: Rect) -> Rect {
+    if sidebar_visible() {
+        super::ui_sidebar::compute_chat_area_without_sidebar(area)
+    } else {
+        area
+    }
+}

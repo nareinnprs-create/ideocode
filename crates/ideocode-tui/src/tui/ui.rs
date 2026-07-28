@@ -2633,6 +2633,19 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     };
     let swarm_page_active = app.swarm_panel_full_page();
 
+    // ── Sidebar area reservation ──────────────────────────────────────
+    // When the sidebar is visible, narrow the working area so all layout
+    // (diagram pane, diff pane, chat) renders to the left of it.
+    let sidebar_active = crate::tui::ui_integration::sidebar_visible();
+    let full_area = area;
+    let area = if sidebar_active {
+        crate::tui::ui_sidebar::compute_chat_area_without_sidebar(full_area)
+    } else {
+        full_area
+    };
+    // All layout below operates on the narrowed `area`.
+    // The sidebar itself is rendered last via render_sidebar using `full_area`.
+
     // Check diagram display mode and get active diagrams early so we can
     // determine the horizontal split before computing input width etc.
     let diagram_mode = app.diagram_mode();
@@ -3476,6 +3489,11 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     // Mood indicator (top-left)
     let mood_area = Rect { x: area.x + 1, y: area.y, width: 8, height: 1 };
     crate::tui::ui_integration::render_mood_indicator(frame, mood_area, app);
+
+    // Sidebar panel system (right side, renders over overlays)
+    if sidebar_active {
+        crate::tui::ui_integration::render_sidebar(frame, full_area);
+    }
 
     // Session timer in status bar
     let timer_area = Rect {

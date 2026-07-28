@@ -1988,6 +1988,11 @@ pub(super) fn handle_alt_key(app: &mut App, code: KeyCode) -> bool {
             crate::tui::ui_integration::toggle_provider_panel();
             true
         }
+        // Alt+x: toggle sidebar panel system
+        KeyCode::Char('x') => {
+            crate::tui::ui_integration::toggle_sidebar();
+            true
+        }
         _ => false,
     }
 }
@@ -2787,6 +2792,11 @@ pub(super) fn handle_basic_key(app: &mut App, code: KeyCode) -> bool {
             true
         }
         KeyCode::Esc => {
+            // Close sidebar first if open
+            if crate::tui::ui_integration::sidebar_visible() {
+                crate::tui::ui_integration::toggle_sidebar();
+                return true;
+            }
             if app
                 .inline_interactive_state
                 .as_ref()
@@ -2991,6 +3001,21 @@ impl App {
         if code == KeyCode::BackTab {
             self.cycle_model_favorite_hotkey();
             return Ok(());
+        }
+
+        // Sidebar panel navigation: Tab/Shift+Tab cycle panels when sidebar is open
+        if crate::tui::ui_integration::sidebar_visible() {
+            match code {
+                KeyCode::Tab => {
+                    crate::tui::ui_integration::sidebar_next_panel();
+                    return Ok(());
+                }
+                KeyCode::BackTab => {
+                    crate::tui::ui_integration::sidebar_prev_panel();
+                    return Ok(());
+                }
+                _ => {}
+            }
         }
 
         // While the model picker preview is visible, route its favorite/default
