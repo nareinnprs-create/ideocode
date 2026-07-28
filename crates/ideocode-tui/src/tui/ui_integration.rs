@@ -810,26 +810,16 @@ pub fn handle_provider_panel_keys(code: crossterm::event::KeyCode, modifiers: cr
     })
 }
 
-// ── Helper: run shell commands ───────────────────────────────────────
+// ── Helper: run shell commands (background-cached) ───────────────────
 
 #[cfg(windows)]
 fn run_command(cmd: &str) -> Vec<String> {
-    std::process::Command::new("cmd")
-        .arg("/C")
-        .arg(cmd)
-        .output()
-        .map(|o| String::from_utf8_lossy(&o.stdout).lines().map(String::from).collect())
-        .unwrap_or_default()
+    super::ui_shell_cache::get_cached_command_default(cmd)
 }
 
 #[cfg(not(windows))]
 fn run_command(cmd: &str) -> Vec<String> {
-    std::process::Command::new("sh")
-        .arg("-c")
-        .arg(cmd)
-        .output()
-        .map(|o| String::from_utf8_lossy(&o.stdout).lines().map(String::from).collect())
-        .unwrap_or_default()
+    super::ui_shell_cache::get_cached_command_default(cmd)
 }
 
 fn run_git_command(args: &str) -> Vec<String> {

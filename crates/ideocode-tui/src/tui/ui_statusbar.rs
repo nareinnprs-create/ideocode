@@ -1,13 +1,7 @@
-//! IDEOCODE Bottom Status Bar (H1)
+//! IDEOCODE Bottom Status Bar (H1) — Premium 2-line design
 //!
-//! A persistent status bar at the bottom of the screen showing:
-//! - Model name with emoji
-//! - Token usage
-//! - Cost (if applicable)
-//! - Streak counter
-//! - Memory usage
-//! - Connection status
-//! - Current time / session duration
+//! Line 1: Connection │ Model │ Provider │ Processing spinner
+//! Line 2: Tokens │ Duration │ Memory │ Shortcuts hint
 
 use crate::tui::TuiState;
 use ideocode_tui_style::theme::*;
@@ -15,7 +9,7 @@ use ratatui::prelude::*;
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
-/// Render the bottom status bar.
+/// Render the bottom status bar (2 lines).
 pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
     if area.width == 0 || area.height == 0 {
         return;
@@ -27,72 +21,130 @@ pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
     let provider = app.provider_name();
     let is_processing = app.is_processing();
 
-    // Build status segments
-    let mut segments: Vec<StatusSegment> = Vec::new();
+    // ── Line 1: Connection │ Model │ Provider │ Spinner ──────────────
 
-    // 1. Connection status (H3)
-    let conn_status = if is_processing {
-        (emoji::LIGHTNING, "thinking", neon_cyan())
+    let mut line1_spans: Vec<Span<'static>> = Vec::new();
+    let sep = Span::styled(" │ ", Style::default().fg(dim_color()));
+
+    // Connection status
+    let (conn_icon, conn_text, conn_color) = if is_processing {
+        ("⚡", "thinking", neon_cyan())
     } else {
-        (emoji::CONNECTED, "ready", neon_green())
+        ("●", "ready", neon_green())
     };
-    segments.push(StatusSegment::new(conn_status.0, conn_status.1, conn_status.2));
+    line1_spans.push(Span::styled(
+        format!("{} {}", conn_icon, conn_text),
+        Style::default().fg(conn_color).add_modifier(Modifier::BOLD),
+    ));
 
-    // 2. Model name with emoji
-    let short_model = if model.len() > 20 {
-        format!("{}…", &model[..19])
+    // Model name
+    let short_model = if model.len() > 24 {
+        format!("{}…", &model[..23])
     } else {
         model.clone()
     };
-    segments.push(StatusSegment::new(
-        emoji::BRAIN,
-        &short_model,
-        neon_magenta(),
+    line1_spans.push(sep.clone());
+    line1_spans.push(Span::styled(
+        format!("🧠 {}", short_model),
+        Style::default()
+            .fg(neon_magenta())
+            .add_modifier(Modifier::BOLD),
     ));
 
-    // 3. Provider
+    // Provider
     if !provider.is_empty() {
-        segments.push(StatusSegment::new(
-            emoji::LINK,
-            &provider,
-            neon_purple(),
+        line1_spans.push(sep.clone());
+        line1_spans.push(Span::styled(
+            format!("🔗 {}", provider),
+            Style::default().fg(neon_purple()),
         ));
     }
 
-    // 4. Token usage (if streaming)
-    let (input_tokens, output_tokens) = app.streaming_tokens();
-    if input_tokens > 0 || output_tokens > 0 {
-        let token_str = format!("↑{} ↓{}", format_tokens(input_tokens), format_tokens(output_tokens));
-        segments.push(StatusSegment::new(emoji::CHART, &token_str, neon_cyan()));
-    }
-
-    // 5. Session duration
-    if elapsed > 0 {
-        let time_str = format_duration(elapsed);
-        segments.push(StatusSegment::new(emoji::CLOCK, &time_str, dim_color()));
-    }
-
-    // 6. Processing indicator
+    // Processing spinner
     if is_processing {
         let spinner = ideocode_tui_style::theme::activity_indicator(
             app.elapsed().map(|d| d.as_secs_f32()).unwrap_or(0.0),
             12.5,
             true,
         );
-        segments.push(StatusSegment::new(spinner, "active", neon_cyan()));
+        line1_spans.push(sep.clone());
+        line1_spans.push(Span::styled(
+            format!("{} active", spinner),
+            Style::default().fg(neon_cyan()),
+        ));
     }
 
-    // Render the status bar
-    let line = render_status_line(&segments, w);
-    frame.render_widget(Paragraph::new(line), area);
+    // Right-align: version
+    let version_text = "v0.60.0";
+    let used_width: usize = line1_spans.iter().map(|s| s.content.chars().count()).sum();
+    let padding = w.saturating_sub(used_width + version_text.len());
+    line1_spans.push(Span::styled(
+        " ".repeat(padding),
+        Style::default(),
+    ));
+    line1_spans.push(Span::styled(
+        version_text,
+        Style::default().fg(dim_color()),
+    ));
+
+    let line1 = Line::from(line1_spans);
+
+    // ── Line 2: Tokens │ Duration │ Shortcuts ───────────────────────
+
+    let mut line2_spans: Vec<Span<'static>> = Vec::new();
+
+    // Token usage
+    let (input_tokens, output_tokens) = app.streaming_tokens();
+    if input_tokens > 0 || output_tokens > 0 {
+        line2_spans.push(Span::styled(
+            format!(
+                "↑{} ↓{}",
+                format_tokens(input_tokens),
+                format_tokens(output_tokens)
+            ),
+            Style::default().fg(neon_cyan()),
+        ));
+    }
+
+    // Session duration
+    if elapsed > 0 {
+        if !line2_spans.is_empty() {
+            line2_spans.push(sep.clone());
+        }
+        line2_spans.push(Span::styled(
+            format!("⏱ {}", format_duration(elapsed)),
+            Style::default().fg(dim_color()),
+        ));
+    }
+
+    // Right-align: keyboard shortcut hints
+    let hints = "Ctrl+/ help │ Alt+Q panels │ Ctrl+F search";
+    let used_width: usize = line2_spans.iter().map(|s| s.content.chars().count()).sum();
+    let padding = w.saturating_sub(used_width + hints.len());
+    line2_spans.push(Span::styled(
+        " ".repeat(padding),
+        Style::default(),
+    ));
+    line2_spans.push(Span::styled(
+        hints,
+        Style::default().fg(dim_color()),
+    ));
+
+    let line2 = Line::from(line2_spans);
+
+    // Render both lines
+    let lines = vec![line1, line2];
+    frame.render_widget(Paragraph::new(lines), area);
 }
 
+#[allow(dead_code)]
 struct StatusSegment {
     icon: String,
     text: String,
     color: Color,
 }
 
+#[allow(dead_code)]
 impl StatusSegment {
     fn new(icon: &str, text: &str, color: Color) -> Self {
         Self {
@@ -101,41 +153,6 @@ impl StatusSegment {
             color,
         }
     }
-}
-
-fn render_status_line(segments: &[StatusSegment], width: usize) -> Line<'static> {
-    let mut spans: Vec<Span<'static>> = Vec::new();
-    let separator = Span::styled(" │ ", Style::default().fg(dim_color()));
-
-    for (i, seg) in segments.iter().enumerate() {
-        if i > 0 {
-            spans.push(separator.clone());
-        }
-        // Icon
-        spans.push(Span::styled(
-            format!("{} ", seg.icon),
-            Style::default().fg(seg.color),
-        ));
-        // Text
-        spans.push(Span::styled(
-            seg.text.clone(),
-            Style::default()
-                .fg(seg.color)
-                .add_modifier(Modifier::BOLD),
-        ));
-    }
-
-    // Fill remaining space with dim line
-    let used_width: usize = spans.iter().map(|s| s.content.chars().count()).sum();
-    if used_width < width {
-        let fill = width - used_width;
-        spans.push(Span::styled(
-            "─".repeat(fill),
-            Style::default().fg(dim_color()),
-        ));
-    }
-
-    Line::from(spans)
 }
 
 fn format_tokens(n: u64) -> String {
