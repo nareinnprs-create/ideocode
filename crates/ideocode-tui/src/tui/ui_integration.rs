@@ -1471,7 +1471,12 @@ struct ThemePickerState {
 }
 
 impl ThemePickerState {
-    fn new() -> Self { Self { visible: false, selected: 0 } }
+    fn new() -> Self {
+        let saved = super::app::ui_prefs::selected_theme();
+        let themes = super::ui_theme_picker::get_builtin_themes();
+        let selected = themes.iter().position(|t| t.name == saved).unwrap_or(0);
+        Self { visible: false, selected }
+    }
 }
 
 pub fn toggle_theme_picker() {
@@ -1480,6 +1485,37 @@ pub fn toggle_theme_picker() {
         st.visible = !st.visible;
         st.selected = 0;
     });
+}
+
+pub fn theme_picker_visible() -> bool {
+    THEME_PICKER_STATE.with(|s| s.borrow().visible)
+}
+
+pub fn theme_picker_navigate_up() {
+    THEME_PICKER_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        if st.selected > 0 {
+            st.selected -= 1;
+        }
+    });
+}
+
+pub fn theme_picker_navigate_down() {
+    let theme_count = super::ui_theme_picker::get_builtin_themes().len();
+    THEME_PICKER_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        if st.selected + 1 < theme_count {
+            st.selected += 1;
+        }
+    });
+}
+
+pub fn theme_picker_selected_name() -> String {
+    THEME_PICKER_STATE.with(|s| {
+        let st = s.borrow();
+        let themes = super::ui_theme_picker::get_builtin_themes();
+        themes.get(st.selected).map(|t| t.name.to_string()).unwrap_or_default()
+    })
 }
 
 pub fn render_theme_picker_overlay(frame: &mut Frame, area: Rect) {

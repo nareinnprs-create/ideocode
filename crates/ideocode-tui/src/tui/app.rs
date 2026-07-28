@@ -802,6 +802,8 @@ pub struct App {
     input: String,
     command_candidates_cache: RefCell<Option<CommandCandidatesCache>>,
     cursor_pos: usize,
+    /// Active vim mode for the input area (Normal / Insert).
+    vim_mode: crate::tui::ui_vim::VimMode,
     scroll_offset: usize,
     /// Pauses auto-scroll when user scrolls up during streaming
     auto_scroll_paused: bool,

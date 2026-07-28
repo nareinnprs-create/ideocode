@@ -198,6 +198,10 @@ impl App {
                 "/rename <session name>\nSet a custom display title for the current session. This updates the window title and /resume display.\n\n/rename --clear\nClear the custom name and return to the generated session title."
             }
             "unsave" => "/unsave\nRemove the bookmark from the current session.",
+            "tag" => {
+                "/tag <category>\nTag the current session with a category for quick filtering.\n\nExamples:\n  /tag work\n  /tag debugging\n  /tag research\n\nTagged sessions appear in the Saved filter of the session picker."
+            }
+            "untag" => "/untag\nRemove the tag from the current session.",
             "client-reload" if self.is_remote => {
                 "/client-reload\nForce client binary reload in remote mode."
             }

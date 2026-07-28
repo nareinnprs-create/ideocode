@@ -190,6 +190,8 @@ const REGISTERED_COMMANDS: &[RegisteredCommand] = &[
     RegisteredCommand::public("/back", "Return to the previous Catch Up session"),
     RegisteredCommand::public("/save", "Bookmark session for easy access"),
     RegisteredCommand::public("/unsave", "Remove bookmark from session"),
+    RegisteredCommand::public("/tag", "Tag session with a category for filtering"),
+    RegisteredCommand::public("/untag", "Remove tag from session"),
     RegisteredCommand::public("/rename", "Rename current session"),
     RegisteredCommand::public("/fork", "Fork session into a new window (optional prompt)"),
     RegisteredCommand::hidden("/split", "Alias for /fork"),
@@ -283,6 +285,142 @@ impl App {
 
     pub fn input(&self) -> &str {
         &self.input
+    }
+
+    pub fn vim_mode(&self) -> crate::tui::ui_vim::VimMode {
+        self.vim_mode
+    }
+
+    pub fn set_vim_mode(&mut self, mode: crate::tui::ui_vim::VimMode) {
+        self.vim_mode = mode;
+    }
+
+    pub fn toggle_vim_mode(&mut self) {
+        self.vim_mode = match self.vim_mode {
+            crate::tui::ui_vim::VimMode::Insert => crate::tui::ui_vim::VimMode::Normal,
+            crate::tui::ui_vim::VimMode::Normal => crate::tui::ui_vim::VimMode::Insert,
+        };
+    }
+
+    pub fn move_cursor_back_char(&mut self) {
+        if self.cursor_pos > 0 {
+            let prev = crate::tui::core::prev_char_boundary(&self.input, self.cursor_pos);
+            self.cursor_pos = prev;
+        }
+    }
+
+    pub fn move_cursor_forward_char(&mut self) {
+        let next = self.cursor_pos
+            + self.input[self.cursor_pos..]
+                .chars()
+                .next()
+                .map(|c| c.len_utf8())
+                .unwrap_or(0);
+        self.cursor_pos = next.min(self.input.len());
+    }
+
+    pub fn move_cursor_to_start(&mut self) {
+        self.cursor_pos = 0;
+    }
+
+    pub fn move_cursor_to_end(&mut self) {
+        self.cursor_pos = self.input.len();
+    }
+
+    pub fn move_cursor_down_line(&mut self) {
+        if let Some(pos) = self.input[self.cursor_pos..].find('\n') {
+            self.cursor_pos += pos + 1;
+        } else {
+            self.cursor_pos = self.input.len();
+        }
+    }
+
+    pub fn move_cursor_up_line(&mut self) {
+        let before = &self.input[..self.cursor_pos];
+        if let Some(pos) = before.rfind('\n') {
+            self.cursor_pos = pos + 1;
+        } else {
+            self.cursor_pos = 0;
+        }
+    }
+
+    pub fn move_cursor_word_forward(&mut self) {
+        let rest = &self.input[self.cursor_pos..];
+        let mut iter = rest.char_indices().peekable();
+        // Skip current whitespace
+        while let Some((_, ch)) = iter.peek() {
+            if ch.is_whitespace() {
+                iter.next();
+            } else {
+                break;
+            }
+        }
+        // Skip word characters
+        while let Some((idx, ch)) = iter.peek() {
+            if ch.is_whitespace() {
+                self.cursor_pos += idx;
+                return;
+            }
+            iter.next();
+        }
+        self.cursor_pos = self.input.len();
+    }
+
+    pub fn move_cursor_word_back(&mut self) {
+        let before = &self.input[..self.cursor_pos];
+        let bytes = before.as_bytes();
+        let mut pos = bytes.len();
+        // Skip trailing whitespace
+        while pos > 0 && bytes[pos - 1].is_ascii_whitespace() {
+            pos -= 1;
+        }
+        // Skip word characters
+        while pos > 0 && !bytes[pos - 1].is_ascii_whitespace() {
+            pos -= 1;
+        }
+        self.cursor_pos = pos;
+    }
+
+    pub fn delete_char_forward(&mut self) {
+        if self.cursor_pos < self.input.len() {
+            let next = self.cursor_pos
+                + self.input[self.cursor_pos..]
+                    .chars()
+                    .next()
+                    .map(|c| c.len_utf8())
+                    .unwrap_or(0);
+            self.input.drain(self.cursor_pos..next);
+        }
+    }
+
+    pub fn delete_char_back(&mut self) {
+        if self.cursor_pos > 0 {
+            let prev = crate::tui::core::prev_char_boundary(&self.input, self.cursor_pos);
+            self.input.drain(prev..self.cursor_pos);
+            self.cursor_pos = prev;
+        }
+    }
+
+    pub fn delete_to_end(&mut self) {
+        self.input.truncate(self.cursor_pos);
+    }
+
+    pub fn select_line(&mut self) {
+        self.input.clear();
+        self.cursor_pos = 0;
+    }
+
+    pub fn paste_from_clipboard_after(&mut self) {
+        super::input::paste_from_clipboard(self);
+    }
+
+    pub fn undo_input(&mut self) {
+        self.undo_input_change();
+    }
+
+    pub fn insert_char(&mut self, ch: char) {
+        self.input.insert(self.cursor_pos, ch);
+        self.cursor_pos += ch.len_utf8();
     }
 
     #[cfg(test)]

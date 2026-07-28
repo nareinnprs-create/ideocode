@@ -43,6 +43,7 @@ mod ui_diff;
 pub mod ui_personality;
 pub mod ui_statusbar;
 pub mod ui_toast;
+pub mod ui_vim;
 pub mod ui_keyboard_wizard;
 pub mod ui_gamification;
 pub mod ui_achievements;
@@ -402,6 +403,8 @@ pub trait TuiState {
     }
     /// Optional configured keybinding label for external dictation.
     fn dictation_key_label(&self) -> Option<String>;
+    /// Vim input mode label when active ("NORMAL" / "INSERT" / None).
+    fn vim_mode_label(&self) -> Option<&'static str> { None }
     /// Time since app started (for startup animations)
     fn animation_elapsed(&self) -> f32;
     /// Time remaining until rate limit resets (if rate limited)

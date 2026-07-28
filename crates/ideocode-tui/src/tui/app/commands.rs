@@ -1861,6 +1861,51 @@ pub(super) fn handle_session_command(app: &mut App, trimmed: &str) -> bool {
         return true;
     }
 
+    if trimmed == "/tag" || trimmed.starts_with("/tag ") {
+        let tag = trimmed.strip_prefix("/tag").unwrap_or_default().trim();
+        if tag.is_empty() {
+            app.push_display_message(DisplayMessage::error(
+                "Usage: /tag <category> — tags the current session for quick filtering.\nExamples: /tag work, /tag debugging, /tag research".to_string(),
+            ));
+            return true;
+        }
+        app.session.mark_saved(Some(tag.to_string()));
+        if let Err(e) = app.session.save() {
+            app.push_display_message(DisplayMessage::error(format!(
+                "Failed to tag session: {}",
+                e
+            )));
+            return true;
+        }
+        crate::tui::session_picker::invalidate_session_list_cache();
+        let name = app.session.display_name().to_string();
+        app.push_display_message(DisplayMessage::system(format!(
+            "🏷 Tagged session {} as \"{}\".",
+            name, tag,
+        )));
+        app.set_status_notice(&format!("Tagged: {}", tag));
+        return true;
+    }
+
+    if trimmed == "/untag" {
+        app.session.unmark_saved();
+        if let Err(e) = app.session.save() {
+            app.push_display_message(DisplayMessage::error(format!(
+                "Failed to untag session: {}",
+                e
+            )));
+            return true;
+        }
+        crate::tui::session_picker::invalidate_session_list_cache();
+        let name = app.session.display_name().to_string();
+        app.push_display_message(DisplayMessage::system(format!(
+            "Removed tag from session {}.",
+            name,
+        )));
+        app.set_status_notice("Tag removed");
+        return true;
+    }
+
     if trimmed == "/rename" || trimmed.starts_with("/rename ") {
         let title = trimmed.strip_prefix("/rename").unwrap_or_default().trim();
         if title.is_empty() {

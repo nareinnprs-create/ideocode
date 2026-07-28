@@ -57,6 +57,8 @@ pub enum PickerResult {
     StartNewSession,
     /// The onboarding read-only recent-project architecture review was chosen.
     ReviewRecentProject,
+    /// User confirmed deletion of a session (session id + display name).
+    DeleteSession { session_id: String, display_name: String },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -173,6 +175,13 @@ enum SessionRef {
 struct PendingSessionPreviewLoad {
     session_id: String,
     receiver: std::sync::mpsc::Receiver<Option<Vec<PreviewMessage>>>,
+}
+
+/// State for a pending session deletion confirmation prompt.
+#[derive(Clone, Debug)]
+struct DeleteConfirm {
+    session_id: String,
+    display_name: String,
 }
 
 /// Fingerprint of every input that affects the *content* of the preview pane
@@ -295,6 +304,9 @@ pub struct SessionPicker {
     /// live Claude session never stops it; only confirming this prompt emits
     /// `PickerResult::TakeOverClaude`.
     pending_claude_takeover: Option<ResumeTarget>,
+    /// Pending session deletion confirmation. When set, 'y'/'Enter' deletes
+    /// and 'n'/Esc cancels.
+    pending_delete: Option<DeleteConfirm>,
 }
 
 impl SessionPicker {
@@ -343,6 +355,7 @@ impl SessionPicker {
             live_presence_refreshed_at: None,
             current_session_id: None,
             pending_claude_takeover: None,
+            pending_delete: None,
         };
         picker.refresh_live_presence();
         picker.rebuild_items();
@@ -388,6 +401,7 @@ impl SessionPicker {
             live_presence_refreshed_at: None,
             current_session_id: None,
             pending_claude_takeover: None,
+            pending_delete: None,
         }
     }
 
@@ -465,6 +479,7 @@ impl SessionPicker {
             live_presence_refreshed_at: None,
             current_session_id: None,
             pending_claude_takeover: None,
+            pending_delete: None,
         };
         picker.refresh_live_presence();
         picker.rebuild_items();
@@ -579,6 +594,24 @@ impl SessionPicker {
         true
     }
 
+    fn begin_delete_confirmation(&mut self) -> bool {
+        let Some(session) = self.selected_session() else {
+            return false;
+        };
+        let display_name = if !session.title.is_empty() {
+            session.title.clone()
+        } else if let Some(ref label) = session.save_label {
+            label.clone()
+        } else {
+            session.short_name.clone()
+        };
+        self.pending_delete = Some(DeleteConfirm {
+            session_id: session.id.clone(),
+            display_name,
+        });
+        true
+    }
+
     fn handle_claude_takeover_confirmation_key(
         &mut self,
         code: KeyCode,
@@ -596,6 +629,32 @@ impl SessionPicker {
             }
             KeyCode::Esc | KeyCode::Char('n') | KeyCode::Char('N') | KeyCode::Char('q') => {
                 self.pending_claude_takeover = None;
+                OverlayAction::Continue
+            }
+            _ => OverlayAction::Continue,
+        })
+    }
+
+    fn handle_delete_confirmation_key(
+        &mut self,
+        code: KeyCode,
+        modifiers: KeyModifiers,
+    ) -> Option<OverlayAction> {
+        self.pending_delete.as_ref()?;
+        if code == KeyCode::Char('c') && modifiers.contains(KeyModifiers::CONTROL) {
+            self.pending_delete = None;
+            return Some(OverlayAction::Close);
+        }
+        Some(match code {
+            KeyCode::Enter | KeyCode::Char('y') | KeyCode::Char('Y') => {
+                let confirm = self.pending_delete.take()?;
+                OverlayAction::Selected(PickerResult::DeleteSession {
+                    session_id: confirm.session_id,
+                    display_name: confirm.display_name,
+                })
+            }
+            KeyCode::Esc | KeyCode::Char('n') | KeyCode::Char('N') | KeyCode::Char('q') => {
+                self.pending_delete = None;
                 OverlayAction::Continue
             }
             _ => OverlayAction::Continue,
@@ -838,6 +897,32 @@ impl SessionPicker {
 
     pub fn clear_selected_sessions(&mut self) {
         self.selected_session_ids.clear();
+    }
+
+    /// Remove a deleted session from all backing lists and rebuild the UI.
+    pub fn remove_deleted_session(&mut self, session_id: &str) {
+        // Remove from flat session list.
+        self.all_sessions.retain(|s| s.id != session_id);
+        // Remove from server groups.
+        for group in &mut self.all_server_groups {
+            group.sessions.retain(|s| s.id != session_id);
+        }
+        self.all_server_groups.retain(|g| !g.sessions.is_empty());
+        // Remove from orphans.
+        self.all_orphan_sessions.retain(|s| s.id != session_id);
+        // Remove from selected set.
+        self.selected_session_ids.remove(session_id);
+        // Clear stale caches and rebuild.
+        self.cached_search_query.clear();
+        self.cached_search_refs.clear();
+        self.list_state.select(None);
+        self.items.clear();
+        self.visible_sessions.clear();
+        self.item_to_session.clear();
+        self.rebuild_items();
+        // Select first remaining session.
+        self.list_state
+            .select(self.item_to_session.iter().position(|x| x.is_some()));
     }
 
     fn selected_session_ref(&self) -> Option<SessionRef> {
@@ -1192,6 +1277,9 @@ impl SessionPicker {
         if let Some(action) = self.handle_claude_takeover_confirmation_key(code, modifiers) {
             return Ok(action);
         }
+        if let Some(action) = self.handle_delete_confirmation_key(code, modifiers) {
+            return Ok(action);
+        }
         if self.loading_message.is_some() {
             return match code {
                 KeyCode::Esc | KeyCode::Char('q') => Ok(OverlayAction::Close),
@@ -1245,6 +1333,9 @@ impl SessionPicker {
             }
             KeyCode::Char('d') => {
                 self.toggle_test_sessions();
+            }
+            KeyCode::Char('x') => {
+                self.begin_delete_confirmation();
             }
             KeyCode::Char('T') => {
                 self.begin_claude_takeover_confirmation();
@@ -2265,6 +2356,7 @@ impl SessionPicker {
         self.render_session_list(frame, chunks[0]);
         self.render_preview(frame, chunks[1]);
         self.render_claude_takeover_confirmation(frame);
+        self.render_delete_confirmation(frame);
     }
 
     fn render_claude_takeover_confirmation(&self, frame: &mut Frame) {
@@ -2316,6 +2408,57 @@ impl SessionPicker {
                     .borders(Borders::ALL)
                     .border_type(BorderType::Rounded)
                     .border_style(Style::default().fg(rgb(255, 193, 7))),
+            )
+            .wrap(ratatui::widgets::Wrap { trim: false });
+        frame.render_widget(modal, area);
+    }
+
+    fn render_delete_confirmation(&self, frame: &mut Frame) {
+        let Some(confirm) = self.pending_delete.as_ref() else {
+            return;
+        };
+        let frame_area = frame.area();
+        if frame_area.width < 8 || frame_area.height < 5 {
+            return;
+        }
+        let width = frame_area.width.saturating_sub(4).min(74);
+        let height = frame_area.height.saturating_sub(2).min(8);
+        let area = Rect {
+            x: frame_area.x + frame_area.width.saturating_sub(width) / 2,
+            y: frame_area.y + frame_area.height.saturating_sub(height) / 2,
+            width,
+            height,
+        };
+        frame.render_widget(Clear, area);
+        let body = vec![
+            Line::from(Span::styled(
+                format!(
+                    "Delete session '{}'?",
+                    ideocode_core::util::truncate_str(&confirm.display_name, 30)
+                ),
+                Style::default()
+                    .fg(Color::White)
+                    .add_modifier(Modifier::BOLD),
+            )),
+            Line::from(""),
+            Line::from(Span::styled(
+                "This removes the session file from disk.",
+                Style::default().fg(rgb(190, 190, 200)),
+            )),
+            Line::from(Span::styled(
+                "Enter/Y confirm · Esc/N cancel",
+                Style::default()
+                    .fg(rgb(255, 80, 80))
+                    .add_modifier(Modifier::BOLD),
+            )),
+        ];
+        let modal = Paragraph::new(body)
+            .block(
+                Block::default()
+                    .title(" ⚠ Delete Session ")
+                    .borders(Borders::ALL)
+                    .border_type(BorderType::Rounded)
+                    .border_style(Style::default().fg(rgb(255, 80, 80))),
             )
             .wrap(ratatui::widgets::Wrap { trim: false });
         frame.render_widget(modal, area);

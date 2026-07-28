@@ -2667,6 +2667,44 @@ impl App {
         true
     }
 
+    pub(super) fn handle_session_deletion(&mut self, session_id: &str, display_name: &str) {
+        let path = match crate::session::session_path(session_id) {
+            Ok(p) => p,
+            Err(e) => {
+                self.push_display_message(DisplayMessage::error(format!(
+                    "Failed to resolve path for session '{}': {}",
+                    display_name, e
+                )));
+                return;
+            }
+        };
+        if !path.exists() {
+            self.push_display_message(DisplayMessage::system(format!(
+                "Session '{}' does not exist on disk.",
+                display_name
+            )));
+            return;
+        }
+        if let Err(e) = std::fs::remove_file(&path) {
+            self.push_display_message(DisplayMessage::error(format!(
+                "Failed to delete session '{}': {}",
+                display_name, e
+            )));
+            return;
+        }
+        // Also remove the journal file if it exists.
+        let journal = crate::session::session_journal_path_from_snapshot(&path);
+        let _ = std::fs::remove_file(&journal);
+        self.push_display_message(DisplayMessage::system(format!(
+            "Deleted session '{}'.",
+            display_name
+        )));
+        // Refresh the picker list if it's still open.
+        if let Some(picker_cell) = self.session_picker_overlay.as_ref() {
+            picker_cell.borrow_mut().remove_deleted_session(session_id);
+        }
+    }
+
     pub(super) fn handle_batch_crash_restore(&mut self, session_ids: &[String]) {
         let recovered = match crate::session::recover_crashed_sessions_by_ids(session_ids) {
             Ok(ids) => ids,
@@ -2803,6 +2841,12 @@ impl App {
                         self.onboarding_start_recent_project_review();
                         return Ok(());
                     }
+                    PickerResult::DeleteSession { session_id, display_name } => {
+                        self.session_picker_overlay = None;
+                        self.session_picker_mode = SessionPickerMode::Resume;
+                        self.handle_session_deletion(&session_id, &display_name);
+                        return Ok(());
+                    }
                 };
                 self.session_picker_overlay = None;
                 self.session_picker_mode = SessionPickerMode::Resume;
@@ -2849,6 +2893,9 @@ impl App {
                 // close defensively without launching a proactive turn.
                 self.session_picker_overlay = None;
                 self.session_picker_mode = SessionPickerMode::Resume;
+            }
+            OverlayAction::Selected(PickerResult::DeleteSession { session_id, display_name }) => {
+                self.handle_session_deletion(&session_id, &display_name);
             }
         }
         Ok(())

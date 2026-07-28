@@ -137,6 +137,24 @@ pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
         ));
     }
 
+    // Vim mode indicator
+    if let Some(mode_label) = app.vim_mode_label() {
+        if !line2_spans.is_empty() {
+            line2_spans.push(sep.clone());
+        }
+        let mode_color = if mode_label == "NORMAL" {
+            neon_magenta()
+        } else {
+            neon_green()
+        };
+        line2_spans.push(Span::styled(
+            format!("⌨ {}", mode_label),
+            Style::default()
+                .fg(mode_color)
+                .add_modifier(Modifier::BOLD),
+        ));
+    }
+
     // Right-align: keyboard shortcut hints
     let hints = "Ctrl+/ help │ Alt+8 palette │ Alt+X sidebar";
     let used_width: usize = line2_spans.iter().map(|s| s.content.chars().count()).sum();

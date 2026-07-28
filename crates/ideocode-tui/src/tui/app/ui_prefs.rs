@@ -26,6 +26,9 @@ pub(crate) struct UiPreferences {
     /// Whether big mode was active when the session ended.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub big_mode: Option<bool>,
+    /// Last selected theme name (e.g. "CyberNeon", "Forest").
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub selected_theme: Option<String>,
 }
 
 fn prefs_path() -> Option<std::path::PathBuf> {
@@ -108,6 +111,22 @@ pub(crate) fn save_big_mode(enabled: bool) {
     let Some(path) = prefs_path() else { return; };
     let mut prefs = load();
     prefs.big_mode = Some(enabled);
+    if let Some(parent) = path.parent() {
+        let _ = std::fs::create_dir_all(parent);
+    }
+    let _ = crate::storage::write_json(&path, &prefs);
+}
+
+/// Persisted selected theme name, defaulting to "CyberNeon".
+pub(crate) fn selected_theme() -> String {
+    load().selected_theme.unwrap_or_else(|| "CyberNeon".to_string())
+}
+
+/// Persist the selected theme preference.
+pub(crate) fn save_selected_theme(theme: &str) {
+    let Some(path) = prefs_path() else { return; };
+    let mut prefs = load();
+    prefs.selected_theme = Some(theme.to_string());
     if let Some(parent) = path.parent() {
         let _ = std::fs::create_dir_all(parent);
     }

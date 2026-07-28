@@ -950,6 +950,14 @@ impl crate::tui::TuiState for App {
         self.dictation_key_label().map(|s| s.to_string())
     }
 
+    fn vim_mode_label(&self) -> Option<&'static str> {
+        let mode = self.vim_mode();
+        match mode {
+            crate::tui::ui_vim::VimMode::Normal => Some(mode.label()),
+            crate::tui::ui_vim::VimMode::Insert => None,
+        }
+    }
+
     fn animation_elapsed(&self) -> f32 {
         self.app_started.elapsed().as_secs_f32()
     }

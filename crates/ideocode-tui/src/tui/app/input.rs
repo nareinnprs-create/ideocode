@@ -2228,6 +2228,34 @@ fn handle_export_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
     }
 }
 
+/// Handle keys while the theme picker overlay is visible.
+fn handle_theme_picker_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
+    if !crate::tui::ui_integration::theme_picker_visible() { return false; }
+
+    match code {
+        KeyCode::Esc => {
+            crate::tui::ui_integration::toggle_theme_picker();
+            true
+        }
+        KeyCode::Up | KeyCode::Char('k') => {
+            crate::tui::ui_integration::theme_picker_navigate_up();
+            true
+        }
+        KeyCode::Down | KeyCode::Char('j') => {
+            crate::tui::ui_integration::theme_picker_navigate_down();
+            true
+        }
+        KeyCode::Enter => {
+            let name = crate::tui::ui_integration::theme_picker_selected_name();
+            crate::tui::app::ui_prefs::save_selected_theme(&name);
+            crate::tui::ui_integration::toggle_theme_picker();
+            crate::tui::ui_integration::push_toast_info(&format!("Theme '{}' selected", name));
+            true
+        }
+        _ => false,
+    }
+}
+
 /// Handle keys while the import overlay is visible.
 fn handle_import_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
     if !crate::tui::ui_integration::import_visible() { return false; }
@@ -3106,6 +3134,11 @@ impl App {
             return Ok(());
         }
 
+        // Theme picker overlay: intercepts keys while theme list is visible.
+        if handle_theme_picker_keys(code, modifiers) {
+            return Ok(());
+        }
+
         // Export format overlay: intercepts keys while export list is visible.
         if handle_export_keys(code, modifiers) {
             return Ok(());
@@ -3198,6 +3231,20 @@ impl App {
 
         if handle_pre_control_shortcuts(self, code, modifiers) {
             return Ok(());
+        }
+
+        // Vim normal mode: intercept single-key motions when not in Insert mode.
+        // Escape always returns to Insert; Alt+V toggles mode from input area.
+        if modifiers.contains(KeyModifiers::ALT) && matches!(code, KeyCode::Char('v')) {
+            self.toggle_vim_mode();
+            let label = self.vim_mode().label();
+            self.set_status_notice(&format!("Vim: {} mode", label));
+            return Ok(());
+        }
+        if self.vim_mode() == crate::tui::ui_vim::VimMode::Normal {
+            if crate::tui::ui_vim::handle_vim_normal(self, code, modifiers) {
+                return Ok(());
+            }
         }
 
         self.normalize_diagram_state();

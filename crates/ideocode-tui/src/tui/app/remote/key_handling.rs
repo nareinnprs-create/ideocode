@@ -1843,6 +1843,53 @@ async fn handle_remote_key_internal(
                     return Ok(());
                 }
 
+                if trimmed == "/tag" || trimmed.starts_with("/tag ") {
+                    let tag = trimmed.strip_prefix("/tag").unwrap_or_default().trim();
+                    if tag.is_empty() {
+                        app.push_display_message(DisplayMessage::error(
+                            "Usage: /tag <category> — tags the current session for quick filtering.".to_string(),
+                        ));
+                        return Ok(());
+                    }
+                    if let Err(e) = persist_remote_session_metadata(app, |session| {
+                        session.mark_saved(Some(tag.to_string()));
+                    }) {
+                        app.push_display_message(DisplayMessage::error(format!(
+                            "Failed to tag session: {}",
+                            e
+                        )));
+                        return Ok(());
+                    }
+                    crate::tui::session_picker::invalidate_session_list_cache();
+                    let name = app.session.display_name().to_string();
+                    app.push_display_message(DisplayMessage::system(format!(
+                        "🏷 Tagged session {} as \"{}\".",
+                        name, tag,
+                    )));
+                    app.set_status_notice(&format!("Tagged: {}", tag));
+                    return Ok(());
+                }
+
+                if trimmed == "/untag" {
+                    if let Err(e) = persist_remote_session_metadata(app, |session| {
+                        session.unmark_saved();
+                    }) {
+                        app.push_display_message(DisplayMessage::error(format!(
+                            "Failed to untag session: {}",
+                            e
+                        )));
+                        return Ok(());
+                    }
+                    crate::tui::session_picker::invalidate_session_list_cache();
+                    let name = app.session.display_name().to_string();
+                    app.push_display_message(DisplayMessage::system(format!(
+                        "Removed tag from session {}.",
+                        name,
+                    )));
+                    app.set_status_notice("Tag removed");
+                    return Ok(());
+                }
+
                 if trimmed == "/rename" || trimmed.starts_with("/rename ") {
                     let title = trimmed.strip_prefix("/rename").unwrap_or_default().trim();
                     if title.is_empty() {
