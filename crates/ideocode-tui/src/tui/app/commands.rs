@@ -3439,10 +3439,52 @@ pub(super) fn handle_provider_command(app: &mut App, trimmed: &str) -> bool {
 
     // /provider <name> - try to switch to the named provider
     if let Some(name) = rest.strip_prefix("switch ").or_else(|| rest.strip_prefix("use ")) {
-        let name = name.trim();
-        let msg = format!("Switching to provider '{}'...", name);
-        app.push_display_message(DisplayMessage::system(msg));
-        app.set_status_notice(format!("Provider → {}", name));
+        let name = name.trim().to_lowercase();
+        // Map common provider names to their default models
+        let model = match name.as_str() {
+            "claude" | "anthropic" => Some("claude-sonnet-4-20250514"),
+            "openai" | "gpt" => Some("gpt-4o"),
+            "gemini" | "google" => Some("gemini-2.5-pro"),
+            "copilot" => Some("gpt-4o"),
+            "deepseek" => Some("deepseek-chat"),
+            "groq" => Some("llama-3.3-70b-versatile"),
+            "mistral" => Some("mistral-large-latest"),
+            "ollama" => Some("llama3.2"),
+            _ => None,
+        };
+        if let Some(model_name) = model {
+            match app.provider.set_model(model_name) {
+                Ok(()) => {
+                    let active_model = app.finalize_model_switch(model_name);
+                    app.push_display_message(DisplayMessage::system(
+                        format!("✓ Switched to provider '{}' (model: {})", name, active_model),
+                    ));
+                    app.set_status_notice(format!("Provider → {} ({})", name, model_name));
+                }
+                Err(e) => {
+                    app.push_display_message(DisplayMessage::error(
+                        format!("Failed to switch to '{}': {}", name, e),
+                    ));
+                    app.set_status_notice("Provider switch failed");
+                }
+            }
+        } else {
+            // Unknown provider — try switching model name directly
+            match app.provider.set_model(&name) {
+                Ok(()) => {
+                    let active_model = app.finalize_model_switch(&name);
+                    app.push_display_message(DisplayMessage::system(
+                        format!("✓ Switched to model: {}", active_model),
+                    ));
+                    app.set_status_notice(format!("Model → {}", name));
+                }
+                Err(e) => {
+                    app.push_display_message(DisplayMessage::error(
+                        format!("Unknown provider '{}'. Use /provider list to see available providers.\nError: {}", name, e),
+                    ));
+                }
+            }
+        }
         return true;
     }
 
