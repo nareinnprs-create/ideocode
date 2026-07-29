@@ -26,6 +26,12 @@ pub struct LogViewerState {
     pub log_path: Option<PathBuf>,
 }
 
+impl Default for LogViewerState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl LogViewerState {
     pub fn new() -> Self {
         let log_dir = dirs::home_dir()
@@ -47,11 +53,10 @@ impl LogViewerState {
 
     pub fn refresh(&mut self) {
         self.lines.clear();
-        if let Some(ref path) = self.log_path {
-            if let Ok(content) = std::fs::read_to_string(path) {
+        if let Some(ref path) = self.log_path
+            && let Ok(content) = std::fs::read_to_string(path) {
                 self.lines = content.lines().map(String::from).collect();
             }
-        }
         if self.auto_scroll {
             self.scroll = self.lines.len().saturating_sub(50);
         }

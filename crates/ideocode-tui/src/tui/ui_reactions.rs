@@ -81,6 +81,12 @@ pub struct ReactionState {
     active_message: usize,
 }
 
+impl Default for ReactionState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ReactionState {
     pub fn new() -> Self {
         Self {

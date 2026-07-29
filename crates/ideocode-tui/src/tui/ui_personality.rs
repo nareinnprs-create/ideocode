@@ -378,9 +378,8 @@ pub fn render_progress_with_poetry(progress: f32, width: usize) -> Line<'static>
     let bar_char = "█";
     let empty_char = "░";
 
-    let bar: String = std::iter::repeat(bar_char)
-        .take(filled)
-        .chain(std::iter::repeat(empty_char).take(empty))
+    let bar: String = std::iter::repeat_n(bar_char, filled)
+        .chain(std::iter::repeat_n(empty_char, empty))
         .collect();
 
     let poetry = progress_poetry(progress);

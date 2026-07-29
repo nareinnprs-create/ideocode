@@ -3650,7 +3650,7 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     crate::tui::ui_integration::render_achievements_overlay(frame, area);
     crate::tui::ui_integration::render_reactions_overlay(frame, area);
     crate::tui::ui_integration::render_humor_overlay(frame, area);
-    crate::tui::ui_integration::render_completion_overlay(frame, area, &app.input());
+    crate::tui::ui_integration::render_completion_overlay(frame, area, app.input());
     crate::tui::ui_integration::render_social_overlay(frame, area, app);
     crate::tui::ui_integration::render_quiz_overlay(frame, area);
     crate::tui::ui_integration::render_share_overlay(frame, area);

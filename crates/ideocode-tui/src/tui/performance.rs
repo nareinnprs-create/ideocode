@@ -21,6 +21,12 @@ pub struct StreamingBuffer {
     max_buffer_size: usize,
 }
 
+impl Default for StreamingBuffer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl StreamingBuffer {
     pub fn new() -> Self {
         Self {
@@ -253,15 +259,14 @@ impl ImageDataManager {
         let mut cache = self.cache.write().unwrap_or_else(|e| e.into_inner());
 
         // Evict oldest if at capacity
-        if cache.len() >= self.max_cache_size {
-            if let Some(oldest_key) = cache
+        if cache.len() >= self.max_cache_size
+            && let Some(oldest_key) = cache
                 .iter()
                 .min_by_key(|(_, e)| e.accessed_at)
                 .map(|(k, _)| k.clone())
             {
                 cache.remove(&oldest_key);
             }
-        }
 
         cache.insert(
             key,

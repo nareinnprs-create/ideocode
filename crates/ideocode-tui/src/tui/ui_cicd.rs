@@ -23,6 +23,12 @@ pub struct CicdRun {
     pub is_success: bool,
 }
 
+impl Default for CicdPanelState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl CicdPanelState {
     pub fn new() -> Self {
         let mut state = Self { visible: false, runs: Vec::new(), selected: 0 };
@@ -34,8 +40,8 @@ impl CicdPanelState {
         self.runs.clear();
         let output = run_cmd("gh run list --limit 10 --json headBranch,status,conclusion,title,updatedAt 2>/dev/null || echo '[]'");
         // Parse JSON output
-        if let Ok(json_str) = output.first().map(|s| s.as_str()).unwrap_or("[]").parse::<serde_json::Value>() {
-            if let Some(arr) = json_str.as_array() {
+        if let Ok(json_str) = output.first().map(|s| s.as_str()).unwrap_or("[]").parse::<serde_json::Value>()
+            && let Some(arr) = json_str.as_array() {
                 for run in arr {
                     self.runs.push(CicdRun {
                         branch: run["headBranch"].as_str().unwrap_or("unknown").to_string(),
@@ -46,7 +52,6 @@ impl CicdPanelState {
                     });
                 }
             }
-        }
 
         // Fallback: simple text parsing
         if self.runs.is_empty() {

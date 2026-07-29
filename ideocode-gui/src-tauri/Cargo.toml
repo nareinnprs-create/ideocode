@@ -1,0 +1,24 @@
+[package]
+name = "ideocode-gui"
+version = "0.1.0"
+edition = "2024"
+description = "IDEOCODE Desktop GUI — Tauri 2.x + React"
+publish = false
+
+[workspace]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+anyhow = "1"
+dirs = "5"
+
+[[bin]]
+name = "ideocode-gui"
+path = "src/main.rs"

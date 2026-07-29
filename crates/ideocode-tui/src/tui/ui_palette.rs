@@ -273,8 +273,8 @@ pub fn render_command_palette(
     }
 
     // Preview
-    if let Some(cmd) = commands.get(selected) {
-        if let Some(preview) = &cmd.preview {
+    if let Some(cmd) = commands.get(selected)
+        && let Some(preview) = &cmd.preview {
             lines.push(Line::from(""));
             lines.push(Line::from(Span::styled(
                 "─".repeat(40),
@@ -285,7 +285,6 @@ pub fn render_command_palette(
                 Style::default().fg(neon_green()),
             )));
         }
-    }
 
     lines
 }

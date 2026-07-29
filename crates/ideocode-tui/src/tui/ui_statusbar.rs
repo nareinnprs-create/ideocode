@@ -107,8 +107,8 @@ pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
     }
 
     // Tokens per second
-    if let Some(tps) = app.output_tps() {
-        if tps > 0.0 {
+    if let Some(tps) = app.output_tps()
+        && tps > 0.0 {
             if !line2_spans.is_empty() {
                 line2_spans.push(sep.clone());
             }
@@ -124,7 +124,6 @@ pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
                 Style::default().fg(tps_color),
             ));
         }
-    }
 
     // Session duration
     if elapsed > 0 {

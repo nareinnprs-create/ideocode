@@ -7,16 +7,13 @@
 use crossterm::event::{KeyCode, KeyModifiers};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default)]
 pub enum VimMode {
+    #[default]
     Insert,
     Normal,
 }
 
-impl Default for VimMode {
-    fn default() -> Self {
-        Self::Insert
-    }
-}
 
 impl VimMode {
     pub fn label(self) -> &'static str {

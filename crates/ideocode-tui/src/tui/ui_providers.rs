@@ -235,15 +235,14 @@ pub fn handle_provider_keys(state: &mut ProviderPanelState, code: KeyCode, _modi
             return true;
         }
         KeyCode::Char('t') => {
-            if state.tab == ProviderTab::Test {
-                if state.selected < COMPATIBLE_PROVIDERS.len() {
+            if state.tab == ProviderTab::Test
+                && state.selected < COMPATIBLE_PROVIDERS.len() {
                     state.test_provider = COMPATIBLE_PROVIDERS[state.selected].0.to_string();
                     state.test_result = Some(format!(
                         "Testing {} API endpoint...",
                         COMPATIBLE_PROVIDERS[state.selected].1
                     ));
                 }
-            }
             return true;
         }
         KeyCode::Char('?') | KeyCode::Char('/') => {

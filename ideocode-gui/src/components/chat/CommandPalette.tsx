@@ -1,0 +1,170 @@
+import { useState, useEffect, useRef } from "react";
+import { useAppStore } from "../../stores/appStore";
+import {
+  Search,
+  Settings,
+  FolderTree,
+  GitBranch,
+  Terminal,
+  Cpu,
+  Palette,
+  Hammer,
+  History,
+  BugPlay,
+  X,
+} from "lucide-react";
+
+interface Command {
+  id: string;
+  label: string;
+  shortcut?: string;
+  icon: typeof Search;
+  category: string;
+}
+
+const COMMANDS: Command[] = [
+  { id: "toggle-sidebar", label: "Toggle Sidebar", shortcut: "⌘B", icon: FolderTree, category: "View" },
+  { id: "toggle-right", label: "Toggle Right Panel", shortcut: "⌘\\", icon: FolderTree, category: "View" },
+  { id: "open-git", label: "Open Git Panel", shortcut: "⌘W", icon: GitBranch, category: "Panels" },
+  { id: "open-terminal", label: "Open Terminal", shortcut: "⌘`", icon: Terminal, category: "Panels" },
+  { id: "open-build", label: "Open Build Panel", shortcut: "⌘⇧B", icon: Hammer, category: "Panels" },
+  { id: "open-debug", label: "Open Debug Panel", shortcut: "⌘⇧D", icon: BugPlay, category: "Panels" },
+  { id: "open-sessions", label: "Open Sessions", icon: History, category: "Panels" },
+  { id: "open-providers", label: "Open Providers", icon: Cpu, category: "Panels" },
+  { id: "open-settings", label: "Open Settings", shortcut: "⌘,", icon: Settings, category: "Settings" },
+  { id: "change-theme", label: "Change Theme", icon: Palette, category: "Settings" },
+];
+
+export function CommandPalette() {
+  const { commandPaletteOpen, setCommandPaletteOpen } = useAppStore();
+  const [query, setQuery] = useState("");
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const filtered = COMMANDS.filter((c) =>
+    c.label.toLowerCase().includes(query.toLowerCase()),
+  );
+
+  useEffect(() => {
+    if (commandPaletteOpen) {
+      setQuery("");
+      setSelectedIdx(0);
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [commandPaletteOpen]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIdx((i) => Math.min(i + 1, filtered.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIdx((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (filtered[selectedIdx]) {
+        executeCommand(filtered[selectedIdx].id);
+      }
+    }
+  };
+
+  const executeCommand = (id: string) => {
+    const s = useAppStore.getState();
+
+    switch (id) {
+      case "toggle-sidebar":
+        s.toggleSidebar();
+        break;
+      case "toggle-right":
+        s.toggleRightPanel();
+        break;
+      case "open-git":
+        s.setRightPanel("git"); s.setRightPanelOpen(true); break;
+      case "open-terminal":
+        s.setRightPanel("terminal"); s.setRightPanelOpen(true); break;
+      case "open-build":
+        s.setRightPanel("build"); s.setRightPanelOpen(true); break;
+      case "open-debug":
+        s.setRightPanel("debug"); s.setRightPanelOpen(true); break;
+      case "open-sessions":
+        s.setRightPanel("sessions"); s.setRightPanelOpen(true); break;
+      case "open-providers":
+        s.setRightPanel("providers"); s.setRightPanelOpen(true); break;
+      case "open-settings":
+        s.setRightPanel("settings"); s.setRightPanelOpen(true); break;
+    }
+    s.setCommandPaletteOpen(false);
+  };
+
+  if (!commandPaletteOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50"
+        onClick={() => setCommandPaletteOpen(false)}
+      />
+
+      {/* Palette */}
+      <div className="relative w-full max-w-lg glass-elevated overflow-hidden animate-slide-up">
+        {/* Search input */}
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-border-subtle">
+          <Search size={16} className="text-text-muted shrink-0" />
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setSelectedIdx(0);
+            }}
+            onKeyDown={handleKeyDown}
+            placeholder="Type a command..."
+            className="flex-1 bg-transparent text-text-primary text-sm outline-none placeholder:text-text-muted"
+          />
+          <button
+            onClick={() => setCommandPaletteOpen(false)}
+            className="p-1 text-text-muted hover:text-text-primary transition-fast"
+          >
+            <X size={14} />
+          </button>
+        </div>
+
+        {/* Results */}
+        <div className="max-h-[300px] overflow-y-auto py-1">
+          {filtered.length === 0 ? (
+            <div className="px-4 py-6 text-center text-text-muted text-sm">
+              No commands found
+            </div>
+          ) : (
+            filtered.map((cmd, idx) => {
+              const Icon = cmd.icon;
+              return (
+                <button
+                  key={cmd.id}
+                  onClick={() => executeCommand(cmd.id)}
+                  onMouseEnter={() => setSelectedIdx(idx)}
+                  className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast
+                    ${
+                      idx === selectedIdx
+                        ? "bg-bg-elevated text-text-primary"
+                        : "text-text-secondary hover:bg-bg-elevated"
+                    }`}
+                >
+                  <Icon size={16} className="shrink-0 opacity-50" />
+                  <span className="flex-1 text-left">{cmd.label}</span>
+                  {cmd.shortcut && (
+                    <kbd className="text-[11px] text-text-muted bg-bg-tertiary px-1.5 py-0.5 rounded font-mono">
+                      {cmd.shortcut}
+                    </kbd>
+                  )}
+                </button>
+              );
+            })
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

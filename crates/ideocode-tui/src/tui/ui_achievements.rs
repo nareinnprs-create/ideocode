@@ -221,6 +221,12 @@ pub struct AchievementTracker {
     stats: HashMap<String, u64>,
 }
 
+impl Default for AchievementTracker {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AchievementTracker {
     pub fn new() -> Self {
         Self {

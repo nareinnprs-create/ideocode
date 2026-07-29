@@ -2724,7 +2724,7 @@ pub fn cache_ttl_for_provider_model(provider: &str, model: Option<&str>) -> Opti
             }
         }
         "openrouter" => Some(300),
-        "IDEOCODE subscription" => Some(300),
+        "ideocode subscription" => Some(300),
         "gemini" => Some(300),
         "copilot" => None,
         "cursor" => None,

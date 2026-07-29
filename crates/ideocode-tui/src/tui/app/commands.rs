@@ -1883,7 +1883,7 @@ pub(super) fn handle_session_command(app: &mut App, trimmed: &str) -> bool {
             "🏷 Tagged session {} as \"{}\".",
             name, tag,
         )));
-        app.set_status_notice(&format!("Tagged: {}", tag));
+        app.set_status_notice(format!("Tagged: {}", tag));
         return true;
     }
 

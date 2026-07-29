@@ -1,0 +1,84 @@
+use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AppSettings {
+    pub theme: String,
+    pub font_size: u32,
+    pub font_family: String,
+    pub active_provider: String,
+    pub active_model: String,
+    pub tab_size: u32,
+    pub word_wrap: bool,
+    pub minimap: bool,
+    pub auto_save: bool,
+    pub language: String,
+}
+
+impl Default for AppSettings {
+    fn default() -> Self {
+        Self {
+            theme: "midnight".into(),
+            font_size: 13,
+            font_family: "JetBrains Mono".into(),
+            active_provider: "openai".into(),
+            active_model: "gpt-4o".into(),
+            tab_size: 2,
+            word_wrap: false,
+            minimap: false,
+            auto_save: true,
+            language: "en".into(),
+        }
+    }
+}
+
+fn settings_path() -> PathBuf {
+    dirs::home_dir()
+        .map(|h| h.join(".ideocode").join("settings.json"))
+        .unwrap_or_default()
+}
+
+#[tauri::command]
+pub fn get_settings() -> AppSettings {
+    let path = settings_path();
+    if path.exists() {
+        std::fs::read_to_string(&path)
+            .ok()
+            .and_then(|s| serde_json::from_str(&s).ok())
+            .unwrap_or_default()
+    } else {
+        AppSettings::default()
+    }
+}
+
+#[tauri::command]
+pub fn update_settings(settings: AppSettings) -> Result<(), String> {
+    let path = settings_path();
+    if let Some(dir) = path.parent() {
+        std::fs::create_dir_all(dir).map_err(|e| format!("Failed to create settings dir: {}", e))?;
+    }
+    let json = serde_json::to_string_pretty(&settings)
+        .map_err(|e| format!("Failed to serialize settings: {}", e))?;
+    std::fs::write(&path, json).map_err(|e| format!("Failed to write settings: {}", e))?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn is_first_launch() -> bool {
+    let path = settings_path();
+    let sessions_dir = dirs::home_dir()
+        .map(|h| h.join(".ideocode").join("sessions"))
+        .unwrap_or_default();
+    // First launch if neither settings nor any session files exist
+    if path.exists() {
+        return false;
+    }
+    if sessions_dir.exists() {
+        if let Ok(entries) = std::fs::read_dir(&sessions_dir) {
+            if entries.filter_map(|e| e.ok()).any(|e| e.path().extension().map(|ext| ext == "json").unwrap_or(false)) {
+                return false;
+            }
+        }
+    }
+    true
+}

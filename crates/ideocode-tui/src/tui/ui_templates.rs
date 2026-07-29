@@ -39,13 +39,11 @@ fn load_user_templates() -> Option<Vec<ProjectTemplate>> {
     for entry in std::fs::read_dir(&templates_dir).ok()? {
         let entry = entry.ok()?;
         let path = entry.path();
-        if path.extension().and_then(|e| e.to_str()) == Some("json") {
-            if let Ok(content) = std::fs::read_to_string(&path) {
-                if let Ok(t) = serde_json::from_str::<ProjectTemplate>(&content) {
+        if path.extension().and_then(|e| e.to_str()) == Some("json")
+            && let Ok(content) = std::fs::read_to_string(&path)
+                && let Ok(t) = serde_json::from_str::<ProjectTemplate>(&content) {
                     templates.push(t);
                 }
-            }
-        }
     }
     Some(templates)
 }

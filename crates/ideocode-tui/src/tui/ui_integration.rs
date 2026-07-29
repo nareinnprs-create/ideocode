@@ -87,11 +87,12 @@ pub struct SearchResult {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+#[derive(Default)]
 pub enum AIMood {
-    Happy, Focused, Confused, Excited, Thinking, Concerned, Celebrating, Chill,
+    Happy, Focused, Confused, Excited, Thinking, Concerned, Celebrating, #[default]
+    Chill,
 }
 
-impl Default for AIMood { fn default() -> Self { AIMood::Chill } }
 
 impl AIMood {
     pub fn icon(&self) -> &str {
@@ -112,11 +113,12 @@ impl AIMood {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+#[derive(Default)]
 pub enum PersonalityMode {
+    #[default]
     Professional, Casual, GenZ, Academic, Witty, Zen,
 }
 
-impl Default for PersonalityMode { fn default() -> Self { PersonalityMode::Professional } }
 
 impl PersonalityMode {
     pub fn icon(&self) -> &str {
@@ -1892,7 +1894,7 @@ pub fn render_progressive_indicator(frame: &mut Frame, area: Rect, app: &dyn Tui
         messages_sent: msg_count as u64,
         sessions_completed: ((msg_count / 10).max(1)) as u64,
         tools_used: tool_count,
-        achievements_unlocked: ((tokens_in + tokens_out) / 10000).min(16) as u64,
+        achievements_unlocked: ((tokens_in + tokens_out) / 10000).min(16),
         days_active: 1,
     };
     let level = super::ui_progressive::determine_level(&stats);
@@ -2121,7 +2123,7 @@ pub fn render_social_overlay(frame: &mut Frame, area: Rect, app: &dyn TuiState) 
     let msg_count = app.display_user_message_count() + app.compacted_hidden_user_prompts();
     let tokens: u64 = app.streaming_tokens().0 + app.streaming_tokens().1;
     let entries = vec![
-        super::ui_social::LeaderboardEntry { rank: 1, name: "You".to_string(), score: tokens.max(100), achievements: (msg_count / 10).max(1) as usize },
+        super::ui_social::LeaderboardEntry { rank: 1, name: "You".to_string(), score: tokens.max(100), achievements: (msg_count / 10).max(1) },
     ];
     let lines = super::ui_social::render_leaderboard(&entries);
     let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);

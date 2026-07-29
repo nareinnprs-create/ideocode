@@ -198,7 +198,7 @@ fn generate_type_pattern(media_type: &str) -> Vec<String> {
                 let mut row = String::new();
                 for x in 0..width {
                     let ch = if x >= 8 && x < width - 8 && y >= 2 && y < height - 2 {
-                        if y >= 4 && y <= 6 && x >= 12 && x < 20 {
+                        if (4..=6).contains(&y) && (12..20).contains(&x) {
                             '#'
                         } else if y > 7 && y < height - 4 && x >= 12 && x < width - 12 {
                             '.'

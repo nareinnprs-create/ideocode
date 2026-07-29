@@ -25,6 +25,12 @@ pub struct FileExplorerState {
     pub scroll: usize,
 }
 
+impl Default for FileExplorerState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl FileExplorerState {
     pub fn new() -> Self {
         let cwd = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
@@ -76,8 +82,8 @@ impl FileExplorerState {
     }
 
     pub fn toggle_expand(&mut self) {
-        if let Some(entry) = self.entries.get_mut(self.selected) {
-            if entry.is_dir {
+        if let Some(entry) = self.entries.get_mut(self.selected)
+            && entry.is_dir {
                 entry.is_expanded = !entry.is_expanded;
                 if entry.is_expanded {
                     // Load children
@@ -114,7 +120,6 @@ impl FileExplorerState {
                     }
                 }
             }
-        }
     }
 
     pub fn move_up(&mut self) {

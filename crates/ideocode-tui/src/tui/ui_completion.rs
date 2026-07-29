@@ -57,6 +57,12 @@ pub struct AutocompleteEngine {
     snippets: Vec<CompletionItem>,
 }
 
+impl Default for AutocompleteEngine {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AutocompleteEngine {
     pub fn new() -> Self {
         Self {

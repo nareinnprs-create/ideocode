@@ -25,6 +25,12 @@ pub struct BuildPanelState {
     pub exit_code: Option<i32>,
 }
 
+impl Default for BuildPanelState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl BuildPanelState {
     pub fn new() -> Self {
         Self {

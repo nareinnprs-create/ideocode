@@ -92,6 +92,29 @@ and are wired into the draw loop via `ui_integration.rs`.
 
 ---
 
+## 🎯 BATCH 8-10 COMPLETIONS (2026-07-28)
+
+### Batch 8: Theme Picker Persistence
+- Keyboard navigation (Up/Down/j/k, Enter, Esc)
+- `selected_theme: Option<String>` in UiPreferences
+- Persists to `ui_preferences.json` and restores on startup
+
+### Batch 9: Session Management
+- `x` key deletes session with red confirmation modal
+- `DeleteSession` variant in PickerResult
+- `handle_session_deletion()` removes file + journal
+- `remove_deleted_session()` refreshes picker live
+- `/tag <category>` and `/untag` commands (local + remote + autocomplete)
+
+### Batch 10: Vim Bindings
+- `ui_vim.rs` module with VimMode enum (Insert/Normal)
+- Alt+V toggles Insert/Normal modes
+- Normal mode motions: h/j/k/l, w/b, 0/$, x/X, D, C, p, u, i/a/A/I/o
+- Cursor movement helpers on App struct
+- Vim mode indicator in status bar (`⌨ NORMAL`)
+
+---
+
 ## 📊 SUMMARY
 
 | Category | Count | Status |
@@ -100,32 +123,50 @@ and are wired into the draw loop via `ui_integration.rs`.
 | Bugs Fixed | 2 | ✅ Fixed |
 | **TOTAL** | **69** | **100% Complete** |
 
+### Additional Features
+| Feature | Status |
+|---------|--------|
+| Theme Persistence | ✅ Complete |
+| Session Deletion | ✅ Complete |
+| Session Tagging | ✅ Complete |
+| Vim Bindings | ✅ Complete |
+
 ---
 
-## 📁 MODULE REGISTRY (67 pub mod declarations in mod.rs)
+## 📁 MODULE REGISTRY (68+ pub mod declarations in mod.rs)
 
-All 67 modules are declared in `crates/ideocode-tui/src/tui/mod.rs` (lines 1-100)
-and each has a corresponding `render_*` call in the draw loop (`ui.rs` lines 3402-3562)
-via `ui_integration.rs`.
+All modules are declared in `crates/ideocode-tui/src/tui/mod.rs`
+and each has a corresponding `render_*` call in the draw loop via `ui_integration.rs`.
+
+**Key modules**: ui_vim.rs, ui_theme_picker.rs, ui_export.rs, ui_shell_cache.rs, ui_sidebar.rs, ui_chat_search.rs, ui_tool_collapse.rs, ui_reactions.rs, ui_palette.rs
 
 ---
 
 ## 🎯 ALTRACTIVE KEYBOARD SHORTCUTS
 
-| Shortcut | Panel |
-|----------|-------|
+| Shortcut | Action |
+|----------|--------|
 | Alt+Q | Gesture Pad (grid of all panels) |
+| Alt+A | Copy text |
+| Alt+B | Word backward |
+| Alt+D | Word delete |
 | Alt+E | File Explorer |
-| Alt+W | Git Panel |
-| Alt+Z | Search Panel |
+| Alt+F | Word forward |
+| Alt+G | Toggle Humor |
+| Alt+I | Export Formats |
+| Alt+L | Share Session |
+| Alt+N | Toggle Challenge |
 | Alt+O | Build Panel |
 | Alt+P | Profiler |
-| Alt+V | Provider Manager |
-| Alt+S | Split Terminal (F10) |
-| Alt+U | Workspace Profiles |
-| Alt+I | Export Formats |
+| Alt+R | Reaction Mode |
+| Alt+S | Split Terminal |
 | Alt+T | Compact Mode |
+| Alt+U | Workspace Profiles |
+| Alt+V | **Toggle Vim Mode** |
+| Alt+W | Git Panel |
+| Alt+X | Sidebar Toggle |
 | Alt+Y | Big Mode |
+| Alt+Z | Search Panel |
 | Alt+1 | Docker |
 | Alt+2 | CI/CD |
 | Alt+3 | Log Viewer |
@@ -136,8 +177,42 @@ via `ui_integration.rs`.
 | Alt+8 | Command Palette |
 | Alt+9 | Theme API |
 | Alt+0 | Macro Recorder |
+| F3 | Chat Search |
+| F10 | Split Terminal |
+
+---
+
+## 🖥️ GUI PLANNING
+
+**Status**: Research complete, plan documented in `GUI_PLAN.md`
+
+**Technology Stack**:
+- **Framework**: Tauri 2.x (Rust backend) + React 19 (TypeScript frontend)
+- **Styling**: Tailwind CSS 4.x + CSS custom properties
+- **State**: Zustand
+- **Animations**: Framer Motion 6.x
+- **Icons**: Lucide React
+- **Terminal**: xterm.js
+- **File Tree**: react-arborist
+- **Editor**: Monaco/CodeMirror
+
+**Development Phases**:
+1. Foundation (Weeks 1-4): Tauri setup, React scaffold, design system
+2. Core Chat (Weeks 5-8): Messages, streaming, tool calls
+3. Editor Integration (Weeks 9-12): Monaco, file explorer, search
+4. Panels & Tools (Weeks 13-16): Git, terminal, providers
+5. Polish & Launch (Weeks 17-20): Onboarding, settings, installers
+6. Ecosystem (Weeks 21+): Themes, plugins, collaboration
+
+**Competitive Advantages**:
+- 10x smaller than Electron (3-8MB vs 150-200MB)
+- 3-5x less RAM (40-85MB vs 150-300MB)
+- <1s startup vs 2-4s
+- Multi-model chat (compare GPT-4o, Claude, Gemini)
+- Session branching, offline mode, keyboard-first
 
 ---
 
 *Last updated: 2026-07-28*
-*Total modules: 67 declared, 67 wired, 0 dead code*
+*Total modules: 68+ declared, 68+ wired, 0 dead code*
+*GUI plan: GUI_PLAN.md (v1.0)*

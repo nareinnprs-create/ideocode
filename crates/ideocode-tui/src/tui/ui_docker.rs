@@ -24,6 +24,12 @@ pub struct DockerContainer {
     pub is_running: bool,
 }
 
+impl Default for DockerPanelState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DockerPanelState {
     pub fn new() -> Self {
         let mut state = Self { visible: false, containers: Vec::new(), selected: 0, scroll: 0 };

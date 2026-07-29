@@ -41,11 +41,10 @@ pub fn get_cached_command(cmd: &str, ttl: Duration) -> Vec<String> {
     let mut inner = c.lock().unwrap_or_else(|p| p.into_inner());
 
     // Check cache freshness
-    if let Some(entry) = inner.cache.get(&key) {
-        if entry.cached_at.elapsed() < ttl {
+    if let Some(entry) = inner.cache.get(&key)
+        && entry.cached_at.elapsed() < ttl {
             return entry.lines.clone();
         }
-    }
 
     // Already have a background fetch in progress?
     if inner.pending.contains_key(&key) {
@@ -95,13 +94,11 @@ pub fn poll_pending() {
 
     let mut completed = Vec::new();
     for key in &keys {
-        if let Some(shared) = inner.pending.get(key) {
-            if let Ok(guard) = shared.lock() {
-                if let Some(lines) = guard.as_ref() {
+        if let Some(shared) = inner.pending.get(key)
+            && let Ok(guard) = shared.lock()
+                && let Some(lines) = guard.as_ref() {
                     completed.push((key.clone(), lines.clone()));
                 }
-            }
-        }
     }
 
     for (key, lines) in completed {

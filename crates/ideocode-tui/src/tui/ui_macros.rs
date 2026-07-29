@@ -57,13 +57,11 @@ pub fn load_macros() -> Vec<Macro> {
     if let Ok(entries) = std::fs::read_dir(&dir) {
         for entry in entries.flatten() {
             let path = entry.path();
-            if path.extension().and_then(|e| e.to_str()) == Some("json") {
-                if let Ok(content) = std::fs::read_to_string(&path) {
-                    if let Ok(m) = serde_json::from_str::<Macro>(&content) {
+            if path.extension().and_then(|e| e.to_str()) == Some("json")
+                && let Ok(content) = std::fs::read_to_string(&path)
+                    && let Ok(m) = serde_json::from_str::<Macro>(&content) {
                         macros.push(m);
                     }
-                }
-            }
         }
     }
     macros.sort_by(|a, b| a.name.cmp(&b.name));

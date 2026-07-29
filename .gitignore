@@ -18,3 +18,9 @@ target-ttest*/
 /*.avif
 /*.mp4
 /*.png
+
+# GUI dependencies and build artifacts
+ideocode-gui/node_modules/
+ideocode-gui/dist/
+ideocode-gui/src-tauri/target/
+/releases/

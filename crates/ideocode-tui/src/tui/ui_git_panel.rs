@@ -40,6 +40,12 @@ pub struct GitPanelState {
     pub selected_file: usize,
 }
 
+impl Default for GitPanelState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl GitPanelState {
     pub fn new() -> Self {
         Self {

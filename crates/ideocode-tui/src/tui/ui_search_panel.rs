@@ -28,6 +28,12 @@ pub struct SearchPanelState {
     pub is_regex: bool,
 }
 
+impl Default for SearchPanelState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SearchPanelState {
     pub fn new() -> Self {
         Self {

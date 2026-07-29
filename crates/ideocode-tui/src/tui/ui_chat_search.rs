@@ -19,6 +19,12 @@ pub struct ChatSearchState {
     pub current_match: usize,
 }
 
+impl Default for ChatSearchState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ChatSearchState {
     pub fn new() -> Self {
         Self {

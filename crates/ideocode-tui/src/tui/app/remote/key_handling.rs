@@ -1866,7 +1866,7 @@ async fn handle_remote_key_internal(
                         "🏷 Tagged session {} as \"{}\".",
                         name, tag,
                     )));
-                    app.set_status_notice(&format!("Tagged: {}", tag));
+                    app.set_status_notice(format!("Tagged: {}", tag));
                     return Ok(());
                 }
 

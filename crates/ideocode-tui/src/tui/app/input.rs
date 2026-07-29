@@ -3238,14 +3238,13 @@ impl App {
         if modifiers.contains(KeyModifiers::ALT) && matches!(code, KeyCode::Char('v')) {
             self.toggle_vim_mode();
             let label = self.vim_mode().label();
-            self.set_status_notice(&format!("Vim: {} mode", label));
+            self.set_status_notice(format!("Vim: {} mode", label));
             return Ok(());
         }
-        if self.vim_mode() == crate::tui::ui_vim::VimMode::Normal {
-            if crate::tui::ui_vim::handle_vim_normal(self, code, modifiers) {
+        if self.vim_mode() == crate::tui::ui_vim::VimMode::Normal
+            && crate::tui::ui_vim::handle_vim_normal(self, code, modifiers) {
                 return Ok(());
             }
-        }
 
         self.normalize_diagram_state();
         let diagram_available = self.diagram_available();
