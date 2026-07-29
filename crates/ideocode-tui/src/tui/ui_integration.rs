@@ -174,8 +174,8 @@ impl ToastManagerState {
         if visible.is_empty() { return; }
         let toast_width = 40.min(area.width as usize);
         let x = area.x + area.width.saturating_sub(toast_width as u16);
-        let mut y = area.y;
-        for toast in &visible {
+        for (i, toast) in visible.iter().enumerate() {
+            let y = area.y + i as u16;
             if y + 1 > area.y + area.height { break; }
             let alpha = toast.fade_alpha();
             let color = if alpha < 1.0 { let (r, g, b) = color_to_rgb(toast.kind.color()); rgb((r as f32 * alpha) as u8, (g as f32 * alpha) as u8, (b as f32 * alpha) as u8) } else { toast.kind.color() };
@@ -184,7 +184,6 @@ impl ToastManagerState {
                 Span::styled(toast.message.clone(), Style::default().fg(color)),
             ]);
             frame.render_widget(Paragraph::new(line), Rect { x, y, width: toast_width as u16, height: 1 });
-            y += 1;
         }
     }
 }
@@ -720,19 +719,20 @@ pub fn render_debugger_panel(frame: &mut Frame, area: Rect) {
         let panel_height = (area.height / 3).max(4);
         let panel_area = Rect { x: area.x, y: area.y, width: area.width, height: panel_height };
 
-        let mut lines = Vec::new();
-        lines.push(Line::from(Span::styled(
-            "🐛 Debugger (GDB/LLDB)",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
-        )));
-        lines.push(Line::from(Span::styled(
-            "  Attach to process or start debugging session",
-            Style::default().fg(dim_color()),
-        )));
-        lines.push(Line::from(Span::styled(
-            "  Commands: run, step, next, continue, print, backtrace",
-            Style::default().fg(dim_color()),
-        )));
+        let lines = vec![
+            Line::from(Span::styled(
+                "🐛 Debugger (GDB/LLDB)",
+                Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            )),
+            Line::from(Span::styled(
+                "  Attach to process or start debugging session",
+                Style::default().fg(dim_color()),
+            )),
+            Line::from(Span::styled(
+                "  Commands: run, step, next, continue, print, backtrace",
+                Style::default().fg(dim_color()),
+            )),
+        ];
 
         frame.render_widget(Paragraph::new(lines), panel_area);
     });

@@ -163,9 +163,8 @@ impl ToastManager {
         // Render toasts in the top-right corner
         let toast_width = 40.min(area.width as usize);
         let x = area.x + area.width.saturating_sub(toast_width as u16);
-        let mut y = area.y;
-
-        for toast in &visible {
+        for (i, toast) in visible.iter().enumerate() {
+            let y = area.y + i as u16;
             if y + 1 > area.y + area.height {
                 break;
             }
@@ -174,7 +173,6 @@ impl ToastManager {
             let color = toast.kind.color();
             let icon = toast.kind.icon();
 
-            // Fade color based on remaining time
             let faded_color = if alpha < 1.0 {
                 match color {
                     Color::Rgb(r, g, b) => rgb(
@@ -201,7 +199,6 @@ impl ToastManager {
 
             let rect = Rect::new(x, y, toast_width as u16, 1);
             frame.render_widget(Paragraph::new(line), rect);
-            y += 1;
         }
     }
 }

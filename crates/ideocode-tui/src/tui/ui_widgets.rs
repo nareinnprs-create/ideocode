@@ -180,8 +180,9 @@ fn extract_toml_value(toml: &str, key: &str) -> Option<String> {
     let rest = &toml[start..].trim_start();
 
     if rest.starts_with('"') {
-        let end = rest[1..].find('"')?;
-        Some(rest[1..end + 1].to_string())
+        let inner = rest.strip_prefix('"')?;
+        let end = inner.find('"')?;
+        Some(inner[..end].to_string())
     } else {
         None
     }

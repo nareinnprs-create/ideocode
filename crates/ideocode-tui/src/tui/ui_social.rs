@@ -119,20 +119,19 @@ pub fn render_team_placeholder() -> Vec<Line<'static>> {
 /// Render social sharing preview.
 #[allow(dead_code)]
 pub fn render_share_preview(achievements: &[String]) -> Vec<Line<'static>> {
-    let mut lines = Vec::new();
-
-    lines.push(Line::from(Span::styled(
-        "📤 Share Your Progress",
-        Style::default()
-            .fg(neon_cyan())
-            .add_modifier(Modifier::BOLD),
-    )));
-    lines.push(Line::from(""));
-
-    lines.push(Line::from(Span::styled(
-        "Look what I accomplished in IDEOCODE!",
-        Style::default().fg(neon_green()),
-    )));
+    let mut lines = vec![
+        Line::from(Span::styled(
+            "📤 Share Your Progress",
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
+        )),
+        Line::from(""),
+        Line::from(Span::styled(
+            "Look what I accomplished in IDEOCODE!",
+            Style::default().fg(neon_green()),
+        )),
+    ];
     lines.push(Line::from(""));
 
     for achievement in achievements.iter().take(5) {

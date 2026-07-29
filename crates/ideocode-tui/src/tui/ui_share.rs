@@ -85,8 +85,9 @@ fn extract_json_string(json: &str, key: &str) -> Option<String> {
     }
 
     if rest.starts_with('"') {
-        let end = rest[1..].find('"')?;
-        Some(rest[1..end + 1].to_string())
+        let inner = rest.strip_prefix('"')?;
+        let end = inner.find('"')?;
+        Some(inner[..end].to_string())
     } else {
         None
     }

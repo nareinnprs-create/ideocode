@@ -83,7 +83,7 @@ pub fn render_timer_with_progress(
             Style::default().fg(neon_cyan()),
         )),
         Line::from(Span::styled(
-            format!("  {} remaining", format!("{:02}:{:02}", minutes, seconds)),
+            format!("  {:02}:{:02} remaining", minutes, seconds),
             Style::default().fg(dim_color()),
         )),
     ]

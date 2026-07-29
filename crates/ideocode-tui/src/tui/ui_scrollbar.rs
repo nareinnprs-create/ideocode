@@ -34,15 +34,11 @@ pub fn render_scrollbar(
 
     for i in 0..scrollbar_height {
         let is_thumb = i >= thumb_pos && i < thumb_pos + thumb_height;
-        let is_top = i == thumb_pos;
-        let is_bottom = i == thumb_pos + thumb_height - 1;
+        let _is_top = i == thumb_pos;
+        let _is_bottom = i == thumb_pos + thumb_height - 1;
 
         let (ch, color) = if is_thumb {
-            if is_top || is_bottom {
-                ("█", neon_cyan())
-            } else {
-                ("█", neon_cyan())
-            }
+            ("█", neon_cyan())
         } else {
             ("│", dim_color())
         };

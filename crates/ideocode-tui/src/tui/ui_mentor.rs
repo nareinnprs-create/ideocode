@@ -64,21 +64,20 @@ pub fn render_explanation(
     explanation: &str,
     level: &MentorLevel,
 ) -> Vec<Line<'static>> {
-    let mut lines = Vec::new();
-
-    // Code block
-    lines.push(Line::from(Span::styled(
-        "```",
-        Style::default().fg(dim_color()),
-    )));
-    lines.push(Line::from(Span::styled(
-        code.to_string(),
-        Style::default().fg(neon_green()),
-    )));
-    lines.push(Line::from(Span::styled(
-        "```",
-        Style::default().fg(dim_color()),
-    )));
+    let mut lines = vec![
+        Line::from(Span::styled(
+            "```",
+            Style::default().fg(dim_color()),
+        )),
+        Line::from(Span::styled(
+            code.to_string(),
+            Style::default().fg(neon_green()),
+        )),
+        Line::from(Span::styled(
+            "```",
+            Style::default().fg(dim_color()),
+        )),
+    ];
 
     // Explanation
     lines.push(Line::from(""));

@@ -111,24 +111,24 @@ pub fn render_sparkline(data: &[f32], width: usize, color: Color) -> Line<'stati
 
 /// Render latency graph.
 pub fn render_latency_graph(latencies: &[f32]) -> Vec<Line<'static>> {
-    let mut lines = Vec::new();
-    lines.push(Line::from(Span::styled(
-        "Latency (ms)",
-        Style::default().fg(neon_cyan()),
-    )));
-    lines.push(render_sparkline(latencies, 40, neon_green()));
-    lines
+    vec![
+        Line::from(Span::styled(
+            "Latency (ms)",
+            Style::default().fg(neon_cyan()),
+        )),
+        render_sparkline(latencies, 40, neon_green()),
+    ]
 }
 
 /// Render token throughput graph.
 pub fn render_throughput_graph(throughputs: &[f32]) -> Vec<Line<'static>> {
-    let mut lines = Vec::new();
-    lines.push(Line::from(Span::styled(
-        "Tokens/sec",
-        Style::default().fg(neon_cyan()),
-    )));
-    lines.push(render_sparkline(throughputs, 40, neon_magenta()));
-    lines
+    vec![
+        Line::from(Span::styled(
+            "Tokens/sec",
+            Style::default().fg(neon_cyan()),
+        )),
+        render_sparkline(throughputs, 40, neon_magenta()),
+    ]
 }
 
 #[cfg(test)]

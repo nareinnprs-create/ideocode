@@ -138,8 +138,7 @@ pub fn render_build_panel(frame: &mut Frame, area: Rect, state: &BuildPanelState
 
     let max_visible = panel_height as usize - 4;
     for line in state.output.iter().skip(state.scroll).take(max_visible) {
-        let color = if line.contains("error[E") { rgb(255, 80, 80) }
-            else if line.contains("error:") { rgb(255, 80, 80) }
+        let color = if line.contains("error[E") || line.contains("error:") { rgb(255, 80, 80) }
             else if line.contains("warning") { neon_yellow() }
             else if line.contains("Compiling") || line.contains("Building") { neon_cyan() }
             else if line.contains("Finished") || line.contains("Done") { neon_green() }
