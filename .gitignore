@@ -23,4 +23,5 @@ target-ttest*/
 ideocode-gui/node_modules/
 ideocode-gui/dist/
 ideocode-gui/src-tauri/target/
+ideocode-gui/src-tauri/.cargo/
 /releases/

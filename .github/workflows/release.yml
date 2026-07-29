@@ -406,6 +406,115 @@ jobs:
         run: |
           gh release upload "${env:GITHUB_REF_NAME}" dist/IDEOCODE-windows-x86_64.exe dist/IDEOCODE-windows-x86_64.tar.gz dist/IDEOCODE-windows-aarch64.exe dist/IDEOCODE-windows-aarch64.tar.gz --clobber
 
+  build-gui:
+    name: Build GUI (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    needs: create-release
+    continue-on-error: true
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            artifact: IDEOCODE-gui-linux-x86_64
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            artifact: IDEOCODE-gui-macos-aarch64
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+            artifact: IDEOCODE-gui-macos-x86_64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact: IDEOCODE-gui-windows-x86_64
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build GUI frontend + backend
+        shell: bash
+        working-directory: ideocode-gui
+        env:
+          IDEOCODE_RELEASE_BUILD: "1"
+          IDEOCODE_BUILD_SEMVER: ${{ github.ref_name }}
+        run: |
+          npm install
+          npx tauri build
+
+      - name: Package GUI bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cd ideocode-gui/src-tauri/target/release
+
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            cp ideocode-gui.exe "$OLDPWD/dist/${{ matrix.artifact }}.exe"
+            bundle_dir="bundle/msi"
+            if [ -d "$bundle_dir" ]; then
+              find "$bundle_dir" -name '*.msi' -exec cp {} "$OLDPWD/dist/" \;
+            fi
+          elif [ "$RUNNER_OS" = "macOS" ]; then
+            bundle_dir="bundle/dmg"
+            if [ -d "$bundle_dir" ]; then
+              find "$bundle_dir" -name '*.dmg' -exec sh -c '
+                src="$1"
+                base=$(basename "$src")
+                cp "$src" "$OLDPWD/dist/${{ matrix.artifact }}.dmg"
+              ' _ {} \;
+            else
+              # Fallback: app bundle inside macos dir
+              bundle_dir="bundle/macos"
+              if [ -d "$bundle_dir" ]; then
+                dmg_name="$(ls "$bundle_dir"/*.app 2>/dev/null | head -1)"
+                if [ -n "$dmg_name" ]; then
+                  echo "App bundle found at $dmg_name, creating tar.gz"
+                  tar czf "$OLDPWD/dist/${{ matrix.artifact }}.tar.gz" "$bundle_dir"
+                fi
+              fi
+            fi
+          elif [ "$RUNNER_OS" = "Linux" ]; then
+            for dir in bundle/appimage bundle/deb; do
+              if [ -d "$dir" ]; then
+                find "$dir" -type f \( -name '*.AppImage' -o -name '*.deb' \) -exec cp {} "$OLDPWD/dist/" \;
+              fi
+            done
+          fi
+
+          ls -la "$OLDPWD/dist/"
+
+      - name: Upload GUI artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/*
+
+      - name: Publish GUI assets to release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${GITHUB_REF_NAME}" dist/* --clobber
+
   build-freebsd:
     name: Build (x86_64-unknown-freebsd)
     runs-on: ubuntu-latest
@@ -476,7 +585,7 @@ jobs:
 
   release:
     name: Finalize release
-    needs: [create-release, build-linux-macos, publish-windows, build-freebsd]
+    needs: [create-release, build-linux-macos, publish-windows, build-gui, build-freebsd]
     # Every platform is independent. Wait until all jobs reach a terminal state,
     # then publish whichever assets succeeded. Only draft creation is mandatory.
     if: ${{ always() && needs.create-release.result == 'success' }}
@@ -512,6 +621,10 @@ jobs:
             artifacts/IDEOCODE-windows-x86_64/IDEOCODE-windows-x86_64.tar.gz
             artifacts/IDEOCODE-windows-aarch64/IDEOCODE-windows-aarch64.exe
             artifacts/IDEOCODE-windows-aarch64/IDEOCODE-windows-aarch64.tar.gz
+            artifacts/IDEOCODE-gui-windows-x86_64/IDEOCODE-gui-windows-x86_64.exe
+            artifacts/IDEOCODE-gui-macos-aarch64/IDEOCODE-gui-macos-aarch64.dmg
+            artifacts/IDEOCODE-gui-macos-x86_64/IDEOCODE-gui-macos-x86_64.dmg
+            artifacts/IDEOCODE-gui-linux-x86_64/IDEOCODE-gui-linux-x86_64.AppImage
           )
 
           missing=()
@@ -541,7 +654,7 @@ jobs:
         run: |
           set -euo pipefail
           mapfile -d '' assets < <(
-            find artifacts -type f \( -name '*.tar.gz' -o -name '*.exe' \) -print0
+            find artifacts -type f \( -name '*.tar.gz' -o -name '*.exe' -o -name '*.msi' -o -name '*.dmg' -o -name '*.AppImage' -o -name '*.deb' \) -print0
           )
           if [ "${#assets[@]}" -eq 0 ]; then
             echo "No completed release assets found" >&2
@@ -564,6 +677,10 @@ jobs:
           windows_x86_64=$(available artifacts/IDEOCODE-windows-x86_64/IDEOCODE-windows-x86_64.exe)
           windows_aarch64=$(available artifacts/IDEOCODE-windows-aarch64/IDEOCODE-windows-aarch64.exe)
           freebsd_x86_64=$(available artifacts/IDEOCODE-freebsd-x86_64/IDEOCODE-freebsd-x86_64.tar.gz)
+          gui_windows_x86_64=$(available artifacts/IDEOCODE-gui-windows-x86_64/IDEOCODE-gui-windows-x86_64.exe)
+          gui_macos_aarch64=$(available artifacts/IDEOCODE-gui-macos-aarch64/IDEOCODE-gui-macos-aarch64.dmg)
+          gui_macos_x86_64=$(available artifacts/IDEOCODE-gui-macos-x86_64/IDEOCODE-gui-macos-x86_64.dmg)
+          gui_linux_x86_64=$(available artifacts/IDEOCODE-gui-linux-x86_64/IDEOCODE-gui-linux-x86_64.AppImage)
 
           homebrew_ready=false
           aur_ready=false
@@ -583,6 +700,10 @@ jobs:
             echo "WINDOWS_X86_64_AVAILABLE=$windows_x86_64"
             echo "WINDOWS_AARCH64_AVAILABLE=$windows_aarch64"
             echo "FREEBSD_X86_64_AVAILABLE=$freebsd_x86_64"
+            echo "GUI_WINDOWS_X86_64_AVAILABLE=$gui_windows_x86_64"
+            echo "GUI_MACOS_AARCH64_AVAILABLE=$gui_macos_aarch64"
+            echo "GUI_MACOS_X86_64_AVAILABLE=$gui_macos_x86_64"
+            echo "GUI_LINUX_X86_64_AVAILABLE=$gui_linux_x86_64"
             echo "HOMEBREW_READY=$homebrew_ready"
             echo "AUR_READY=$aur_ready"
           } >> "$GITHUB_ENV"
@@ -595,6 +716,10 @@ jobs:
             echo "- Windows x86_64: $windows_x86_64"
             echo "- Windows ARM64: $windows_aarch64"
             echo "- FreeBSD x86_64: $freebsd_x86_64"
+            echo "- GUI Windows x86_64: $gui_windows_x86_64"
+            echo "- GUI macOS Apple Silicon: $gui_macos_aarch64"
+            echo "- GUI macOS Intel: $gui_macos_x86_64"
+            echo "- GUI Linux x86_64: $gui_linux_x86_64"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Generate checksums
@@ -664,6 +789,10 @@ jobs:
               - Windows x86_64: {status('WINDOWS_X86_64_AVAILABLE')}
               - Windows ARM64: {status('WINDOWS_AARCH64_AVAILABLE')}
               - FreeBSD x86_64: {status('FREEBSD_X86_64_AVAILABLE')}
+              - GUI Windows x86_64: {status('GUI_WINDOWS_X86_64_AVAILABLE')}
+              - GUI macOS Apple Silicon: {status('GUI_MACOS_AARCH64_AVAILABLE')}
+              - GUI macOS Intel: {status('GUI_MACOS_X86_64_AVAILABLE')}
+              - GUI Linux x86_64: {status('GUI_LINUX_X86_64_AVAILABLE')}
               {end}
           """).strip("\n")
           path.write_text(f"{body}\n\n{availability}\n", encoding="utf-8")
