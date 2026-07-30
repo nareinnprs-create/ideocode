@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Single-flight coordination for OAuth token refreshes.
 //!
 //! Without coordination, two concurrent tasks can both observe an expired

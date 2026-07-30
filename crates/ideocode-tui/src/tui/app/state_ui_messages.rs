@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::state_ui_storage::{
     compact_display_message_tool_data, compact_display_messages_for_storage,
 };

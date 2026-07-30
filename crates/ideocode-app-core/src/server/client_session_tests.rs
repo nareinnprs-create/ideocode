@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{
     apply_or_defer_subscribe_working_dir, claim_live_target_agent, effective_subscribe_working_dir,
     handle_clear_session, handle_reload, handle_resume_session, handle_subscribe,

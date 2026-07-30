@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Memory tool for storing and recalling information across sessions
 
 use super::{Tool, ToolContext, ToolOutput};
@@ -105,7 +109,7 @@ impl Tool for MemoryTool {
                 "intent": super::intent_schema_property(),
                 "action": {
                     "type": "string",
-                    "enum": ["remember", "recall", "search", "list", "forget", "tag", "link", "related"],
+                    "enum": ["remember", "recall", "search", "list", "forget", "tag", "link", "related", "stats", "clear"],
                     "description": "Action."
                 },
                 "content": { "type": "string" },
@@ -180,7 +184,7 @@ impl Tool for MemoryTool {
                 )))
             }
             "recall" => {
-                let limit = input.limit.unwrap_or(10);
+                let limit = input.limit.unwrap_or(10_000);
                 let scope = Self::parse_scope(input.scope.as_deref(), MemoryScope::All)?;
                 let mode = input.mode.as_deref().unwrap_or_else(|| {
                     if input.query.is_some() {
@@ -435,6 +439,55 @@ impl Tool for MemoryTool {
                     }
                     Ok(ToolOutput::new(out))
                 }
+            }
+            "stats" => {
+                let all = manager.list_all_scoped(MemoryScope::All)?;
+                let count = all.len();
+                let project_count = manager.list_all_scoped(MemoryScope::Project)?.len();
+                let global_count = manager.list_all_scoped(MemoryScope::Global)?.len();
+                let oldest = all.iter().map(|e| e.created_at).min();
+                let newest = all.iter().map(|e| e.created_at).max();
+                let avg_access: f64 = if count > 0 {
+                    all.iter().map(|e| e.access_count as f64).sum::<f64>() / count as f64
+                } else {
+                    0.0
+                };
+                let categories: std::collections::HashMap<String, usize> = {
+                    let mut m = std::collections::HashMap::new();
+                    for e in &all {
+                        let key = format!("{:?}", e.category);
+                        *m.entry(key).or_default() += 1;
+                    }
+                    m
+                };
+                let mut out = format!("Memory stats:\n\nTotal: {}\n", count);
+                out.push_str(&format!("Project: {}\n", project_count));
+                out.push_str(&format!("Global: {}\n", global_count));
+                if let Some(o) = oldest {
+                    out.push_str(&format!("Oldest: {}\n", o.format("%Y-%m-%d %H:%M:%S UTC")));
+                }
+                if let Some(n) = newest {
+                    out.push_str(&format!("Newest: {}\n", n.format("%Y-%m-%d %H:%M:%S UTC")));
+                }
+                out.push_str(&format!("Avg access count: {:.1}\n", avg_access));
+                out.push_str("By category:\n");
+                let mut cats: Vec<_> = categories.into_iter().collect();
+                cats.sort_by(|a, b| b.1.cmp(&a.1));
+                for (cat, cnt) in &cats {
+                    out.push_str(&format!("  {cat}: {cnt}\n", ));
+                }
+                memory::set_state(MemoryState::Idle);
+                Ok(ToolOutput::new(out))
+            }
+            "clear" => {
+                let scope = Self::parse_scope(input.scope.as_deref(), MemoryScope::All)?;
+                let all = manager.list_all_scoped(scope)?;
+                let count = all.len();
+                for e in &all {
+                    manager.forget(&e.id)?;
+                }
+                memory::set_state(MemoryState::Idle);
+                Ok(ToolOutput::new(format!("Cleared {} memories", count)))
             }
             other => Err(anyhow::anyhow!("Unknown action: {}", other)),
         }

@@ -11,7 +11,10 @@ export type PanelId =
   | "sessions"
   | "editor"
   | "debug"
-  | "settings";
+  | "settings"
+  | "memory"
+  | "issues"
+  | "browser";
 
 interface AppState {
   version: string;

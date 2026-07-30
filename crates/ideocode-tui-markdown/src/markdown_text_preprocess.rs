@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{is_closing_fence, parse_opening_fence};
 
 pub(crate) fn escape_currency_dollars(text: &str) -> String {

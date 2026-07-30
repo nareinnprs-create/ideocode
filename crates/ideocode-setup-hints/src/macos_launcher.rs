@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{
     MacTerminalKind, SetupHintsState, effective_macos_terminal, escape_applescript_text,
     escape_shell_single_quotes, launch_command_for_macos_terminal, paused_ideocode_shell_command,

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! `IDEOCODE provider-doctor` command: a user-facing strict provider/model diagnostic.
 
 use std::io::IsTerminal;

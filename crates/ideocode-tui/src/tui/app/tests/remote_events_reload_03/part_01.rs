@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[test]
 fn test_handle_server_event_service_tier_changed_mentions_next_request_when_streaming() {
     let mut app = create_test_app();

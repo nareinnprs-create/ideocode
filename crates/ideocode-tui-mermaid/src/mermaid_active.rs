@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::ACTIVE_DIAGRAMS_MAX;
 use crate::DiagramInfo;
 use std::sync::{LazyLock, Mutex};

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::visual_debug::RectCapture;
 pub(crate) use ideocode_tui_render::layout::{parse_area_spec, point_in_rect, rect_contains};
 use ratatui::layout::Rect;

@@ -8,6 +8,8 @@
 [![Last Commit](https://badgen.net/github/last-commit/nareinnprs-create/ideocode/master?icon=github)](https://github.com/nareinnprs-create/ideocode/commits/master)
 [![GitHub Stars](https://badgen.net/github/stars/nareinnprs-create/ideocode?icon=github)](https://github.com/nareinnprs-create/ideocode/stargazers)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/nBe9vGyK9a)
+[![Docs](https://img.shields.io/badge/docs-USER_GUIDE-blue?style=flat-square)](docs/USER_GUIDE.md)
+[![Shortcuts](https://img.shields.io/badge/docs-KEYBOARD_SHORTCUTS-blue?style=flat-square)](docs/KEYBOARD_SHORTCUTS.md)
 
 The next generation coding agent harness to raise the skill ceiling. <br>
 Built for multi-session workflows, infinite customizability, and performance. 
@@ -20,7 +22,7 @@ Built for multi-session workflows, infinite customizability, and performance.
 
 <br>
 
-[Website](https://github.com/nareinnprs-create/ideocode) · [Docs](https://github.com/nareinnprs-create/ideocode#readme) · [Benchmarks](https://github.com/nareinnprs-create/ideocode#benchmarks) · [Features](#features) · [Install](#installation) · [Quick Start](#quick-start) · [Further Reading](#further-reading) · [Contributing](CONTRIBUTING.md)
+[Website](https://github.com/nareinnprs-create/ideocode) · [Docs](https://github.com/nareinnprs-create/ideocode#readme) · [Keyboard Shortcuts](docs/KEYBOARD_SHORTCUTS.md) · [User Guide](docs/USER_GUIDE.md) · [Benchmarks](https://github.com/nareinnprs-create/ideocode#benchmarks) · [Features](#features) · [Install](#installation) · [Quick Start](#quick-start) · [Contributing](CONTRIBUTING.md)
 
 </div>
 
@@ -868,6 +870,11 @@ curl -fsSL https://raw.githubusercontent.com/nareinnprs-create/ideocode/master/s
 ```
 
 Add `--dry-run` to preview what would be removed without deleting anything.
+
+### IDEOCODE PowerPack
+
+- **[Keyboard Shortcuts Reference](docs/KEYBOARD_SHORTCUTS.md)** — Every keybinding, slash command, and config option for the TUI.
+- **[User Guide](docs/USER_GUIDE.md)** — Complete tutorial covering install, providers, memory, swarm, self-dev, personality, and troubleshooting.
 
 ### Platform Support
 

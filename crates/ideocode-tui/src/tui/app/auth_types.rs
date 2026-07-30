@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[derive(Debug, Clone)]
 pub(crate) enum PendingLogin {
     /// Waiting for user to paste Claude OAuth code for a specific stored account

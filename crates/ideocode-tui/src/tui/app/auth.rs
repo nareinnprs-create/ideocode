@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[path = "auth_account_commands.rs"]
 mod auth_account_commands;
 #[path = "auth_account_picker.rs"]

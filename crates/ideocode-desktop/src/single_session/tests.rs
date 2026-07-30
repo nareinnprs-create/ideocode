@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 
 fn rendered_tool_lines(content: &str, active: bool) -> Vec<SingleSessionStyledLine> {

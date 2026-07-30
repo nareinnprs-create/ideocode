@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[test]
 fn test_redraw_interval_uses_low_frequency_during_remote_startup_phase() {
     let idle = TestState {

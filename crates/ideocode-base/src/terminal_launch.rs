@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use anyhow::Result;
 pub use ideocode_terminal_launch::{
     SpawnAttempt, TerminalCommand, build_hook_spawn_command, detected_resume_terminal, expand_home,

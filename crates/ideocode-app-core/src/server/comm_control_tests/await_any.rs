@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[tokio::test]
 async fn await_members_any_mode_returns_after_first_match() {
     let (_env, _runtime) = RuntimeEnvGuard::new();

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Persistent Memory Agent
 //!
 //! A dedicated Haiku-powered agent for memory management that runs alongside
@@ -42,7 +46,7 @@ const CONTEXT_CHANNEL_CAPACITY: usize = 16;
 const TOPIC_CHANGE_THRESHOLD: f32 = 0.3;
 
 /// Maximum memories to surface per turn
-const MAX_MEMORIES_PER_TURN: usize = 5;
+const MAX_MEMORIES_PER_TURN: usize = 100;
 
 /// Dynamic no-sidecar gate tunables (variable-k surfacing without an LLM).
 ///
@@ -1476,56 +1480,9 @@ fn apply_cluster_assignment(
     }
 }
 
-fn prune_low_confidence(manager: &MemoryManager) -> Result<usize> {
-    let min_confidence = 0.15;
-    let min_age_hours = 24;
-    let now = Utc::now();
-    let mut pruned = 0usize;
-
-    for scope in &["project", "global"] {
-        let mut graph = if *scope == "project" {
-            manager.load_project_graph()?
-        } else {
-            manager.load_global_graph()?
-        };
-
-        let ids_to_prune: Vec<String> = graph
-            .memories
-            .iter()
-            .filter(|(_, entry)| {
-                let age_hours = (now - entry.created_at).num_hours();
-                age_hours >= min_age_hours && entry.confidence < min_confidence
-            })
-            .map(|(id, _)| id.clone())
-            .collect();
-
-        if ids_to_prune.is_empty() {
-            continue;
-        }
-
-        for id in &ids_to_prune {
-            graph.remove_memory(id);
-            pruned += 1;
-        }
-
-        if *scope == "project" {
-            manager.save_project_graph(&graph)?;
-        } else {
-            manager.save_global_graph(&graph)?;
-        }
-
-        if !ids_to_prune.is_empty() {
-            crate::logging::info(&format!(
-                "Pruned {} low-confidence {} memories (conf < {}, age >= {}h)",
-                ids_to_prune.len(),
-                scope,
-                min_confidence,
-                min_age_hours
-            ));
-        }
-    }
-
-    Ok(pruned)
+fn prune_low_confidence(_manager: &MemoryManager) -> Result<usize> {
+    // Infinite memory: never auto-prune. Only user-driven `forget` or `clear` removes data.
+    Ok(0)
 }
 
 fn stable_hash(values: &[String]) -> u64 {

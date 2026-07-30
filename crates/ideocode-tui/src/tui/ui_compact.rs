@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! IDEOCODE Compact Mode (F8)
 //!
 //! Ultra-dense layout. Remove padding, max info per line. Terminal-native.

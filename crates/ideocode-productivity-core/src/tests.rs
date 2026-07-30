@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use crate::model::SessionSummary;
 use crate::{render_markdown, render_png, render_svg, report_from_summaries};
 use std::collections::BTreeMap;

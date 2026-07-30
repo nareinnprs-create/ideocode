@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Small, dependency-free LaTeX math renderer for text front-ends.
 //!
 //! This is intentionally a readable terminal renderer rather than a complete

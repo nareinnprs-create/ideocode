@@ -84,6 +84,14 @@ export interface ProviderStatus {
 }
 
 // ============================================
+// App Commands
+// ============================================
+
+export async function getVersion(): Promise<string> {
+  return invoke<string>("get_version");
+}
+
+// ============================================
 // Chat Commands
 // ============================================
 
@@ -220,4 +228,126 @@ export async function updateSettings(settings: AppSettings): Promise<void> {
 
 export async function isFirstLaunch(): Promise<boolean> {
   return invoke<boolean>("is_first_launch");
+}
+
+// ============================================
+// Memory Commands
+// ============================================
+
+export interface MemoryEntry {
+  id: string;
+  content: string;
+  tags: string[];
+  category: string;
+  created_at: number;
+  updated_at: number;
+}
+
+export async function listMemories(): Promise<MemoryEntry[]> {
+  return invoke<MemoryEntry[]>("list_memories");
+}
+
+export async function storeMemory(content: string, tags: string[], category: string): Promise<MemoryEntry> {
+  return invoke<MemoryEntry>("store_memory", { content, tags, category });
+}
+
+export async function searchMemories(query: string): Promise<MemoryEntry[]> {
+  return invoke<MemoryEntry[]>("search_memories", { query });
+}
+
+export async function deleteMemory(id: string): Promise<void> {
+  return invoke<void>("delete_memory", { id });
+}
+
+// ============================================
+// RAG / Code Search Commands
+// ============================================
+
+export interface CodeSearchResult {
+  file: string;
+  line: number;
+  column: number;
+  content: string;
+  match_type: string;
+}
+
+export interface IndexProgress {
+  files_indexed: number;
+  total_files: number;
+  current_file: string;
+}
+
+export async function searchContents(path: string, query: string): Promise<CodeSearchResult[]> {
+  return invoke<CodeSearchResult[]>("search_contents", { path, query });
+}
+
+export async function indexDirectory(path: string): Promise<IndexProgress> {
+  return invoke<IndexProgress>("index_directory", { path });
+}
+
+// ============================================
+// Issue Commands
+// ============================================
+
+export interface Issue {
+  id: string;
+  title: string;
+  body: string;
+  state: string;
+  url: string;
+  source: string;
+  repository: string;
+  created_at: number;
+  updated_at: number;
+  labels: string[];
+}
+
+export interface FetchResult {
+  fetched: number;
+  source: string;
+  repository: string;
+}
+
+export async function listIssues(source?: string): Promise<Issue[]> {
+  return invoke<Issue[]>("list_issues", { source: source || null });
+}
+
+export async function searchIssues(query: string): Promise<Issue[]> {
+  return invoke<Issue[]>("search_issues", { query });
+}
+
+export async function fetchGithubIssues(owner: string, repo: string, token: string): Promise<FetchResult> {
+  return invoke<FetchResult>("fetch_github_issues", { owner, repo, token });
+}
+
+// ============================================
+// Browser Context Commands
+// ============================================
+
+export interface BrowserTab {
+  url: string;
+  title: string;
+  last_active: number;
+}
+
+export interface BrowserContext {
+  active_tab: BrowserTab | null;
+  recent_tabs: BrowserTab[];
+  updated_at: number;
+}
+
+export async function getBrowserContext(): Promise<BrowserContext> {
+  return invoke<BrowserContext>("get_browser_context");
+}
+
+export async function setBrowserTab(url: string, title: string): Promise<BrowserContext> {
+  return invoke<BrowserContext>("set_browser_tab", { url, title });
+}
+
+export async function clearBrowserContext(): Promise<void> {
+  return invoke<void>("clear_browser_context");
+}
+
+export async function getBrowserContextText(): Promise<string> {
+  return invoke<string>("get_browser_context_text");
 }

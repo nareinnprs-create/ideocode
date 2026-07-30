@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // End-to-end tests for inline hotkey feedback: rare-hotkey notes and
 // unknown-chord near-miss suggestions, driven through App::handle_key.
 

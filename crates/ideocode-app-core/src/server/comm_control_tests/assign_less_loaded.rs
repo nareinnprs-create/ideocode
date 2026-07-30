@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[tokio::test]
 async fn assign_task_without_target_prefers_less_loaded_ready_agent() {
     let (_env, _runtime) = RuntimeEnvGuard::new();

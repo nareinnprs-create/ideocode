@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Body line wrapping algorithms for single_session_render.
 //! Operates on SingleSessionStyledLine to produce explicit visual rows so
 //! scroll metrics, selection hit-testing, and the rendered viewport agree.

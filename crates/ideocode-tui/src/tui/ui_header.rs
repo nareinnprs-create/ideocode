@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::box_utils::render_rounded_box;
 use super::changelog::get_unseen_changelog_entries;
 use super::{
@@ -278,7 +282,7 @@ fn auth_dot_color(state: AuthState) -> Color {
     }
 }
 
-#[allow(dead_code)]
+#[allow(dead_code, reason = "kept for auth status dot rendering; not yet wired to header layout")]
 fn auth_dot_char(state: AuthState) -> &'static str {
     match state {
         AuthState::Available => "●",

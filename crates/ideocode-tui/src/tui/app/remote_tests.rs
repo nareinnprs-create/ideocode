@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::reconnect;
 use super::{
     RemoteRunState, auth_provider_hint_for_login_provider, handle_post_connect,

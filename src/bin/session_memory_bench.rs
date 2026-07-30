@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use clap::{Parser, ValueEnum};
 use ideocode::message::{ContentBlock, Role};
 use ideocode::process_memory;

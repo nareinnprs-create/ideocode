@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Composition-root registry for externally-implemented provider runtimes.
 //!
 //! Provider runtime implementations are being moved out of `IDEOCODE-base` into

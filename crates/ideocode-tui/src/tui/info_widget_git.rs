@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::text::truncate_smart;
 use super::{GitInfo, InfoWidgetData};
 use crate::tui::color_support::rgb;

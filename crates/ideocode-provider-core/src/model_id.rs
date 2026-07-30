@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Canonical model-id normalization.
 //!
 //! Model ids arrive in many shapes: mixed case, with the Anthropic `[1m]`

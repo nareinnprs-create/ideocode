@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Resolve the global "launch a new IDEOCODE" hotkeys from config into a concrete
 //! list of (chord, shell command, script file) tuples.
 //!

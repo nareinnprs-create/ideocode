@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Pure math/color helpers for single_session_render.
 //! Extracted leaf functions with no rendering-state dependencies.
 

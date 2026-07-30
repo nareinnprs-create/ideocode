@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Regression pins for the client-attached (visible, live-client) assignee path.
 //
 // `handle_comm_assign_task` deliberately skips `spawn_assigned_task_run` when the

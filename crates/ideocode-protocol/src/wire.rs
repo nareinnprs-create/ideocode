@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 
 /// Serde default for boolean fields that should default to `true` when absent,
@@ -331,6 +335,10 @@ pub enum Request {
         #[serde(default, skip_serializing_if = "is_false")]
         prefer_strongest: bool,
     },
+
+    /// Set the agent's response personality/tone mode.
+    #[serde(rename = "set_personality")]
+    SetPersonality { id: u64, mode: String },
 
     /// Switch active Anthropic account label on the server session.
     /// This keeps account overrides and provider credential caches in sync.

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Harness API wiring for desktop2.
 //!
 //! Connects to the harness API socket (`~/.IDEOCODE/IDEOCODE-api.sock`, served by

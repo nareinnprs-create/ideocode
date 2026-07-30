@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 
 pub(crate) fn load_session_cards_for_desktop() -> Vec<workspace::SessionCard> {

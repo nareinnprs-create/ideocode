@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[test]
 fn precise_viewport_accepts_high_auto_zoom_without_panicking() {
     let area = ratatui::prelude::Rect::new(0, 0, 40, 20);

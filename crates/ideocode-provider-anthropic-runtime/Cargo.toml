@@ -1,6 +1,7 @@
 [package]
 name = "ideocode-provider-anthropic-runtime"
 version = "0.1.0"
+license = "MIT"
 edition = "2024"
 description = "Direct Anthropic Messages API provider runtime (OAuth + API key, SSE streaming) for ideocode, kept downstream of ideocode-base so provider edits do not rebuild the app spine"
 

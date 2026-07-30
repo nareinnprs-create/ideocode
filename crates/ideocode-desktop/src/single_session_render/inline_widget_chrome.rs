@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Inline-widget card chrome rendering: the widget card itself, preview panes, structured chrome, model picker and command rows, session switcher panels, reflow rows, selection highlight, and their palette constants.
 
 use super::*;

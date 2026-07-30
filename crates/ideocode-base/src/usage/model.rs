@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::display::{format_reset_time, usage_reset_passed};
 use super::{CACHE_DURATION, ERROR_BACKOFF, RATE_LIMIT_BACKOFF};
 use serde::Deserialize;

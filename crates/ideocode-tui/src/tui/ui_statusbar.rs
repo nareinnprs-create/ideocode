@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! IDEOCODE Bottom Status Bar (H1) — Premium 2-line design
 //!
 //! Line 1: Connection │ Model │ Provider │ Processing spinner

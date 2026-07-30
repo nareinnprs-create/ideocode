@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Interactive, animated demo of the inline swarm gallery.
 //!
 //! This runs as a real full-screen terminal app so you can *see* the inline

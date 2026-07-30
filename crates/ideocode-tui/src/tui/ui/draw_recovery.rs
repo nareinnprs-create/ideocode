@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use ratatui::{prelude::*, widgets::Paragraph};
 use std::sync::atomic::{AtomicUsize, Ordering};
 

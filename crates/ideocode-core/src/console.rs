@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Console/terminal ANSI capability helpers.
 //!
 //! Rendering ANSI escapes before the console supports them shows literal

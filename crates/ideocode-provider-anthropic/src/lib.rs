@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use ideocode_message_types::{ContentBlock, Message, Role, ToolDefinition, sanitize_tool_id};
 use ideocode_provider_core::anthropic_map_tool_name_for_oauth as map_tool_name_for_oauth;
 use serde::Serialize;

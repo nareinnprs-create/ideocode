@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Transcript scrollbar rendering and body scroll metrics, plus transcript card/message run detection over styled body lines.
 
 use super::*;

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Pure layout geometry, in logical (device-independent) units.
 //!
 //! Layout is separated from drawing so the rules in

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Visual preview of the swarm gallery layout against mock streams.
 //!
 //! Run with: `cargo run --profile selfdev -p IDEOCODE-tui-render --example swarm_gallery_preview`

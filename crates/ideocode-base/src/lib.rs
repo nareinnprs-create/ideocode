@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! `IDEOCODE-base`: foundational layer of the IDEOCODE application core.
 //!
 //! This crate holds the downward-closed set of modules that the upper

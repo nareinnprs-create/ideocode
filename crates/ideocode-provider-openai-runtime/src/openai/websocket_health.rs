@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 pub(super) use ideocode_provider_openai::websocket_health::{
     WEBSOCKET_FALLBACK_NOTICE, WEBSOCKET_FIRST_EVENT_TIMEOUT_SECS,
     classify_websocket_fallback_reason, is_stream_activity_event, is_websocket_activity_payload,

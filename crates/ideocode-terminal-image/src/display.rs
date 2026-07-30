@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Terminal image display support
 //!
 //! Supports Kitty graphics protocol (Kitty, Ghostty, Handterm), iTerm2 inline images,

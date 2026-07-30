@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Regression tests for issue #438: in remote sessions, the runtime model
 // picker preview advertises Ctrl+N (toggle favorite) and Ctrl+O (set default),
 // but the remote key path never routed those chords to

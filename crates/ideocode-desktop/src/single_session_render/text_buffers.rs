@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Text buffer caching for single-session rendering: SingleSessionTextKey construction, buffer (re)build from keys, body-buffer layout cache, and inline-widget split-buffer sizing.
 
 use super::*;

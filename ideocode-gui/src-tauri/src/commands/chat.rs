@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -54,7 +58,7 @@ fn new_id() -> String {
     use std::time::{SystemTime, UNIX_EPOCH};
     let t = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap()
+        .unwrap_or_default()
         .as_nanos();
     format!("{:x}", t)
 }
@@ -63,13 +67,13 @@ fn now_ms() -> u64 {
     use std::time::{SystemTime, UNIX_EPOCH};
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap()
+        .unwrap_or_default()
         .as_millis() as u64
 }
 
 fn sessions_dir() -> PathBuf {
     dirs::home_dir()
-        .map(|h| h.join(".ideocode").join("sessions"))
+        .map(|h| h.join(".IDEOCODE").join("sessions"))
         .unwrap_or_default()
 }
 
@@ -79,8 +83,8 @@ fn save_session(state: &ChatState) {
         return;
     }
     let _ = std::fs::create_dir_all(&dir);
-    let session_id = state.current_session_id.lock().unwrap().clone();
-    let messages = state.messages.lock().unwrap().clone();
+    let session_id = state.current_session_id.lock().unwrap_or_else(|e| e.into_inner()).clone();
+    let messages = state.messages.lock().unwrap_or_else(|e| e.into_inner()).clone();
     let now = now_ms() / 1000;
     let value = serde_json::json!({
         "id": session_id,
@@ -90,7 +94,9 @@ fn save_session(state: &ChatState) {
         "messages": messages,
     });
     let path = dir.join(format!("{}.json", session_id));
-    let _ = std::fs::write(&path, serde_json::to_string_pretty(&value).unwrap());
+    if let Ok(json) = serde_json::to_string_pretty(&value) {
+        let _ = std::fs::write(&path, json);
+    }
 }
 
 #[tauri::command]
@@ -103,7 +109,7 @@ pub fn send_message(content: String, state: State<'_, ChatState>) -> Message {
         timestamp: Some(now_ms()),
     };
 
-    state.messages.lock().unwrap().push(user_msg.clone());
+    state.messages.lock().unwrap_or_else(|e| e.into_inner()).push(user_msg.clone());
 
     let assistant_msg = Message {
         id: new_id(),
@@ -116,21 +122,21 @@ pub fn send_message(content: String, state: State<'_, ChatState>) -> Message {
         timestamp: Some(now_ms()),
     };
 
-    state.messages.lock().unwrap().push(assistant_msg.clone());
+    state.messages.lock().unwrap_or_else(|e| e.into_inner()).push(assistant_msg.clone());
     save_session(&state);
     assistant_msg
 }
 
 #[tauri::command]
 pub fn get_messages(state: State<'_, ChatState>) -> Vec<Message> {
-    state.messages.lock().unwrap().clone()
+    state.messages.lock().unwrap_or_else(|e| e.into_inner()).clone()
 }
 
 #[tauri::command]
 pub fn clear_messages(state: State<'_, ChatState>) {
-    state.messages.lock().unwrap().clear();
+    state.messages.lock().unwrap_or_else(|e| e.into_inner()).clear();
     // Reset session ID
-    *state.current_session_id.lock().unwrap() = new_id();
+    *state.current_session_id.lock().unwrap_or_else(|e| e.into_inner()) = new_id();
 }
 
 #[tauri::command]

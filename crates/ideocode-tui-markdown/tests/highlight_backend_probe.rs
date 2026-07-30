@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Ignored perf/memory probe for the syntect regex backend.
 //!
 //! Motivation: a jemalloc heap profile of a long-lived TUI client attributed

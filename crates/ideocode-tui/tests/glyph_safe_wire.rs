@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! End-to-end wire proof for the macOS glyph-atlas corruption fix (#330).
 //!
 //! Renders a colored buffer through a *real* `CrosstermBackend` (the same

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Fold per-session summaries into the global [`ProductivityReport`], including
 //! the shareable "flavor" fields (archetype, badges, power score).
 

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Cross-layer invalidation signal for the cached session list.
 //!
 //! The session list cache itself is a TUI session-picker implementation detail,

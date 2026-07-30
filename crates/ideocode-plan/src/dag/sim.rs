@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Deterministic task-DAG simulator.
 //!
 //! This drives the engine end-to-end with scripted mock workers so the scheduler,

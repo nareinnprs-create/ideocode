@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Shared-server lifecycle hooks usable from lower layers.
 //!
 //! The actual "spawn a shared IDEOCODE server" logic lives in the CLI command

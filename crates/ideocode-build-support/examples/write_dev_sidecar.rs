@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Write the dev-binary source metadata sidecar for the current repo state.
 //!
 //! Self-dev helper: after a direct `scripts/dev_cargo.sh build` (outside the

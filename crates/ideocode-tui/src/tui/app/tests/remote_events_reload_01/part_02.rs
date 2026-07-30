@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[test]
 fn test_remote_done_shows_footer_after_final_tool_result_without_trailing_text() {
     let mut app = create_test_app();

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Process-wide "keep the machine awake while IDEOCODE is working" inhibitor.
 //!
 //! The shared `IDEOCODE serve` daemon hosts every session, so a single inhibitor

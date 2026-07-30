@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! IDEOCODE Workspace Profiles (F5)
 //!
 //! Different configs per project. Auto-switch theme/personality/tools by directory.

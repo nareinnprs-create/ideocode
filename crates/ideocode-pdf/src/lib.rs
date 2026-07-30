@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use anyhow::{Result, anyhow};
 use std::panic::AssertUnwindSafe;
 use std::path::Path;

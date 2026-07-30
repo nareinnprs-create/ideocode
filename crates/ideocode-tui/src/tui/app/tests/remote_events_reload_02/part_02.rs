@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[test]
 fn test_handle_remote_disconnect_preserves_pending_interleaves_for_reconnect() {
     let mut app = create_test_app();

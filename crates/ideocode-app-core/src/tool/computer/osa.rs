@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Centralized `osascript` / JXA execution for the `macos_computer_use` tool.
 //!
 //! Many macOS capabilities (Accessibility actions, window/app management, system

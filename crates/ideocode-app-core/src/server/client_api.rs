@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{connect_socket, debug_socket_path, socket_path};
 use crate::protocol::{HistoryMessage, Request, ServerEvent, TranscriptMode};
 use crate::transport::{ReadHalf, WriteHalf};

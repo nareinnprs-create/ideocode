@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Tests for the streaming reasoning region helpers.
 //
 // Reasoning text is rendered as dim, italic lines (no blockquote `│` gutter, no

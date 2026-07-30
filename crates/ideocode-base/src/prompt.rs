@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! System prompt management
 
 use std::path::{Path, PathBuf};
@@ -5,6 +9,152 @@ use std::process::Command;
 
 /// Default system prompt for IDEOCODE (embedded at compile time)
 pub const DEFAULT_SYSTEM_PROMPT: &str = include_str!("prompt/system_prompt.md");
+
+/// The agent's response personality/tone mode.
+/// Controls how the LLM is instructed to style its responses.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum PersonalityMode {
+    /// Formal, structured, business-like tone
+    #[default]
+    Professional,
+    /// Relaxed, conversational, friendly tone
+    Casual,
+    /// Gen-Z internet-casual slang and energy
+    GenZ,
+    /// Scholarly, research-oriented, precise language
+    Academic,
+    /// Playful, humorous, clever wordplay
+    Witty,
+    /// Calm, minimalist, meditative tone
+    Zen,
+}
+
+impl PersonalityMode {
+    /// System-prompt directive text that conditions the model's response style.
+    pub fn system_directive(&self) -> &'static str {
+        match self {
+            PersonalityMode::Professional => {
+                "Respond in a professional, polished tone. Use clear, structured language. \
+                 Be direct and efficient. Avoid slang and overly casual expressions."
+            }
+            PersonalityMode::Casual => {
+                "Respond in a casual, friendly tone. Be conversational and approachable. \
+                 Use natural everyday language. It's okay to be informal."
+            }
+            PersonalityMode::GenZ => {
+                "Respond with Gen-Z energy. Be hype, use internet slang naturally, \
+                 and keep it real. No cap. Vibes are immaculate energy."
+            }
+            PersonalityMode::Academic => {
+                "Respond in a scholarly, precise manner. Use formal academic language, \
+                 cite reasoning steps, and prefer structured arguments. Be thorough and rigorous."
+            }
+            PersonalityMode::Witty => {
+                "Respond with wit and humor. Use clever wordplay, puns, and幽默 observations. \
+                 Be playful but still helpful and accurate."
+            }
+            PersonalityMode::Zen => {
+                "Respond in a calm, minimalist, meditative tone. Use simple, clear language. \
+                 Be peaceful and unhurried. Pause to consider before responding."
+            }
+        }
+    }
+
+    pub fn list_all() -> &'static [PersonalityMode] {
+        &[
+            PersonalityMode::Professional,
+            PersonalityMode::Casual,
+            PersonalityMode::GenZ,
+            PersonalityMode::Academic,
+            PersonalityMode::Witty,
+            PersonalityMode::Zen,
+        ]
+    }
+
+    pub fn from_str(s: &str) -> Option<Self> {
+        match s.to_lowercase().trim() {
+            "professional" | "prof" => Some(PersonalityMode::Professional),
+            "casual" | "chill" => Some(PersonalityMode::Casual),
+            "genz" | "gen-z" | "gen_z" => Some(PersonalityMode::GenZ),
+            "academic" | "scholar" => Some(PersonalityMode::Academic),
+            "witty" | "funny" | "humor" => Some(PersonalityMode::Witty),
+            "zen" | "calm" | "peace" => Some(PersonalityMode::Zen),
+            _ => None,
+        }
+    }
+}
+
+/// Emotional tone detected from user input for response mirroring.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum EmotionTone {
+    #[default]
+    Neutral,
+    Frustrated,
+    Excited,
+    Curious,
+    Urgent,
+    Confused,
+    Happy,
+    Sad,
+    Angry,
+}
+
+impl EmotionTone {
+    /// Returns a directive string to inject into the system prompt for emotional mirroring.
+    pub fn mirror_directive(&self) -> Option<&'static str> {
+        match self {
+            EmotionTone::Neutral => None,
+            EmotionTone::Frustrated => Some("Note: The user seems frustrated. Respond with patience and empathy. Acknowledge their frustration before addressing the technical issue."),
+            EmotionTone::Excited => Some("Note: The user seems excited. Match their positive energy and enthusiasm while staying helpful."),
+            EmotionTone::Curious => Some("Note: The user seems curious and exploratory. Encourage their curiosity and provide thorough explanations."),
+            EmotionTone::Urgent => Some("Note: The user seems urgent. Be direct, concise, and prioritize speed over thoroughness."),
+            EmotionTone::Confused => Some("Note: The user seems confused. Be extra clear, provide step-by-step explanations, and check for understanding."),
+            EmotionTone::Happy => Some("Note: The user is in a good mood. Match their positive tone while staying professional."),
+            EmotionTone::Sad => Some("Note: The user seems down. Be gentle, supportive, and encouraging."),
+            EmotionTone::Angry => Some("Note: The user seems angry. Stay calm, professional, and de-escalatory. Do not match their anger."),
+        }
+    }
+
+    /// Simple keyword-based emotion detection from user text.
+    pub fn detect(text: &str) -> EmotionTone {
+        let lower = text.to_lowercase();
+        let angry_words = ["angry", "furious", "pissed", "annoyed", "infuriated", "livid", "damn it", "wtf", "what the hell", "stupid", "terrible", "awful", "useless", "unacceptable", "frustrating", "infuriating"];
+        let frustrated_words = ["frustrated", "ugh", "annoying", "not working", "broken", "doesn't work", "why doesn't", "still broken", "still not", "give up", "exhausting", "tired of", "sick of"];
+
+        if angry_words.iter().any(|w| lower.contains(w)) {
+            return EmotionTone::Angry;
+        }
+        if frustrated_words.iter().any(|w| lower.contains(w)) {
+            return EmotionTone::Frustrated;
+        }
+        let excited_words = ["exciting", "awesome", "amazing", "fantastic", "great!", "love it", "wow", "cool!", "yay", "yes!", "let's go", "hell yeah", "finally!"];
+        if excited_words.iter().any(|w| lower.contains(w)) {
+            return EmotionTone::Excited;
+        }
+        let happy_words = ["happy", "glad", "pleased", "nice", "good", "satisfied", "wonderful", "delighted"];
+        if happy_words.iter().any(|w| lower.contains(w)) {
+            return EmotionTone::Happy;
+        }
+        let sad_words = ["sad", "unfortunate", "disappointed", "sorry", "regret", "unhappy", "depressing", "upset"];
+        if sad_words.iter().any(|w| lower.contains(w)) {
+            return EmotionTone::Sad;
+        }
+        let curious_words = ["wonder", "curious", "how does", "why does", "explain", "tell me about", "what is", "how is", "what are", "why is"];
+        let questions = lower.matches('?').count();
+        if curious_words.iter().any(|w| lower.contains(w)) || questions > 1 {
+            return EmotionTone::Curious;
+        }
+        let confused_words = ["confused", "don't understand", "not sure", "what do you mean", "unclear", "doesn't make sense", "huh", "wait", "i don't get", "i'm lost"];
+        if confused_words.iter().any(|w| lower.contains(w)) {
+            return EmotionTone::Confused;
+        }
+        let urgent_words = ["urgent", "asap", "hurry", "quick", "now!", "immediately", "emergency", "critical", "deadline", "right now", "fast", "important", "priority"];
+        if urgent_words.iter().any(|w| lower.contains(w)) {
+            return EmotionTone::Urgent;
+        }
+        EmotionTone::Neutral
+    }
+}
 
 /// Prompt guidance for the optional Mermaid rendering capability.
 pub const MERMAID_PROMPT: &str = "# Mermaid\n\nRender fenced `mermaid` blocks inline.";

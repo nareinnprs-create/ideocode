@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Guard against width-unstable glyphs in TUI source (issue seen 2026-07-02).
 //!
 //! Unicode 16 reclassified several symbol ranges from narrow (1 cell) to wide

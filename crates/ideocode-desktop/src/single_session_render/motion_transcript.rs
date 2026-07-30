@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Motion state machines for transcript surfaces: transcript cards, per-message highlights, inline markdown pills, tool cards, and the shared SurfaceMotionVisual plus motion hashing helpers.
 
 use super::*;

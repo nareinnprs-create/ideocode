@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! MCP (Model Context Protocol) client implementation
 //!
 //! Connects to MCP servers that provide tools via JSON-RPC over stdio.

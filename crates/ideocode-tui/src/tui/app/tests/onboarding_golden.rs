@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Golden state-space walker for the first-run onboarding welcome screen.
 //
 // This renders every onboarding phase to an offscreen TestBackend and captures

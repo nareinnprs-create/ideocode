@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Server handlers for the task-DAG mutation ops (seed/expand/complete/inject).
 //!
 //! These are the live counterparts of the validated engine ops in

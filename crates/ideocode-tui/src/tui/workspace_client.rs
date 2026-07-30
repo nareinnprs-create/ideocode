@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use crate::session::{Session, SessionStatus};
 use crate::tui::workspace_map::{
     VisibleWorkspaceRow, WorkspaceMapModel, WorkspaceSessionTile, WorkspaceSessionVisualState,

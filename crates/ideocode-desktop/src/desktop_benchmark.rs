@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use crate::desktop_config::env_flag_enabled;
 use std::time::Instant;
 use winit::dpi::PhysicalSize;

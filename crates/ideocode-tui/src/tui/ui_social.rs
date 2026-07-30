@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! IDEOCODE Social Features (S2-S5)
 //!
 //! Leaderboards, team features, social sharing, and achievement sharing.
@@ -61,7 +65,7 @@ pub fn render_leaderboard(entries: &[LeaderboardEntry]) -> Vec<Line<'static>> {
 }
 
 /// Render team and sharing features panel.
-#[allow(dead_code)]
+#[allow(dead_code, reason = "kept for social features panel; not yet wired into main UI")]
 pub fn render_team_placeholder() -> Vec<Line<'static>> {
     vec![
         Line::from(Span::styled(
@@ -117,7 +121,7 @@ pub fn render_team_placeholder() -> Vec<Line<'static>> {
 }
 
 /// Render social sharing preview.
-#[allow(dead_code)]
+#[allow(dead_code, reason = "kept for share preview overlay; not yet wired into main UI")]
 pub fn render_share_preview(achievements: &[String]) -> Vec<Line<'static>> {
     let mut lines = vec![
         Line::from(Span::styled(
@@ -158,7 +162,7 @@ pub fn render_share_preview(achievements: &[String]) -> Vec<Line<'static>> {
 }
 
 /// Render achievement share card.
-#[allow(dead_code)]
+#[allow(dead_code, reason = "kept for achievement card overlay; not yet wired into main UI")]
 pub fn render_achievement_card(
     achievement: &str,
     description: &str,

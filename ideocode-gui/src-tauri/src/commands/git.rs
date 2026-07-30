@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
@@ -63,9 +67,8 @@ pub fn git_status(path: String) -> Result<GitStatus, String> {
 
     // Get branch name
     let branch = run_git(&["rev-parse", "--abbrev-ref", "HEAD"], &cwd)
-        .unwrap_or_else(|_| "main".into())
-        .trim()
-        .to_string();
+        .map(|s| s.trim().to_string())
+        .unwrap_or_else(|_| "detached".into());
 
     // Get ahead/behind
     let (ahead, behind) = run_git(&["rev-list", "--left-right", "--count", "HEAD...@{upstream}"], &cwd)
@@ -130,22 +133,19 @@ pub fn git_status(path: String) -> Result<GitStatus, String> {
 pub fn git_diff(path: String, file: Option<String>) -> Result<String, String> {
     let cwd = PathBuf::from(&path).to_string_lossy().to_string();
 
-    let args: Vec<String> = if let Some(f) = file {
-        vec!["diff".into(), f]
-    } else {
-        vec!["diff".into()]
-    };
+    let mut args = vec!["diff"];
+    if let Some(ref f) = file {
+        args.push("--");
+        args.push(f);
+    }
 
-    run_git(
-        &args.iter().map(|s| s.as_str()).collect::<Vec<&str>>(),
-        &cwd,
-    )
+    let args_refs: Vec<&str> = args.iter().copied().collect();
+    run_git(&args_refs, &cwd)
 }
 
 #[tauri::command]
 pub fn git_commit(path: String, message: String) -> Result<(), String> {
     let cwd = PathBuf::from(&path).to_string_lossy().to_string();
-    run_git(&["add", "-A"], &cwd)?;
-    run_git(&["commit", "-m", &message], &cwd)?;
+    run_git(&["commit", "-am", &message], &cwd)?;
     Ok(())
 }

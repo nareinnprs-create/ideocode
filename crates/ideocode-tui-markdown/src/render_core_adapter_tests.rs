@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Parity checks: the shared-core adapter vs. the legacy renderer.
 //!
 //! The two renderers differ in spacing details and some decorative styling, so

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Shared copy-selection highlight rendering.
 //!
 //! One implementation for every pane that supports drag-to-select (chat

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Gallery / grid layout for live swarm-agent viewports.
 //!
 //! Unlike [`crate::memory_tiles`], which is a ragged masonry bin-packer optimized

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 pub(super) fn truncate_smart(s: &str, max_len: usize) -> String {
     let char_len = s.chars().count();
     if char_len <= max_len {

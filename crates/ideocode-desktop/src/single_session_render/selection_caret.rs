@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Selection highlight, draft caret positioning, and draft/welcome-timeline top-edge layout for the single-session composer.
 
 use super::*;

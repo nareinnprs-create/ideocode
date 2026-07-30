@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Light/dark terminal theme support.
 //!
 //! IDEOCODE's palette (`theme.rs` and the many ad hoc `rgb(...)` call sites) is

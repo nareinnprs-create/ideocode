@@ -1,26 +1,55 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 mod agentgrep;
+mod ai_diagram;
+mod ai_embed;
+mod ai_explain;
+mod ai_imagine;
+mod ai_plan;
+mod ai_refactor;
+mod ai_review;
+mod ai_speak;
+mod ai_summarize;
+mod ai_transcribe;
+mod ai_translate;
 pub mod ambient;
 mod apply_patch;
+mod ask;
 mod bash;
 mod batch;
 mod bg;
 mod browser;
+mod clipboard;
 mod communicate;
 #[cfg(target_os = "macos")]
 mod computer;
+#[cfg(windows)]
+mod computer_windows;
+#[cfg(target_os = "linux")]
+mod computer_linux;
 mod conversation_search;
 mod debug_socket;
+mod diff;
 mod discover;
+mod docker;
 mod edit;
+mod env;
+mod git;
 mod gmail;
+mod glob_tool;
 mod goal;
+mod http;
 mod invalid;
 mod ls;
 pub mod mcp;
 mod memory;
 mod multiedit;
+mod notify;
 mod open;
 mod patch;
+mod process;
 mod read;
 pub mod selfdev;
 pub(crate) mod serde_coerce;
@@ -28,6 +57,9 @@ mod session_search;
 pub(crate) mod session_search_index;
 mod side_panel;
 mod skill;
+mod sql;
+mod system_control;
+mod think;
 mod todo;
 mod webfetch;
 mod websearch;
@@ -98,6 +130,7 @@ pub struct Registry {
     tools: Arc<RwLock<HashMap<String, Arc<dyn Tool>>>>,
     skills: Arc<RwLock<SkillRegistry>>,
     compaction: Arc<RwLock<CompactionManager>>,
+    pub provider: Option<Arc<dyn Provider>>,
 }
 
 impl Clone for Registry {
@@ -108,6 +141,7 @@ impl Clone for Registry {
             // Each clone gets a fresh CompactionManager to prevent parallel
             // subagents from corrupting each other's message history
             compaction: Arc::new(RwLock::new(CompactionManager::new())),
+            provider: self.provider.clone(),
         }
     }
 }
@@ -144,6 +178,7 @@ impl Registry {
             tools: Arc::new(RwLock::new(HashMap::new())),
             skills: Arc::new(RwLock::new(SkillRegistry::default())),
             compaction: Arc::new(RwLock::new(CompactionManager::new())),
+            provider: None,
         }
     }
 
@@ -195,6 +230,20 @@ impl Registry {
                 "macos_computer_use",
                 computer::ComputerTool::new,
             );
+            #[cfg(windows)]
+            Self::insert_tool_timed(
+                &mut m,
+                &mut timings,
+                "windows_computer_use",
+                computer_windows::WindowsComputerTool::new,
+            );
+            #[cfg(target_os = "linux")]
+            Self::insert_tool_timed(
+                &mut m,
+                &mut timings,
+                "linux_computer_use",
+                computer_linux::LinuxComputerTool::new,
+            );
             Self::insert_tool_timed(
                 &mut m,
                 &mut timings,
@@ -230,8 +279,22 @@ impl Registry {
                 goal::InitiativeTool::new,
             );
             Self::insert_tool_timed(&mut m, &mut timings, "gmail", gmail::GmailTool::new);
+            Self::insert_tool_timed(&mut m, &mut timings, "system_control", system_control::SystemControlTool::new);
             Self::insert_tool_timed(&mut m, &mut timings, "schedule", ambient::ScheduleTool::new);
             Self::insert_tool_timed(&mut m, &mut timings, "selfdev", selfdev::SelfDevTool::new);
+            // New tools
+            Self::insert_tool_timed(&mut m, &mut timings, "ask", ask::AskTool::new);
+            Self::insert_tool_timed(&mut m, &mut timings, "clipboard", clipboard::ClipboardTool::new);
+            Self::insert_tool_timed(&mut m, &mut timings, "diff", diff::DiffTool::new);
+            Self::insert_tool_timed(&mut m, &mut timings, "docker", docker::DockerTool::new);
+            Self::insert_tool_timed(&mut m, &mut timings, "env", env::EnvTool::new);
+            Self::insert_tool_timed(&mut m, &mut timings, "git", git::GitTool::new);
+            Self::insert_tool_timed(&mut m, &mut timings, "glob", glob_tool::GlobTool::new);
+            Self::insert_tool_timed(&mut m, &mut timings, "http", http::HttpTool::new);
+            Self::insert_tool_timed(&mut m, &mut timings, "notify", notify::NotifyTool::new);
+            Self::insert_tool_timed(&mut m, &mut timings, "process", process::ProcessTool::new);
+            Self::insert_tool_timed(&mut m, &mut timings, "sql", sql::SqlTool::new);
+            Self::insert_tool_timed(&mut m, &mut timings, "think", think::ThinkTool::new);
             let nonzero: Vec<String> = timings
                 .iter()
                 .filter(|(_, ms)| *ms > 0)
@@ -255,7 +318,7 @@ impl Registry {
         tools
     }
 
-    pub async fn new(_provider: Arc<dyn Provider>) -> Self {
+    pub async fn new(provider: Arc<dyn Provider>) -> Self {
         let start = std::time::Instant::now();
         let skills_start = std::time::Instant::now();
         let skills = Self::shared_skills_registry();
@@ -268,6 +331,7 @@ impl Registry {
             tools: Arc::new(RwLock::new(HashMap::new())),
             skills: skills.clone(),
             compaction: compaction.clone(),
+            provider: Some(provider),
         };
         let registry_struct_ms = registry_struct_start.elapsed().as_millis();
 
@@ -287,6 +351,18 @@ impl Registry {
             "conversation_search",
             conversation_search::ConversationSearchTool::new(compaction),
         );
+        // AI-integrated tools (need provider from registry)
+        Self::insert_tool(&mut tools_map, "diagram", ai_diagram::DiagramTool::new(registry.clone()));
+        Self::insert_tool(&mut tools_map, "embed", ai_embed::EmbedTool::new(registry.clone()));
+        Self::insert_tool(&mut tools_map, "explain", ai_explain::ExplainTool::new(registry.clone()));
+        Self::insert_tool(&mut tools_map, "imagine", ai_imagine::ImagineTool::new(registry.clone()));
+        Self::insert_tool(&mut tools_map, "plan", ai_plan::PlanTool::new(registry.clone()));
+        Self::insert_tool(&mut tools_map, "refactor", ai_refactor::RefactorTool::new(registry.clone()));
+        Self::insert_tool(&mut tools_map, "review", ai_review::ReviewTool::new(registry.clone()));
+        Self::insert_tool(&mut tools_map, "speak", ai_speak::SpeakTool::new(registry.clone()));
+        Self::insert_tool(&mut tools_map, "summarize", ai_summarize::SummarizeTool::new(registry.clone()));
+        Self::insert_tool(&mut tools_map, "transcribe", ai_transcribe::TranscribeTool::new(registry.clone()));
+        Self::insert_tool(&mut tools_map, "translate", ai_translate::TranslateTool::new(registry.clone()));
         // Sponsored discovery is on by default (opt-out); when disabled the
         // tool is never registered and no discovery endpoint is ever
         // contacted.
@@ -339,6 +415,11 @@ impl Registry {
         // Sort by name for deterministic ordering - critical for prompt cache hits
         defs.sort_by(|a, b| a.name.cmp(&b.name));
         defs
+    }
+
+    /// Get a reference to the AI provider, if available.
+    pub fn provider(&self) -> Option<&Arc<dyn Provider>> {
+        self.provider.as_ref()
     }
 
     pub async fn tool_names(&self) -> Vec<String> {

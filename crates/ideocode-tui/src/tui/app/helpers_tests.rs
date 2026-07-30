@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{
     build_resume_command, effort_display_label, extract_bracketed_system_message,
     format_countdown_until, gather_ambient_info_inner, inferred_reasoning_efforts,

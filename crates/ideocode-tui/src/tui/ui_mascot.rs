@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! IDEOCODE Mascot System (P5)
 //!
 //! ASCII art mascot that appears in onboarding, gives tips, celebrates wins.

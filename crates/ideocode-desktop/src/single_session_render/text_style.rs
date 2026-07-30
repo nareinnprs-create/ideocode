@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Text buffer construction, shaping, styled segments, rich-line conversion,
 //! font-family selection, and color/attribute mapping for single_session_render.
 

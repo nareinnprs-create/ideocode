@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use ideocode_render_core::{BlockKind, normalize_latex_math, parse_markdown};
 
 fn math_display_count(markdown: &str) -> usize {

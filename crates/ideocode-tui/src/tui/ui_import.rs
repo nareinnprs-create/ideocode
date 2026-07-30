@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! IDEOCODE Import from Competitors (F1)
 //!
 //! Import sessions from: Claude Code, Codex, Cursor, OpenCode, Pi.

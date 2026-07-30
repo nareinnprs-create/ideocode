@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 const MEMORY_CONTEXT_MAX_CHARS: usize = 8_000;
 const MEMORY_CONTEXT_MAX_MESSAGES: usize = 12;
 const MEMORY_CONTEXT_MAX_BLOCK_CHARS: usize = 1_200;

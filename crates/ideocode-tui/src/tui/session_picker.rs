@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Interactive session picker with preview
 //!
 //! Shows a list of sessions on the left, with a preview of the selected session's
@@ -2567,7 +2571,7 @@ pub fn pick_session() -> Result<Option<PickerResult>> {
         + orphan_sessions.len();
 
     if total_sessions == 0 {
-        eprintln!("No sessions found.");
+        crate::logging::info("No sessions found.");
         return Ok(None);
     }
 

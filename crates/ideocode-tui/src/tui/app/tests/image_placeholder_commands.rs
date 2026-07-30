@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Pins how `[image N]` placeholders in the input buffer interact with
 // slash-command parsing in submit_input (crates/IDEOCODE-tui/src/tui/app/input.rs).
 //

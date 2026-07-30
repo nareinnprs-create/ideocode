@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use crate::{RouteCheapnessEstimate, RouteCostConfidence, RouteCostSource};
 
 fn usd_to_micros(usd: f64) -> u64 {

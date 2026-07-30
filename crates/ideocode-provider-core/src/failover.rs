@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use serde::{Deserialize, Serialize};
 
 const PROVIDER_FAILOVER_PROMPT_PREFIX: &str = "[IDEOCODE-provider-failover]";

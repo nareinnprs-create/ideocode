@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Mock provider for e2e tests
 //!
 //! Returns pre-scripted StreamEvent sequences for deterministic testing.

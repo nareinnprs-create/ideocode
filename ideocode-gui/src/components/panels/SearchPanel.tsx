@@ -1,25 +1,37 @@
 import { useState } from "react";
-import { Search, File, Folder } from "lucide-react";
-import { searchFiles } from "../../lib/tauri-commands";
+import { Search, File, FileText, ArrowLeft } from "lucide-react";
+import { searchFiles, searchContents } from "../../lib/tauri-commands";
 import { useFileStore } from "../../stores/fileStore";
-import type { SearchResult } from "../../lib/tauri-commands";
+import { useAppStore } from "../../stores/appStore";
+import type { SearchResult, CodeSearchResult } from "../../lib/tauri-commands";
+
+type SearchMode = "filename" | "content";
 
 export function SearchPanel() {
-  const { rootPath } = useFileStore();
+  const { rootPath, setRootPath } = useFileStore();
+  const setRightPanelOpen = useAppStore((s) => s.setRightPanelOpen);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [mode, setMode] = useState<SearchMode>("filename");
+  const [results, setResults] = useState<SearchResult[] | CodeSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSearch = async () => {
     if (!query.trim()) return;
     setLoading(true);
     setSearched(true);
+    setError(null);
     try {
-      const r = await searchFiles(query, rootPath);
-      setResults(r);
+      if (mode === "filename") {
+        const r = await searchFiles(query, rootPath || ".");
+        setResults(r);
+      } else {
+        const r = await searchContents(rootPath || ".", query);
+        setResults(r);
+      }
     } catch (e) {
-      console.error("Search failed:", e);
+      setError(`${e}`);
       setResults([]);
     } finally {
       setLoading(false);
@@ -28,26 +40,82 @@ export function SearchPanel() {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="px-1 pt-1 flex items-center justify-between">
+        <button
+          onClick={() => setRightPanelOpen(false)}
+          className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
+        >
+          <ArrowLeft size={14} />
+          Back
+        </button>
+        <div className="flex gap-0.5">
+          <button
+            onClick={() => { setMode("filename"); setResults([]); setSearched(false); }}
+            className={`px-2 py-1 text-[10px] rounded transition-fast ${
+              mode === "filename"
+                ? "bg-accent-primary text-white"
+                : "text-text-muted hover:text-text-primary"
+            }`}
+          >
+            Files
+          </button>
+          <button
+            onClick={() => { setMode("content"); setResults([]); setSearched(false); }}
+            className={`px-2 py-1 text-[10px] rounded transition-fast ${
+              mode === "content"
+                ? "bg-accent-primary text-white"
+                : "text-text-muted hover:text-text-primary"
+            }`}
+          >
+            Content
+          </button>
+        </div>
+      </div>
+
       {/* Search input */}
-      <div className="px-3 py-2 border-b border-border-subtle">
+      <div className="px-3 py-2">
         <div className="flex items-center gap-2 bg-bg-primary rounded-lg px-2.5 py-1.5 border border-border-subtle focus-within:border-accent-primary">
-          <Search size={14} className="text-text-muted shrink-0" />
+          {mode === "filename" ? (
+            <Search size={14} className="text-text-muted shrink-0" />
+          ) : (
+            <FileText size={14} className="text-text-muted shrink-0" />
+          )}
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            placeholder="Search files..."
+            placeholder={mode === "filename" ? "Search filenames..." : "Search file contents..."}
             className="flex-1 bg-transparent text-text-primary text-xs outline-none placeholder:text-text-muted"
           />
         </div>
+        {/* Custom path input */}
+        <div className="mt-1">
+          <input
+            type="text"
+            value={rootPath}
+            onChange={(e) => setRootPath(e.target.value)}
+            placeholder="Search path (default: project root)"
+            className="w-full px-2.5 py-1 text-[10px] bg-bg-tertiary border border-border-subtle rounded text-text-muted placeholder:text-text-muted/50 focus:outline-none focus:border-accent-primary font-mono"
+          />
+        </div>
       </div>
+
+      {/* Error */}
+      {error && (
+        <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle">
+          <div className="text-xs text-red-400">{error}</div>
+        </div>
+      )}
 
       {/* Results */}
       <div className="flex-1 overflow-y-auto">
         {!searched && (
           <div className="p-4 text-center text-text-muted text-xs">
-            Type a search query and press Enter
+            {mode === "filename"
+              ? "Type a filename pattern and press Enter"
+              : "Type content to search for and press Enter"}
           </div>
         )}
 
@@ -57,29 +125,39 @@ export function SearchPanel() {
           </div>
         )}
 
-        {searched && !loading && results.length === 0 && (
+        {searched && !loading && results.length === 0 && !error && (
           <div className="p-4 text-center text-text-muted text-xs">
             No results found
+          </div>
+        )}
+
+        {searched && !loading && results.length > 0 && (
+          <div className="px-3 py-1 text-[10px] text-text-muted">
+            {results.length} result{results.length !== 1 ? "s" : ""}
           </div>
         )}
 
         {results.map((r, i) => (
           <div
             key={`${r.file}-${i}`}
-            className="flex items-start gap-2 px-3 py-1.5 hover:bg-bg-elevated cursor-pointer text-xs border-b border-border-subtle"
+            className="flex items-start gap-2 px-3 py-1.5 hover:bg-bg-elevated cursor-pointer text-xs border-b border-border-subtle last:border-none"
           >
-            {r.file.includes("/") || r.file.includes("\\") ? (
-              <Folder size={14} className="shrink-0 text-accent-primary mt-0.5" />
-            ) : (
-              <File size={14} className="shrink-0 text-text-muted mt-0.5" />
-            )}
-            <div className="min-w-0">
+            <File size={14} className="shrink-0 text-accent-primary mt-0.5" />
+            <div className="min-w-0 flex-1">
               <div className="text-text-secondary truncate font-mono text-[11px]">
                 {r.file.split(/[/\\]/).pop()}
+                {"line" in r && (r as CodeSearchResult).line > 0 && (
+                  <span className="text-text-muted ml-1">:{(r as CodeSearchResult).line}</span>
+                )}
               </div>
               <div className="text-text-muted truncate text-[10px]">
                 {r.file}
               </div>
+              {"content" in r && r.content && (
+                <div className="text-[10px] text-text-muted mt-0.5 font-mono truncate">
+                  {(r as CodeSearchResult).content.slice(0, 150)}
+                </div>
+              )}
             </div>
           </div>
         ))}

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Small typo-resistant fuzzy matcher shared by IDEOCODE's terminal and desktop UIs.
 //!
 //! The matcher combines subsequence matching with a bounded number of

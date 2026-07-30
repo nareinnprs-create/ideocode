@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Markdown -> backend-neutral [`Document`].
 //!
 //! This mirrors the *semantics* of the TUI markdown renderer

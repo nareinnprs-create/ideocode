@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Decode macOS system keyboard shortcuts from `com.apple.symbolichotkeys`.
 //!
 //! macOS stores global shortcuts (Spotlight, Mission Control, screenshots,

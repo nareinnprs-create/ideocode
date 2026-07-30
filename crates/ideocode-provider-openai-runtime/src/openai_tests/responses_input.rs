@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 fn assistant_tool_use(id: &str, name: &str, input: serde_json::Value) -> ChatMessage {
     ChatMessage {
         role: Role::Assistant,

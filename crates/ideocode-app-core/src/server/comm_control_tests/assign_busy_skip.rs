@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Worker-stacking regression tests for auto-assignment target selection.
 //
 // Observed live: three `assign_task spawn_if_needed=true` calls within ~100ms

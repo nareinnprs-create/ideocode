@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Sun, Moon } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Sun, Moon, AlertCircle } from "lucide-react";
 import { getSettings, updateSettings } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
 
@@ -18,22 +18,30 @@ const FONT_FAMILIES = [
 export function SettingsPanel() {
   const [tab, setTab] = useState<Tab>("appearance");
   const [settings, setSettings] = useState<AppSettings | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    getSettings().then(setSettings);
+    getSettings().then(setSettings).catch((e) => setError(`Failed to load settings: ${e}`));
   }, []);
+
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   const handleChange = (patch: Partial<AppSettings>) => {
     if (!settings) return;
     const next = { ...settings, ...patch };
     setSettings(next);
     setSaved(false);
-    updateSettings(next)
-      .then(() => {
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
-      });
+    setError(null);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      updateSettings(next)
+        .then(() => {
+          setSaved(true);
+          setTimeout(() => setSaved(false), 2000);
+        })
+        .catch((e) => setError(`Failed to save settings: ${e}`));
+    }, 300);
   };
 
   return (
@@ -58,6 +66,16 @@ export function SettingsPanel() {
           <span className="text-[10px] text-success self-center mr-2">Saved</span>
         )}
       </div>
+
+      {/* Error */}
+      {error && (
+        <div className="mx-3 mt-2 p-2 rounded bg-error/10 border border-error/30">
+          <div className="flex items-start gap-2">
+            <AlertCircle size={14} className="text-error mt-0.5 shrink-0" />
+            <div className="text-xs text-error">{error}</div>
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
@@ -235,7 +253,7 @@ function ToggleRow({
     <div className="flex items-start gap-3">
       <button
         onClick={() => onChange(!checked)}
-        className={`relative shrink-0 w-8 h-4.5 rounded-full transition-fast mt-0.5
+        className={`relative shrink-0 rounded-full transition-fast mt-0.5
           ${checked ? "bg-accent-primary" : "bg-bg-elevated border border-border-subtle"}`}
         style={{ height: "18px", width: "32px" }}
       >

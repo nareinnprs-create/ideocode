@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[tokio::test]
 async fn resume_background_awaits_finalizes_states_expired_while_down() {
     let (_env, _runtime_dir) = RuntimeEnvGuard::new();

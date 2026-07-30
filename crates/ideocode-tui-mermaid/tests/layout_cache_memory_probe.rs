@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Memory-bound probe for the Layout-tier cache (see
 //! `mermaid_cache_render.rs`: `LayoutCache`, `LAYOUT_CACHE_MAX`,
 //! `approx_layout_bytes`, `layout_cache_usage`).

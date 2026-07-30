@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Issue #544: stray Enter after a bracketed paste must not submit.
 #[test]
 fn bare_enter_immediately_after_paste_does_not_submit() {

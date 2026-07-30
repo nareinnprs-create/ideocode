@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Pluggable embedding backends for memory retrieval.
 //!
 //! Memory dense-retrieval embeds two kinds of text: stored memories (passages)

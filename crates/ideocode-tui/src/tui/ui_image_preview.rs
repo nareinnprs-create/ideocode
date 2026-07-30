@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Multimodal output preview — inline image thumbnails, file previews, and save support.
 //!
 //! In a terminal, we cannot render actual images, but we can:

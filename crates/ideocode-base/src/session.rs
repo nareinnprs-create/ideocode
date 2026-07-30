@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use crate::id::{extract_session_name, new_id, new_memorable_session_id_avoiding};
 use crate::message::{ContentBlock, Message, Role};
 pub use crate::storage::{

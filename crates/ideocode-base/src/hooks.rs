@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! User-configurable lifecycle hooks.
 //!
 //! Hooks are external commands that IDEOCODE runs at well-defined lifecycle

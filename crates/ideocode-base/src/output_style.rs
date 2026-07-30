@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Re-exports of the shared output-style helpers (emoji suppression, see #526).
 //!
 //! Items are re-exported explicitly rather than with a glob so the crate

@@ -1,6 +1,7 @@
 [package]
 name = "ideocode-terminal-image"
 version = "0.1.0"
+license = "MIT"
 edition = "2024"
 publish = false
 description = "Terminal image display (Kitty/iTerm2/Sixel) and image metadata formatting helpers for ideocode"

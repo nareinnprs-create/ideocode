@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Probe: render a swarm-plan-style flowchart (the exact shape
 //! `IDEOCODE-tui`'s `swarm_plan_graph` emits) through the real mermaid pipeline
 //! and report success/error. Useful when iterating on the renderer:

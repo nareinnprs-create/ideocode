@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Disk cache of MCP tool schemas (`~/.IDEOCODE/mcp-schema-cache.json`).
 //!
 //! MCP servers connect on a background task and only expose their tool

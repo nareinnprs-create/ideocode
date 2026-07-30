@@ -1,6 +1,7 @@
 [package]
 name = "ideocode-provider-antigravity-runtime"
 version = "0.1.0"
+license = "MIT"
 edition = "2024"
 description = "Antigravity provider runtime (Google Cloud Code multiplexed Gemini/Claude backend) for ideocode, kept downstream of ideocode-base so provider edits do not rebuild the app spine"
 

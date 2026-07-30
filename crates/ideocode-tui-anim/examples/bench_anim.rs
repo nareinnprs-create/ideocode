@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Throughput benchmark: old "trig every iteration" samplers vs the new
 // precomputed-angle-table samplers. Run with:
 //   cargo run --profile selfdev --example bench_anim -p IDEOCODE-tui-anim

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Render and install global "launch a new IDEOCODE" hotkeys on Linux/niri.
 //!
 //! Unlike macOS, a Wayland client cannot grab system-wide hotkeys: the

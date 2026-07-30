@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::client_actions::{
     AgentTaskContext, NotifySessionContext, handle_agent_task, handle_compact, handle_input_shell,
     handle_notify_session, handle_rename_session, handle_run_subagent, handle_set_feature,
@@ -39,8 +43,9 @@ use super::comm_sync::{
 };
 use super::provider_control::{
     handle_cycle_model, handle_notify_auth_changed, handle_refresh_models,
-    handle_set_compaction_mode, handle_set_model, handle_set_premium_mode,
-    handle_set_reasoning_effort, handle_set_route, handle_set_service_tier, handle_set_transport,
+    handle_set_compaction_mode, handle_set_model, handle_set_personality,
+    handle_set_premium_mode, handle_set_reasoning_effort, handle_set_route,
+    handle_set_service_tier, handle_set_transport,
     handle_switch_anthropic_account, handle_switch_openai_account,
     try_available_models_updated_event,
 };
@@ -1689,6 +1694,10 @@ pub(super) async fn handle_client(
 
             Request::RefreshModels { id } => {
                 handle_refresh_models(id, &provider, &agent, &client_event_tx).await;
+            }
+
+            Request::SetPersonality { id, mode } => {
+                handle_set_personality(id, &mode, &agent, &client_event_tx).await;
             }
 
             Request::SetPremiumMode { id, mode } => {

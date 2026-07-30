@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! OpenAI provider runtime (Codex OAuth + API key, Responses API over SSE and
 //! persistent WebSocket), moved out of `IDEOCODE-base` so provider edits compile
 //! only this crate plus a binary relink instead of rebuilding the

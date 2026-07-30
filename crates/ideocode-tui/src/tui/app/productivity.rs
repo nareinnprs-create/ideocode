@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! `/productivity` command: scan local transcripts, render a shareable usage
 //! report (markdown + PNG dashboard), copy the dashboard image to the clipboard,
 //! and open it in the default image viewer.

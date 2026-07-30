@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Shared transport-level error classification for provider runtimes.
 //!
 //! Every provider (Anthropic, OpenAI, Gemini, Cursor, ...) needs to decide

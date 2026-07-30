@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::helpers::{
     agent_model_default_summary, agent_model_target_config_path, agent_model_target_label,
     agent_model_target_slug, load_agent_model_override, model_entry_base_name,

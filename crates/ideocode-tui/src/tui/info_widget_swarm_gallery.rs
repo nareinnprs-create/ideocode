@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Adapter from swarm member status into the inline gallery layout.
 //!
 //! All presentation logic (status colors, role glyphs, age formatting, header,
@@ -444,7 +448,7 @@ fn clamp_line_to_width(line: &mut Line<'static>, width: usize) {
 }
 
 /// Render the inline swarm gallery for the given members into `area`-width lines.
-#[allow(dead_code)]
+#[allow(dead_code, reason = "kept for swarm UI wiring; exported for external callers not yet migrated")]
 pub(crate) fn render_swarm_gallery_lines(
     members: &[SwarmMemberStatus],
     width: usize,
@@ -458,7 +462,7 @@ pub(crate) fn render_swarm_gallery_lines(
 
 /// Render the list+detail swarm panel: a compact list of managed agents plus a
 /// detail viewport for the `selected` one. `focused` adds an interaction hint.
-#[allow(dead_code)]
+#[allow(dead_code, reason = "kept for swarm panel wiring; exported for external callers not yet migrated")]
 pub(crate) fn render_swarm_panel_lines(
     members: &[SwarmMemberStatus],
     selected: usize,
@@ -581,7 +585,7 @@ pub(crate) fn render_swarm_compact_lines(
 /// Render the swarm dock widget body: a narrow vertical agent list for the
 /// info-widget margins. `plan` is the coordinator's swarm plan progress
 /// (completed, total), shown in the header when present.
-#[allow(dead_code)]
+#[allow(dead_code, reason = "kept for swarm dock widget; exported for external callers not yet migrated")]
 pub(crate) fn render_swarm_dock_lines(
     members: &[SwarmMemberStatus],
     selected: usize,

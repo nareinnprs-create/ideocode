@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Live OpenAI-compatible provider probes shared by the auth lifecycle driver
 //! and the provider doctor. These are pure HTTP/JSON checks with no test-only
 //! dependencies, so they compile into the shipping binary.

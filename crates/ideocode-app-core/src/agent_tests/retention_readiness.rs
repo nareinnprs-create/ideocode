@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Deterministic longitudinal synthetic-cohort evaluator for retention readiness.
 //
 // This deliberately does NOT claim to measure human retention. It asks whether

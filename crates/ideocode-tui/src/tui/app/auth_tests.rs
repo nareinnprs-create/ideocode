@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{
     App, antigravity_input_requires_state_validation, save_tui_openai_compatible_api_base,
     save_tui_openai_compatible_key,

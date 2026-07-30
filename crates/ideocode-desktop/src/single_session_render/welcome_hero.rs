@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Welcome hero and fresh-welcome ambient rendering: handwriting stroke reveal, runtime mask specs, aurora ribbons, gradient primitives, and welcome-timeline offsets.
 
 use super::*;

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Build a shareable dashboard as an SVG and rasterize it to PNG.
 //!
 //! The SVG is assembled by hand (no templating dep) into a dark, card-based

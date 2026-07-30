@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Auto-assignment must only target *drivable* workers. An independent,
 // client-attached human session that happens to share the swarm is NOT driven by
 // `spawn_assigned_task_run` (that only fires when the target has no live client),

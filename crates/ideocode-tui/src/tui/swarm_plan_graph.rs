@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Mermaid source generation for the swarm plan graph.
 //!
 //! The generator itself lives in `IDEOCODE-plan` (`crate::plan::mermaid`) so the

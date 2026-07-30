@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Pure diffing of swarm member snapshots into user-facing status notices.
 //!
 //! The server streams full `SwarmStatus` snapshots; the strip renders them,

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Transcript card and message-highlight rendering plus tool-card rendering: per-viewport card pushes, geometries, palettes, and motion-driven visuals.
 
 use super::*;

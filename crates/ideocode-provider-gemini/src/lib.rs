@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use anyhow::Result;
 use ideocode_message_types::{ContentBlock, Message, Role, ToolCall, ToolDefinition};
 use serde::{Deserialize, Serialize};

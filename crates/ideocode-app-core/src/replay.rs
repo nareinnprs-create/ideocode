@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use crate::message::{ContentBlock, Role};
 use crate::protocol::ServerEvent;
 use crate::session::{Session, StoredReplayEventKind};

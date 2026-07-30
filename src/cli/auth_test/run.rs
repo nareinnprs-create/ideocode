@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 async fn maybe_run_auth_test_smoke(
     report: &mut AuthTestProviderReport,
     kind: AuthTestSmokeKind,

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #![allow(
     unknown_lints,
     clippy::collapsible_match,
@@ -23,6 +27,9 @@ pub use ideocode_tui::*;
 
 // Cli + entrypoint layer (kept in the root crate).
 pub mod cli;
+
+/// Placeholder provider for offline/local mode (no AI provider configured).
+pub mod local_provider;
 
 use anyhow::Result;
 

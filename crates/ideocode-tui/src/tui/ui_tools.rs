@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use crate::message::ToolCall;
 
 use super::{dim_color, rgb, tool_color, truncate_line_preserving_suffix_to_width};

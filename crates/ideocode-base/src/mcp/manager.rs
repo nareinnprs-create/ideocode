@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! MCP Manager - manages MCP server connections for a single session.
 //!
 //! In daemon mode with a shared pool, servers marked `shared: true` (the default)

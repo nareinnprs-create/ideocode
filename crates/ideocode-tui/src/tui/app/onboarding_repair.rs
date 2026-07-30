@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Agent-assisted onboarding recovery.
 //!
 //! When a first-run login import/validation fails, the recovery screen offers

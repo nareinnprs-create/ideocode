@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Guard against the stray Enter key event some terminals (Windows Terminal /
 //! conhost) deliver immediately after a bracketed paste that ends with a
 //! newline. Without this, pasting multi-line text submitted the chat (#544).

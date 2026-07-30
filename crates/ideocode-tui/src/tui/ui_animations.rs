@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use crate::tui::{TuiState, color_support::rgb};
 use ratatui::prelude::*;
 use std::cell::RefCell;

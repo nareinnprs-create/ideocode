@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Regression tests for issue #391: a queued message must survive a reload or
 // disconnect that races the turn-end dispatch, staying queued until the turn
 // naturally completes instead of silently disappearing.

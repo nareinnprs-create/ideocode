@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Bridge between the validated [`crate::dag`] engine and the live
 //! [`VersionedPlan`] storage used by the swarm runtime.
 //!

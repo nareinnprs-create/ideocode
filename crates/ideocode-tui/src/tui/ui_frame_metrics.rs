@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 use serde::Serialize;
 use std::collections::{VecDeque, hash_map::DefaultHasher};
@@ -866,6 +870,10 @@ fn process_cpu_ticks() -> Option<u64> {
 
 #[cfg(unix)]
 fn clock_ticks_per_second() -> Option<f64> {
+    // SAFETY: sysconf is a standard POSIX function that returns system
+    // configuration values. _SC_CLK_TCK is a well-defined constant (1 for
+    // most modern Linux). The call is trivially safe: no pointers, no
+    // mutable state, and the result is validated (> 0) by the caller.
     let ticks = unsafe { libc::sysconf(libc::_SC_CLK_TCK) };
     if ticks > 0 { Some(ticks as f64) } else { None }
 }

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[test]
 fn test_file_diff_cache_reuses_entry_when_signature_matches() {
     let temp = tempfile::NamedTempFile::new().expect("temp file");

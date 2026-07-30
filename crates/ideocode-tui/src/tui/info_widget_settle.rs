@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Settlement tracking for "resident" info widgets.
 //!
 //! Info widgets should behave like residents of the transcript: once placed into

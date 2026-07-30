@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::commands::active_session_id;
 use super::commands_review::{ImproveCommand, RefactorCommand};
 use super::{App, DisplayMessage, ImproveMode, ProcessingStatus};

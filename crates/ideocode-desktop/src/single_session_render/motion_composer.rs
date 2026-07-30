@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Motion state machines for composer chrome, attachment chips, and the stdin overlay: targets, visuals, frames, registries, and cache keys.
 
 use super::*;

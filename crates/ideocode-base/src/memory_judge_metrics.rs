@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Attribution + measurement of "no-LLM memory mode" conversions.
 //!
 //! Memory is only reliably productive when the LLM precision judge (the

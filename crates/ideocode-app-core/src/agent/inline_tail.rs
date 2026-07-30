@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Rolling live-output tail for inline swarm workers.
 //!
 //! The coordinator's inline gallery/dock renders a small viewport of each

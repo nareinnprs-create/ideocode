@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[test]
 fn test_new_for_remote_restored_soft_interrupt_resend_triggers_dispatch_state() {
     let mut app = create_test_app();

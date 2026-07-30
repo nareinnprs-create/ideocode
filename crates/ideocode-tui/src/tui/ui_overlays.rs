@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{
     accent_color, ai_color, ai_text, asap_color, clear_area, dim_color, get_grouped_changelog,
     header_icon_color, header_name_color, header_session_color, pending_color, queued_color,

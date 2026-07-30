@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Embedding facade for IDEOCODE.
 //!
 //! The heavy ONNX/tokenizer implementation lives in the `IDEOCODE-embedding`

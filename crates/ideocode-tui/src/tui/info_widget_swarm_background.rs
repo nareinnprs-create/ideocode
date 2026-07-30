@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{BackgroundInfo, InfoWidgetData, SwarmInfo, truncate_smart};
 use crate::protocol::SwarmMemberStatus;
 use crate::tui::color_support::rgb;

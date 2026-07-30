@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Inline raster image support, decoupled from the Mermaid diagram pipeline.
 //!
 //! Real images (pasted screenshots, `read` of an image file, generated images)

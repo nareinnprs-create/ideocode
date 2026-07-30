@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Native SessionStart integrations for reminding users about IDEOCODE's global
 //! launch shortcut when they open another coding CLI.
 //!

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Client-input handoff files (`~/.IDEOCODE/client-input-<session>`).
 //!
 //! When a client queues a startup submission for a session (e.g. a headed

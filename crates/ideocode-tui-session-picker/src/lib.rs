@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use chrono::{DateTime, Utc};
 use ideocode_message_types::ToolCall;
 use ideocode_session_types::SessionStatus;

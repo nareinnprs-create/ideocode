@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::live_turn::{LiveTurnSwarmContext, run_live_turn_if_idle};
 use super::state::SwarmEvent;
 use super::{

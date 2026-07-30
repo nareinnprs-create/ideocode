@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{
     SelfDevBuildCommand, SelfDevBuildTarget, canary_binary_path, current_binary_path,
     read_current_version, read_shared_server_version, read_stable_version,

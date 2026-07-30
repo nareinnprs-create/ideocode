@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Motion state machines for inline-widget chrome: selection highlight, preview panes, and list reflow (targets, visuals, frames, registries, cache keys, and row-run extraction).
 
 use super::*;

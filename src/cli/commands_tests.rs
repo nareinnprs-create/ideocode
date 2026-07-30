@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 use crate::auth::{AuthState, AuthStatus, ProviderAuth};
 use crate::message::{Message, StreamEvent, ToolDefinition};

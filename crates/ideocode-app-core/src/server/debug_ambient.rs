@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use crate::ambient_runner::AmbientRunnerHandle;
 use crate::provider::Provider;
 use anyhow::Result;

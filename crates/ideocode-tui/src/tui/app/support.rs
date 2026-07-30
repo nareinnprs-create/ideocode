@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! `/support` command: gather diagnostics and open a prefilled support email.
 //!
 //! The diagnostics builder is a pure function over [`SupportDiagnostics`] so it

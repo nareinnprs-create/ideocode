@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Sponsored-discovery provenance and coarse usage metering.
 //!
 //! When the agent connects an MCP server whose command matches a recent

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 fn awaited_member(session_id: &str, done: bool) -> AwaitedMemberStatus {
     AwaitedMemberStatus {
         session_id: session_id.to_string(),

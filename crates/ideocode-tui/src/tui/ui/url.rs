@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use regex::Regex;
 use std::sync::OnceLock;
 use unicode_width::UnicodeWidthStr;

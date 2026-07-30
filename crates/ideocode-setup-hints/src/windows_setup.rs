@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{SetupHintsState, StartupHints, read_choice};
 use crate::windows_hotkeys::{self, WindowsHotkey};
 use anyhow::{Context, Result};

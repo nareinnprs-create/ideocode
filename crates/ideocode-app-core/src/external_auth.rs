@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! External-auth-source review and auto-import flow.
 //!
 //! Discovers credentials left behind by other tools (Claude Code, Codex,

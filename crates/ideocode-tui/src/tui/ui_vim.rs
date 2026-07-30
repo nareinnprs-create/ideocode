@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Basic vim modal input mode (Normal / Insert).
 //!
 //! Activated with Alt+V from the input area. In Normal mode, single-key

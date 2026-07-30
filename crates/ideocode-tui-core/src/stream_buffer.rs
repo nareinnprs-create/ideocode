@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Semantic stream buffer - paces streaming text reveal at a smooth rate.
 //!
 //! Providers feed text deltas with wildly different cadences. OpenAI emits many

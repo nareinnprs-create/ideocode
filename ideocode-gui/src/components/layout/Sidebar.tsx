@@ -10,6 +10,9 @@ import {
   History,
   BugPlay,
   Settings,
+  Brain,
+  Github,
+  Globe,
 } from "lucide-react";
 
 const SIDEBAR_ITEMS: { id: PanelId; icon: typeof MessageSquare; label: string }[] = [
@@ -21,27 +24,36 @@ const SIDEBAR_ITEMS: { id: PanelId; icon: typeof MessageSquare; label: string }[
   { id: "terminal", icon: Terminal, label: "Terminal" },
   { id: "sessions", icon: History, label: "Sessions" },
   { id: "providers", icon: Cpu, label: "Providers" },
+  { id: "memory", icon: Brain, label: "Memory" },
+  { id: "issues", icon: Github, label: "Issues" },
+  { id: "browser", icon: Globe, label: "Browser" },
   { id: "debug", icon: BugPlay, label: "Debug" },
   { id: "settings", icon: Settings, label: "Settings" },
 ];
 
 export function Sidebar() {
-  const { activePanel, setActivePanel, setRightPanel, setRightPanelOpen } =
+  const { activePanel, rightPanel, rightPanelOpen, setActivePanel, setRightPanel, setRightPanelOpen } =
     useAppStore();
 
   const handleClick = (id: PanelId) => {
     if (id === "chat") {
       setActivePanel("chat");
     } else {
-      setRightPanel(id);
-      setRightPanelOpen(true);
+      if (rightPanelOpen && rightPanel === id) {
+        setRightPanelOpen(false);
+      } else {
+        setRightPanel(id);
+        setRightPanelOpen(true);
+      }
     }
   };
 
   return (
     <aside className="flex flex-col w-[52px] bg-bg-secondary border-r border-border-subtle">
       {SIDEBAR_ITEMS.map(({ id, icon: Icon, label }) => {
-        const isActive = id === "chat" ? activePanel === "chat" : false;
+        const isActive = id === "chat"
+          ? activePanel === "chat"
+          : rightPanelOpen && rightPanel === id;
         return (
           <button
             key={id}

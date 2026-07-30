@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[cfg(unix)]
 use super::{
     resumed_window_title, should_show_server_spawning, spawn_resume_in_new_terminal,

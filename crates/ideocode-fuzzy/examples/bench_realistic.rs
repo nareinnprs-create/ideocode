@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 fn main() {
     // realistic model picker filter_text: "name provider method detail"
     let names: Vec<String> = (0..9000)

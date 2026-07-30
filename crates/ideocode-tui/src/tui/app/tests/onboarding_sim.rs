@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Tests for the onboarding simulator (Alt+5 reset, Cmd+5 toggle, and
 // `/onboarding-sim`).
 //

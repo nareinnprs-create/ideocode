@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::openai_helpers::{classify_openai_limits, usage_percent_to_ratio};
 use super::{AccountUsageSnapshot, OpenAIUsageData, ProviderUsage, UsageData, UsageLimit};
 use std::collections::HashMap;

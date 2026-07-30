@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 const LINUX_PROCESS_TITLE_LIMIT: usize = 15;
 #[cfg(target_os = "linux")]
 const KILLALL_PROCESS_NAME: &str = "IDEOCODE";

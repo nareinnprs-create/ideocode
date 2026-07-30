@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Helpers for talking to the public GitHub REST API.
 //!
 //! Unauthenticated GitHub API requests share a 60 req/hour per-IP bucket

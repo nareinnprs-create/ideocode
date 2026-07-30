@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Resize-speedup probe for the mermaid layout-tier cache (commit 72bd457b).
 //!
 //! Verifies, through the public sized-render API only, that:

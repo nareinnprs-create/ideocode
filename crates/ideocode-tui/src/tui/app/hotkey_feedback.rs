@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Inline hotkey feedback.
 //!
 //! Two complementary behaviors, both gated behind `display.keybinding_hints`:

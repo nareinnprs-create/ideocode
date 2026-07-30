@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 use crate::{terminal_eprintln as eprintln, terminal_println as println};
 
@@ -291,6 +295,16 @@ impl Agent {
         if !enabled {
             crate::memory::clear_pending_memory(&self.session.id);
         }
+    }
+
+    /// Set the agent's response personality/tone mode.
+    pub fn set_personality(&mut self, mode: crate::prompt::PersonalityMode) {
+        self.personality = mode;
+        crate::logging::info(&format!(
+            "Personality set to {:?} for session {}",
+            mode,
+            self.session.id
+        ));
     }
 
     /// Mark this session as an inline swarm worker. When enabled, the streaming

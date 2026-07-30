@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Standalone harness API bridge daemon.
 //!
 //! Usage: IDEOCODE-harness-api-bridge [api_socket] [legacy_socket]

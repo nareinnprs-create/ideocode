@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::state_ui_storage::infer_spawned_session_startup_hints;
 use super::*;
 use crate::tui::ui::tools_ui;

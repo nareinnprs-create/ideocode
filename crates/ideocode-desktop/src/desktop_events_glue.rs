@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 
 pub(crate) fn desktop_key_event_to_key_input(event: &DesktopKeyEvent) -> KeyInput {

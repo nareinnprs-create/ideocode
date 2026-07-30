@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[tokio::test]
 async fn handle_resume_session_registers_live_events_before_history_replay() -> Result<()> {
     let _guard = crate::storage::lock_test_env();

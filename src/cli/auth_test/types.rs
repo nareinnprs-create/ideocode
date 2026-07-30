@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[expect(
     clippy::large_enum_variant,
     reason = "Generic auth-test targets carry provider descriptors until this CLI path is refactored"

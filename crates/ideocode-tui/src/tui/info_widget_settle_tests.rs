@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Tests for [`SettlementTracker`]: negative space must hold still for
 //! [`SETTLE_AFTER_FRAMES`] frames before it may host a new widget, churn resets
 //! the counter, scrolled-in rows inherit prior observations, and a width change

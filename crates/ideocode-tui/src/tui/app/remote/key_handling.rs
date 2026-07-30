@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 use crate::tui::app as app_mod;
 use crate::tui::app::PendingRemoteRewindNotice;
@@ -1564,6 +1568,27 @@ async fn handle_remote_key_internal(
 
                 if trimmed.starts_with("/judge ") {
                     app.push_display_message(DisplayMessage::error("Usage: /judge".to_string()));
+                    return Ok(());
+                }
+
+                // Personality mode commands
+                if trimmed == "/personality" || trimmed == "/personality status" {
+                    app.push_display_message(DisplayMessage::system(
+                        "Available modes: professional, casual, genz, academic, witty, zen".to_string(),
+                    ));
+                    return Ok(());
+                }
+
+                if trimmed.starts_with("/personality ") {
+                    let mode = trimmed.trim_start_matches("/personality ");
+                    let mode = mode.trim();
+                    if !mode.is_empty() {
+                        remote.set_personality(mode).await?;
+                        app.push_display_message(DisplayMessage::system(format!(
+                            "Personality set to: {}",
+                            mode
+                        )));
+                    }
                     return Ok(());
                 }
 

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 pub(super) fn line_display_width(text: &str) -> usize {
     unicode_width::UnicodeWidthStr::width(text)
 }

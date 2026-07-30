@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Glyphon TextArea assembly for single-session rendering: mapping cached text buffers to positioned text areas, plus header/version label helpers.
 
 use super::*;

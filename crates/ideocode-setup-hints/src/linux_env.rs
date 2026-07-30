@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Multi-compositor Linux launch-hotkey support.
 //!
 //! niri has its own dedicated module ([`crate::linux_niri`]) because it splices

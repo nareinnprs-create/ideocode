@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Issue #496: input routing on interactive prompts.
 //
 // 1. `/cancel` typed at top level must never fall through to skill parsing

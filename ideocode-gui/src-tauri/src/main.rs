@@ -1,49 +1,120 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands;
 
 use commands::ChatState;
+use std::fs::{self, OpenOptions};
+use std::io::Write;
+use std::path::PathBuf;
+use std::time::{SystemTime, UNIX_EPOCH};
+
+fn log_dir() -> PathBuf {
+    dirs::home_dir()
+        .map(|h| h.join(".IDEOCODE").join("logs"))
+        .unwrap_or_else(|| {
+            std::env::current_dir()
+                .unwrap_or_default()
+                .join(".IDEOCODE")
+                .join("logs")
+        })
+}
+
+fn log_to_file(filename: &str, msg: &str) {
+    let dir = log_dir();
+    let _ = fs::create_dir_all(&dir);
+    let path = dir.join(filename);
+    let _ = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .write(true)
+        .open(&path)
+        .and_then(|mut f| f.write_all(msg.as_bytes()));
+}
+
+fn init_panic_hook() {
+    std::panic::set_hook(Box::new(|info| {
+        let ts = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|d| d.as_secs())
+            .unwrap_or(0);
+        let msg = format!("[{ts}] PANIC: {info}\n");
+        log_to_file("gui-panic.log", &msg);
+    }));
+}
 
 #[tauri::command]
 fn get_version() -> String {
     env!("CARGO_PKG_VERSION").to_string()
 }
 
+#[tauri::command]
+fn log_error(msg: String) {
+    let ts = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    log_to_file("gui-js-errors.log", &format!("[{ts}] {msg}\n"));
+}
+
 fn main() {
-    tauri::Builder::default()
+    init_panic_hook();
+
+    if let Err(e) = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .manage(ChatState::new())
         .invoke_handler(tauri::generate_handler![
-            // General
             get_version,
-            // Chat
+            log_error,
             commands::send_message,
             commands::get_messages,
             commands::clear_messages,
             commands::list_sessions,
             commands::delete_session,
             commands::export_session,
-            // Files
             commands::get_file_tree,
             commands::read_file,
             commands::write_file,
             commands::file_exists,
             commands::search_files,
-            // Git
             commands::git_status,
             commands::git_diff,
             commands::git_commit,
-            // Tools
             commands::run_build,
             commands::run_cargo_check,
-            // Providers
             commands::list_providers,
             commands::get_provider_status,
-            // Settings
             commands::get_settings,
             commands::update_settings,
             commands::is_first_launch,
+            // Memory
+            commands::list_memories,
+            commands::store_memory,
+            commands::search_memories,
+            commands::delete_memory,
+            // RAG / Code Search
+            commands::search_contents,
+            commands::index_directory,
+            // Issues
+            commands::list_issues,
+            commands::search_issues,
+            commands::fetch_github_issues,
+            // Browser
+            commands::get_browser_context,
+            commands::set_browser_tab,
+            commands::clear_browser_context,
+            commands::get_browser_context_text,
         ])
         .run(tauri::generate_context!())
-        .expect("error while running IDEOCODE GUI");
+    {
+        let ts = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|d| d.as_secs())
+            .unwrap_or(0);
+        let msg = format!("[{ts}] Tauri runtime error: {e}\n");
+        log_to_file("gui-error.log", &msg);
+    }
 }

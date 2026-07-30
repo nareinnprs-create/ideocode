@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #![cfg_attr(test, allow(clippy::await_holding_lock))]
 
 use anyhow::Result;
@@ -7,7 +11,7 @@ use std::time::Instant;
 
 use super::args::{
     AmbientCommand, Args, AuthCommand, CloudCommand, CloudSessionsCommand, Command, MemoryCommand,
-    ModelCommand, ProviderCommand, RestartCommand, ServerCommand, SessionCommand,
+    ModelCommand, ProviderCommand, RestartCommand, ServerCommand, SessionCommand, ToolCommand,
     TranscriptModeArg,
 };
 use crate::{
@@ -16,8 +20,8 @@ use crate::{
 };
 
 use super::{
-    account, acp, commands, debug, hot_exec, login, output, provider_init, selfdev, terminal,
-    tui_launch,
+    account, acp, commands, debug, hot_exec, local_repl, login, output, provider_init, selfdev,
+    terminal, tool_commands, tui_launch,
 };
 use provider_init::ProviderChoice;
 
@@ -530,6 +534,27 @@ pub(crate) async fn run_main(mut args: Args) -> Result<()> {
         Some(Command::Menubar { once, json }) => {
             commands::run_menubar_command(once, json)?;
         }
+        Some(Command::Shell) => {
+            local_repl::run_shell().await?;
+        }
+        Some(Command::Tool(subcmd)) => match subcmd {
+            ToolCommand::List { json } => {
+                tool_commands::run_tool_command(tool_commands::ToolSubcommand::List { json }).await?;
+            }
+            ToolCommand::Run { tool, input } => {
+                let input_value: serde_json::Value = serde_json::from_str(&input)
+                    .map_err(|e| anyhow::anyhow!("Invalid JSON: {e}"))?;
+                tool_commands::run_tool_command(tool_commands::ToolSubcommand::Run {
+                    name: tool,
+                    input: input_value,
+                })
+                .await?;
+            }
+            ToolCommand::Info { tool } => {
+                tool_commands::run_tool_command(tool_commands::ToolSubcommand::Help { name: tool })
+                    .await?;
+            }
+        },
         None => run_default_command(args).await?,
     }
 
@@ -808,6 +833,13 @@ fn map_transcript_mode(mode: TranscriptModeArg) -> crate::protocol::TranscriptMo
 
 async fn run_default_command(args: Args) -> Result<()> {
     startup_profile::mark("run_main_none_branch");
+
+    // --local mode: skip AI provider, use tools directly
+    if args.local {
+        startup_profile::mark("local_mode");
+        output::stderr_info("Local mode (no AI) — use `ideocode tool` or `ideocode shell` for interactive use.");
+        return local_repl::run_shell().await;
+    }
 
     let explicit_provider_or_model = args.provider != ProviderChoice::Auto
         || args.model.is_some()

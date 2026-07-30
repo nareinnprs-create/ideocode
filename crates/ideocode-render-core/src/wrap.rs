@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Backend-neutral width measurement and line wrapping.
 //!
 //! Wrapping needs to know how "wide" text is, but width is backend-specific:

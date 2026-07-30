@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Copilot pure model-catalog data (compatibility shim).
 //!
 //! The GitHub Copilot provider *runtime* (`CopilotApiProvider`) now lives in

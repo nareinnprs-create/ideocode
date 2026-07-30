@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Stress probe: build the mermaid source that `ideocode_plan::mermaid::
 //! swarm_plan_mermaid` (the production swarm plan-graph generator, re-exported
 //! to the TUI via `crate::tui::swarm_plan_graph`) emits for realistic +

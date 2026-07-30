@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 fn main() -> anyhow::Result<()> {
     let t = std::time::Instant::now();
     let out = ideocode_productivity_core::generate()?;

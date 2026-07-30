@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Double-assignment guard: a direct assign_task naming a node that is already
 // assigned and actively worked must be rejected with an error naming the
 // current assignee. Incident: run_plan dispatched a node to a spawned worker,

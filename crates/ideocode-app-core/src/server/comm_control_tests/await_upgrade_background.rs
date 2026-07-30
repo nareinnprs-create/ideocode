@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[tokio::test]
 async fn await_members_blocking_to_background_upgrade_survives_waiter_disconnect() {
     let (_env, _runtime_dir) = RuntimeEnvGuard::new();

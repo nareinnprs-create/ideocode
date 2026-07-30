@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! MCP Protocol types (JSON-RPC 2.0)
 
 use serde::{Deserialize, Serialize};

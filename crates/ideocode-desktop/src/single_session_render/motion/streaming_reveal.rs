@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Adaptive streaming-text reveal motion.
 //!
 //! Provider deltas arrive in bursty chunks. Instead of popping each chunk in,

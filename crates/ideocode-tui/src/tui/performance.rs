@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Performance optimization layer — streaming buffers, provider health cache,
 //! and latency-aware failover.
 //!
@@ -167,8 +171,8 @@ impl ProviderHealthCache {
         let entries = self.entries.read().unwrap_or_else(|e| e.into_inner());
         let mut sorted: Vec<(String, f64)> = entries
             .iter()
-            .filter(|(_, e)| e.healthy && e.latency_ms.is_some())
-            .map(|(name, e)| (name.clone(), e.latency_ms.unwrap()))
+            .filter(|(_, e)| e.healthy)
+            .filter_map(|(name, e)| e.latency_ms.map(|ms| (name.clone(), ms)))
             .collect();
         sorted.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
         sorted
@@ -338,7 +342,7 @@ pub struct RequestTimingTracker {
 
 struct RequestTiming {
     provider: String,
-    #[allow(dead_code)]
+    #[allow(dead_code, reason = "kept for per-model latency tracking; aggregator not yet consuming it")]
     model: String,
     start: Instant,
     end: Option<Instant>,

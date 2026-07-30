@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Clamp outbound image dimensions before sending a request to a provider.
 //!
 //! Anthropic's Messages API enforces a per-image pixel cap that depends on how

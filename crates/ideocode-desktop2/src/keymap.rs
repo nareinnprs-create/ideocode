@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Keymap: winit key events to editor actions.
 //!
 //! The chords mirror the IDEOCODE TUI (see `IDEOCODE-tui/src/tui/app/input.rs`) so

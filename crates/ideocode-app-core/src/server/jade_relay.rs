@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::client_lifecycle::process_message_streaming_mpsc;
 use super::state::{
     SessionControlHandle, SessionInterruptQueues, queue_soft_interrupt_for_session,

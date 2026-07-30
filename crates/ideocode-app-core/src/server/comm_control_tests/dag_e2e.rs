@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // End-to-end task-DAG flow through the real server handlers and assignment loop.
 //
 // Unlike the engine unit tests (which exercise `ideocode_plan::dag` in isolation),

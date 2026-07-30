@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use unicode_width::{UnicodeWidthChar, UnicodeWidthStr};
 
 /// Map provider-side tool names to internal display names.

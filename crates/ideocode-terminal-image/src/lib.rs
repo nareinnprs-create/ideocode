@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Low-level terminal image primitives for IDEOCODE.
 //!
 //! This crate has no dependency on the rest of IDEOCODE; it provides:

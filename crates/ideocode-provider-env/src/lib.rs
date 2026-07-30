@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use std::sync::{LazyLock, RwLock};
 
 use ideocode_provider_metadata::{is_safe_env_file_name, is_safe_env_key_name};

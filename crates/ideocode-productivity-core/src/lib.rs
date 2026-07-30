@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Productivity report generation for IDEOCODE.
 //!
 //! Scans local session transcripts (with an incremental cache), computes

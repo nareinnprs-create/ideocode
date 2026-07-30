@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Direct Anthropic Messages API provider runtime (OAuth subscription + API
 //! key, SSE streaming, service tiers, reasoning efforts), moved out of
 //! `IDEOCODE-base` so provider edits compile only this crate plus a binary

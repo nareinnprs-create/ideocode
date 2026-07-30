@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::commands_improve::{interrupt_and_queue_synthetic_message, start_synthetic_user_turn};
 use super::{App, DisplayMessage};
 

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! IDEOCODE CI/CD Status Panel (#13)
 //!
 //! Real GitHub Actions / CI status via `gh` CLI.

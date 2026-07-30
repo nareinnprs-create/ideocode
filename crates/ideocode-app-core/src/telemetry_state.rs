@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{SESSION_STATE, sanitize_telemetry_label};
 use crate::storage;
 use chrono::{DateTime, Datelike, Timelike, Utc};

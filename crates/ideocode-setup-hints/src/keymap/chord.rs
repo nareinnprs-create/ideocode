@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! A normalized, platform-independent representation of a key chord.
 //!
 //! Both IDEOCODE's own bindings and the bindings we discover on the machine

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Desktop notification for completed long agent turns.
 //!
 //! When a turn finishes after a configurable duration (lower threshold when

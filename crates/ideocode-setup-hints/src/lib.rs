@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Platform setup hints shown on startup.
 //!
 //! - Windows: suggest native Alt launch hotkeys plus Copilot-key setup and terminal setup.

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Shared handling for provider `Retry-After` hints.
 //!
 //! Provider runtimes keep their own retry classification and request logic, but

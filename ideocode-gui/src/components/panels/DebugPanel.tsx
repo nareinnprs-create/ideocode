@@ -1,23 +1,28 @@
 import { BugPlay, ArrowDown, ArrowUp, ArrowRight, RotateCcw, Square } from "lucide-react";
+import { useState } from "react";
 
 export function DebugPanel() {
+  const [debugActive] = useState(false);
+
+  const buttons = [
+    { icon: BugPlay, label: "Start", active: false },
+    { icon: ArrowDown, label: "Step Over", active: false },
+    { icon: ArrowRight, label: "Step Into", active: false },
+    { icon: ArrowUp, label: "Step Out", active: false },
+    { icon: RotateCcw, label: "Restart", active: false },
+    { icon: Square, label: "Stop", active: false },
+  ];
+
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
       <div className="flex items-center gap-1 px-2 py-2 border-b border-border-subtle">
-        {[
-          { icon: BugPlay, label: "Start", active: false },
-          { icon: ArrowDown, label: "Step Over", active: false },
-          { icon: ArrowRight, label: "Step Into", active: false },
-          { icon: ArrowUp, label: "Step Out", active: false },
-          { icon: RotateCcw, label: "Restart", active: false },
-          { icon: Square, label: "Stop", active: false },
-        ].map(({ icon: Icon, label }) => (
+        {buttons.map(({ icon: Icon, label, active }) => (
           <button
             key={label}
-            title={label}
-            disabled
-            className="p-1.5 text-text-muted disabled:opacity-25 rounded hover:bg-bg-elevated transition-fast"
+            title={`${label}${!debugActive ? " (no active session)" : ""}`}
+            disabled={!debugActive}
+            className="p-1.5 text-text-muted disabled:opacity-25 enabled:hover:bg-bg-elevated transition-fast rounded"
           >
             <Icon size={14} />
           </button>

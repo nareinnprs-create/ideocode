@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Task-DAG engine model.
 //!
 //! This is the DAG-first reframe of swarm described in `docs/SWARM_TASK_GRAPH.md`.

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Inline markdown decorations over the transcript body: inline code/math cards, markdown pills, rule lines, span run extraction, and glyph-accurate span measurement.
 
 use super::*;

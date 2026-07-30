@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Backend-neutral styled-span and block model.
 //!
 //! The TUI markdown renderer emits `ratatui::Span`s whose colors are chosen

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use anyhow::{Context, Result};
 pub use ideocode_side_panel_types::{
     PersistedSidePanelPage, PersistedSidePanelState, SidePanelPage, SidePanelPageFormat,

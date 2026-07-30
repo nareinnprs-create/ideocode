@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::openrouter_sse_stream::run_stream_with_retries;
 use super::*;
 use ideocode_base::provider::{ModelCatalogRefreshSummary, summarize_model_catalog_refresh};

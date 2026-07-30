@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Deterministic non-retryable auto-poke error classification.
 
 pub(crate) fn is_non_retryable_auto_poke_error(error: &str) -> bool {

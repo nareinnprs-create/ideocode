@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! API-key usage reporting for `/usage`.
 //!
 //! OAuth subscriptions expose rich usage endpoints, but plain API keys mostly

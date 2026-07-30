@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Provider-doctor diagnostics for IDEOCODE.
 //!
 //! Sits downstream of `IDEOCODE-base` so edits to the doctor cluster do not

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use clap::{Parser, Subcommand, ValueEnum};
 
 use super::provider_init::ProviderChoice;
@@ -34,6 +38,11 @@ pub(crate) struct Args {
     /// Initial provider to use (IDEOCODE, claude, openai, openai-api, openrouter, azure, opencode, opencode-go, zai, 302ai, baseten, cortecs, comtegra, deepseek, fpt, firmware, huggingface, moonshotai, nebius, scaleway, stackit, groq, mistral, perplexity, togetherai, deepinfra, xai, nvidia-nim, lmstudio, ollama, chutes, cerebras, alibaba-coding-plan, openai-compatible, cursor, copilot, gemini, antigravity, google, or auto-detect). Interactive sessions can switch providers with /model.
     #[arg(short, long, default_value = "auto", global = true)]
     pub(crate) provider: ProviderChoice,
+
+    /// Run in offline/local mode: skip AI provider setup, all tools
+    /// available directly. Useful with `ideocode tool` or `ideocode shell`.
+    #[arg(long = "local", alias = "no-ai", global = true)]
+    pub(crate) local: bool,
 
     /// Working directory for the local client process
     #[arg(short = 'C', long, global = true)]
@@ -236,6 +245,9 @@ pub(crate) enum Command {
 
     /// Run in simple REPL mode (no TUI)
     Repl,
+
+    /// Run an interactive tool shell without AI (see also: `ideocode --local`)
+    Shell,
 
     /// Update IDEOCODE to the latest version
     Update,
@@ -529,6 +541,10 @@ pub(crate) enum Command {
         #[arg(long, conflicts_with = "once")]
         json: bool,
     },
+
+    /// List, run, or get help for built-in tools (works without AI provider)
+    #[command(subcommand)]
+    Tool(ToolCommand),
 }
 
 #[derive(Subcommand, Debug)]
@@ -950,6 +966,29 @@ pub(crate) enum ProviderCommand {
         /// Emit JSON instead of human-readable setup output
         #[arg(long)]
         json: bool,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+pub(crate) enum ToolCommand {
+    /// List all available tools with descriptions (works offline)
+    List {
+        /// Emit JSON instead of human-readable output
+        #[arg(long)]
+        json: bool,
+    },
+    /// Execute a tool directly without AI
+    Run {
+        /// Tool name (e.g. bash, read, write, system_control)
+        tool: String,
+
+        /// JSON input for the tool (e.g. '{"cmd": "ls -la"}')
+        input: String,
+    },
+    /// Show detailed information for a tool, including parameters and examples
+    Info {
+        /// Tool name
+        tool: String,
     },
 }
 

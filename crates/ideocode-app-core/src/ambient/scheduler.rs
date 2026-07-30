@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Adaptive usage calculator for ambient mode scheduling.
 //!
 //! Tracks per-call token usage (user vs ambient), maintains a rolling usage log,

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Exhaustive live coverage of EVERY computer action. These mutate the desktop
 //! (open TextEdit, move windows, clipboard, etc.) so they are `#[ignore]`d and
 //! run explicitly:

@@ -12,6 +12,7 @@ import {
 interface ChatState {
   messages: Message[];
   loading: boolean;
+  error: string | null;
   sessions: Session[];
   sendMessage: (content: string) => Promise<void>;
   loadMessages: () => Promise<void>;
@@ -23,6 +24,7 @@ interface ChatState {
 export const useChatStore = create<ChatState>((set) => ({
   messages: [],
   loading: false,
+  error: null,
   sessions: [],
 
   sendMessage: async (content: string) => {
@@ -41,8 +43,7 @@ export const useChatStore = create<ChatState>((set) => ({
       const sessions = await listSessions();
       set({ sessions });
     } catch (e) {
-      console.error("Failed to send:", e);
-      set({ loading: false });
+      set({ loading: false, error: `Failed to send: ${e}` });
     }
   },
 
@@ -51,7 +52,7 @@ export const useChatStore = create<ChatState>((set) => ({
       const messages = await getMessages();
       set({ messages });
     } catch (e) {
-      console.error("Failed to load messages:", e);
+      set({ error: `Failed to load messages: ${e}` });
     }
   },
 
@@ -62,7 +63,7 @@ export const useChatStore = create<ChatState>((set) => ({
       const sessions = await listSessions();
       set({ sessions });
     } catch (e) {
-      console.error("Failed to clear:", e);
+      set({ error: `Failed to clear: ${e}` });
     }
   },
 
@@ -71,7 +72,7 @@ export const useChatStore = create<ChatState>((set) => ({
       const sessions = await listSessions();
       set({ sessions });
     } catch (e) {
-      console.error("Failed to load sessions:", e);
+      set({ error: `Failed to load sessions: ${e}` });
     }
   },
 
@@ -80,7 +81,7 @@ export const useChatStore = create<ChatState>((set) => ({
       await tauriDeleteSession(id);
       set((s) => ({ sessions: s.sessions.filter((x) => x.id !== id) }));
     } catch (e) {
-      console.error("Failed to delete session:", e);
+      set({ error: `Failed to delete session: ${e}` });
     }
   },
 }));

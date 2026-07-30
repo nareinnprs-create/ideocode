@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Gemini pure protocol types and helpers (compatibility shim).
 //!
 //! The Gemini provider *runtime* (`GeminiProvider`) now lives in the

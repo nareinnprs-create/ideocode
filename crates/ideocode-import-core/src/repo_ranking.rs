@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Rank the repositories a user works in most, from the working directories
 //! recorded across their agent sessions (IDEOCODE + imported Claude/Codex/etc.).
 //!

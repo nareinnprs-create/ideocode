@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Placeholder-route helpers for the remote model catalog (issue: poisoned
 //! "remote-catalog"/"current" rows pinning models to useless routes).
 //!

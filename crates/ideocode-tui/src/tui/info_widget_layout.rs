@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::info_widget::{
     InfoWidgetData, Side, WidgetKind, WidgetPlacement, calculate_widget_height,
     is_overview_mergeable,

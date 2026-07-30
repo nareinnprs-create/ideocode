@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[derive(Debug, Clone)]
 pub struct GraphNode {
     /// Stable node ID from memory graph (mem:*, tag:*, cluster:*)

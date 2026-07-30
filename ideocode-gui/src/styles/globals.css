@@ -37,6 +37,7 @@
   --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4);
   --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
   --shadow-glow-accent: 0 0 30px rgba(139, 92, 246, 0.2);
+  --shadow-glow-primary: 0 0 20px rgba(99, 102, 241, 0.4);
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
@@ -112,7 +113,7 @@ body {
    ============================================ */
 
 .glass {
-  background: rgba(18, 18, 26, 0.8);
+  background: color-mix(in srgb, var(--color-bg-secondary) 80%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border-subtle);
@@ -120,7 +121,7 @@ body {
 }
 
 .glass-elevated {
-  background: rgba(34, 34, 58, 0.9);
+  background: color-mix(in srgb, var(--color-bg-elevated) 90%, transparent);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--color-border-default);

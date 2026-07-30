@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Rate-limit error parsing (reset/retry timing) for TUI auto-retry logic.
 use std::time::Duration;
 

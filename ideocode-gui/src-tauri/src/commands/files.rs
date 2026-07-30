@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
@@ -20,12 +24,20 @@ pub struct SearchResult {
     pub content: String,
 }
 
-#[tauri::command]
-pub fn get_file_tree(path: String, depth: usize) -> Result<Vec<FileNode>, String> {
-    let root = PathBuf::from(&path);
-    if !root.exists() {
+fn sanitize_path(path: &str) -> Result<PathBuf, String> {
+    if path.contains("..") {
+        return Err("Path traversal detected".into());
+    }
+    let p = PathBuf::from(path);
+    if !p.exists() {
         return Err(format!("Path does not exist: {}", path));
     }
+    Ok(p)
+}
+
+#[tauri::command]
+pub fn get_file_tree(path: String, depth: usize) -> Result<Vec<FileNode>, String> {
+    let root = sanitize_path(&path)?;
     build_tree(&root, depth, 0)
 }
 
@@ -77,25 +89,24 @@ fn build_tree(path: &PathBuf, max_depth: usize, current_depth: usize) -> Result<
 
 #[tauri::command]
 pub fn read_file(path: String) -> Result<String, String> {
+    let _ = sanitize_path(&path)?;
     std::fs::read_to_string(&path).map_err(|e| format!("Failed to read {}: {}", path, e))
 }
 
 #[tauri::command]
 pub fn write_file(path: String, content: String) -> Result<(), String> {
+    let _ = sanitize_path(&path)?;
     std::fs::write(&path, content).map_err(|e| format!("Failed to write {}: {}", path, e))
 }
 
 #[tauri::command]
 pub fn file_exists(path: String) -> bool {
-    std::path::Path::new(&path).exists()
+    sanitize_path(&path).is_ok() && std::path::Path::new(&path).exists()
 }
 
 #[tauri::command]
 pub fn search_files(pattern: String, path: String) -> Result<Vec<SearchResult>, String> {
-    let root = PathBuf::from(&path);
-    if !root.exists() {
-        return Err(format!("Path does not exist: {}", path));
-    }
+    let root = sanitize_path(&path)?;
 
     let mut results = Vec::new();
     search_recursive(&root, &pattern, &mut results, 0, 50)?;

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 fn exact_multiline_latex_response() -> &'static str {
     concat!(
         "\\[\n\\boxed{\ne^{i\\pi}+1=0\n}\n\\]\n\n",

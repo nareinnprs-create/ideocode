@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! End-to-end Claude Code import integration tests (swarm Worker C / dolphin).
 //!
 //! These drive the real `ideocode_base::import` pipeline against synthetic

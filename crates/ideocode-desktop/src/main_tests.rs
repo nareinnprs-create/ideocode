@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::animation::{
     APP_MODE_TRANSITION_DURATION, AnimatedRect, ColorTransition, DESKTOP_REDUCED_MOTION_ENV,
     DesktopReducedMotionEnvGuard, FOCUS_PULSE_DURATION, STATUS_COLOR_TRANSITION_DURATION,

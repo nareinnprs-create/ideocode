@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Discovery and explicit handoff support for live Claude Code sessions.
 //!
 //! Claude Code 2.1.x publishes one small registry record per interactive

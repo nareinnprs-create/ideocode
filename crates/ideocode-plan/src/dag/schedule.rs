@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Scheduler: ready-set computation, dispatch, and dataflow hydration.
 //!
 //! The scheduler walks the DAG. A node becomes runnable when all its dependencies

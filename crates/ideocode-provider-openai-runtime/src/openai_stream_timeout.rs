@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Streaming timeout budgets for the OpenAI Responses transports.
 //!
 //! Both the HTTPS/SSE and websocket paths must agree on how long a silent model

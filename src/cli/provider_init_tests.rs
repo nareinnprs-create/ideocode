@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 // These moved from cli::provider_init to crate::external_auth in the
 // tui->cli layering refactor (a9a82827); provider_init.rs only re-imports the

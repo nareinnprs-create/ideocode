@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 pub use ideocode_tui_visual_debug::{
     FrameCapture, FrameCaptureBuilder, ImageRegionCapture, InfoWidgetCapture, InfoWidgetSummary,
     LayoutCapture, MarginsCapture, MessageCapture, RectCapture, RenderTimingCapture, RenderedText,

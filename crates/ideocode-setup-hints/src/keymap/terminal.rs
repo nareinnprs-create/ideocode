@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Discover key bindings declared by terminal emulators.
 //!
 //! Different terminals store bindings in different ways. The most reliable

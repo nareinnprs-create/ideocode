@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Stable, versioned client API for the IDEOCODE harness (agent runtime).
 //!
 //! This crate defines the *public* boundary between the harness and any UI

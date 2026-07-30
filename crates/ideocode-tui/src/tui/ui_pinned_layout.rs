@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{
     FitImageRenderPlan, SIDE_PANEL_INLINE_IMAGE_MIN_ROWS, SIDE_PANEL_INLINE_IMAGE_MIN_ZOOM_PERCENT,
     SidePanelImageLayout, SidePanelImageRenderMode,

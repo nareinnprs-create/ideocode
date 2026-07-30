@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! CLI orchestration for the IDEOCODE account device authorization flow.
 //!
 //! Protocol parsing and HTTP behavior live in `subscription_api` so the CLI and

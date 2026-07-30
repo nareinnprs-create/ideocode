@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[tokio::test]
 async fn await_members_reuses_persisted_deadline_after_reload_retry() {
     let (_env, _runtime_dir) = RuntimeEnvGuard::new();

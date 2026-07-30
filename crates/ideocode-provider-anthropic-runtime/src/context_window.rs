@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Context-window resolution for the Anthropic runtime.
 //!
 //! The default `Provider::context_window` uses the cache-free lookup, so a live

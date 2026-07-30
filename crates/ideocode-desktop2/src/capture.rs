@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Offscreen capture: render a scene to a PNG without any window or
 //! compositor. Used by `--capture` for self-contained visual verification
 //! (agents and CI can inspect the app's real output without screenshots).

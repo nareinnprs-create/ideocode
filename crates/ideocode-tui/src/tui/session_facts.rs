@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Centralized session "facts" formatting.
 //!
 //! Several surfaces (info widgets, the overscroll status line, and the compact

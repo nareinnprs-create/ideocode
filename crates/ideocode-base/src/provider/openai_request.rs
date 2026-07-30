@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 pub use ideocode_provider_openai::{
     OPENAI_ENCRYPTED_CONTENT_SAFE_MAX_CHARS, build_tools,
     is_openai_encrypted_content_too_large_error, openai_encrypted_content_fallback_summary,

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 /// Collapsible swarm notification content.
 ///
 /// When a swarm message/report arrives with a sender-provided `tldr`, the TUI

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! State-space nodes for the UI.
 //!
 //! `build_scene` is a pure function of `Model`, so the app's visual states

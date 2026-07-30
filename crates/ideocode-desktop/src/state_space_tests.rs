@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Headless state-space walker for the desktop UI.
 //!
 //! Explores the reachable UI state graph by replaying every interesting

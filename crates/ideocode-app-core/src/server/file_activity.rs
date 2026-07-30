@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::FileAccess;
 
 pub(crate) fn parse_file_activity_line_range(summary: Option<&str>) -> Option<(u64, u64)> {

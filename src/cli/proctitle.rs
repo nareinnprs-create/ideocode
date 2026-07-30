@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Mapping from parsed CLI arguments to an initial process title.
 //!
 //! This logic depends on the clap `Args`/`Command` types defined in `cli`, so
@@ -60,6 +64,8 @@ pub(crate) fn initial_title(args: &Args) -> String {
         Some(Command::AuthTest { .. }) => "IDEOCODE auth-test".to_string(),
         Some(Command::Restart { .. }) => "IDEOCODE restart".to_string(),
         Some(Command::Menubar { .. }) => "IDEOCODE menubar".to_string(),
+        Some(Command::Shell) => "IDEOCODE shell".to_string(),
+        Some(Command::Tool(_)) => "IDEOCODE tool".to_string(),
         Some(Command::SetupLauncher) => "IDEOCODE setup-launcher".to_string(),
         None => {
             if let Some(resume) = args.resume.as_deref().filter(|resume| !resume.is_empty()) {

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Ignored embed-latency probe for the tract inference stack.
 //!
 //! Motivation: at opt-level 0 (plain dev/selfdev profiles before the

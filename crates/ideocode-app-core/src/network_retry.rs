@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use std::time::Duration;
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 use tokio::process::Command;

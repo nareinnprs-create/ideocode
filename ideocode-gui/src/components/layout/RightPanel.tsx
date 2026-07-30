@@ -9,9 +9,11 @@ import { SessionHistory } from "../panels/SessionHistory";
 import { BuildPanel } from "../panels/BuildPanel";
 import { DebugPanel } from "../panels/DebugPanel";
 import { SettingsPanel } from "../panels/SettingsPanel";
+import { MemoryPanel } from "../panels/MemoryPanel";
+import { IssuePanel } from "../panels/IssuePanel";
+import { BrowserPanel } from "../panels/BrowserPanel";
 
 const TerminalPane = lazy(() => import("../terminal/TerminalPane").then(m => ({ default: m.TerminalPane })));
-const CodeEditor = lazy(() => import("../editor/CodeEditor").then(m => ({ default: m.CodeEditor })));
 
 const PANEL_TITLES: Record<string, string> = {
   files: "File Explorer",
@@ -22,8 +24,10 @@ const PANEL_TITLES: Record<string, string> = {
   providers: "Providers",
   sessions: "Sessions",
   debug: "Debug",
-  editor: "Editor",
   settings: "Settings",
+  memory: "Memory",
+  issues: "Issues",
+  browser: "Browser",
 };
 
 export function RightPanel() {
@@ -66,17 +70,21 @@ function PanelContent({ panel }: { panel: string }) {
     case "providers":
       return <ProviderPanel />;
     case "terminal":
-      return <TerminalPane visible={true} />;
+      return <TerminalPane />;
     case "sessions":
       return <SessionHistory />;
     case "build":
       return <BuildPanel />;
     case "debug":
       return <DebugPanel />;
-    case "editor":
-      return <CodeEditor />;
     case "settings":
       return <SettingsPanel />;
+    case "memory":
+      return <MemoryPanel />;
+    case "issues":
+      return <IssuePanel />;
+    case "browser":
+      return <BrowserPanel />;
     default:
       return (
         <div className="p-4 text-text-muted text-xs text-center">

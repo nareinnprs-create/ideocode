@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! `IDEOCODE menubar` - a lightweight live indicator of how many IDEOCODE sessions
 //! are running and how many are actively streaming a model response.
 //!

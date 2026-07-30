@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Build and runtime version metadata for IDEOCODE.
 //!
 //! The build script (`build.rs`) computes git- and version-derived values and

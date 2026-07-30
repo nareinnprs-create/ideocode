@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! First-run onboarding flow state machine.
 //!
 //! After the user logs in / imports credentials on a fresh install, we walk

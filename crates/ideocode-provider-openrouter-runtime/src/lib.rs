@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! OpenRouter / OpenAI-compatible provider runtime (aggregator with
 //! provider-routing features, plus direct profile endpoints like DeepSeek and
 //! NVIDIA NIM), moved out of `IDEOCODE-base` so provider edits compile only this

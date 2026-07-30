@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Incremental hashed-token index used by `session_search` to pre-filter
 //! candidate files before any expensive parsing.
 //!

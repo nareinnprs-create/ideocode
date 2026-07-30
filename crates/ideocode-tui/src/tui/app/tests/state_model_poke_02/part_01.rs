@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[test]
 fn test_side_diagram_uses_left_splitter_instead_of_rounded_box() {
     let _lock = scroll_render_test_lock();

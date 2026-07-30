@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #![cfg_attr(test, allow(clippy::items_after_test_module))]
 
 use crate::agent::Agent;
@@ -512,6 +516,28 @@ fn apply_set_premium_mode(
         premium_mode_label(premium_mode)
     ));
     let _ = client_event_tx.send(ServerEvent::Ack { id });
+}
+
+pub(super) async fn handle_set_personality(
+    id: u64,
+    mode: &str,
+    agent: &Arc<Mutex<Agent>>,
+    client_event_tx: &mpsc::UnboundedSender<ServerEvent>,
+) {
+    let parsed = crate::prompt::PersonalityMode::from_str(mode);
+    match parsed {
+        Some(personality) => {
+            agent.lock().await.set_personality(personality);
+            let _ = client_event_tx.send(ServerEvent::Ack { id });
+        }
+        None => {
+            let _ = client_event_tx.send(ServerEvent::Error {
+                id,
+                message: format!("Unknown personality mode: {mode}. Available: professional, casual, genz, academic, witty, zen"),
+                retry_after_secs: None,
+            });
+        }
+    }
 }
 
 pub(super) async fn handle_set_premium_mode(

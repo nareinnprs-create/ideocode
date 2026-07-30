@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{accent_color, clear_area, dim_color, tool_color};
 use crate::tui::info_widget;
 use ratatui::{prelude::*, widgets::Paragraph};

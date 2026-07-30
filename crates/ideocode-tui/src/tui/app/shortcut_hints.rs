@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Learned-keybinding nudges.
 //!
 //! IDEOCODE tracks, per action, how often the user reaches a result via its

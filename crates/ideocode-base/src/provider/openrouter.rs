@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! OpenRouter / OpenAI-compatible provider shared helpers (compatibility shim).
 //!
 //! The OpenRouter provider *runtime* (`OpenRouterProvider`) now lives in the

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Transcript scanning with an on-disk incremental cache.
 //!
 //! Scanning is the expensive part: there can be ~100k JSON transcripts totaling

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Typed client for the IDEOCODE account and subscription API.
 //!
 //! All bearer credentials are sent in authorization headers or JSON response

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Background maintenance for the on-disk session store.
 //!
 //! Session transcripts (`<id>.json`) are kept forever, but the atomic-write

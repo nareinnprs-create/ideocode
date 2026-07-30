@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
@@ -34,7 +38,7 @@ impl Default for AppSettings {
 
 fn settings_path() -> PathBuf {
     dirs::home_dir()
-        .map(|h| h.join(".ideocode").join("settings.json"))
+        .map(|h| h.join(".IDEOCODE").join("settings.json"))
         .unwrap_or_default()
 }
 
@@ -67,7 +71,7 @@ pub fn update_settings(settings: AppSettings) -> Result<(), String> {
 pub fn is_first_launch() -> bool {
     let path = settings_path();
     let sessions_dir = dirs::home_dir()
-        .map(|h| h.join(".ideocode").join("sessions"))
+        .map(|h| h.join(".IDEOCODE").join("sessions"))
         .unwrap_or_default();
     // First launch if neither settings nor any session files exist
     if path.exists() {

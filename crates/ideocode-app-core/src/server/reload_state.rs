@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{has_live_listener, is_server_ready};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;

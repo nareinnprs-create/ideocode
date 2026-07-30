@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{App, DisplayMessage, begin_remote_split_launch};
 use crate::tui::backend::RemoteConnection;
 use crate::tui::keybind::WorkspaceNavigationDirection;

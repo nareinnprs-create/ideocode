@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Client-side cache tracking for append-only validation
 //!
 //! When providers don't report cache tokens, we can still detect cache violations

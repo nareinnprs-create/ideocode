@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Debug socket tool - send commands to the IDEOCODE debug socket
 //!
 //! This tool provides direct access to the debug socket API, allowing the agent

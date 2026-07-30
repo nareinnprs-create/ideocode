@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! IDEOCODE Performance Dashboard (H8)
 //!
 //! Toggle with F12. Live charts: tokens/sec, latency, cost, memory.

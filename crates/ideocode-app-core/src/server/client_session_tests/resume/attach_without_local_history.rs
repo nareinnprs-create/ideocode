@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[tokio::test]
 async fn handle_resume_session_allows_attach_without_local_history() -> Result<()> {
     let _guard = crate::storage::lock_test_env();

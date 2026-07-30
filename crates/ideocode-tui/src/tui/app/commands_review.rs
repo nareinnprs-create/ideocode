@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::commands::{REVIEW_PREFERRED_MODEL, active_session_id, active_working_dir};
 use super::{App, DisplayMessage};
 use crate::id;

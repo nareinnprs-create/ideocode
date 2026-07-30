@@ -1,6 +1,7 @@
 [package]
 name = "ideocode-desktop2"
 version = "0.1.0"
+license = "MIT"
 edition = "2024"
 publish = false
 description = "Greenfield ideocode desktop app: winit + wgpu + Vello + Parley over the harness API"

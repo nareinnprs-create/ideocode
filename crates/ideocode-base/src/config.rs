@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Configuration file support for IDEOCODE
 //!
 //! Config is loaded from `~/.IDEOCODE/config.toml` (or `$IDEOCODE_HOME/config.toml`)

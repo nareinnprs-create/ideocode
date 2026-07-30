@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Detect conflicts between IDEOCODE's own key bindings and the bindings
 //! discovered on the machine (terminal emulator + macOS system shortcuts).
 //!

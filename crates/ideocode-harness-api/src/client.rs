@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! NDJSON framing helpers and a minimal blocking client.
 
 use crate::{API_VERSION_MAJOR, ApiEvent, ApiRequest, ClientFrame, ServerFrame};

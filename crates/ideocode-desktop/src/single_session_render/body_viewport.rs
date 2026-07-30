@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Body viewport and rendered-line pipeline: visible body selection, viewport windows, rendered/wrapped body line production, streaming append, hit-testing, and vertical body geometry.
 
 use super::*;

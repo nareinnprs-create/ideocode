@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::STREAM_KEEPALIVE_PONG_ID;
 use crate::protocol::ServerEvent;
 use std::time::Duration;

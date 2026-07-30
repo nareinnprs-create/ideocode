@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Listwise LLM reranking of memory retrieval candidates (recall-5, Mode-2).
 //!
 //! Hybrid retrieval (`MemoryManager::find_similar_hybrid`) reliably pulls the

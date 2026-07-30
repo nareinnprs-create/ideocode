@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Small persisted UI preferences that survive restarts and session resumes.
 //!
 //! These are deliberately separate from the main config file: they capture

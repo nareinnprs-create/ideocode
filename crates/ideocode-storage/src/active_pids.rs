@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Tracking of active session process IDs under `~/.IDEOCODE/active_pids`.
 //!
 //! This is pure filesystem state keyed by session ID, used to discover which

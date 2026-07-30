@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Tests for the macos_computer_use tool. Pure-logic tests run anywhere on macOS; live
 //! tests that synthesize events / capture the screen are `#[ignore]`d.
 

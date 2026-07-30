@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 use crate::tui::TuiState as _;
 use std::cell::RefCell;
@@ -1998,7 +2002,7 @@ impl App {
         next
     }
 
-    #[allow(dead_code)]
+    #[allow(dead_code, reason = "kept for swarm-panel focus API; callers not yet migrated")]
     pub(crate) fn set_swarm_panel_focus(&mut self, focused: bool) {
         self.swarm_panel_focused = focused && self.inline_swarm_gallery_active();
         self.swarm_panel_full_page = false;

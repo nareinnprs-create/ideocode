@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! IDEOCODE Command Palette Pro (I7)
 //!
 //! Ctrl+P style command palette with categories, fuzzy search, and preview.

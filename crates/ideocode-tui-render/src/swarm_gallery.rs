@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Shared presentation logic for the inline swarm gallery.
 //!
 //! This is the single source of truth for how swarm-agent viewports look:

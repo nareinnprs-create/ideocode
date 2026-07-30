@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use unicode_width::UnicodeWidthStr;
 
 use super::display_width::{clamp_display_col, display_col_slice, line_display_width};

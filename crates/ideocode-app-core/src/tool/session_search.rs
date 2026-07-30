@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Cross-session search tool - RAG across all past sessions
 //!
 //! The tool is optimized for agent recall rather than raw grep output:

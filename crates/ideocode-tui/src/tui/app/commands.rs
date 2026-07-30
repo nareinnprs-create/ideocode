@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 pub(super) use super::commands_improve::{
     build_improve_prompt, build_improve_resume_prompt, build_refactor_prompt,
     build_refactor_resume_prompt, format_improve_status, format_refactor_status,
@@ -1950,6 +1954,32 @@ pub(super) fn handle_session_command(app: &mut App, trimmed: &str) -> bool {
             title,
         )));
         app.set_status_notice("Session renamed");
+        return true;
+    }
+
+    if trimmed == "/personality" || trimmed == "/personality status" {
+        app.push_display_message(DisplayMessage::system(
+            "Available modes: professional, casual, genz, academic, witty, zen".to_string(),
+        ));
+        return true;
+    }
+
+    if trimmed.starts_with("/personality ") {
+        let mode = trimmed.trim_start_matches("/personality ");
+        let mode = mode.trim();
+        if !mode.is_empty() {
+            if crate::prompt::PersonalityMode::from_str(mode).is_some() {
+                app.push_display_message(DisplayMessage::system(format!(
+                    "Personality set to: {}",
+                    mode
+                )));
+            } else {
+                app.push_display_message(DisplayMessage::error(format!(
+                    "Unknown personality mode: {}. Available: professional, casual, genz, academic, witty, zen",
+                    mode
+                )));
+            }
+        }
         return true;
     }
 

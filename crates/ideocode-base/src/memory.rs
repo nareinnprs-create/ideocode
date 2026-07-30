@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Memory system for cross-session learning
 //!
 //! Provides persistent memory that survives across sessions, organized by:
@@ -58,9 +62,9 @@ pub use prompt_support::{
 };
 
 const LEGACY_NOTE_CATEGORY: &str = "note";
-const MEMORY_RELEVANCE_MAX_CANDIDATES: usize = 30;
-const MEMORY_RELEVANCE_MAX_RESULTS: usize = 10;
+const MEMORY_RELEVANCE_MAX_CANDIDATES: usize = 1000;
 
+const MEMORY_RELEVANCE_MAX_RESULTS: usize = 100;
 /// Producer of synthetic [`MemoryEntry`] values contributed by a higher layer.
 ///
 /// Used to invert the legacy `memory -> skill` dependency: the `skill` layer
@@ -1979,7 +1983,7 @@ impl MemoryManager {
 pub const EMBEDDING_SIMILARITY_THRESHOLD: f32 = 0.5;
 
 /// Maximum embedding hits to verify with sidecar
-pub const EMBEDDING_MAX_HITS: usize = 10;
+pub const EMBEDDING_MAX_HITS: usize = 100;
 
 /// Minimum per-retriever candidate pool size for hybrid fusion.
 const HYBRID_POOL_MIN: usize = 50;

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Lightweight sidecar client for fast, cheap model calls.
 //!
 //! Used for memory relevance verification and other quick tasks that don't

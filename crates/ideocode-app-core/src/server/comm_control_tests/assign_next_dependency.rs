@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[tokio::test]
 async fn assign_next_prefers_worker_with_dependency_context() {
     let (_env, _runtime) = RuntimeEnvGuard::new();

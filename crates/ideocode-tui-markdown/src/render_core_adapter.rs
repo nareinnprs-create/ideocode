@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Adapter: backend-neutral [`ideocode_render_core::Document`] -> ratatui lines.
 //!
 //! This is the thin TUI-side translation layer for the shared render core. It

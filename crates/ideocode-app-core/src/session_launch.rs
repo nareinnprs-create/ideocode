@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Launching IDEOCODE sessions in new terminal windows.
 //!
 //! These helpers spawn a fresh `IDEOCODE` process (resume or self-dev) inside a

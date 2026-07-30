@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Antigravity provider runtime (Google Cloud Code backend multiplexing
 //! Gemini/Claude/gpt-oss upstreams), moved out of `IDEOCODE-base` so provider
 //! edits compile only this crate plus a binary relink instead of rebuilding

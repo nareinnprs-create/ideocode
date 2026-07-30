@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Text editing model for the composer: a real input box.
 //!
 //! Pure and UI-free so every keybinding can be tested as a state transition.

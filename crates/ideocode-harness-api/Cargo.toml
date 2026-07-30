@@ -1,6 +1,7 @@
 [package]
 name = "ideocode-harness-api"
 version = "0.1.0"
+license = "MIT"
 edition = "2024"
 publish = false
 description = "Stable, versioned client API for the ideocode harness (agent runtime)"

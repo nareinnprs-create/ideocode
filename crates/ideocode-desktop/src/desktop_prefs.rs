@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use crate::workspace::{DEFAULT_SPACE_HOLD_TOGGLE_MS, DesktopPreferences, PanelSizePreset};
 use anyhow::{Context, Result};
 use serde_json::{Value, json};

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use crate::{DesktopUserEvent, desktop_log, session_launch};
 use std::sync::mpsc;
 use std::time::{Duration, Instant};

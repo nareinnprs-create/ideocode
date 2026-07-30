@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // ImageRegion offsetting across body-cache reuse paths.
 //
 // Inline plan-graph diagrams and anchored raster images bake placeholder

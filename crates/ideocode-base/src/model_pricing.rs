@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Live model pricing catalog backed by <https://models.dev>.
 //!
 //! IDEOCODE's static pricing tables (`ideocode_provider_core::pricing`) only cover

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! WebSocket gateway for remote clients (iOS app, web).
 //!
 //! Accepts WebSocket connections over TCP and bridges them to the

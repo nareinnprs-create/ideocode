@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Deprecated Claude CLI provider (compatibility shim).
 //!
 //! The Claude CLI provider *runtime* (`ClaudeProvider`, subprocess transport)

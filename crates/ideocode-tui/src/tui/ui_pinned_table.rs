@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use ratatui::text::Line;
 
 pub(crate) fn is_rendered_table_line(line: &Line<'_>) -> bool {

@@ -1,6 +1,7 @@
 [package]
 name = "ideocode-provider-openrouter-runtime"
 version = "0.1.0"
+license = "MIT"
 edition = "2024"
 description = "OpenRouter / OpenAI-compatible provider runtime (aggregator + direct profile endpoints) for ideocode, kept downstream of ideocode-base so provider edits do not rebuild the app spine"
 

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Issue #497: Ctrl+C while a copy-mode selection is active must copy the
 // selection, not fall through to the global interrupt/quit handler (which
 // closed IDEOCODE and lost the very error the user was trying to copy).

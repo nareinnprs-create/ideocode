@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Tests for copy-selection in the prompt composer (input box), issue #430:
 // text being typed must be drag-selectable and copyable with the mouse, just
 // like the transcript, without ever copying the prompt decoration.

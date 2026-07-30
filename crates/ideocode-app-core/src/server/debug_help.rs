@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 pub(super) fn parse_namespaced_command(command: &str) -> (&str, &str) {
     let trimmed = command.trim();
     if let Some(idx) = trimmed.find(':') {

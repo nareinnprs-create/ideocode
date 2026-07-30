@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Service handle that owns the server's file-touch tracking state.
 //!
 //! Historically the [`Server`](super::Server) struct held two raw

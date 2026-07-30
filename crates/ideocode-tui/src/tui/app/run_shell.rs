@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 use crate::tui::TuiState;
 use crossterm::cursor::{RestorePosition, SavePosition};
@@ -761,14 +765,14 @@ impl App {
 
             if sim_time_ms >= next_progress {
                 let pct = (sim_time_ms / total_duration_ms * 100.0).min(100.0);
-                eprint!("\r  Rendering... {:.0}%", pct);
+                crate::logging::info(&format!("Rendering... {:.0}%", pct));
                 next_progress += progress_interval;
             }
 
             sim_time_ms += frame_duration_ms;
         }
 
-        eprintln!("\r  Rendering... 100%  ({} frames captured)", frames.len());
+        crate::logging::info(&format!("Rendering... 100%  ({} frames captured)", frames.len()));
 
         Ok(frames)
     }

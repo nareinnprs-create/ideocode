@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Import Claude Code sessions into IDEOCODE
 //!
 //! This module handles discovering, parsing, and converting Claude Code sessions

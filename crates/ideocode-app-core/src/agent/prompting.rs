@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::Agent;
 use crate::logging;
 use crate::message::{Message, ToolDefinition};
@@ -120,6 +124,30 @@ impl Agent {
             &mut split,
             self.provider.reasoning_effort().as_deref(),
         );
+
+        // Inject personality tone directive
+        let personality_directive = self.personality.system_directive();
+        if !split.dynamic_part.is_empty() {
+            split.dynamic_part.push_str("\n\n");
+        }
+        split.dynamic_part.push_str("# Response Style\n\n");
+        split.dynamic_part.push_str(personality_directive);
+
+        // Inject emotion mirroring directive if detectable from the last user message
+        if let Some(last_user_msg) = self.session.messages.iter().rev().find(|m| matches!(m.role, crate::message::Role::User)) {
+            let text: String = last_user_msg.content.iter().filter_map(|block| {
+                if let crate::message::ContentBlock::Text { text, .. } = block {
+                    Some(text.clone())
+                } else {
+                    None
+                }
+            }).collect();
+            let tone = crate::prompt::EmotionTone::detect(&text);
+            if let Some(directive) = tone.mirror_directive() {
+                split.dynamic_part.push_str("\n\n");
+                split.dynamic_part.push_str(directive);
+            }
+        }
 
         split
     }

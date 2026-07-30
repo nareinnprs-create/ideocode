@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Human-readable rendering of the keymap snapshot and detected conflicts,
 //! shared by the `/keys` command and the startup conflict hint.
 

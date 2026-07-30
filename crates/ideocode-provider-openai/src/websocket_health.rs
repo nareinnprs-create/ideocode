@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use ideocode_message_types::StreamEvent;
 
 pub const WEBSOCKET_FALLBACK_NOTICE: &str = "falling back from websockets to https transport";

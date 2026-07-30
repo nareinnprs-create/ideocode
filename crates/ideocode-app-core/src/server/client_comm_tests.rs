@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{handle_comm_list, handle_comm_message};
 use crate::agent::Agent;
 use crate::message::{Message, ToolDefinition};

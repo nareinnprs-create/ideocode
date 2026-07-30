@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Config-driven global launch hotkeys on Windows.
 //!
 //! Windows registers normal global hotkeys through `RegisterHotKey`. Because

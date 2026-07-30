@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Synthetic mouse + keyboard input via Core Graphics CGEvents.
 //!
 //! This is the *visible* control path: events go to the shared HID stream, so

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! IDEOCODE UI Integration Layer — v2
 //!
 //! Bridges UI modules with the real App state via TuiState trait.
@@ -26,7 +30,7 @@ struct OverlayState {
     gesture_selected: usize,
     file_explorer_visible: bool,
     file_explorer_selected: usize,
-    #[allow(dead_code)]
+    #[allow(dead_code, reason = "kept for file-explorer state persistence across panel toggle")]
     file_explorer_cwd: String,
     git_panel_visible: bool,
     search_panel_visible: bool,
@@ -48,13 +52,13 @@ struct OverlayState {
     provider_panel_state: crate::tui::ui_providers::ProviderPanelState,
     mood: AIMood,
     personality_mode: PersonalityMode,
-    #[allow(dead_code)]
+    #[allow(dead_code, reason = "kept for theme state persistence across panel toggle")]
     active_theme: usize,
-    #[allow(dead_code)]
+    #[allow(dead_code, reason = "kept for achievements UI; not yet wired")]
     achievements_unlocked: usize,
-    #[allow(dead_code)]
+    #[allow(dead_code, reason = "kept for achievements UI; not yet wired")]
     achievements_total: usize,
-    #[allow(dead_code)]
+    #[allow(dead_code, reason = "kept for session duration display; not yet wired")]
     session_started_at: Option<Instant>,
     split_visible: bool,
     split_layout: super::ui_split::SplitLayout,

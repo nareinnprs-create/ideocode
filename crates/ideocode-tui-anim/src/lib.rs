@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Pure, dependency-free math kernels for the TUI idle animations.
 //!
 //! This crate intentionally contains only hot, self-contained numeric code

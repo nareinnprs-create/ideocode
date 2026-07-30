@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Shared typo-resistant fuzzy matching adapters for TUI slash commands.
 
 pub(crate) fn fuzzy_score(needle: &str, haystack: &str) -> Option<i32> {

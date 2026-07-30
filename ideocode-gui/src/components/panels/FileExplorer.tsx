@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFileStore } from "../../stores/fileStore";
 import {
   ChevronRight,
@@ -7,12 +7,14 @@ import {
   Folder,
   FolderOpen,
   RefreshCw,
+  FolderInput,
 } from "lucide-react";
 import type { FileNode } from "../../lib/tauri-commands";
 
 export function FileExplorer() {
-  const { rootPath, tree, loading, expandedPaths, loadTree, toggleExpanded, selectFile, selectedFile } =
+  const { rootPath, tree, loading, error, expandedPaths, loadTree, toggleExpanded, selectFile, selectedFile, setRootPath } =
     useFileStore();
+  const [pathInput, setPathInput] = useState("");
 
   useEffect(() => {
     loadTree();
@@ -34,25 +36,61 @@ export function FileExplorer() {
         </button>
       </div>
 
+      {/* Error */}
+      {error && (
+        <div className="mx-3 mt-2 p-2 rounded bg-error/10 border border-error/30">
+          <div className="text-xs text-error">{error}</div>
+        </div>
+      )}
+
       {/* Tree */}
       <div className="flex-1 overflow-y-auto py-1">
-        {tree.map((node) => (
-          <TreeNode
-            key={node.path}
-            node={node}
-            depth={0}
-            expandedPaths={expandedPaths}
-            selectedFile={selectedFile}
-            onToggle={toggleExpanded}
-            onSelect={selectFile}
-          />
-        ))}
+        {!rootPath ? (
+          <div className="px-3 py-4">
+            <div className="text-xs text-text-muted mb-2">Enter a project path to browse:</div>
+            <div className="flex gap-1">
+              <input
+                type="text"
+                value={pathInput}
+                onChange={(e) => setPathInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && pathInput.trim() && setRootPath(pathInput.trim())}
+                placeholder="C:\path\to\project"
+                className="flex-1 bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary"
+              />
+              <button
+                onClick={() => pathInput.trim() && setRootPath(pathInput.trim())}
+                disabled={!pathInput.trim()}
+                className="px-2 py-1.5 rounded bg-accent-primary text-white text-xs hover:bg-accent-hover disabled:opacity-50 transition-fast"
+              >
+                <FolderInput size={14} />
+              </button>
+            </div>
+          </div>
+        ) : tree.length === 0 && !loading ? (
+          <div className="px-3 py-4 text-center text-text-muted text-xs">
+            No files found in {rootPath}
+          </div>
+        ) : (
+          tree.map((node) => (
+            <TreeNode
+              key={node.path}
+              node={node}
+              depth={0}
+              expandedPaths={expandedPaths}
+              selectedFile={selectedFile}
+              onToggle={toggleExpanded}
+              onSelect={selectFile}
+            />
+          ))
+        )}
       </div>
 
       {/* Root path */}
-      <div className="px-3 py-1.5 border-t border-border-subtle text-[10px] text-text-muted truncate">
-        {rootPath}
-      </div>
+      {rootPath && (
+        <div className="px-3 py-1.5 border-t border-border-subtle text-[10px] text-text-muted truncate">
+          {rootPath}
+        </div>
+      )}
     </div>
   );
 }

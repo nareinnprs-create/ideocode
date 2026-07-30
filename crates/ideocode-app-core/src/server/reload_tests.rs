@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{
     graceful_shutdown_sessions, graceful_shutdown_sessions_with_timeout,
     persist_reload_recovery_intents, receive_reload_signal,

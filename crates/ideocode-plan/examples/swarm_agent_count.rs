@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Measure how many agents a swarm task graph would spawn.
 //!
 //! This drives the *real* task-DAG engine (`ideocode_plan::dag`) with scripted mock

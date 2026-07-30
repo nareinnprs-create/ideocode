@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Quantifying info-widget movement during scrolling.
 //!
 //! Info widgets are placed into the "negative space" (free width to the right/left

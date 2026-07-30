@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use ideocode_message_types::{
     ContentBlock, Message, Role, TOOL_OUTPUT_MISSING_TEXT, sanitize_tool_id,
 };

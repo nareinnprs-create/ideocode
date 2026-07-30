@@ -1,6 +1,7 @@
 [package]
 name = "ideocode-provider-gemini-runtime"
 version = "0.1.0"
+license = "MIT"
 edition = "2024"
 description = "Gemini provider runtime (Code Assist OAuth + Developer API key) for ideocode, kept downstream of ideocode-base so provider edits do not rebuild the app spine"
 

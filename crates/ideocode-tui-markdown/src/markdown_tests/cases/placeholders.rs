@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 // Placeholder-preservation tests: image/diagram placeholder bodies are blank
 // lines by design, and block-separator normalization must never collapse them.
 

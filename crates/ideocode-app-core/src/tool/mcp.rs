@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! MCP management tool - connect, disconnect, list, reload MCP servers
 
 use crate::mcp::{McpManager, McpServerConfig};

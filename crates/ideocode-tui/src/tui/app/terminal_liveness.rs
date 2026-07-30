@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Detection of an abandoned controlling terminal.
 //!
 //! A TUI client can outlive its terminal: if the terminal emulator dies

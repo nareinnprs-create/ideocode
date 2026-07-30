@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 use std::process::{ExitStatus, Stdio};
 use std::sync::Arc;
@@ -503,6 +507,11 @@ fn shell_command(command: &str) -> Command {
     {
         let mut cmd = Command::new("sh");
         cmd.arg("-lc").arg(command);
+        // SAFETY: pre_exec runs after fork() in the child process, before exec(),
+        // in a single-threaded context. setsid() creates a new session so that
+        // the child is its own process group leader, preventing ctrl-C in the
+        // parent from propagating to the dictation child. The return value is
+        // checked for errors per POSIX.
         unsafe {
             cmd.pre_exec(|| {
                 if libc::setsid() == -1 {

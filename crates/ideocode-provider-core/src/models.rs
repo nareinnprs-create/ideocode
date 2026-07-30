@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 /// Quality-first default for Claude-capable routes.
 pub const DEFAULT_CLAUDE_MODEL: &str = "claude-fable-5";
 

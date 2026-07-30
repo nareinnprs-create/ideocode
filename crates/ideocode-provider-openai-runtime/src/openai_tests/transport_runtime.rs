@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[tokio::test]
 #[ignore = "requires real OpenAI OAuth credentials"]
 async fn live_openai_catalog_lists_gpt_5_4_family() -> Result<()> {

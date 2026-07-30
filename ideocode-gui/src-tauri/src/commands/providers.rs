@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -34,7 +38,7 @@ pub fn list_providers() -> Vec<Provider> {
             id: "openai".into(),
             name: "OpenAI".into(),
             api_key_env: "OPENAI_API_KEY".into(),
-            is_configured: std::env::var("OPENAI_API_KEY").is_ok(),
+            is_configured: std::env::var("OPENAI_API_KEY").map(|k| !k.is_empty()).unwrap_or(false),
             models: vec![
                 Model {
                     id: "gpt-4o".into(),
@@ -69,7 +73,7 @@ pub fn list_providers() -> Vec<Provider> {
             id: "anthropic".into(),
             name: "Anthropic".into(),
             api_key_env: "ANTHROPIC_API_KEY".into(),
-            is_configured: std::env::var("ANTHROPIC_API_KEY").is_ok(),
+            is_configured: std::env::var("ANTHROPIC_API_KEY").map(|k| !k.is_empty()).unwrap_or(false),
             models: vec![
                 Model {
                     id: "claude-sonnet-4-20250514".into(),
@@ -95,7 +99,7 @@ pub fn list_providers() -> Vec<Provider> {
             id: "gemini".into(),
             name: "Google Gemini".into(),
             api_key_env: "GOOGLE_API_KEY".into(),
-            is_configured: std::env::var("GOOGLE_API_KEY").is_ok(),
+            is_configured: std::env::var("GOOGLE_API_KEY").map(|k| !k.is_empty()).unwrap_or(false),
             models: vec![
                 Model {
                     id: "gemini-2.5-pro".into(),
@@ -121,7 +125,7 @@ pub fn list_providers() -> Vec<Provider> {
             id: "openrouter".into(),
             name: "OpenRouter".into(),
             api_key_env: "OPENROUTER_API_KEY".into(),
-            is_configured: std::env::var("OPENROUTER_API_KEY").is_ok(),
+            is_configured: std::env::var("OPENROUTER_API_KEY").map(|k| !k.is_empty()).unwrap_or(false),
             models: vec![
                 Model {
                     id: "anthropic/claude-sonnet-4".into(),
@@ -153,7 +157,7 @@ pub fn get_provider_status() -> ProviderStatus {
             .unwrap_or_else(|_| "openai".into()),
         active_model: std::env::var("IDEOCODE_MODEL")
             .unwrap_or_else(|_| "gpt-4o".into()),
-        api_key_configured: std::env::var("OPENAI_API_KEY").is_ok()
-            || std::env::var("ANTHROPIC_API_KEY").is_ok(),
+        api_key_configured: std::env::var("OPENAI_API_KEY").map(|k| !k.is_empty()).unwrap_or(false)
+            || std::env::var("ANTHROPIC_API_KEY").map(|k| !k.is_empty()).unwrap_or(false),
     }
 }

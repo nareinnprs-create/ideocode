@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Discover global key bindings declared by third-party apps that grab hotkeys
 //! *before* the terminal (and therefore IDEOCODE) ever sees them.
 //!

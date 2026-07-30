@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use futures::StreamExt;
 use ideocode::message::{ContentBlock, Message, ToolDefinition};
 use ideocode::provider::Provider;

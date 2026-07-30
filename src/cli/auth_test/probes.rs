@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 fn generic_credential_paths_for_provider(
     provider: crate::provider_catalog::LoginProviderDescriptor,
 ) -> Vec<String> {

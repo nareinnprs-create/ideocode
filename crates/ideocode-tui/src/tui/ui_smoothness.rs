@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Global anchor-stability (screen smoothness) recorder for the TUI.
 //!
 //! Feeds one [`AnchorFrame`] per rendered frame from the messages area of the

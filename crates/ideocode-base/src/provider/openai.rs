@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! OpenAI provider shared helpers (compatibility shim).
 //!
 //! The OpenAI provider *runtime* (`OpenAIProvider`: Codex OAuth + API key,

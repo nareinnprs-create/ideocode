@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[tokio::test]
 async fn task_control_wake_returns_structured_response_with_plan_summary() {
     let (_env, _runtime) = RuntimeEnvGuard::new();

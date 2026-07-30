@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Audit sweep: panic-safety and width-bound checks for the swarm gallery,
 //! panel, and strip renderers across degenerate inputs (empty members, huge
 //! member counts, tiny widths/heights, wide glyphs).

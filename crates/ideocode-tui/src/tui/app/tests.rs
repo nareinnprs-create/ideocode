@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #![cfg_attr(test, allow(clippy::clone_on_copy))]
 include!("tests/support_failover/part_01.rs");
 include!("tests/support_failover/part_02.rs");

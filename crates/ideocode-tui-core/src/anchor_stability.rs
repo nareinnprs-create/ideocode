@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Anchor-stability analysis for rendered transcript frames.
 //!
 //! Quantifies the most jarring kinds of visual motion in the chat transcript:

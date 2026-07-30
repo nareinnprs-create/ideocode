@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use anyhow::{Context, Result};
 use ideocode_message_types::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
 use ideocode_provider_core::EventStream;

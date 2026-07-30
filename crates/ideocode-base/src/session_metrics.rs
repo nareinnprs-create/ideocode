@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Lock-free per-session runtime metrics.
 //!
 //! These metrics are tracked in a process-global registry rather than on the

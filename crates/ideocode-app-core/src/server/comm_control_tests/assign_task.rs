@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[tokio::test]
 async fn assign_task_without_task_id_picks_highest_priority_runnable_task() {
     let (_env, _runtime) = RuntimeEnvGuard::new();

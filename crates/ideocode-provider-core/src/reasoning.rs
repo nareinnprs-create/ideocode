@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Shared reasoning-effort ladders.
 //!
 //! Keep these in provider-core so provider runtimes and UI clients expose the

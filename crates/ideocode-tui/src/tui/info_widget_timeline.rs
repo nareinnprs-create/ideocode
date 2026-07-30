@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Activity timeline widget: a vertical, git-log-meets-todo visualization of
 //! what the agent has been doing. Each tool the agent runs contributes an
 //! "intent" node (sourced from the tool-call `intent` parameter); file edits

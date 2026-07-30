@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::pricing::{cheapness_for_route, openrouter_pricing_from_model_pricing};
 use super::{ModelRoute, RouteCostConfidence, RouteCostSource, provider_for_model};
 use std::collections::BTreeSet;

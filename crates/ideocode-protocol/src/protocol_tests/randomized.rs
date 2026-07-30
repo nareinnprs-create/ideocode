@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[test]
 fn test_protocol_request_roundtrip_randomized_samples() -> Result<()> {
     use rand::{Rng, SeedableRng};

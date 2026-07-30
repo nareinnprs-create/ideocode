@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use anyhow::{Context, Result};
 use base64::Engine;
 use ratatui::buffer::Buffer;
@@ -132,10 +136,10 @@ pub async fn export_video(
     }
 
     let (font_family, font_size) = get_terminal_font();
-    eprintln!(
-        "  Rendering at {}x{}, {}fps, {:.1}x speed (font: {} {}pt)...",
+    crate::logging::info(&format!(
+        "Rendering at {}x{}, {}fps, {:.1}x speed (font: {} {}pt)...",
         width, height, fps, speed, font_family, font_size
-    );
+    ));
 
     let frames = app
         .run_headless_replay(timeline, speed, width, height, fps)
@@ -180,8 +184,8 @@ pub async fn export_swarm_video(
     let (cols, rows) = swarm_export_grid(pane_count);
     let (font_family, base_font_size) = get_terminal_font();
     let font_size = swarm_export_font_size(base_font_size, pane_count, cols, rows);
-    eprintln!(
-        "  Rendering swarm replay at {}x{}, {}fps, {:.1}x speed ({} panes, layout: {}x{}, font: {} {:.1}pt)...",
+    crate::logging::info(&format!(
+        "Rendering swarm replay at {}x{}, {}fps, {:.1}x speed ({} panes, layout: {}x{}, font: {} {:.1}pt)...",
         width,
         height,
         fps,
@@ -191,7 +195,7 @@ pub async fn export_swarm_video(
         rows,
         font_family,
         font_size
-    );
+    ));
 
     let rows = pane_count.div_ceil(cols).max(1);
     let pane_width = (width / cols).max(1);
@@ -280,11 +284,11 @@ async fn render_svg_pipeline(
         frame_indices.push(idx);
     }
 
-    eprintln!(
-        "  Rendering {} unique frames as SVG → PNG ({} total)...",
+    crate::logging::info(&format!(
+        "Rendering {} unique frames as SVG → PNG ({} total)...",
         unique_frames.len(),
         frames.len()
-    );
+    ));
 
     // Render unique SVGs and convert to PNG in parallel
     let png_dir = tmp_dir.join("png");
@@ -336,12 +340,10 @@ async fn render_svg_pipeline(
             }
             let done = rendered.fetch_add(1, std::sync::atomic::Ordering::Relaxed) + 1;
             if done.is_multiple_of(20) || done == total_unique {
-                eprint!("\r  Rendering SVG... {}/{}", done, total_unique);
+                crate::logging::info(&format!("Rendering SVG... {}/{}", done, total_unique));
             }
         }
     }
-    eprintln!();
-
     // Create symlinks for the full frame sequence (ffmpeg needs sequential numbering)
     let seq_dir = tmp_dir.join("seq");
     std::fs::create_dir_all(&seq_dir)?;
@@ -352,7 +354,7 @@ async fn render_svg_pipeline(
         crate::platform::symlink_or_copy(&src, &dst)?;
     }
 
-    eprintln!("  Encoding video with ffmpeg...");
+    crate::logging::info("Encoding video with ffmpeg...");
     let status = tokio::process::Command::new(&ffmpeg)
         .arg("-y")
         .arg("-framerate")
@@ -386,10 +388,10 @@ async fn render_svg_pipeline(
         anyhow::bail!("ffmpeg encoding failed");
     }
 
-    eprintln!("  Output: {}", output_path.display());
+    crate::logging::info(&format!("Output: {}", output_path.display()));
     if output_path.exists() {
         let size = std::fs::metadata(output_path)?.len();
-        eprintln!("  Size: {:.1} MB", size as f64 / 1_048_576.0);
+        crate::logging::info(&format!("Size: {:.1} MB", size as f64 / 1_048_576.0));
     }
     let _ = std::fs::remove_dir_all(&tmp_dir);
     Ok(())

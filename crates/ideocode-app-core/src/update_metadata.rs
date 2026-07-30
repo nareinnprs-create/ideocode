@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! On-disk state shared by every IDEOCODE process that checks for updates.
 //!
 //! Update checks are cheap but rate limited, and several IDEOCODE processes can run

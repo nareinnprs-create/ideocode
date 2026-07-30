@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Provider-agnostic streaming idle-timeout budgets.
 //!
 //! Every streaming provider path shares these helpers so a slow reasoning model

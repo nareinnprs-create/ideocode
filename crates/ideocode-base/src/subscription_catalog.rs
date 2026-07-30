@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use crate::provider_catalog;
 
 pub const IDEOCODE_API_KEY_ENV: &str = "IDEOCODE_API_KEY";

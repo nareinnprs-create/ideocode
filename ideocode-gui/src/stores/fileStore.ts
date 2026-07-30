@@ -12,32 +12,36 @@ interface FileState {
   selectedFile: string | null;
   fileContent: string | null;
   loading: boolean;
+  error: string | null;
   setRootPath: (path: string) => void;
   loadTree: () => Promise<void>;
   toggleExpanded: (path: string) => void;
   selectFile: (path: string) => Promise<void>;
-  collapseAll: () => void;
 }
 
 export const useFileStore = create<FileState>((set, get) => ({
-  rootPath: "C:\\Users\\manag\\IDEOCODE\\jcode",
+  rootPath: "",
   tree: [],
   expandedPaths: new Set(),
   selectedFile: null,
   fileContent: null,
   loading: false,
+  error: null,
 
   setRootPath: (path) => set({ rootPath: path }),
 
   loadTree: async () => {
     const { rootPath } = get();
+    if (!rootPath) {
+      set({ tree: [], loading: false });
+      return;
+    }
     set({ loading: true });
     try {
       const tree = await getFileTree(rootPath, 2);
       set({ tree, loading: false });
     } catch (e) {
-      console.error("Failed to load tree:", e);
-      set({ loading: false });
+      set({ loading: false, error: `Failed to load tree: ${e}` });
     }
   },
 
@@ -57,10 +61,7 @@ export const useFileStore = create<FileState>((set, get) => ({
       const content = await readFile(path);
       set({ fileContent: content });
     } catch (e) {
-      console.error("Failed to read file:", e);
-      set({ fileContent: `Error reading file: ${e}` });
+      set({ error: `Failed to read file: ${e}`, fileContent: null });
     }
   },
-
-  collapseAll: () => set({ expandedPaths: new Set() }),
 }));

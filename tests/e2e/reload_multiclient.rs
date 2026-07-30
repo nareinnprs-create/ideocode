@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! In-process multi-client reload tests.
 //!
 //! These exercise the real server reload fan-out and streaming-interrupt paths

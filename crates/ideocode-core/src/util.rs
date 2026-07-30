@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 /// Truncate a string at a valid UTF-8 character boundary.
 ///
 /// Returns a slice of at most `max_bytes` bytes, ending at a valid char boundary.

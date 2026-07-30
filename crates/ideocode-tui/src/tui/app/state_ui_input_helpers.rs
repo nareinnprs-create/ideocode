@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 use crate::tui::core;
 use std::path::{Path, PathBuf};
@@ -132,6 +136,7 @@ const REGISTERED_COMMANDS: &[RegisteredCommand] = &[
     RegisteredCommand::public("/dictate", "Run configured external dictation command"),
     RegisteredCommand::public("/dictation", "Alias for /dictate"),
     RegisteredCommand::public("/memory", "Toggle memory feature"),
+    RegisteredCommand::public("/personality", "Set response personality mode"),
     RegisteredCommand::public("/test", "Verify a claim/current changes with layered tests"),
     RegisteredCommand::public(
         "/initiatives",
@@ -1020,6 +1025,20 @@ impl App {
                 }
             }
             return self.rank_suggestions(input, suggestions);
+        }
+
+        if prefix.starts_with("/personality ") {
+            return self.rank_suggestions(
+                input,
+                vec![
+                    ("/personality professional".into(), "Professional tone"),
+                    ("/personality casual".into(), "Casual friendly tone"),
+                    ("/personality genz".into(), "Gen-Z energy"),
+                    ("/personality academic".into(), "Scholarly precise tone"),
+                    ("/personality witty".into(), "Playful humorous tone"),
+                    ("/personality zen".into(), "Calm meditative tone"),
+                ],
+            );
         }
 
         if prefix.starts_with("/memory ") {

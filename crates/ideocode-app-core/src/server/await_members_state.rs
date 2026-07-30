@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use crate::protocol::{AwaitedMemberStatus, ServerEvent};
 use crate::server::durable_state::{
     hashed_request_key, load_json_state, now_unix_ms, save_json_state, state_dir,

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use std::process::{Child, Command, Stdio};
 
 const DISABLE_ENV: &str = "IDEOCODE_DISABLE_POWER_INHIBIT";

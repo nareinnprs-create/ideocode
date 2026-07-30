@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{Tool, ToolContext, ToolOutput};
 use crate::ambient::{
     AmbientCycleResult, AmbientManager, AmbientState, CycleStatus, Priority, ScheduleRequest,

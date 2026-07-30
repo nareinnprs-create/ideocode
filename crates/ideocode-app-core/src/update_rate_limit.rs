@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! GitHub API rate-limit detection and shared backoff for update checks.
 //!
 //! Unauthenticated `api.github.com` requests share a 60 req/hour per-IP bucket

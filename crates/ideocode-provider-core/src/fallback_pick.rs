@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Pick the "next best" model route to fall back to after a provider error.
 //!
 //! When the active model/route fails (auth error, rate limit, provider outage,

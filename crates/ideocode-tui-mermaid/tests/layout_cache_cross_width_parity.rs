@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Cross-width parity probe for the mermaid layout-tier cache (commit
 //! 72bd457b, see `mermaid_cache_render.rs`: `LAYOUT_CACHE`,
 //! `layout_cache_get`, `render_mermaid_sized_internal`).

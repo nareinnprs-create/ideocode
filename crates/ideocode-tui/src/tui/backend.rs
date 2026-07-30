@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Backend abstraction for TUI runtime transports.
 //!
 //! This module provides a unified interface for message processing across
@@ -774,6 +778,16 @@ impl RemoteConnection {
         let request = Request::SetTransport {
             id: self.next_request_id,
             transport: transport.to_string(),
+        };
+        self.next_request_id += 1;
+        self.send_request(request).await
+    }
+
+    /// Set the agent's response personality/tone mode on the server.
+    pub async fn set_personality(&mut self, mode: &str) -> Result<()> {
+        let request = Request::SetPersonality {
+            id: self.next_request_id,
+            mode: mode.to_string(),
         };
         self.next_request_id += 1;
         self.send_request(request).await

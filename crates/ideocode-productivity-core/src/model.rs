@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Core data model for the productivity report.
 //!
 //! `SessionSummary` is the compact, cache-friendly per-session aggregate that we

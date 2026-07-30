@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Ad-hoc e2e check: fetch models.dev live and resolve a few model prices.
 //! Run: cargo run --example pricing_e2e_check
 fn main() {

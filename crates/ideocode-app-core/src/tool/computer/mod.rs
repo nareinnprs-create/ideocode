@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Native macOS "computer use" tool.
 //!
 //! The desktop analog of the `browser` tool: a single `action`-dispatched tool

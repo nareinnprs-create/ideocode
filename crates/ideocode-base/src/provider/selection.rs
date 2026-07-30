@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::*;
 use crate::provider_catalog::{LoginProviderDescriptor, LoginProviderTarget};
 pub(super) use ideocode_provider_core::{ActiveProvider, ProviderAvailability};

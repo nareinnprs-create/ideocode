@@ -10,6 +10,7 @@ interface GitState {
   status: GitStatus | null;
   diff: string;
   loading: boolean;
+  error: string | null;
   loadStatus: (path: string) => Promise<void>;
   loadDiff: (path: string, file?: string) => Promise<void>;
   commit: (path: string, message: string) => Promise<void>;
@@ -19,6 +20,7 @@ export const useGitStore = create<GitState>((set) => ({
   status: null,
   diff: "",
   loading: false,
+  error: null,
 
   loadStatus: async (path: string) => {
     set({ loading: true });
@@ -26,8 +28,7 @@ export const useGitStore = create<GitState>((set) => ({
       const status = await tauriGitStatus(path);
       set({ status, loading: false });
     } catch (e) {
-      console.error("Git status failed:", e);
-      set({ loading: false });
+      set({ loading: false, error: `Git status failed: ${e}` });
     }
   },
 
@@ -36,7 +37,7 @@ export const useGitStore = create<GitState>((set) => ({
       const diff = await tauriGitDiff(path, file);
       set({ diff });
     } catch (e) {
-      console.error("Git diff failed:", e);
+      set({ error: `Git diff failed: ${e}` });
     }
   },
 
@@ -47,7 +48,7 @@ export const useGitStore = create<GitState>((set) => ({
       const status = await tauriGitStatus(path);
       set({ status });
     } catch (e) {
-      console.error("Git commit failed:", e);
+      set({ error: `Git commit failed: ${e}` });
     }
   },
 }));

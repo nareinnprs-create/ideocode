@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Harness API bridge: exposes the stable versioned harness API on its own
 //! Unix socket and translates to the internal (legacy) IDEOCODE protocol.
 //!

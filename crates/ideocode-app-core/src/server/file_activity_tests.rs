@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 use super::{FileAccess, latest_peer_touches};
 use crate::bus::FileOp;
 use std::collections::HashSet;

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 #[test]
 fn spawn_initial_message_accepts_prompt_alias_and_prefers_explicit_initial_message() {
     let from_prompt: CommunicateInput = serde_json::from_value(serde_json::json!({

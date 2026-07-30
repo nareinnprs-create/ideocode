@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Tier 1: Accessibility (AX) read + action.
 //!
 //! This is the *background* control path. It drives other apps' UI elements by

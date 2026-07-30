@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Opraiz Technology Pvt Ltd
+// R&D by Opraiz Cognitive
+// Developer: Narein Rao
+// SPDX-License-Identifier: MIT
 //! Partner discovery: shared constants and provenance tracking.
 //!
 //! Partner discovery makes third-party developer tools discoverable to the
