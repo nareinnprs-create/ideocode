@@ -174,37 +174,37 @@ fn dispatch(action: &str, input: &ComputerInput) -> Result<ToolOutput> {
         "screenshot" => screen::screenshot(),
         "ocr" => screen::ocr(input.x, input.y, input.w, input.h),
         "cursor" => {
-            let out = run_cmd(&["xdotool", "getmouselocation", "--shell"])?;
+            let out = win::run_cmd(&["xdotool", "getmouselocation", "--shell"])?;
             Ok(ToolOutput::new(out))
         }
         "move" => {
             let (x, y) = require_xy(input)?;
-            run_cmd(&["xdotool", "mousemove", &format!("{x:.0}"), &format!("{y:.0}")])?;
+            win::run_cmd(&["xdotool", "mousemove", &format!("{x:.0}"), &format!("{y:.0}")])?;
             Ok(ToolOutput::new(format!("moved cursor to ({x:.0}, {y:.0})")))
         }
         "click" => {
             let (x, y) = require_xy(input)?;
-            run_cmd(&["xdotool", "mousemove", &format!("{x:.0}"), &format!("{y:.0}"), "click", "1"])?;
+            win::run_cmd(&["xdotool", "mousemove", &format!("{x:.0}"), &format!("{y:.0}"), "click", "1"])?;
             Ok(ToolOutput::new(format!("clicked at ({x:.0}, {y:.0})")))
         }
         "double_click" => {
             let (x, y) = require_xy(input)?;
-            run_cmd(&["xdotool", "mousemove", &format!("{x:.0}"), &format!("{y:.0}"), "click", "--repeat", "2", "1"])?;
+            win::run_cmd(&["xdotool", "mousemove", &format!("{x:.0}"), &format!("{y:.0}"), "click", "--repeat", "2", "1"])?;
             Ok(ToolOutput::new(format!("double-clicked at ({x:.0}, {y:.0})")))
         }
         "right_click" => {
             let (x, y) = require_xy(input)?;
-            run_cmd(&["xdotool", "mousemove", &format!("{x:.0}"), &format!("{y:.0}"), "click", "3"])?;
+            win::run_cmd(&["xdotool", "mousemove", &format!("{x:.0}"), &format!("{y:.0}"), "click", "3"])?;
             Ok(ToolOutput::new(format!("right-clicked at ({x:.0}, {y:.0})")))
         }
         "type" => {
             let text = input.text.as_deref().context("type requires `text`")?;
-            run_cmd(&["xdotool", "type", text])?;
+            win::run_cmd(&["xdotool", "type", text])?;
             Ok(ToolOutput::new(format!("typed {} characters", text.len())))
         }
         "key" => {
             let keys = input.keys.as_deref().context("key requires `keys`")?;
-            run_cmd(&["xdotool", "key", keys])?;
+            win::run_cmd(&["xdotool", "key", keys])?;
             Ok(ToolOutput::new(format!("pressed {keys}")))
         }
         "list_apps" => win::list_apps(),

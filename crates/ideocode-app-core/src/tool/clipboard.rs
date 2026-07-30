@@ -123,7 +123,7 @@ async fn clipboard_set(content: &str) -> Result<ToolOutput> {
 
 #[cfg(not(windows))]
 async fn clipboard_set(content: &str) -> Result<ToolOutput> {
-    let cmd = if cfg!(target_os = "macos") {
+    let mut cmd = if cfg!(target_os = "macos") {
         let mut c = tokio::process::Command::new("pbcopy");
         c.stdin(std::process::Stdio::piped());
         c

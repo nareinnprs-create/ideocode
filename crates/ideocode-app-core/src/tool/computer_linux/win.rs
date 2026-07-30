@@ -64,7 +64,7 @@ pub fn focus_window(name: &str) -> Result<ToolOutput> {
     activate_app(name)
 }
 
-fn run_cmd(args: &[&str]) -> Result<String> {
+pub(super) fn run_cmd(args: &[&str]) -> Result<String> {
     let output = std::process::Command::new(args[0])
         .args(&args[1..])
         .output()?;
