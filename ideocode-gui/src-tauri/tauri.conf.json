@@ -38,10 +38,12 @@
       "icons/icon.png"
     ],
     "windows": {
-      "wix": {
-        "webview2InstallMode": "embedBootstrapper"
-      },
-      "nsis": null
+      "wix": null,
+      "nsis": null,
+      "webviewInstallMode": {
+        "type": "embedBootstrapper",
+        "silent": true
+      }
     },
     "macOS": {
       "minimumSystemVersion": "10.15"
