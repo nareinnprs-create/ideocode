@@ -141,7 +141,7 @@ pub fn clear_messages(state: State<'_, ChatState>) {
 
 #[tauri::command]
 pub fn delete_session(id: String) -> Result<(), String> {
-    let path = sessions_dir().join(format!("{}.json", id));
+    let path = sessions_dir().join(format!("{}.json", super::sanitize_id(&id)));
     if path.exists() {
         std::fs::remove_file(&path).map_err(|e| format!("Failed to delete session: {}", e))
     } else {
@@ -207,7 +207,7 @@ pub fn list_sessions() -> Vec<Session> {
 
 #[tauri::command]
 pub fn export_session(id: String, format: String) -> Result<String, String> {
-    let path = sessions_dir().join(format!("{}.json", id));
+    let path = sessions_dir().join(format!("{}.json", super::sanitize_id(&id)));
     let content = std::fs::read_to_string(&path)
         .map_err(|e| format!("Failed to read session: {}", e))?;
     let parsed: serde_json::Value =

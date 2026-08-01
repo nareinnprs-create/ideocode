@@ -65,7 +65,11 @@ fn save_issues(issues: &[Issue]) {
     let dir = issues_dir();
     let _ = std::fs::create_dir_all(&dir);
     for issue in issues {
-        let path = dir.join(format!("{}_{}.json", issue.source, issue.id));
+        let path = dir.join(format!(
+            "{}_{}.json",
+            super::sanitize_id(&issue.source),
+            super::sanitize_id(&issue.id)
+        ));
         if let Ok(json) = serde_json::to_string_pretty(issue) {
             let _ = std::fs::write(&path, json);
         }

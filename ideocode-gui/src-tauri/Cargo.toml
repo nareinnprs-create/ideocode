@@ -6,6 +6,8 @@ edition = "2021"
 description = "IDEOCODE Desktop GUI — Tauri 2.x + React"
 publish = false
 
+[workspace]
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 

@@ -25,10 +25,12 @@ pub struct SearchResult {
 }
 
 fn sanitize_path(path: &str) -> Result<PathBuf, String> {
-    if path.contains("..") {
-        return Err("Path traversal detected".into());
-    }
     let p = PathBuf::from(path);
+    for component in p.components() {
+        if matches!(component, std::path::Component::ParentDir) {
+            return Err("Path traversal detected".into());
+        }
+    }
     if !p.exists() {
         return Err(format!("Path does not exist: {}", path));
     }

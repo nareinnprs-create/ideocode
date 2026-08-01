@@ -102,7 +102,11 @@ pub fn search_memories(query: String) -> Vec<MemoryEntry> {
 
 #[tauri::command]
 pub fn delete_memory(id: String) -> Result<(), String> {
-    let path = memories_dir().join(format!("{}.json", id));
+    let safe_id = super::sanitize_id(&id);
+    if safe_id != id || safe_id.is_empty() {
+        return Err("Invalid memory id".into());
+    }
+    let path = memories_dir().join(format!("{}.json", safe_id));
     if path.exists() {
         std::fs::remove_file(&path).map_err(|e| format!("Failed to delete memory: {}", e))
     } else {

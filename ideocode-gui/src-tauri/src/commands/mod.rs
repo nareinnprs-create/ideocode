@@ -23,3 +23,18 @@ pub use memory::*;
 pub use rag::*;
 pub use issues::*;
 pub use browser::*;
+
+/// Returns a path-safe copy of an identifier used to build file names, so
+/// untrusted ids (session ids, issue ids) cannot escape their storage
+/// directory via separators or parent-directory components.
+pub(crate) fn sanitize_id(id: &str) -> String {
+    id.chars()
+        .map(|ch| {
+            if ch.is_ascii_alphanumeric() || ch == '-' || ch == '_' {
+                ch
+            } else {
+                '_'
+            }
+        })
+        .collect()
+}
