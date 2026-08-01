@@ -67,12 +67,25 @@ impl SearchPanelState {
             regex::escape(query)
         };
 
-        let mut cmd = format!("grep -rn --include='*.rs' --include='*.ts' --include='*.js' --include='*.py' --include='*.go' --include='*.md' '{}'", pattern);
-        if !self.is_case_sensitive {
-            cmd = format!("grep -rni --include='*.rs' --include='*.ts' --include='*.js' --include='*.py' --include='*.go' --include='*.md' '{}' .", pattern);
+        let includes = [
+            "--include=*.rs",
+            "--include=*.ts",
+            "--include=*.js",
+            "--include=*.py",
+            "--include=*.go",
+            "--include=*.md",
+        ];
+        let mut args: Vec<&str> = vec!["-r"];
+        if self.is_case_sensitive {
+            args.push("-n");
+        } else {
+            args.push("-rni");
         }
+        args.extend(includes);
+        args.push(&pattern);
+        args.push(".");
 
-        let output = run_cmd(&cmd);
+        let output = run_command("grep", &args);
         self.total_matches = output.len();
 
         for line in output.into_iter().take(200) {
@@ -183,13 +196,10 @@ pub fn render_search_panel(frame: &mut Frame, area: Rect, state: &SearchPanelSta
     frame.render_widget(Paragraph::new(lines), panel_area);
 }
 
-fn run_cmd(cmd: &str) -> Vec<String> {
-    #[cfg(windows)]
-    let output = std::process::Command::new("cmd").arg("/C").arg(cmd).output();
-    #[cfg(not(windows))]
-    let output = std::process::Command::new("sh").arg("-c").arg(cmd).output();
-
-    output
+fn run_command(program: &str, args: &[&str]) -> Vec<String> {
+    std::process::Command::new(program)
+        .args(args)
+        .output()
         .map(|o| String::from_utf8_lossy(&o.stdout).lines().map(String::from).collect())
         .unwrap_or_default()
 }

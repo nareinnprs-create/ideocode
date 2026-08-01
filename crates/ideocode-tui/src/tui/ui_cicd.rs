@@ -42,7 +42,13 @@ impl CicdPanelState {
 
     pub fn refresh(&mut self) {
         self.runs.clear();
-        let output = run_cmd("gh run list --limit 10 --json headBranch,status,conclusion,title,updatedAt 2>/dev/null || echo '[]'");
+        let mut output = run_command(
+            "gh",
+            &["run", "list", "--limit", "10", "--json", "headBranch,status,conclusion,title,updatedAt"],
+        );
+        if output.is_empty() {
+            output.push("[]".to_string());
+        }
         // Parse JSON output
         if let Ok(json_str) = output.first().map(|s| s.as_str()).unwrap_or("[]").parse::<serde_json::Value>()
             && let Some(arr) = json_str.as_array() {
@@ -59,7 +65,7 @@ impl CicdPanelState {
 
         // Fallback: simple text parsing
         if self.runs.is_empty() {
-            let output = run_cmd("gh run list --limit 5 2>/dev/null || echo 'gh CLI not available'");
+            let output = run_command("gh", &["run", "list", "--limit", "5"]);
             for line in output {
                 if line.contains("completed") || line.contains("success") || line.contains("failure") {
                     let is_success = line.contains("success") || line.contains("completed");
@@ -112,10 +118,10 @@ pub fn render_cicd_panel(frame: &mut Frame, area: Rect, state: &CicdPanelState) 
     frame.render_widget(Paragraph::new(lines), panel_area);
 }
 
-fn run_cmd(cmd: &str) -> Vec<String> {
-    #[cfg(windows)]
-    let output = std::process::Command::new("cmd").arg("/C").arg(cmd).output();
-    #[cfg(not(windows))]
-    let output = std::process::Command::new("sh").arg("-c").arg(cmd).output();
-    output.map(|o| String::from_utf8_lossy(&o.stdout).lines().map(String::from).collect()).unwrap_or_default()
+fn run_command(program: &str, args: &[&str]) -> Vec<String> {
+    std::process::Command::new(program)
+        .args(args)
+        .output()
+        .map(|o| String::from_utf8_lossy(&o.stdout).lines().map(String::from).collect())
+        .unwrap_or_default()
 }

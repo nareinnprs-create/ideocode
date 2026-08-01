@@ -266,7 +266,7 @@ pub fn toggle_debugger() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut();
 pub fn toggle_docker() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.docker_visible = !st.docker_visible; }); }
 pub fn toggle_cicd() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.cicd_visible = !st.cicd_visible; }); }
 pub fn toggle_profiler() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.profiler_visible = !st.profiler_visible; }); }
-pub fn toggle_provider_panel() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.provider_panel_visible = !st.provider_panel_visible; }); }
+pub fn toggle_provider_panel() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.provider_panel_visible = !st.provider_panel_visible; st.provider_panel_state.visible = st.provider_panel_visible; if st.provider_panel_visible { st.provider_panel_state.selected = 0; st.provider_panel_state.scroll = 0; } }); }
 pub fn provider_panel_visible() -> bool { OVERLAY_STATE.with(|s| s.borrow().provider_panel_visible) }
 
 pub fn set_search_results(results: Vec<SearchResult>) {
@@ -1016,7 +1016,7 @@ pub fn toggle_macro_recorder() {
     MACRO_STATE.with(|s| {
         let mut st = s.borrow_mut();
         st.recording = !st.recording;
-        st.visible = true;
+        st.visible = st.recording;
         if st.recording { st.action_count = 0; }
     });
 }
@@ -1314,16 +1314,10 @@ impl MentorState {
 pub fn toggle_mentor_mode() {
     MENTOR_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        if !st.visible {
-            st.visible = true;
-        } else {
-            // Cycle: Beginner → Intermediate → Advanced → off
+        st.visible = !st.visible;
+        if st.visible {
             use super::ui_mentor::MentorLevel;
-            match st.level {
-                MentorLevel::Beginner => st.level = MentorLevel::Intermediate,
-                MentorLevel::Intermediate => st.level = MentorLevel::Advanced,
-                MentorLevel::Advanced => { st.visible = false; }
-            }
+            st.level = MentorLevel::Beginner;
         }
     });
 }
@@ -2510,7 +2504,6 @@ pub fn sidebar_set_panel(panel: super::ui_sidebar::SidebarPanel) {
     SIDEBAR_STATE.with(|s| {
         let mut st = s.borrow_mut();
         st.active_panel = panel;
-        st.visible = true;
     });
     super::app::ui_prefs::save_sidebar_panel(panel.label());
 }

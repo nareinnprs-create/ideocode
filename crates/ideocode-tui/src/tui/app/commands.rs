@@ -1968,7 +1968,7 @@ pub(super) fn handle_session_command(app: &mut App, trimmed: &str) -> bool {
         let mode = trimmed.trim_start_matches("/personality ");
         let mode = mode.trim();
         if !mode.is_empty() {
-            if crate::prompt::PersonalityMode::from_str(mode).is_some() {
+            if crate::prompt::PersonalityMode::parse(mode).is_some() {
                 app.push_display_message(DisplayMessage::system(format!(
                     "Personality set to: {}",
                     mode

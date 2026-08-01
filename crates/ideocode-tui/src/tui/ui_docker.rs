@@ -43,7 +43,13 @@ impl DockerPanelState {
 
     pub fn refresh(&mut self) {
         self.containers.clear();
-        let output = run_cmd("docker ps -a --format '{{.Names}}\\t{{.Image}}\\t{{.Status}}\\t{{.Ports}}' 2>/dev/null || echo 'Docker not available'");
+        let mut output = run_command(
+            "docker",
+            &["ps", "-a", "--format", "{{.Names}}\\t{{.Image}}\\t{{.Status}}\\t{{.Ports}}"],
+        );
+        if output.is_empty() {
+            output.push("Docker not available".to_string());
+        }
         for line in output {
             let parts: Vec<&str> = line.split('\t').collect();
             if parts.len() >= 3 {
@@ -62,7 +68,7 @@ impl DockerPanelState {
     pub fn move_down(&mut self) { if self.selected + 1 < self.containers.len() { self.selected += 1; } }
 
     pub fn get_container_logs(&self, name: &str) -> Vec<String> {
-        run_cmd(&format!("docker logs --tail 50 {} 2>&1", name))
+        run_command_with_stderr("docker", &["logs", "--tail", "50", name])
     }
 }
 
@@ -92,10 +98,22 @@ pub fn render_docker_panel(frame: &mut Frame, area: Rect, state: &DockerPanelSta
     frame.render_widget(Paragraph::new(lines), panel_area);
 }
 
-fn run_cmd(cmd: &str) -> Vec<String> {
-    #[cfg(windows)]
-    let output = std::process::Command::new("cmd").arg("/C").arg(cmd).output();
-    #[cfg(not(windows))]
-    let output = std::process::Command::new("sh").arg("-c").arg(cmd).output();
-    output.map(|o| String::from_utf8_lossy(&o.stdout).lines().map(String::from).collect()).unwrap_or_default()
+fn run_command(program: &str, args: &[&str]) -> Vec<String> {
+    std::process::Command::new(program)
+        .args(args)
+        .output()
+        .map(|o| String::from_utf8_lossy(&o.stdout).lines().map(String::from).collect())
+        .unwrap_or_default()
+}
+
+fn run_command_with_stderr(program: &str, args: &[&str]) -> Vec<String> {
+    std::process::Command::new(program)
+        .args(args)
+        .output()
+        .map(|o| {
+            let mut lines: Vec<String> = String::from_utf8_lossy(&o.stdout).lines().map(String::from).collect();
+            lines.extend(String::from_utf8_lossy(&o.stderr).lines().map(String::from));
+            lines
+        })
+        .unwrap_or_default()
 }

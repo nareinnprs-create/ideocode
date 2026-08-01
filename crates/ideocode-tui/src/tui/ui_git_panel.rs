@@ -66,15 +66,18 @@ impl GitPanelState {
     }
 
     pub fn refresh(&mut self) {
-        self.branch = run_cmd("git rev-parse --abbrev-ref HEAD 2>/dev/null")
+        self.branch = run_command("git", &["rev-parse", "--abbrev-ref", "HEAD"])
             .first()
             .cloned()
             .unwrap_or_else(|| "detached".to_string());
 
-        self.status_lines = run_cmd("git status --short 2>/dev/null");
-        self.diff_lines = run_cmd("git diff --stat 2>/dev/null");
-        self.log_lines = run_cmd("git log --oneline -20 2>/dev/null");
-        self.branch_lines = run_cmd("git branch --format='%(refname:short)%(if)%(HEAD)%(then) * (HEAD)%(end)' 2>/dev/null");
+        self.status_lines = run_command("git", &["status", "--short"]);
+        self.diff_lines = run_command("git", &["diff", "--stat"]);
+        self.log_lines = run_command("git", &["log", "--oneline", "-20"]);
+        self.branch_lines = run_command(
+            "git",
+            &["branch", "--format=%(refname:short)%(if)%(HEAD)%(then) * (HEAD)%(end)"],
+        );
     }
 
     pub fn next_tab(&mut self) {
@@ -280,13 +283,10 @@ fn render_branch_lines(state: &GitPanelState) -> Vec<Line<'static>> {
     lines
 }
 
-fn run_cmd(cmd: &str) -> Vec<String> {
-    #[cfg(windows)]
-    let output = std::process::Command::new("cmd").arg("/C").arg(cmd).output();
-    #[cfg(not(windows))]
-    let output = std::process::Command::new("sh").arg("-c").arg(cmd).output();
-
-    output
+fn run_command(program: &str, args: &[&str]) -> Vec<String> {
+    std::process::Command::new(program)
+        .args(args)
+        .output()
         .map(|o| String::from_utf8_lossy(&o.stdout).lines().map(String::from).collect())
         .unwrap_or_default()
 }
