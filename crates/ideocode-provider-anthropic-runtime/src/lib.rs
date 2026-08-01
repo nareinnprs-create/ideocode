@@ -1834,7 +1834,7 @@ async fn stream_response(
 
     // Parse SSE stream
     let mut stream = response.bytes_stream();
-    let mut buffer = String::new();
+    let mut buffer: Vec<u8> = Vec::new();
     let mut sse_state = SseStreamState {
         requested_model_base,
         ..SseStreamState::default()
@@ -1860,8 +1860,7 @@ async fn stream_response(
                 );
             }
         };
-        let chunk_str = String::from_utf8_lossy(&chunk);
-        buffer.push_str(&chunk_str);
+        buffer.extend_from_slice(&chunk);
 
         // Process complete SSE events
         while let Some(event) = parse_sse_event(&mut buffer) {
@@ -2014,8 +2013,12 @@ fn anthropic_recommended_model_from_error(error_str: &str) -> Option<String> {
         .split("please use")
         .nth(1)
         .or_else(|| error_str.split("use ").nth(1))?;
-    // Take up to the next sentence boundary.
-    let hint = hint.split(['.', '!', '\n']).next().unwrap_or(hint).trim();
+    // Take up to the next sentence boundary. A period is only a boundary when
+    // followed by whitespace or the end of the hint, so a version number like
+    // "Opus 4.8" is not truncated to "opus 4".
+    let hint = hint.split(['!', '\n']).next().unwrap_or(hint);
+    let hint = hint.split(". ").next().unwrap_or(hint);
+    let hint = hint.trim_end_matches('.').trim();
     if hint.is_empty() {
         return None;
     }
@@ -2029,25 +2032,42 @@ fn anthropic_recommended_model_from_error(error_str: &str) -> Option<String> {
         return None;
     }
     // Score each known catalog model by how many hint tokens it contains.
-    ideocode_base::provider::known_anthropic_model_ids()
+    // Tokenize the candidate ids the same way as the hint ("claude-opus-4-8"
+    // and a raw live-catalog id like "claude-opus-4.8" must compare
+    // identically), and always include the static canonical catalog so a
+    // dotted raw id can never shadow the canonical hyphenated id.
+    let tokenize = |id: &str| -> Vec<String> {
+        id.split(|c: char| !c.is_ascii_alphanumeric())
+            .filter(|t| !t.is_empty())
+            .map(|t| t.to_ascii_lowercase())
+            .collect()
+    };
+    let is_canonical = |id: &str| id.contains('-') && !id.contains('.');
+
+    let mut candidates = ideocode_base::provider::known_anthropic_model_ids();
+    for canonical in ideocode_base::provider::ALL_CLAUDE_MODELS {
+        if !candidates.iter().any(|candidate| candidate.as_str() == *canonical) {
+            candidates.push((*canonical).to_string());
+        }
+    }
+
+    candidates
         .into_iter()
         .filter(|candidate| !anthropic_model_is_retired(candidate))
         .map(|candidate| {
-            let key = AnthropicProvider::normalized_model_key(&candidate);
-            // The catalog id uses hyphenated digits ("claude-opus-4-8"), so the
-            // hint tokens ["opus","4","8"] should all appear.
+            let key_tokens = tokenize(&candidate);
             let score = hint_tokens
                 .iter()
-                .filter(|token| key.contains(token.as_str()))
+                .filter(|token| key_tokens.contains(token))
                 .count();
-            (candidate, score)
+            let canonical = is_canonical(&candidate);
+            (candidate, score, canonical)
         })
         // Require at least the family word plus one version digit to match so we
         // do not pick an arbitrary model from a single shared token.
-        .filter(|(_, score)| *score >= 2)
-        .max_by_key(|(_, score)| *score)
-        .map(|(candidate, _)| candidate)
-}
+        .filter(|(_, score, _)| *score >= 2)
+        .max_by_key(|(_, score, canonical)| (*score, *canonical))
+        .map(|(candidate, _, _)| candidate)}
 
 /// Pick the next Anthropic model to try after a "model not found" failure.
 ///
@@ -2115,11 +2135,18 @@ struct ToolUseAccumulator {
 }
 
 /// Parse a single SSE event from the buffer
-fn parse_sse_event(buffer: &mut String) -> Option<SseEvent> {
-    // Look for complete event (ends with double newline)
-    let event_end = buffer.find("\n\n")?;
-    let event_str = buffer[..event_end].to_string();
+fn parse_sse_event(buffer: &mut Vec<u8>) -> Option<SseEvent> {
+    // A complete event ends with a blank line (double newline). Newline bytes
+    // (0x0A) can never appear inside a multi-byte UTF-8 sequence, so a
+    // byte-oriented search is safe even when a network chunk splits a
+    // multi-byte character across the buffer boundary.
+    let event_end = buffer.windows(2).position(|w| w == b"\n\n")?;
+    let event_bytes: Vec<u8> = buffer[..event_end].to_vec();
     buffer.drain(..event_end + 2);
+
+    // The event's lines are all complete and newline-terminated, so the event
+    // is valid UTF-8; lossy decoding here cannot corrupt multi-byte characters.
+    let event_str = String::from_utf8_lossy(&event_bytes);
 
     let mut event_type = String::new();
     let mut data = String::new();

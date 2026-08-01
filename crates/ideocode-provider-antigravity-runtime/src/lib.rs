@@ -385,6 +385,51 @@ impl AntigravityProvider {
     }
 }
 
+/// Retry a fallible async operation on transient transport/rate-limit errors
+/// (429, 5xx, connection errors) with jittered exponential backoff.
+/// Non-transient errors are returned immediately.
+async fn retry_transient<F, Fut>(label: &str, f: F) -> Result<CodeAssistGenerateResponse>
+where
+    F: Fn() -> Fut,
+    Fut: std::future::Future<Output = Result<CodeAssistGenerateResponse>>,
+{
+    use ideocode_provider_core::attempt_tracker::retry_backoff_delay;
+    use ideocode_provider_core::is_transient_transport_error;
+
+    const MAX_ATTEMPTS: u32 = 3;
+    let mut last_err: Option<anyhow::Error> = None;
+    for attempt in 0..MAX_ATTEMPTS {
+        if attempt > 0 {
+            let delay = retry_backoff_delay(attempt, 1000);
+            tokio::time::sleep(delay).await;
+        }
+        match f().await {
+            Ok(response) => return Ok(response),
+            Err(err) => {
+                let err_str = format!("{err:#}");
+                let can_retry = is_transient_transport_error(&err_str)
+                    || err_str.contains("429") || err_str.contains("500")
+                    || err_str.contains("502") || err_str.contains("503")
+                    || err_str.contains("504")
+                    || err_str.contains("rate limit") || err_str.contains("rate_limit")
+                    || err_str.contains("too many requests");
+                if attempt + 1 < MAX_ATTEMPTS && can_retry {
+                    ideocode_base::logging::warn(&format!(
+                        "{} attempt {} failed transiently; retrying: {}",
+                        label,
+                        attempt + 1,
+                        err
+                    ));
+                    last_err = Some(err);
+                    continue;
+                }
+                return Err(err);
+            }
+        }
+    }
+    Err(last_err.unwrap_or_else(|| anyhow::anyhow!("{} failed after {MAX_ATTEMPTS} attempts", label)))
+}
+
 impl Default for AntigravityProvider {
     fn default() -> Self {
         Self::new()
@@ -439,22 +484,26 @@ impl Provider for AntigravityProvider {
             // downgraded to plain text. Content is preserved, the turn completes,
             // and the model re-signs its new calls.
             let mut signature_policy = ideocode_provider_gemini::SignaturePolicy::ReplayCarriedForward;
-            let response = match provider
-                .generate_content(
-                    &model,
-                    &messages,
-                    &tools,
-                    &system,
-                    resume_session_id.as_deref(),
-                    false,
-                    signature_policy,
-                )
-                .await
-            {
+
+            let response = retry_transient("Antigravity generateContent", || async {
+                provider
+                    .generate_content(
+                        &model,
+                        &messages,
+                        &tools,
+                        &system,
+                        resume_session_id.as_deref(),
+                        false,
+                        signature_policy,
+                    )
+                    .await
+            })
+            .await;
+
+            let response = match response {
                 Ok(response) => response,
                 Err(err) => {
-                    if !ideocode_provider_gemini::is_missing_thought_signature_error(&err.to_string())
-                    {
+                    if !ideocode_provider_gemini::is_missing_thought_signature_error(&err.to_string()) {
                         let _ = tx.send(Err(err)).await;
                         return;
                     }
@@ -463,17 +512,23 @@ impl Provider for AntigravityProvider {
                     );
                     signature_policy =
                         ideocode_provider_gemini::SignaturePolicy::DowngradeToolCallsToText;
-                    match provider
-                        .generate_content(
-                            &model,
-                            &messages,
-                            &tools,
-                            &system,
-                            resume_session_id.as_deref(),
-                            false,
-                            signature_policy,
-                        )
-                        .await
+                    match retry_transient(
+                        "Antigravity generateContent (downgraded)",
+                        || async {
+                            provider
+                                .generate_content(
+                                    &model,
+                                    &messages,
+                                    &tools,
+                                    &system,
+                                    resume_session_id.as_deref(),
+                                    false,
+                                    signature_policy,
+                                )
+                                .await
+                        },
+                    )
+                    .await
                     {
                         Ok(response) => response,
                         Err(retry_err) => {
@@ -483,13 +538,7 @@ impl Provider for AntigravityProvider {
                     }
                 }
             };
-            // Gemini-3 thinking models intermittently return an empty
-            // `MALFORMED_FUNCTION_CALL` turn (pseudo-code instead of a clean
-            // functionCall). It is transient, so transparently re-request a few
-            // times before surfacing it; this turns a frequent hard failure into a
-            // near-always-successful turn without the agent loop seeing the blip.
-            // The retries force function-calling mode `ANY` so the model must emit
-            // a real functionCall rather than the pseudo-code that failed.
+
             let mut response = response;
             let mut malformed_retries = 0u8;
             const MAX_MALFORMED_RETRIES: u8 = 2;
@@ -514,6 +563,7 @@ impl Provider for AntigravityProvider {
                     }
                 }
             }
+
             let _ = tx
                 .send(Ok(StreamEvent::ConnectionPhase {
                     phase: ConnectionPhase::Streaming,

@@ -402,28 +402,62 @@ async fn run_native_text_command(
     prompt: &str,
     model: &str,
 ) -> Result<()> {
-    let tokens = cursor_auth::resolve_direct_tokens(&client).await?;
+    use ideocode_provider_core::is_transient_transport_error;
+    use ideocode_provider_core::attempt_tracker::retry_backoff_delay;
 
-    // The current Cursor agent transport (`agent.v1.AgentService/Run`) is a
-    // paced bidirectional Connect/HTTP2 stream. The old
-    // `ChatService/StreamUnifiedChatWithTools` endpoint was decommissioned for
-    // API-key / CLI tokens and now returns "Update Required"/payment errors.
-    let first_result =
-        crate::agent_transport::run_agent_turn(&tokens.access_token, prompt, model, tx.clone())
-            .await;
+    const MAX_RETRIES: u32 = 3;
+    const RETRY_BASE_MS: u64 = 1000;
 
-    match first_result {
-        Ok(()) => Ok(()),
-        Err(err) if cursor_auth::error_indicates_not_logged_in(&err) => {
-            let refreshed = cursor_auth::refresh_resolved_tokens(&client, &tokens)
-                .await
-                .with_context(|| {
-                    format!("Cursor token was rejected and refresh also failed after: {err:#}")
-                })?;
-            crate::agent_transport::run_agent_turn(&refreshed.access_token, prompt, model, tx).await
+    let mut last_err: Option<anyhow::Error> = None;
+    for attempt in 0..MAX_RETRIES {
+        if attempt > 0 {
+            let delay = retry_backoff_delay(attempt, RETRY_BASE_MS);
+            tokio::time::sleep(delay).await;
         }
-        Err(err) => Err(err),
+
+        let tokens = match cursor_auth::resolve_direct_tokens(&client).await {
+            Ok(t) => t,
+            Err(e) => {
+                if attempt + 1 < MAX_RETRIES && is_transient_transport_error(&format!("{e:#}")) {
+                    last_err = Some(e);
+                    continue;
+                }
+                return Err(e);
+            }
+        };
+
+        let result =
+            crate::agent_transport::run_agent_turn(&tokens.access_token, prompt, model, tx.clone())
+                .await;
+
+        match result {
+            Ok(()) => return Ok(()),
+            Err(err) => {
+                if cursor_auth::error_indicates_not_logged_in(&err) {
+                    let refreshed = match cursor_auth::refresh_resolved_tokens(&client, &tokens)
+                        .await
+                    {
+                        Ok(r) => r,
+                        Err(e) => {
+                            return Err(e).context("Cursor token was rejected and refresh also failed");
+                        }
+                    };
+                    return crate::agent_transport::run_agent_turn(
+                        &refreshed.access_token, prompt, model, tx,
+                    )
+                    .await;
+                }
+                if attempt + 1 < MAX_RETRIES
+                    && is_transient_transport_error(&format!("{err:#}"))
+                {
+                    last_err = Some(err);
+                    continue;
+                }
+                return Err(err);
+            }
+        }
     }
+    Err(last_err.unwrap_or_else(|| anyhow::anyhow!("Cursor request failed after {MAX_RETRIES} attempts")))
 }
 
 #[cfg(test)]

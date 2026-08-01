@@ -66,9 +66,26 @@ async fn collect_live_smoke_stream(
 
 #[test]
 fn test_parse_sse_event() {
-    let mut buffer = "event: message_start\ndata: {\"type\":\"message_start\"}\n\n".to_string();
+    let mut buffer = "event: message_start\ndata: {\"type\":\"message_start\"}\n\n"
+        .as_bytes()
+        .to_vec();
     let event = parse_sse_event(&mut buffer).unwrap();
     assert_eq!(event.event_type, "message_start");
+    assert!(buffer.is_empty());
+}
+
+#[test]
+fn test_parse_sse_event_utf8_split_across_chunks() {
+    // A multi-byte character (the emoji) split across a buffer boundary must
+    // survive decoding without being replaced by U+FFFD replacement chars.
+    let full = "event: content_block_delta\ndata: {\"text\":\"caf\u{e9} \u{1f600}\"}\n\n";
+    let mid = full.len() / 2;
+    let mut buffer: Vec<u8> = full[..mid].as_bytes().to_vec();
+    assert!(parse_sse_event(&mut buffer).is_none());
+    buffer.extend_from_slice(full[mid..].as_bytes());
+    let event = parse_sse_event(&mut buffer).unwrap();
+    assert!(event.data.contains('\u{e9}'));
+    assert!(event.data.contains('\u{1f600}'));
     assert!(buffer.is_empty());
 }
 

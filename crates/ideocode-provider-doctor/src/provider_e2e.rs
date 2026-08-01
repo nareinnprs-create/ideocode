@@ -1475,9 +1475,12 @@ impl NativeProviderKind {
                 ideocode_base::env::set_var("IDEOCODE_COPILOT_PREFETCH_STARTUP_GRACE_MS", "0");
                 let runtime = match ideocode_provider_copilot_runtime::CopilotApiProvider::new() {
                     Ok(runtime) => runtime,
-                    Err(_) => ideocode_provider_copilot_runtime::CopilotApiProvider::new_with_token(
-                        String::new(),
-                    ),
+                    Err(_) => {
+                        ideocode_provider_copilot_runtime::CopilotApiProvider::new_with_token(
+                            String::new(),
+                        )
+                        .context("construct Copilot runtime with empty token")?
+                    }
                 };
                 std::sync::Arc::new(runtime)
             }

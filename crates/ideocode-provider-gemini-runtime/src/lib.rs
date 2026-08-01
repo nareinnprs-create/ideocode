@@ -37,6 +37,9 @@ use tokio::sync::{Mutex, mpsc};
 use tokio_stream::wrappers::ReceiverStream;
 use uuid::Uuid;
 
+const MAX_RETRIES: u32 = 3;
+const RETRY_BASE_DELAY_MS: u64 = 1000;
+
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 struct PersistedCatalog {
     models: Vec<String>,
@@ -340,32 +343,62 @@ impl GeminiProvider {
         Ok(models)
     }
 
-    /// Send a request with a single transient-error retry, transparently
-    /// rebuilding the HTTP client on the second attempt. The `make` closure
-    /// produces a fully-configured (auth + body) request builder for each try.
+    /// Send a request with retry for both transport faults and retryable HTTP
+    /// status codes (429, 5xx). Uses jittered exponential backoff and respects
+    /// `Retry-After` headers from the server.
     async fn send_with_retry<F>(&self, make: F, url: &str) -> Result<reqwest::Response>
     where
         F: Fn(reqwest::Client) -> reqwest::RequestBuilder,
     {
+        use ideocode_provider_core::retry_after::{retry_after, retry_after_from_error, error_with_retry_after};
+        use ideocode_provider_core::attempt_tracker::retry_backoff_delay;
+
         let mut last_error: Option<anyhow::Error> = None;
-        for attempt in 0..2 {
+        for attempt in 0..MAX_RETRIES {
             let client = if attempt == 0 {
                 self.client.clone()
             } else {
                 gemini_http_client()
             };
+
+            if attempt > 0 {
+                let delay = last_error.as_ref()
+                    .and_then(retry_after_from_error)
+                    .unwrap_or_else(|| retry_backoff_delay(attempt, RETRY_BASE_DELAY_MS));
+                tokio::time::sleep(delay).await;
+            }
+
             match make(client).send().await {
-                Ok(response) => return Ok(response),
-                Err(err) if attempt == 0 && is_transient_gemini_transport_error(&err) => {
+                Ok(response) => {
+                    let status = response.status();
+                    if status.is_success() {
+                        return Ok(response);
+                    }
+
+                    let retry_hint = retry_after(response.headers());
+                    let body = ideocode_base::util::http_error_body(response, "HTTP error").await;
+
+                    if status.as_u16() == 429 || status.as_u16() >= 500 {
+                        let err_msg = format!("Gemini request to {} failed (HTTP {}): {}", url, status, body.trim());
+                        last_error = Some(error_with_retry_after(err_msg, retry_hint));
+                        // Continue to retry
+                    } else {
+                        return Err(error_with_retry_after(
+                            format!("Gemini request to {} failed (HTTP {}): {}", url, status, body.trim()),
+                            retry_hint,
+                        ));
+                    }
+                }
+                Err(err) if attempt + 1 < MAX_RETRIES && is_transient_gemini_transport_error(&err) => {
                     last_error = Some(err.into());
-                    tokio::time::sleep(Duration::from_millis(250)).await;
+                    // Continue to retry with backoff
                 }
                 Err(err) => {
                     return Err(err).with_context(|| format!("Gemini request to {} failed", url));
                 }
             }
         }
-        let err = last_error.unwrap_or_else(|| anyhow::anyhow!("Gemini request failed"));
+        let err = last_error.unwrap_or_else(|| anyhow::anyhow!("Gemini request failed after {} attempts", MAX_RETRIES));
         Err(err).with_context(|| format!("Gemini request to {} failed", url))
     }
 
@@ -390,17 +423,6 @@ impl GeminiProvider {
                 &url,
             )
             .await?;
-
-        if !resp.status().is_success() {
-            let status = resp.status();
-            let body = ideocode_base::util::http_error_body(resp, "HTTP error").await;
-            anyhow::bail!(
-                "Gemini request {} failed (HTTP {}): {}",
-                method,
-                status,
-                body.trim()
-            );
-        }
 
         resp.json()
             .await
@@ -431,17 +453,6 @@ impl GeminiProvider {
             )
             .await?;
 
-        if !resp.status().is_success() {
-            let status = resp.status();
-            let body = ideocode_base::util::http_error_body(resp, "HTTP error").await;
-            anyhow::bail!(
-                "Gemini request {} failed (HTTP {}): {}",
-                label,
-                status,
-                body.trim()
-            );
-        }
-
         resp.json()
             .await
             .with_context(|| format!("Failed to parse Gemini {} response", label))
@@ -467,12 +478,6 @@ impl GeminiProvider {
             )
             .await?;
 
-        if !resp.status().is_success() {
-            let status = resp.status();
-            let body = ideocode_base::util::http_error_body(resp, "HTTP error").await;
-            anyhow::bail!("Gemini {} failed (HTTP {}): {}", label, status, body.trim());
-        }
-
         resp.json()
             .await
             .with_context(|| format!("Failed to parse Gemini {} response", label))
@@ -492,16 +497,6 @@ impl GeminiProvider {
                 &url,
             )
             .await?;
-
-        if !resp.status().is_success() {
-            let status = resp.status();
-            let body = ideocode_base::util::http_error_body(resp, "HTTP error").await;
-            anyhow::bail!(
-                "Gemini operation lookup failed (HTTP {}): {}",
-                status,
-                body.trim()
-            );
-        }
 
         resp.json()
             .await

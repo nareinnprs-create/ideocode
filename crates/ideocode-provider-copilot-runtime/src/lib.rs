@@ -9,7 +9,7 @@
 //! root registers [`CopilotApiProvider`] with `ideocode_base::provider::external`
 //! at startup.
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use async_trait::async_trait;
 use chrono::Utc;
 use ideocode_base::auth::copilot as copilot_auth;
@@ -162,7 +162,7 @@ impl CopilotApiProvider {
             fetched_models: Arc::new(RwLock::new(Vec::new())),
             catalog_source: Arc::new(RwLock::new(CatalogSource::None)),
             session_id: Uuid::new_v4().to_string(),
-            machine_id: Self::get_or_create_machine_id(),
+            machine_id: Self::get_or_create_machine_id()?,
             init_ready: Arc::new(tokio::sync::Notify::new()),
             init_done: Arc::new(std::sync::atomic::AtomicBool::new(false)),
             premium_mode: Arc::new(std::sync::atomic::AtomicU8::new(Self::env_premium_mode())),
@@ -186,7 +186,7 @@ impl CopilotApiProvider {
         }
     }
 
-    pub fn new_with_token(github_token: String) -> Self {
+    pub fn new_with_token(github_token: String) -> Result<Self> {
         let model =
             std::env::var("IDEOCODE_COPILOT_MODEL").unwrap_or_else(|_| DEFAULT_MODEL.to_string());
 
@@ -198,7 +198,7 @@ impl CopilotApiProvider {
             fetched_models: Arc::new(RwLock::new(Vec::new())),
             catalog_source: Arc::new(RwLock::new(CatalogSource::None)),
             session_id: Uuid::new_v4().to_string(),
-            machine_id: Self::get_or_create_machine_id(),
+            machine_id: Self::get_or_create_machine_id()?,
             init_ready: Arc::new(tokio::sync::Notify::new()),
             init_done: Arc::new(std::sync::atomic::AtomicBool::new(false)),
             premium_mode: Arc::new(std::sync::atomic::AtomicU8::new(Self::env_premium_mode())),
@@ -207,7 +207,7 @@ impl CopilotApiProvider {
             created_at: std::time::Instant::now(),
         };
         provider.seed_cached_catalog();
-        provider
+        Ok(provider)
     }
 
     fn startup_prefetch_grace_ms() -> u64 {
@@ -217,7 +217,7 @@ impl CopilotApiProvider {
             .unwrap_or(2000)
     }
 
-    fn get_or_create_machine_id() -> String {
+    fn get_or_create_machine_id() -> Result<String> {
         let machine_id_path = dirs::home_dir()
             .unwrap_or_default()
             .join(".IDEOCODE")
@@ -225,13 +225,17 @@ impl CopilotApiProvider {
         if let Ok(id) = std::fs::read_to_string(&machine_id_path) {
             let id = id.trim().to_string();
             if !id.is_empty() {
-                return id;
+                return Ok(id);
             }
         }
         let id = Uuid::new_v4().to_string().replace('-', "");
-        let _ = std::fs::create_dir_all(machine_id_path.parent().unwrap_or(&machine_id_path));
-        let _ = std::fs::write(&machine_id_path, &id);
-        id
+        if let Some(parent) = machine_id_path.parent() {
+            std::fs::create_dir_all(parent)
+                .with_context(|| format!("create machine_id dir {}", parent.display()))?;
+        }
+        std::fs::write(&machine_id_path, &id)
+            .with_context(|| format!("write machine_id to {}", machine_id_path.display()))?;
+        Ok(id)
     }
 
     fn is_user_initiated_raw(messages: &[ChatMessage]) -> bool {
@@ -464,13 +468,17 @@ impl CopilotApiProvider {
         const RETRY_BASE_DELAY_MS: u64 = 1000;
         let mut last_error: Option<anyhow::Error> = None;
         let mut attempted_auth_refresh = false;
+        let mut retry_after_hint: Option<ideocode_provider_core::retry_after::RetryAfter> = None;
 
         for attempt in 0..MAX_RETRIES {
             if attempt > 0 {
-                let delay = ideocode_provider_core::attempt_tracker::retry_backoff_delay(
-                    attempt,
-                    RETRY_BASE_DELAY_MS,
-                );
+                let delay = match retry_after_hint.take() {
+                    Some(hint) => hint.remaining(),
+                    None => ideocode_provider_core::attempt_tracker::retry_backoff_delay(
+                        attempt,
+                        RETRY_BASE_DELAY_MS,
+                    ),
+                };
                 ideocode_base::logging::info(&format!(
                     "Retrying Copilot API request (attempt {}/{}) after {}ms",
                     attempt + 1,
@@ -584,10 +592,14 @@ impl CopilotApiProvider {
             }
 
             if !status.is_success() {
+                // Extract Retry-After hint before consuming the response body.
+                let server_hint =
+                    ideocode_provider_core::retry_after::retry_after(resp.headers());
                 let body_text = ideocode_base::util::http_error_body(resp, "HTTP error").await;
                 let error_str =
                     format!("Copilot API error (HTTP {}): {}", status, body_text).to_lowercase();
                 if is_retryable_error(&error_str) && attempt + 1 < MAX_RETRIES {
+                    retry_after_hint = server_hint;
                     ideocode_base::logging::info(&format!(
                         "Retryable Copilot HTTP error: {}",
                         error_str
@@ -693,7 +705,7 @@ impl CopilotApiProvider {
         let sse_chunk_timeout = ideocode_base::provider::stream_idle_timeout();
 
         let mut stream = resp.bytes_stream();
-        let mut buffer = String::new();
+        let mut buffer: Vec<u8> = Vec::new();
         let mut current_tool_id = String::new();
         let mut current_tool_name = String::new();
         let mut current_tool_args = String::new();
@@ -722,12 +734,18 @@ impl CopilotApiProvider {
             };
             saw_any_data = true;
 
-            buffer.push_str(&String::from_utf8_lossy(&chunk));
+            buffer.extend_from_slice(&chunk);
 
-            // Process complete SSE lines
-            while let Some(line_end) = buffer.find('\n') {
-                let line = buffer[..line_end].trim_end_matches('\r').to_string();
-                buffer = buffer[line_end + 1..].to_string();
+            // Process complete SSE lines. Newline bytes (0x0A) never appear
+            // inside a multi-byte UTF-8 sequence, so the byte-oriented search is
+            // safe even when a chunk splits a multi-byte character. Only
+            // complete lines are decoded, so multi-byte characters survive.
+            while let Some(line_end) = buffer.iter().position(|&b| b == b'\n') {
+                let line_bytes = buffer[..line_end].to_vec();
+                buffer.drain(..line_end + 1);
+                let line = String::from_utf8_lossy(&line_bytes)
+                    .trim_end_matches('\r')
+                    .to_string();
 
                 if line.is_empty() || line.starts_with(':') {
                     continue;
