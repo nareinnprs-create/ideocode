@@ -138,6 +138,7 @@ function SessionCard({ session }: { session: Session }) {
               URL.revokeObjectURL(url);
             } catch (err) {
               console.error("Export failed:", err);
+              alert(`Export failed: ${err}`);
             }
           }}
           className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-accent-primary transition-fast"

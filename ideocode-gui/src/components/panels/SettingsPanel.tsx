@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Sun, Moon, AlertCircle } from "lucide-react";
 import { getSettings, updateSettings } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
+import { useAppStore } from "../../stores/appStore";
 
 type Tab = "appearance" | "editor" | "about";
 
@@ -25,7 +26,7 @@ export function SettingsPanel() {
     getSettings().then(setSettings).catch((e) => setError(`Failed to load settings: ${e}`));
   }, []);
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const handleChange = (patch: Partial<AppSettings>) => {
     if (!settings) return;
@@ -33,6 +34,9 @@ export function SettingsPanel() {
     setSettings(next);
     setSaved(false);
     setError(null);
+    if (patch.theme) {
+      useAppStore.getState().setTheme(patch.theme);
+    }
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       updateSettings(next)
@@ -105,11 +109,11 @@ function AppearanceTab({
       {/* Theme */}
       <Section label="Theme">
         <div className="flex gap-2">
-          {[
+          {([
             { id: "midnight", icon: Moon, label: "Midnight" },
             { id: "dark", icon: Moon, label: "Dark" },
             { id: "light", icon: Sun, label: "Light" },
-          ].map(({ id, icon: Icon, label }) => (
+          ] as const).map(({ id, icon: Icon, label }) => (
             <button
               key={id}
               onClick={() => onChange({ theme: id })}

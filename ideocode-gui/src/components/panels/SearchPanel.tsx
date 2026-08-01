@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Search, File, FileText, ArrowLeft } from "lucide-react";
 import { searchFiles, searchContents } from "../../lib/tauri-commands";
 import { useFileStore } from "../../stores/fileStore";
@@ -8,14 +8,40 @@ import type { SearchResult, CodeSearchResult } from "../../lib/tauri-commands";
 type SearchMode = "filename" | "content";
 
 export function SearchPanel() {
-  const { rootPath, setRootPath } = useFileStore();
+  const rootPath = useFileStore((s) => s.rootPath);
+  const setRootPath = useFileStore((s) => s.setRootPath);
   const setRightPanelOpen = useAppStore((s) => s.setRightPanelOpen);
   const [query, setQuery] = useState("");
+  const [pathDraft, setPathDraft] = useState(rootPath);
   const [mode, setMode] = useState<SearchMode>("filename");
   const [results, setResults] = useState<SearchResult[] | CodeSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const pathDebounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  // Keep the draft in sync when the workspace root changes elsewhere.
+  useEffect(() => {
+    setPathDraft(rootPath);
+  }, [rootPath]);
+
+  // Debounce root-path commits so FileExplorer/GitPanel do not fire a backend
+  // round-trip for every keystroke typed in the path box.
+  const handlePathChange = (value: string) => {
+    setPathDraft(value);
+    if (pathDebounceRef.current) clearTimeout(pathDebounceRef.current);
+    pathDebounceRef.current = setTimeout(() => {
+      if (value !== useFileStore.getState().rootPath) {
+        setRootPath(value);
+      }
+    }, 500);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (pathDebounceRef.current) clearTimeout(pathDebounceRef.current);
+    };
+  }, []);
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -94,8 +120,8 @@ export function SearchPanel() {
         <div className="mt-1">
           <input
             type="text"
-            value={rootPath}
-            onChange={(e) => setRootPath(e.target.value)}
+            value={pathDraft}
+            onChange={(e) => handlePathChange(e.target.value)}
             placeholder="Search path (default: project root)"
             className="w-full px-2.5 py-1 text-[10px] bg-bg-tertiary border border-border-subtle rounded text-text-muted placeholder:text-text-muted/50 focus:outline-none focus:border-accent-primary font-mono"
           />

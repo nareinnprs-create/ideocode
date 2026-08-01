@@ -16,13 +16,17 @@ export function BrowserPanel() {
   const [loading, setLoading] = useState(false);
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
     try {
       const result = await getBrowserContext();
       setCtx(result);
-    } catch (_) {}
+      setError(null);
+    } catch (e) {
+      setError(`${e}`);
+    }
     setLoading(false);
   };
 
@@ -40,21 +44,31 @@ export function BrowserPanel() {
 
   const handleSetTab = async () => {
     if (!url.trim()) return;
-    await setBrowserTab(url.trim(), title.trim() || url.trim());
-    load();
-    loadText();
-    setUrl("");
-    setTitle("");
+    try {
+      await setBrowserTab(url.trim(), title.trim() || url.trim());
+      await load();
+      await loadText();
+      setUrl("");
+      setTitle("");
+    } catch (e) {
+      setError(`Failed to set tab: ${e}`);
+    }
   };
 
   const handleClear = async () => {
-    await clearBrowserContext();
-    load();
-    loadText();
+    try {
+      await clearBrowserContext();
+      setCtx(null);
+      setText("");
+      await load();
+      await loadText();
+    } catch (e) {
+      setError(`Failed to clear context: ${e}`);
+    }
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(text).catch(() => {});
   };
 
   return (
@@ -114,6 +128,13 @@ export function BrowserPanel() {
           </button>
         </div>
       </div>
+
+      {/* Error */}
+      {error && (
+        <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle">
+          <div className="text-xs text-red-400">{error}</div>
+        </div>
+      )}
 
       {/* Loading */}
       {loading && (

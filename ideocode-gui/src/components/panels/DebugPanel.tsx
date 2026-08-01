@@ -17,7 +17,7 @@ export function DebugPanel() {
     <div className="flex flex-col h-full">
       {/* Toolbar */}
       <div className="flex items-center gap-1 px-2 py-2 border-b border-border-subtle">
-        {buttons.map(({ icon: Icon, label, active }) => (
+        {buttons.map(({ icon: Icon, label }) => (
           <button
             key={label}
             title={`${label}${!debugActive ? " (no active session)" : ""}`}

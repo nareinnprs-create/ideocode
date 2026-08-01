@@ -26,7 +26,7 @@ export const useGitStore = create<GitState>((set) => ({
     set({ loading: true });
     try {
       const status = await tauriGitStatus(path);
-      set({ status, loading: false });
+      set({ status, loading: false, error: null });
     } catch (e) {
       set({ loading: false, error: `Git status failed: ${e}` });
     }
@@ -35,7 +35,7 @@ export const useGitStore = create<GitState>((set) => ({
   loadDiff: async (path: string, file?: string) => {
     try {
       const diff = await tauriGitDiff(path, file);
-      set({ diff });
+      set({ diff, error: null });
     } catch (e) {
       set({ error: `Git diff failed: ${e}` });
     }
@@ -44,11 +44,17 @@ export const useGitStore = create<GitState>((set) => ({
   commit: async (path: string, message: string) => {
     try {
       await tauriGitCommit(path, message);
-      // Reload status after commit
-      const status = await tauriGitStatus(path);
-      set({ status });
     } catch (e) {
       set({ error: `Git commit failed: ${e}` });
+      return;
+    }
+    // The commit itself succeeded; a failure to refresh status afterwards is a
+    // separate, non-fatal error and must not be reported as a failed commit.
+    try {
+      const status = await tauriGitStatus(path);
+      set({ status, error: null });
+    } catch (e) {
+      set({ error: `Commit succeeded, but status refresh failed: ${e}` });
     }
   },
 }));

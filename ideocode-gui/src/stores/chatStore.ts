@@ -39,18 +39,29 @@ export const useChatStore = create<ChatState>((set) => ({
 
     try {
       const response = await tauriSend(content);
-      set((s) => ({ messages: [...s.messages, response], loading: false }));
+      set((s) => ({
+        messages: [...s.messages, response],
+        loading: false,
+        error: null,
+      }));
+    } catch (e) {
+      set({ loading: false, error: `Failed to send: ${e}` });
+      return;
+    }
+    // The message was delivered; failing to refresh the session list is a
+    // separate, non-fatal error and must not be reported as a failed send.
+    try {
       const sessions = await listSessions();
       set({ sessions });
     } catch (e) {
-      set({ loading: false, error: `Failed to send: ${e}` });
+      set({ error: `Message sent, but session list refresh failed: ${e}` });
     }
   },
 
   loadMessages: async () => {
     try {
       const messages = await getMessages();
-      set({ messages });
+      set({ messages, error: null });
     } catch (e) {
       set({ error: `Failed to load messages: ${e}` });
     }
@@ -59,7 +70,7 @@ export const useChatStore = create<ChatState>((set) => ({
   clearMessages: async () => {
     try {
       await tauriClear();
-      set({ messages: [] });
+      set({ messages: [], error: null });
       const sessions = await listSessions();
       set({ sessions });
     } catch (e) {
@@ -70,7 +81,7 @@ export const useChatStore = create<ChatState>((set) => ({
   loadSessions: async () => {
     try {
       const sessions = await listSessions();
-      set({ sessions });
+      set({ sessions, error: null });
     } catch (e) {
       set({ error: `Failed to load sessions: ${e}` });
     }

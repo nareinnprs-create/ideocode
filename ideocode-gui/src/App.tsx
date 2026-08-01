@@ -3,7 +3,7 @@ import { AppShell } from "./components/layout/AppShell";
 import { OnboardingWizard } from "./components/onboarding/OnboardingWizard";
 import { useAppStore } from "./stores/appStore";
 import { useFileStore } from "./stores/fileStore";
-import { isFirstLaunch, getVersion } from "./lib/tauri-commands";
+import { isFirstLaunch, getVersion, getSettings } from "./lib/tauri-commands";
 
 function App() {
   const setVersion = useAppStore((s) => s.setVersion);
@@ -12,6 +12,14 @@ function App() {
 
   useEffect(() => {
     getVersion().then(setVersion).catch(() => setVersion("0.61.0"));
+    getSettings()
+      .then((s) => {
+        const t = s.theme;
+        if (t === "dark" || t === "light" || t === "midnight") {
+          useAppStore.getState().setTheme(t);
+        }
+      })
+      .catch(() => {});
     useFileStore.getState().loadTree();
     isFirstLaunch()
       .then((first) => setOnboarding(first))

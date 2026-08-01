@@ -23,6 +23,12 @@ export function TerminalPane({ visible }: Props) {
   const xtermRef = useRef<Terminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
   const rootPath = useFileStore((s) => s.rootPath);
+  const rootPathRef = useRef(rootPath);
+  const disposedRef = useRef(false);
+
+  useEffect(() => {
+    rootPathRef.current = rootPath;
+  }, [rootPath]);
 
   useEffect(() => {
     isWindows = navigator.userAgent.includes("Windows");
@@ -74,20 +80,23 @@ export function TerminalPane({ visible }: Props) {
     term.writeln("\x1b[36mType commands to execute in the workspace root.\x1b[0m");
     term.writeln("");
 
-    showPrompt(term, rootPath);
+    showPrompt(term, rootPathRef.current);
 
     let currentLine = "";
+    let running = false;
 
     term.onData(async (data) => {
       switch (data) {
         case "\r": { // Enter
           term.writeln("");
           const trimmed = currentLine.trim();
-          if (trimmed) {
-            await runCommand(term, rootPath, trimmed);
+          if (trimmed && !running) {
+            running = true;
+            await runCommand(term, rootPathRef, disposedRef, trimmed);
+            running = false;
           }
           currentLine = "";
-          showPrompt(term, rootPath);
+          showPrompt(term, rootPathRef.current);
           break;
         }
         case "\x7f": // Backspace
@@ -99,7 +108,7 @@ export function TerminalPane({ visible }: Props) {
         case "\u0003": // Ctrl+C
           currentLine = "";
           term.writeln("^C");
-          showPrompt(term, rootPath);
+          showPrompt(term, rootPathRef.current);
           break;
         default:
           if (!data.startsWith("\x1b")) {
@@ -117,6 +126,7 @@ export function TerminalPane({ visible }: Props) {
     }, 100);
 
     return () => {
+      disposedRef.current = true;
       term.dispose();
       xtermRef.current = null;
     };
@@ -163,38 +173,50 @@ function showPrompt(term: Terminal, cwd: string) {
 
 async function runCommand(
   term: Terminal,
-  cwd: string,
+  rootPathRef: React.RefObject<string>,
+  disposedRef: React.MutableRefObject<boolean>,
   input: string,
 ) {
+  const cwd = rootPathRef.current;
   const [shell, shellArgs] = getShell();
   const args = [...shellArgs, input];
 
-  try {
-    const cmd = Command.create(shell, args, { cwd });
+  let closed = false;
+  let resolveFinished!: () => void;
+  const finished = new Promise<void>((resolve) => {
+    resolveFinished = resolve;
+  });
 
-    let closed = false;
+  try {
+    const cmd = Command.create(shell, args, cwd ? { cwd } : {});
+
+    // Subscribe to lifecycle events BEFORE spawn: a fast command (e.g.
+    // `echo hi`) can emit "close" before spawn() resolves, and attaching the
+    // listeners afterwards would leave this promise pending forever.
+    cmd.on("close", () => {
+      closed = true;
+      resolveFinished();
+    });
+    cmd.on("error", () => {
+      closed = true;
+      resolveFinished();
+    });
 
     cmd.stdout.on("data", (line: string) => {
-      if (!closed) term.write(line);
+      if (!closed && !disposedRef.current) term.write(line);
     });
 
     cmd.stderr.on("data", (line: string) => {
-      if (!closed) term.write(`\x1b[91m${line}\x1b[0m`);
+      if (!closed && !disposedRef.current) term.write(`\x1b[91m${line}\x1b[0m`);
     });
 
     await cmd.spawn();
-
-    await new Promise<void>((resolve) => {
-      cmd.on("close", () => {
-        closed = true;
-        resolve();
-      });
-      cmd.on("error", () => {
-        closed = true;
-        resolve();
-      });
-    });
+    await finished;
   } catch (e) {
-    term.writeln(`\x1b[91mError: ${e}\x1b[0m`);
+    closed = true;
+    resolveFinished();
+    if (!disposedRef.current) {
+      term.writeln(`\x1b[91mError: ${e}\x1b[0m`);
+    }
   }
 }

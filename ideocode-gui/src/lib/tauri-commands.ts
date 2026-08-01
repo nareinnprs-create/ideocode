@@ -205,8 +205,10 @@ export async function runCargoCheck(path: string): Promise<BuildOutput> {
 // Settings Commands
 // ============================================
 
+export type Theme = "dark" | "light" | "midnight";
+
 export interface AppSettings {
-  theme: string;
+  theme: Theme;
   font_size: number;
   font_family: string;
   active_provider: string;

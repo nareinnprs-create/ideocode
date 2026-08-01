@@ -12,7 +12,7 @@ import {
 
 export function GitPanel() {
   const { rootPath } = useFileStore();
-  const { status, loading, error, loadStatus, commit, loadDiff } = useGitStore();
+  const { status, diff, loading, error, loadStatus, commit, loadDiff } = useGitStore();
   const [commitMsg, setCommitMsg] = useState("");
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
@@ -68,7 +68,7 @@ export function GitPanel() {
       {/* Diff view */}
       {selectedFile && (
         <DiffView
-          diff={selectedFile}
+          diff={diff}
           onClose={() => setSelectedFile(null)}
         />
       )}
@@ -163,9 +163,15 @@ function DiffView({ diff, onClose }: { diff: string; onClose: () => void }) {
         <span className="text-[10px] uppercase tracking-wider text-text-muted">Diff</span>
         <button onClick={onClose} className="text-xs text-text-muted hover:text-text-primary">Close</button>
       </div>
-      <pre className="px-3 py-2 text-[10px] font-mono text-text-secondary max-h-48 overflow-y-auto whitespace-pre-wrap">
-        Loading...
-      </pre>
+      {diff ? (
+        <pre className="px-3 py-2 text-[10px] font-mono text-text-secondary max-h-48 overflow-y-auto whitespace-pre-wrap">
+          {diff}
+        </pre>
+      ) : (
+        <pre className="px-3 py-2 text-[10px] font-mono text-text-secondary max-h-48 overflow-y-auto whitespace-pre-wrap">
+          Loading...
+        </pre>
+      )}
     </div>
   );
 }

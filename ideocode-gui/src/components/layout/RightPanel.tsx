@@ -70,7 +70,7 @@ function PanelContent({ panel }: { panel: string }) {
     case "providers":
       return <ProviderPanel />;
     case "terminal":
-      return <TerminalPane />;
+      return <TerminalPane visible={true} />;
     case "sessions":
       return <SessionHistory />;
     case "build":

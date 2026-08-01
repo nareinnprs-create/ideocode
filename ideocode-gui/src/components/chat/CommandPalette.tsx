@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useAppStore } from "../../stores/appStore";
+import { getSettings, updateSettings, type Theme } from "../../lib/tauri-commands";
 import {
   Search,
   Settings,
@@ -36,7 +37,8 @@ const COMMANDS: Command[] = [
 ];
 
 export function CommandPalette() {
-  const { commandPaletteOpen, setCommandPaletteOpen } = useAppStore();
+  const commandPaletteOpen = useAppStore((s) => s.commandPaletteOpen);
+  const setCommandPaletteOpen = useAppStore((s) => s.setCommandPaletteOpen);
   const [query, setQuery] = useState("");
   const [selectedIdx, setSelectedIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -49,14 +51,15 @@ export function CommandPalette() {
     if (commandPaletteOpen) {
       setQuery("");
       setSelectedIdx(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
+      const t = setTimeout(() => inputRef.current?.focus(), 50);
+      return () => clearTimeout(t);
     }
   }, [commandPaletteOpen]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setSelectedIdx((i) => Math.min(i + 1, filtered.length - 1));
+      setSelectedIdx((i) => Math.min(i + 1, Math.max(filtered.length - 1, 0)));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setSelectedIdx((i) => Math.max(i - 1, 0));
@@ -92,6 +95,15 @@ export function CommandPalette() {
         s.setRightPanel("providers"); s.setRightPanelOpen(true); break;
       case "open-settings":
         s.setRightPanel("settings"); s.setRightPanelOpen(true); break;
+      case "change-theme": {
+        const order: Theme[] = ["midnight", "dark", "light"];
+        const next = order[(order.indexOf(s.theme) + 1) % order.length];
+        s.setTheme(next);
+        void getSettings()
+          .then((settings) => updateSettings({ ...settings, theme: next }))
+          .catch(() => {});
+        break;
+      }
     }
     s.setCommandPaletteOpen(false);
   };

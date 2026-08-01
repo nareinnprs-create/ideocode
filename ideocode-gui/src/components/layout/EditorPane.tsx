@@ -48,6 +48,7 @@ export function EditorPane() {
             <ChatArea
               messages={messages}
               loading={loading}
+              error={error}
               messagesEndRef={messagesEndRef}
             />
           </div>

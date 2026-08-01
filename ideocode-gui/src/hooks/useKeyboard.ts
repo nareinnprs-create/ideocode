@@ -27,9 +27,11 @@ export function useKeyboard() {
         toggleRightPanel();
       }
 
-      // Esc — Close overlays
+      // Esc — Close overlays and panels
       if (e.key === "Escape") {
-        useAppStore.getState().setCommandPaletteOpen(false);
+        const state = useAppStore.getState();
+        state.setCommandPaletteOpen(false);
+        state.setRightPanelOpen(false);
       }
     };
 

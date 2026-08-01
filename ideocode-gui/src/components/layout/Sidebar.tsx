@@ -11,7 +11,7 @@ import {
   BugPlay,
   Settings,
   Brain,
-  Github,
+  AlertCircle,
   Globe,
 } from "lucide-react";
 
@@ -25,7 +25,7 @@ const SIDEBAR_ITEMS: { id: PanelId; icon: typeof MessageSquare; label: string }[
   { id: "sessions", icon: History, label: "Sessions" },
   { id: "providers", icon: Cpu, label: "Providers" },
   { id: "memory", icon: Brain, label: "Memory" },
-  { id: "issues", icon: Github, label: "Issues" },
+  { id: "issues", icon: AlertCircle, label: "Issues" },
   { id: "browser", icon: Globe, label: "Browser" },
   { id: "debug", icon: BugPlay, label: "Debug" },
   { id: "settings", icon: Settings, label: "Settings" },

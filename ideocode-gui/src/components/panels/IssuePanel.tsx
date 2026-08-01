@@ -6,7 +6,7 @@ import {
   fetchGithubIssues,
   type Issue,
 } from "../../lib/tauri-commands";
-import { ArrowLeft, Github, Search, ExternalLink, RefreshCw, AlertCircle } from "lucide-react";
+import { ArrowLeft, AlertCircle, Search, ExternalLink, RefreshCw } from "lucide-react";
 
 export function IssuePanel() {
   const setRightPanelOpen = useAppStore((s) => s.setRightPanelOpen);
@@ -56,7 +56,7 @@ export function IssuePanel() {
     setLoading(true);
     setError(null);
     try {
-      const result = await fetchGithubIssues(
+      await fetchGithubIssues(
         owner.trim(),
         repo.trim(),
         token.trim()
@@ -171,7 +171,7 @@ export function IssuePanel() {
       {/* Empty */}
       {!loading && !error && issues.length === 0 && (
         <div className="flex flex-col items-center justify-center py-8 text-text-muted">
-          <Github size={24} className="mb-2 opacity-50" />
+          <AlertCircle size={24} className="mb-2 opacity-50" />
           <div className="text-xs">No issues loaded</div>
           <div className="text-[10px] mt-1">Click Fetch to load issues from GitHub</div>
         </div>

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { ChevronRight, ChevronLeft, Check, Sparkles } from "lucide-react";
 import { updateSettings } from "../../lib/tauri-commands";
-import type { AppSettings } from "../../lib/tauri-commands";
+import type { AppSettings, Theme } from "../../lib/tauri-commands";
+import { useAppStore } from "../../stores/appStore";
 
 type Step = "welcome" | "theme" | "provider" | "done";
 
@@ -9,14 +10,21 @@ const THEMES = [
   { id: "midnight", label: "Midnight Noir", desc: "Dark with indigo accents", class: "bg-[#0a0a0f] border-indigo-500" },
   { id: "dark", label: "Dark", desc: "Classic dark theme", class: "bg-[#1e1e2e] border-blue-500" },
   { id: "light", label: "Light", desc: "Clean light theme", class: "bg-[#ffffff] border-gray-300" },
-];
+] as const;
 
 const PROVIDERS = [
   { id: "openai", label: "OpenAI", models: "GPT-4o, GPT-4o-mini" },
   { id: "anthropic", label: "Anthropic", models: "Claude 3.5 Sonnet, Haiku" },
-  { id: "google", label: "Google Gemini", models: "Gemini 1.5 Pro, Flash" },
+  { id: "google", label: "Google Gemini", models: "Gemini 2.5 Pro, Flash" },
   { id: "openrouter", label: "OpenRouter", models: "100+ models" },
 ];
+
+const DEFAULT_MODEL_BY_PROVIDER: Record<string, string> = {
+  openai: "gpt-4o",
+  anthropic: "claude-3-5-sonnet",
+  google: "gemini-2.5-pro",
+  openrouter: "anthropic/claude-sonnet-4-6",
+};
 
 interface Props {
   onComplete: () => void;
@@ -24,20 +32,44 @@ interface Props {
 
 export function OnboardingWizard({ onComplete }: Props) {
   const [step, setStep] = useState<Step>("welcome");
-  const [theme, setTheme] = useState("midnight");
+  const [theme, setTheme] = useState<Theme>("midnight");
   const [provider, setProvider] = useState("openai");
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const next = () => {
     if (step === "welcome") setStep("theme");
     else if (step === "theme") setStep("provider");
     else if (step === "provider") {
-      updateSettings({
-        theme, active_provider: provider, active_model: provider === "openai" ? "gpt-4o" : "claude-3-5-sonnet",
-        font_size: 13, font_family: "JetBrains Mono", tab_size: 2, word_wrap: false, minimap: false, auto_save: true, language: "en",
-      } as AppSettings).then(() => {
-        setStep("done");
-      }).catch(console.error);
+      setSaving(true);
+      setSaveError(null);
+      const settings: AppSettings = {
+        theme,
+        active_provider: provider,
+        active_model: DEFAULT_MODEL_BY_PROVIDER[provider] ?? "gpt-4o",
+        font_size: 13,
+        font_family: "JetBrains Mono",
+        tab_size: 2,
+        word_wrap: false,
+        minimap: false,
+        auto_save: true,
+        language: "en",
+      };
+      updateSettings(settings)
+        .then(() => {
+          setSaving(false);
+          setStep("done");
+        })
+        .catch((e) => {
+          setSaving(false);
+          setSaveError(`Failed to save settings: ${e}`);
+        });
     }
+  };
+
+  const chooseTheme = (id: Theme) => {
+    setTheme(id);
+    useAppStore.getState().setTheme(id);
   };
 
   const prev = () => {
@@ -90,7 +122,7 @@ export function OnboardingWizard({ onComplete }: Props) {
               {THEMES.map((t) => (
                 <button
                   key={t.id}
-                  onClick={() => setTheme(t.id)}
+                  onClick={() => chooseTheme(t.id)}
                   className={`p-3 rounded-xl border-2 transition-all text-left
                     ${theme === t.id
                       ? `${t.class} border-2 shadow-glow-primary`
@@ -143,12 +175,22 @@ export function OnboardingWizard({ onComplete }: Props) {
                 </button>
               ))}
             </div>
+            {saveError && (
+              <div className="p-2 rounded bg-error/10 border border-error/30">
+                <div className="text-xs text-error">{saveError}</div>
+              </div>
+            )}
             <div className="flex justify-between">
               <button onClick={prev} className="flex items-center gap-1 text-xs text-text-muted hover:text-text-primary transition-fast">
                 <ChevronLeft size={14} /> Back
               </button>
-              <button onClick={next} className="flex items-center gap-1 px-4 py-1.5 rounded-lg bg-accent-primary text-white text-xs font-medium hover:bg-accent-hover transition-fast">
-                Continue <ChevronRight size={14} />
+              <button
+                onClick={next}
+                disabled={saving}
+                className="flex items-center gap-1 px-4 py-1.5 rounded-lg bg-accent-primary text-white text-xs font-medium hover:bg-accent-hover transition-fast disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Continue"}
+                <ChevronRight size={14} />
               </button>
             </div>
           </div>

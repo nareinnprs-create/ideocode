@@ -120,9 +120,10 @@ function CodeBlock({ children }: { children: React.ReactNode }) {
 
   const handleCopy = () => {
     const text = extractText(children);
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {});
   };
 
   return (

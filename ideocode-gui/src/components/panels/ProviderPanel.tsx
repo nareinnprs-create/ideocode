@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useProviderStore } from "../../stores/providerStore";
 import { useAppStore } from "../../stores/appStore";
 import { Cpu, Check, ArrowLeft, RefreshCw, Eye, EyeOff } from "lucide-react";
@@ -9,11 +9,35 @@ export function ProviderPanel() {
   const setRightPanelOpen = useAppStore((s) => s.setRightPanelOpen);
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
+  const loadingTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
   useEffect(() => {
     loadProviders();
     loadStatus();
+
+    loadingTimer.current = setTimeout(() => {
+      setTimedOut(true);
+    }, 5000);
+
+    return () => {
+      if (loadingTimer.current) clearTimeout(loadingTimer.current);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!loading) setTimedOut(false);
+  }, [loading]);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setRightPanelOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [setRightPanelOpen]);
 
   const handleSetActive = (providerId: string, modelId: string) => {
     setActiveProvider(providerId, modelId);
@@ -33,12 +57,24 @@ export function ProviderPanel() {
       </div>
 
       {/* Loading */}
-      {loading && (
+      {loading && !timedOut && (
         <div className="flex items-center justify-center py-8">
           <div className="flex items-center gap-2 text-text-muted text-xs animate-pulse">
             <RefreshCw size={14} className="animate-spin" />
             Loading providers...
           </div>
+        </div>
+      )}
+
+      {loading && timedOut && (
+        <div className="mx-3 my-2 p-2 rounded bg-bg-elevated border border-border-subtle">
+          <div className="text-xs text-yellow-400 mb-1">Loading is taking longer than expected.</div>
+          <button
+            onClick={() => { setTimedOut(false); loadProviders(); loadStatus(); }}
+            className="text-xs text-accent-primary hover:underline"
+          >
+            Retry
+          </button>
         </div>
       )}
 
@@ -108,7 +144,7 @@ export function ProviderPanel() {
           </button>
         </div>
         <div className="text-[10px] text-text-muted mt-1">
-          Key is stored in the provider environment variable
+          API keys are set via environment variables (not saved through this UI). Clicking Save refreshes status.
         </div>
       </div>
 

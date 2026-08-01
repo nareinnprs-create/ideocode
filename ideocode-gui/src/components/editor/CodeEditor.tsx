@@ -1,7 +1,10 @@
-import { useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import Editor, { loader } from "@monaco-editor/react";
 import type { OnMount } from "@monaco-editor/react";
 import { useFileStore } from "../../stores/fileStore";
+import { useAppStore } from "../../stores/appStore";
+import { getSettings } from "../../lib/tauri-commands";
+import type { AppSettings } from "../../lib/tauri-commands";
 
 // Configure Monaco to use bundled files
 loader.config({
@@ -52,12 +55,47 @@ function detectLanguage(filename: string): string {
 }
 
 export function CodeEditor() {
-  const { selectedFile, fileContent } = useFileStore();
+  const selectedFile = useFileStore((s) => s.selectedFile);
+  const fileContent = useFileStore((s) => s.fileContent);
+  const dirty = useFileStore((s) => s.dirty);
+  const setContent = useFileStore((s) => s.setContent);
+  const saveFile = useFileStore((s) => s.saveFile);
+  const theme = useAppStore((s) => s.theme);
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [editorSettings, setEditorSettings] = useState<AppSettings | null>(null);
+
+  useEffect(() => {
+    getSettings().then(setEditorSettings).catch(() => {});
+  }, []);
 
   const handleMount: OnMount = useCallback((editor) => {
     editorRef.current = editor;
   }, []);
+
+  const handleChange = useCallback(
+    (value: string | undefined) => {
+      setContent(value ?? "");
+      if (editorSettings?.auto_save) {
+        if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = setTimeout(() => {
+          void saveFile();
+        }, 800);
+      }
+    },
+    [editorSettings?.auto_save, setContent, saveFile],
+  );
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        void saveFile();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [saveFile]);
 
   if (!selectedFile) {
     return null;
@@ -75,6 +113,12 @@ export function CodeEditor() {
           <span className="text-text-primary font-mono text-[11px]">
             {filename}
           </span>
+          {dirty && (
+            <span
+              className="w-1.5 h-1.5 rounded-full bg-warning shrink-0"
+              title="Unsaved changes"
+            />
+          )}
           <span className="text-text-muted text-[10px]">
             {language}
           </span>
@@ -86,20 +130,21 @@ export function CodeEditor() {
         <Editor
           value={fileContent ?? ""}
           language={language}
-          theme="vs-dark"
+          theme={theme === "light" ? "vs-light" : "vs-dark"}
           onMount={handleMount}
+          onChange={handleChange}
           options={{
             readOnly: false,
-            minimap: { enabled: false },
-            fontSize: 13,
-            fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+            minimap: { enabled: editorSettings?.minimap ?? false },
+            fontSize: editorSettings?.font_size ?? 13,
+            fontFamily: editorSettings?.font_family ?? "'JetBrains Mono', 'Fira Code', monospace",
             lineNumbers: "on",
             renderWhitespace: "selection",
             scrollBeyondLastLine: false,
             automaticLayout: true,
             padding: { top: 8 },
-            tabSize: 2,
-            wordWrap: "off",
+            tabSize: editorSettings?.tab_size ?? 2,
+            wordWrap: (editorSettings?.word_wrap ? "on" : "off") as "on" | "off",
           }}
         />
       </div>
