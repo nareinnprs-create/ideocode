@@ -113,11 +113,11 @@ impl Tool for GitTool {
         let mut cmd = tokio::process::Command::new("git");
         cmd.arg(action_str);
 
-        if let Some(msg) = &params.message {
-            if matches!(params.action, GitAction::Commit) {
-                cmd.arg("-m");
-                cmd.arg(msg);
-            }
+        if let Some(msg) = &params.message
+            && matches!(params.action, GitAction::Commit)
+        {
+            cmd.arg("-m");
+            cmd.arg(msg);
         }
 
         for arg in &params.args {

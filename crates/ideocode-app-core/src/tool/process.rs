@@ -98,10 +98,10 @@ async fn process_list(filter: Option<&str>) -> Result<ToolOutput> {
         if parts.len() >= 2 {
             let name = parts.first().unwrap_or(&"");
             let pid = parts.get(1).unwrap_or(&"");
-            if let Some(f) = filter {
-                if !name.to_lowercase().contains(&f.to_lowercase()) {
-                    continue;
-                }
+            if let Some(f) = filter
+                && !name.to_lowercase().contains(&f.to_lowercase())
+            {
+                continue;
             }
             let mem = parts.get(4).unwrap_or(&"");
             result.push_str(&format!("{:>8}  {:<30}  {}\n", pid, name, mem));

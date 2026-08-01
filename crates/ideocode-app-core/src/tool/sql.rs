@@ -126,7 +126,7 @@ async fn run_sqlite(params: &SqlInput, ctx: &ToolContext) -> Result<ToolOutput> 
     {
         cmd.arg(&params.query);
     } else {
-        cmd.arg(format!("{};", &params.query));
+        cmd.arg(format!("{};", params.query));
     }
 
     cmd.arg("-header");

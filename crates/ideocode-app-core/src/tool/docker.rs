@@ -120,10 +120,11 @@ impl Tool for DockerTool {
             }
         }
 
-        if let Some(file) = &params.file {
-            if matches!(params.action, DockerAction::Build) && params.target.is_none() {
-                cmd.arg("-f").arg(file);
-            }
+        if let Some(file) = &params.file
+            && matches!(params.action, DockerAction::Build)
+            && params.target.is_none()
+        {
+            cmd.arg("-f").arg(file);
         }
 
         for arg in &params.args {

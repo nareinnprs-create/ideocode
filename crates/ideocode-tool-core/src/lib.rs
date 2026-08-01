@@ -107,14 +107,36 @@ impl ToolContext {
     }
 
     pub fn resolve_path(&self, path: &Path) -> PathBuf {
-        if path.is_absolute() {
+        let base = if path.is_absolute() {
             path.to_path_buf()
         } else if let Some(ref base) = self.working_dir {
             base.join(path)
         } else {
             path.to_path_buf()
+        };
+        normalize_path(base)
+    }
+}
+
+/// Lexically normalize a path: collapse `.` components and resolve `..`
+/// components without touching the filesystem. Absolute/prefix/root
+/// components are preserved, so results are deterministic regardless of
+/// how a caller spelled the relative portion.
+pub fn normalize_path(path: impl AsRef<Path>) -> PathBuf {
+    use std::path::Component;
+    let mut out = PathBuf::new();
+    for component in path.as_ref().components() {
+        match component {
+            Component::CurDir => {}
+            Component::ParentDir => {
+                if !out.pop() {
+                    out.push(component.as_os_str());
+                }
+            }
+            other => out.push(other.as_os_str()),
         }
     }
+    out
 }
 
 /// A tool that can be executed by the agent.

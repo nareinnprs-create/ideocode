@@ -524,7 +524,7 @@ pub(super) async fn handle_set_personality(
     agent: &Arc<Mutex<Agent>>,
     client_event_tx: &mpsc::UnboundedSender<ServerEvent>,
 ) {
-    let parsed = crate::prompt::PersonalityMode::from_str(mode);
+    let parsed = crate::prompt::PersonalityMode::parse(mode);
     match parsed {
         Some(personality) => {
             agent.lock().await.set_personality(personality);

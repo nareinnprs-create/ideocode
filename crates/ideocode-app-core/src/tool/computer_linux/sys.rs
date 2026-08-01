@@ -6,7 +6,14 @@ use anyhow::{Context, Result};
 
 use super::ToolOutput;
 
-fn clipboard_cmd() -> &'static [&'static str] {
+#[derive(Clone, Copy, PartialEq)]
+enum ClipboardBackend {
+    Xclip,
+    WlClipboard,
+    None,
+}
+
+fn clipboard_backend() -> ClipboardBackend {
     if std::process::Command::new("xclip")
         .arg("-version")
         .stdout(std::process::Stdio::null())
@@ -14,34 +21,32 @@ fn clipboard_cmd() -> &'static [&'static str] {
         .status()
         .is_ok()
     {
-        &["xclip", "-selection", "clipboard"]
-    } else if std::process::Command::new("wl-paste")
+        ClipboardBackend::Xclip
+    } else if std::process::Command::new("wl-copy")
         .arg("--version")
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::null())
         .status()
         .is_ok()
     {
-        &["wl-paste"]
+        ClipboardBackend::WlClipboard
     } else {
-        &[]
+        ClipboardBackend::None
     }
 }
 
 pub fn get_clipboard() -> Result<ToolOutput> {
-    let cmd = clipboard_cmd();
-    if cmd.is_empty() {
-        return Ok(ToolOutput::new("Clipboard access requires xclip or wl-clipboard".to_string()));
-    }
-    let output = if cmd[0] == "wl-paste" {
-        std::process::Command::new("wl-paste")
-            .output()
-            .context("wl-paste failed")?
-    } else {
-        std::process::Command::new("xclip")
+    let output = match clipboard_backend() {
+        ClipboardBackend::Xclip => std::process::Command::new("xclip")
             .args(["-o", "-selection", "clipboard"])
             .output()
-            .context("xclip failed")?
+            .context("xclip failed")?,
+        ClipboardBackend::WlClipboard => std::process::Command::new("wl-paste")
+            .output()
+            .context("wl-paste failed")?,
+        ClipboardBackend::None => {
+            return Ok(ToolOutput::new("Clipboard access requires xclip or wl-clipboard".to_string()));
+        }
     };
     let text = String::from_utf8_lossy(&output.stdout).trim().to_string();
     Ok(ToolOutput::new(if text.is_empty() {
@@ -52,20 +57,8 @@ pub fn get_clipboard() -> Result<ToolOutput> {
 }
 
 pub fn set_clipboard(text: &str) -> Result<ToolOutput> {
-    let cmd = clipboard_cmd();
-    if cmd.is_empty() {
-        return Ok(ToolOutput::new("Clipboard access requires xclip or wl-clipboard".to_string()));
-    }
-    let status = if cmd[0] == "wl-copy" {
-        let mut child = std::process::Command::new("wl-copy")
-            .stdin(std::process::Stdio::piped())
-            .spawn()
-            .context("wl-copy failed")?;
-        use std::io::Write;
-        child.stdin.take().unwrap().write_all(text.as_bytes())?;
-        child.wait()?
-    } else {
-        std::process::Command::new("xclip")
+    let status = match clipboard_backend() {
+        ClipboardBackend::Xclip => std::process::Command::new("xclip")
             .args(["-selection", "clipboard"])
             .stdin(std::process::Stdio::piped())
             .spawn()
@@ -74,7 +67,19 @@ pub fn set_clipboard(text: &str) -> Result<ToolOutput> {
                 child.stdin.take().unwrap().write_all(text.as_bytes())?;
                 child.wait()
             })
-            .context("xclip failed")?
+            .context("xclip failed")?,
+        ClipboardBackend::WlClipboard => {
+            let mut child = std::process::Command::new("wl-copy")
+                .stdin(std::process::Stdio::piped())
+                .spawn()
+                .context("wl-copy failed")?;
+            use std::io::Write;
+            child.stdin.take().unwrap().write_all(text.as_bytes())?;
+            child.wait()?
+        }
+        ClipboardBackend::None => {
+            return Ok(ToolOutput::new("Clipboard access requires xclip or wl-clipboard".to_string()));
+        }
     };
     if !status.success() {
         anyhow::bail!("Failed to set clipboard");
