@@ -237,10 +237,6 @@ pub(crate) enum DesktopReloadHandoffPoll {
 }
 
 impl DesktopReloadHandoffWatcher {
-    pub(crate) fn poll(&self) -> Result<DesktopReloadHandoffPoll> {
-        self.poll_with_placement(None)
-    }
-
     pub(crate) fn poll_with_placement(
         &self,
         placement: Option<DesktopReloadWindowPlacement>,

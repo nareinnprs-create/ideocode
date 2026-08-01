@@ -73,42 +73,67 @@ fn terminal_candidates_with_working_dir(
         }
     }
 
-    candidates.push(terminal_command(
-        "footclient",
-        &["-T", title, "--"],
-        ideocode_args,
-        working_dir,
-    ));
-    candidates.push(terminal_command(
-        "foot",
-        &["-T", title, "--"],
-        ideocode_args,
-        working_dir,
-    ));
-    candidates.push(terminal_command(
-        "kitty",
-        &["--title", title],
-        ideocode_args,
-        working_dir,
-    ));
-    candidates.push(terminal_command(
-        "alacritty",
-        &["-t", title, "-e"],
-        ideocode_args,
-        working_dir,
-    ));
-    candidates.push(terminal_command(
-        "wezterm",
-        &["start", "--"],
-        ideocode_args,
-        working_dir,
-    ));
-    candidates.push(terminal_command(
-        "x-terminal-emulator",
-        &["-T", title, "-e"],
-        ideocode_args,
-        working_dir,
-    ));
+    #[cfg(windows)]
+    {
+        let _ = title;
+        candidates.push(terminal_command(
+            "cmd.exe",
+            &["/c"],
+            ideocode_args,
+            working_dir,
+        ));
+        candidates.push(terminal_command(
+            "powershell.exe",
+            &["-NoExit", "-Command"],
+            ideocode_args,
+            working_dir,
+        ));
+        candidates.push(terminal_command(
+            "pwsh.exe",
+            &["-NoExit", "-Command"],
+            ideocode_args,
+            working_dir,
+        ));
+    }
+    #[cfg(not(windows))]
+    {
+        candidates.push(terminal_command(
+            "footclient",
+            &["-T", title, "--"],
+            ideocode_args,
+            working_dir,
+        ));
+        candidates.push(terminal_command(
+            "foot",
+            &["-T", title, "--"],
+            ideocode_args,
+            working_dir,
+        ));
+        candidates.push(terminal_command(
+            "kitty",
+            &["--title", title],
+            ideocode_args,
+            working_dir,
+        ));
+        candidates.push(terminal_command(
+            "alacritty",
+            &["-t", title, "-e"],
+            ideocode_args,
+            working_dir,
+        ));
+        candidates.push(terminal_command(
+            "wezterm",
+            &["start", "--"],
+            ideocode_args,
+            working_dir,
+        ));
+        candidates.push(terminal_command(
+            "x-terminal-emulator",
+            &["-T", title, "-e"],
+            ideocode_args,
+            working_dir,
+        ));
+    }
 
     candidates
 }
