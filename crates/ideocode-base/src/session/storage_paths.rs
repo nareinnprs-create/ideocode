@@ -8,8 +8,25 @@ use std::path::{Path, PathBuf};
 use super::PersistVectorMode;
 use crate::storage;
 
+/// Replaces every character that is not a safe session-id character with `_`
+/// so untrusted session ids cannot escape the sessions directory via path
+/// separators or parent-directory components.
+pub(crate) fn sanitize_session_id(session_id: &str) -> String {
+    session_id
+        .chars()
+        .map(|ch| {
+            if ch.is_ascii_alphanumeric() || ch == '-' || ch == '_' {
+                ch
+            } else {
+                '_'
+            }
+        })
+        .collect()
+}
+
 pub(crate) fn session_path_in_dir(base: &std::path::Path, session_id: &str) -> PathBuf {
-    base.join("sessions").join(format!("{}.json", session_id))
+    base.join("sessions")
+        .join(format!("{}.json", sanitize_session_id(session_id)))
 }
 
 pub(super) use crate::process_memory::estimate_json_bytes;
@@ -50,4 +67,30 @@ pub fn session_exists(session_id: &str) -> bool {
     session_path(session_id)
         .map(|path| path.exists())
         .unwrap_or(false)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn session_path_sanitizes_unsafe_ids() {
+        let base = std::path::Path::new("/base");
+        assert_eq!(
+            session_path_in_dir(base, "abc-123_9"),
+            PathBuf::from("/base/sessions/abc-123_9.json")
+        );
+        assert_eq!(
+            session_path_in_dir(base, "../../../etc/passwd"),
+            PathBuf::from("/base/sessions/___..___etc_passwd.json")
+        );
+        assert_eq!(
+            session_path_in_dir(base, "a/b\\c"),
+            PathBuf::from("/base/sessions/a_b_c.json")
+        );
+        assert_eq!(
+            session_path_in_dir(base, ""),
+            PathBuf::from("/base/sessions/.json")
+        );
+    }
 }

@@ -872,7 +872,7 @@ fn normalized_login_provider_id(provider_id: &str) -> Option<&'static str> {
             Some("openai-api")
         }
         "openrouter" => Some("openrouter"),
-        "IDEOCODE" | "subscription" | "IDEOCODE-subscription" => Some("IDEOCODE"),
+        "ideocode" | "subscription" | "ideocode-subscription" => Some("IDEOCODE"),
         "bedrock" | "aws-bedrock" | "aws_bedrock" => Some("bedrock"),
         "cursor" => Some("cursor"),
         "copilot" => Some("copilot"),

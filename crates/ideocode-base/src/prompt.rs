@@ -71,7 +71,7 @@ impl PersonalityMode {
         ]
     }
 
-    pub fn from_str(s: &str) -> Option<Self> {
+    pub fn parse(s: &str) -> Option<Self> {
         match s.to_lowercase().trim() {
             "professional" | "prof" => Some(PersonalityMode::Professional),
             "casual" | "chill" => Some(PersonalityMode::Casual),
@@ -81,6 +81,26 @@ impl PersonalityMode {
             "zen" | "calm" | "peace" => Some(PersonalityMode::Zen),
             _ => None,
         }
+    }
+}
+
+/// Error returned when a personality mode string is unrecognized.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PersonalityModeParseError(pub String);
+
+impl std::fmt::Display for PersonalityModeParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "unknown personality mode: {}", self.0)
+    }
+}
+
+impl std::error::Error for PersonalityModeParseError {}
+
+impl std::str::FromStr for PersonalityMode {
+    type Err = PersonalityModeParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::parse(s).ok_or_else(|| PersonalityModeParseError(s.to_string()))
     }
 }
 

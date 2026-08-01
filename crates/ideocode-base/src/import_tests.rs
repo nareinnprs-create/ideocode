@@ -568,7 +568,11 @@ fn test_list_claude_code_sessions_uses_live_transcripts_when_index_is_stale() {
     let temp = tempfile::TempDir::new().unwrap();
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
 
-    let project_dir = temp.path().join("external/.claude/projects/demo-project");
+    let project_dir = temp
+        .path()
+        .join("external")
+        .join(".claude/projects")
+        .join("demo-project");
     std::fs::create_dir_all(&project_dir).unwrap();
 
     let indexed_session_path = project_dir.join("live-session-1.jsonl");
@@ -636,7 +640,11 @@ fn test_list_claude_code_sessions_uses_index_metadata_without_parsing_transcript
     let temp = tempfile::TempDir::new().unwrap();
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
 
-    let project_dir = temp.path().join("external/.claude/projects/demo-project");
+    let project_dir = temp
+        .path()
+        .join("external")
+        .join(".claude/projects")
+        .join("demo-project");
     std::fs::create_dir_all(&project_dir).unwrap();
 
     let transcript_path = project_dir.join("indexed-session.jsonl");
@@ -644,21 +652,20 @@ fn test_list_claude_code_sessions_uses_index_metadata_without_parsing_transcript
 
     std::fs::write(
         project_dir.join("sessions-index.json"),
-        format!(
-            concat!(
-                "{{\"version\":1,\"entries\":[",
-                "{{\"sessionId\":\"indexed-session\",",
-                "\"fullPath\":\"{}\",",
-                "\"firstPrompt\":\"Investigate the login bug\",",
-                "\"summary\":\"Investigate the login bug\",",
-                "\"messageCount\":2,",
-                "\"created\":\"2026-04-04T12:00:00Z\",",
-                "\"modified\":\"2026-04-04T12:05:00Z\",",
-                "\"projectPath\":\"/tmp/demo-project\"",
-                "}}]}}"
-            ),
-            transcript_path.display()
-        ),
+        serde_json::to_string(&serde_json::json!({
+            "version": 1,
+            "entries": [{
+                "sessionId": "indexed-session",
+                "fullPath": transcript_path,
+                "firstPrompt": "Investigate the login bug",
+                "summary": "Investigate the login bug",
+                "messageCount": 2,
+                "created": "2026-04-04T12:00:00Z",
+                "modified": "2026-04-04T12:05:00Z",
+                "projectPath": "/tmp/demo-project"
+            }]
+        }))
+        .unwrap(),
     )
     .unwrap();
 
@@ -682,7 +689,11 @@ fn test_list_claude_code_sessions_skips_empty_index_entries_without_messages() {
     let temp = tempfile::TempDir::new().unwrap();
     let _home = EnvVarGuard::set_path("IDEOCODE_HOME", temp.path());
 
-    let project_dir = temp.path().join("external/.claude/projects/demo-project");
+    let project_dir = temp
+        .path()
+        .join("external")
+        .join(".claude/projects")
+        .join("demo-project");
     std::fs::create_dir_all(&project_dir).unwrap();
 
     let transcript_path = project_dir.join("empty-session.jsonl");
@@ -694,18 +705,17 @@ fn test_list_claude_code_sessions_skips_empty_index_entries_without_messages() {
 
     std::fs::write(
         project_dir.join("sessions-index.json"),
-        format!(
-            concat!(
-                "{{\"version\":1,\"entries\":[",
-                "{{\"sessionId\":\"empty-session\",",
-                "\"fullPath\":\"{}\",",
-                "\"firstPrompt\":\"\",",
-                "\"summary\":\"\",",
-                "\"messageCount\":0",
-                "}}]}}"
-            ),
-            transcript_path.display()
-        ),
+        serde_json::to_string(&serde_json::json!({
+            "version": 1,
+            "entries": [{
+                "sessionId": "empty-session",
+                "fullPath": transcript_path,
+                "firstPrompt": "",
+                "summary": "",
+                "messageCount": 0
+            }]
+        }))
+        .unwrap(),
     )
     .unwrap();
 

@@ -582,6 +582,12 @@ pub fn openai_compatible_profile_static_models(profile: OpenAiCompatibleProfile)
             push("glm-4-0520");
             push("codegeex-4");
         }
+        // OmniRoute answers `auto` (its routing model that falls back across
+        // every upstream) out of the box on a fresh install, and exposes a live
+        // catalog through /v1/models once running.
+        "omniroute" => {
+            push("auto");
+        }
         _ => {}
     }
 
@@ -612,6 +618,10 @@ pub fn openai_compatible_profile_context_limit(profile_id: &str, model: &str) ->
         // direct profile runs through the OpenRouter/OpenAI-compatible provider
         // implementation, whose live catalog can be unavailable during startup.
         "deepseek" if model.starts_with("deepseek-v4-") => Some(1_000_000),
+        // OmniRoute's `auto` routing model falls back across every upstream, so
+        // it has no single advertised window; size prompts at the shared
+        // conservative default instead of the generous generic fallback.
+        "omniroute" if model == "auto" => Some(128_000),
         // Fall back to the shared open-weight family classifier. Many bundled
         // OpenAI-compatible gateways (Z.AI/GLM, Moonshot/Kimi, MiniMax, Qwen,
         // etc.) serve `/v1/models` entries without a `context_length`, so this

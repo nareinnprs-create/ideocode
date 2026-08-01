@@ -370,11 +370,11 @@ fn config_file_path() -> Result<PathBuf> {
 pub fn cursor_auth_file_path() -> Result<PathBuf> {
     #[cfg(target_os = "windows")]
     {
-        let appdata = std::env::var_os("APPDATA")
-            .map(PathBuf::from)
-            .or_else(|| crate::storage::user_home_path("AppData/Roaming").ok())
-            .ok_or_else(|| anyhow::anyhow!("No APPDATA directory found"))?;
-        Ok(appdata.join("Cursor").join("auth.json"))
+        // Honor IDEOCODE_HOME isolation (used by the onboarding sandbox and
+        // tests) via the shared user_home_path helper, which falls back to the
+        // real `%APPDATA%` location for normal users.
+        crate::storage::user_home_path("AppData/Roaming/Cursor/auth.json")
+            .context("No home directory found for Cursor auth.json")
     }
 
     #[cfg(target_os = "macos")]
