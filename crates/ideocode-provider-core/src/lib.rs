@@ -898,7 +898,7 @@ impl ModelRouteApiMethod {
             return Self::from_auth_route(route);
         }
         match lower.as_str() {
-            "IDEOCODE-subscription" => Self::IDEOCODESubscription,
+            "ideocode-subscription" => Self::IDEOCODESubscription,
             "openrouter" => Self::OpenRouter,
             "openai-compatible" => Self::OpenAiCompatible { profile_id: None },
             "copilot" => Self::Copilot,

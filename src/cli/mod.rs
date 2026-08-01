@@ -12,6 +12,7 @@ pub mod dispatch;
 pub mod hot_exec;
 pub mod local_repl;
 pub mod login;
+pub mod omniroute;
 pub mod output;
 pub mod proctitle;
 pub mod provider_doctor;

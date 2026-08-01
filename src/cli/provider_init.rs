@@ -103,6 +103,13 @@ pub enum ProviderChoice {
     #[value(alias = "lm-studio")]
     Lmstudio,
     Ollama,
+    #[value(
+        name = "omniroute",
+        alias = "omni-route",
+        alias = "omniroute-gateway",
+        alias = "omni"
+    )]
+    OmniRoute,
     Chutes,
     #[value(alias = "cerebrascode", alias = "cerberascode")]
     Cerebras,
@@ -172,6 +179,7 @@ impl ProviderChoice {
             Self::Celeris => "celeris",
             Self::Lmstudio => "lmstudio",
             Self::Ollama => "ollama",
+            Self::OmniRoute => "omniroute",
             Self::Chutes => "chutes",
             Self::Cerebras => "cerebras",
             Self::AlibabaCodingPlan => "alibaba-coding-plan",
@@ -340,6 +348,10 @@ const PROVIDER_CHOICE_LOGIN_PROVIDERS: &[(ProviderChoice, LoginProviderDescripto
     (
         ProviderChoice::Ollama,
         crate::provider_catalog::OLLAMA_LOGIN_PROVIDER,
+    ),
+    (
+        ProviderChoice::OmniRoute,
+        crate::provider_catalog::OMNIROUTE_LOGIN_PROVIDER,
     ),
     (
         ProviderChoice::Chutes,
@@ -580,6 +592,7 @@ struct AutoProviderAvailability {
     has_gemini: bool,
     has_cursor: bool,
     has_openrouter: bool,
+    has_omniroute: bool,
 }
 
 impl AutoProviderAvailability {
@@ -634,6 +647,7 @@ async fn detect_auto_provider_flags() -> AutoProviderAvailability {
         has_gemini: auth_status.gemini == auth::AuthState::Available,
         has_cursor: auth_status.cursor == auth::AuthState::Available,
         has_openrouter: auth_status.openrouter == auth::AuthState::Available,
+        has_omniroute: false,
         auth_status,
     }
 }
@@ -1531,6 +1545,7 @@ async fn init_provider_with_options(
         | ProviderChoice::Celeris
         | ProviderChoice::Lmstudio
         | ProviderChoice::Ollama
+        | ProviderChoice::OmniRoute
         | ProviderChoice::Chutes
         | ProviderChoice::Cerebras
         | ProviderChoice::AlibabaCodingPlan
@@ -1715,6 +1730,7 @@ async fn init_provider_with_options(
                     has_gemini,
                     has_cursor,
                     has_openrouter,
+                    has_omniroute: false,
                 };
                 crate::logging::info(&format!(
                     "[TIMING] auto_provider_bootstrap: detect={}ms, external_import={}, supplemental={}ms, final_has_any={}",
@@ -1730,7 +1746,31 @@ async fn init_provider_with_options(
                 ));
             }
 
-            if availability.has_any_provider() {
+            // OmniRoute: a free, zero-config local AI gateway. It is the seamless
+            // fallback only when nothing else is configured, so a fresh install
+            // "just works" without touching any user-configured provider.
+            if !availability.has_any_provider()
+                && !availability.has_omniroute
+                && std::env::var_os("IDEOCODE_PROVIDER_PROFILE_ACTIVE").is_none()
+                && std::env::var_os("IDEOCODE_NAMED_PROVIDER_PROFILE").is_none()
+                && crate::cli::omniroute::ensure_gateway().await?
+            {
+                availability.has_omniroute = true;
+                crate::logging::info("[TIMING] auto_provider_bootstrap: omniroute_gateway=up");
+            }
+
+            if availability.has_omniroute {
+                crate::provider_catalog::force_apply_openai_compatible_profile_env(Some(
+                    crate::provider_catalog::OMNIROUTE_PROFILE,
+                ));
+                crate::provider::activation::apply_openai_compatible_runtime(Some(
+                    "auto".to_string(),
+                ))?;
+                init_notice(
+                    "Using OmniRoute local AI gateway (zero-config; use /model to switch)",
+                );
+                Arc::new(ideocode_provider_openrouter_runtime::OpenRouterProvider::new()?)
+            } else if availability.has_any_provider() {
                 let multi = provider::MultiProvider::from_auth_status(availability.auth_status);
                 init_notice(&format!(
                     "Using {} (use /model to switch models)",

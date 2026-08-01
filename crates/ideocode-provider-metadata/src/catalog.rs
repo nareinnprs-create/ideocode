@@ -397,6 +397,22 @@ pub const OLLAMA_PROFILE: OpenAiCompatibleProfile = OpenAiCompatibleProfile {
     requires_api_key: false,
 };
 
+// OmniRoute is the free MIT AI gateway: one local endpoint
+// (`http://localhost:20128/v1`) that routes across 290+ providers (90+ free
+// tiers) with quota-aware auto-fallback and compression. It is keyless out of
+// the box and answers model `auto` immediately, so it fits the same
+// no-auth-localhost pattern as LM Studio / Ollama.
+pub const OMNIROUTE_PROFILE: OpenAiCompatibleProfile = OpenAiCompatibleProfile {
+    id: "omniroute",
+    display_name: "OmniRoute",
+    api_base: "http://localhost:20128/v1",
+    api_key_env: "OMNIROUTE_API_KEY",
+    env_file: "omniroute.env",
+    setup_url: "https://github.com/diegosouzapw/OmniRoute",
+    default_model: Some("auto"),
+    requires_api_key: false,
+};
+
 pub const CHUTES_PROFILE: OpenAiCompatibleProfile = OpenAiCompatibleProfile {
     id: "chutes",
     display_name: "Chutes",
@@ -480,7 +496,7 @@ pub const OPENAI_COMPAT_PROFILE: OpenAiCompatibleProfile = OpenAiCompatibleProfi
     requires_api_key: true,
 };
 
-pub(crate) const OPENAI_COMPAT_PROFILES: [OpenAiCompatibleProfile; 41] = [
+pub(crate) const OPENAI_COMPAT_PROFILES: [OpenAiCompatibleProfile; 42] = [
     OPENCODE_PROFILE,
     OPENCODE_GO_PROFILE,
     ZAI_PROFILE,
@@ -517,6 +533,7 @@ pub(crate) const OPENAI_COMPAT_PROFILES: [OpenAiCompatibleProfile; 41] = [
     CELERIS_PROFILE,
     LMSTUDIO_PROFILE,
     OLLAMA_PROFILE,
+    OMNIROUTE_PROFILE,
     GITHUB_MODELS_PROFILE,
     SAMBANOVA_PROFILE,
     REPLICATE_PROFILE,
@@ -569,7 +586,7 @@ pub const IDEOCODE_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescri
     auth_kind: LoginProviderAuthKind::ApiKey,
     auth_state_key: LoginProviderAuthStateKey::IDEOCODE,
     auth_status_method: "API key",
-    aliases: &["subscription", "IDEOCODE-subscription"],
+    aliases: &["subscription", "IDEOCODE-subscription", "ideocode"],
     menu_detail: "curated IDEOCODE subscription models",
     recommended: false,
     target: LoginProviderTarget::IDEOCODE,
@@ -678,7 +695,7 @@ pub const ZAI_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescriptor 
     auth_kind: LoginProviderAuthKind::ApiKey,
     auth_state_key: LoginProviderAuthStateKey::OpenRouterLike,
     auth_status_method: "API key",
-    aliases: &["z.ai", "z-ai", "zai-coding", "zhipu"],
+    aliases: &["z.ai", "z-ai", "zai-coding"],
     menu_detail: "API key",
     recommended: false,
     target: LoginProviderTarget::OpenAiCompatible(ZAI_PROFILE),
@@ -1042,6 +1059,19 @@ pub const OLLAMA_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescript
     order: LoginProviderSurfaceOrder::new(Some(35), Some(35), Some(35), Some(35), Some(35)),
 };
 
+pub const OMNIROUTE_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescriptor {
+    id: "omniroute",
+    display_name: "OmniRoute",
+    auth_kind: LoginProviderAuthKind::Local,
+    auth_state_key: LoginProviderAuthStateKey::OpenRouterLike,
+    auth_status_method: "local endpoint",
+    aliases: &["omni-route", "omniroute-gateway", "omni"],
+    menu_detail: "free local AI gateway (zero-config, 290+ providers)",
+    recommended: false,
+    target: LoginProviderTarget::OpenAiCompatible(OMNIROUTE_PROFILE),
+    order: LoginProviderSurfaceOrder::new(Some(42), Some(42), Some(42), Some(42), Some(42)),
+};
+
 pub const OPENAI_COMPAT_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescriptor {
     id: "openai-compatible",
     display_name: "OpenAI-compatible",
@@ -1216,7 +1246,7 @@ pub const GOOGLE_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescript
     order: LoginProviderSurfaceOrder::new(Some(13), None, None, None, None),
 };
 
-pub(crate) const LOGIN_PROVIDERS: [LoginProviderDescriptor; 52] = [
+pub(crate) const LOGIN_PROVIDERS: [LoginProviderDescriptor; 53] = [
     AUTO_IMPORT_LOGIN_PROVIDER,
     CLAUDE_LOGIN_PROVIDER,
     ANTHROPIC_API_LOGIN_PROVIDER,
@@ -1262,6 +1292,7 @@ pub(crate) const LOGIN_PROVIDERS: [LoginProviderDescriptor; 52] = [
     ZHIPU_DIRECT_LOGIN_PROVIDER,
     LMSTUDIO_LOGIN_PROVIDER,
     OLLAMA_LOGIN_PROVIDER,
+    OMNIROUTE_LOGIN_PROVIDER,
     OPENAI_COMPAT_LOGIN_PROVIDER,
     CURSOR_LOGIN_PROVIDER,
     COPILOT_LOGIN_PROVIDER,

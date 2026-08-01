@@ -190,7 +190,11 @@ pub fn auth_status_login_providers() -> Vec<LoginProviderDescriptor> {
 pub fn resolve_login_provider(input: &str) -> Option<LoginProviderDescriptor> {
     let normalized = normalize_provider_input(input)?;
     login_providers().iter().copied().find(|provider| {
-        provider.id == normalized || provider.aliases.iter().any(|alias| *alias == normalized)
+        provider.id.eq_ignore_ascii_case(&normalized)
+            || provider
+                .aliases
+                .iter()
+                .any(|alias| alias.eq_ignore_ascii_case(&normalized))
     })
 }
 
@@ -500,6 +504,36 @@ mod tests {
     }
 
     #[test]
+    fn omniroute_profile_is_local_openai_compatible_without_required_api_key() {
+        assert_eq!(OMNIROUTE_PROFILE.id, "omniroute");
+        assert_eq!(OMNIROUTE_PROFILE.display_name, "OmniRoute");
+        assert_eq!(OMNIROUTE_PROFILE.api_base, "http://localhost:20128/v1");
+        assert_eq!(OMNIROUTE_PROFILE.api_key_env, "OMNIROUTE_API_KEY");
+        assert_eq!(OMNIROUTE_PROFILE.env_file, "omniroute.env");
+        assert_eq!(
+            OMNIROUTE_PROFILE.setup_url,
+            "https://github.com/diegosouzapw/OmniRoute"
+        );
+        assert_eq!(OMNIROUTE_PROFILE.default_model, Some("auto"));
+        const {
+            assert!(!OMNIROUTE_PROFILE.requires_api_key);
+        }
+
+        assert_eq!(
+            OMNIROUTE_LOGIN_PROVIDER.auth_kind,
+            LoginProviderAuthKind::Local
+        );
+        assert_eq!(
+            OMNIROUTE_LOGIN_PROVIDER.auth_status_method,
+            "local endpoint"
+        );
+        assert!(matches!(
+            OMNIROUTE_LOGIN_PROVIDER.target,
+            LoginProviderTarget::OpenAiCompatible(profile) if profile.id == "omniroute"
+        ));
+    }
+
+    #[test]
     fn matrix_login_provider_aliases_resolve_to_canonical_ids() {
         assert_eq!(
             resolve_login_provider("subscription").map(|provider| provider.id),
@@ -519,7 +553,7 @@ mod tests {
         );
         assert_eq!(
             resolve_login_provider("zhipu").map(|provider| provider.id),
-            Some("zai")
+            Some("zhipu-direct")
         );
         assert_eq!(
             resolve_login_provider("kimi").map(|provider| provider.id),
@@ -588,6 +622,10 @@ mod tests {
         assert_eq!(
             resolve_login_provider("lm-studio").map(|provider| provider.id),
             Some("lmstudio")
+        );
+        assert_eq!(
+            resolve_login_provider("omniroute-gateway").map(|provider| provider.id),
+            Some("omniroute")
         );
         assert_eq!(
             resolve_login_provider("gmail").map(|provider| provider.id),

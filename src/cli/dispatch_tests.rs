@@ -5,6 +5,7 @@
 use super::*;
 use crate::transport::Listener;
 
+#[cfg(target_os = "linux")]
 #[test]
 fn only_file_controlled_debug_clients_need_parent_lifetime_binding() {
     let _lock = crate::storage::lock_test_env();

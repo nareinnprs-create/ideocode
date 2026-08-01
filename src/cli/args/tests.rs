@@ -53,6 +53,16 @@ fn test_provider_choice_aliases_parse() {
 
     let args = Args::try_parse_from(["IDEOCODE", "--provider", "cgc", "run", "smoke"]).unwrap();
     assert_eq!(args.provider, ProviderChoice::Comtegra);
+
+    let args = Args::try_parse_from(["IDEOCODE", "--provider", "omniroute", "run", "smoke"]).unwrap();
+    assert_eq!(args.provider, ProviderChoice::OmniRoute);
+
+    let args =
+        Args::try_parse_from(["IDEOCODE", "--provider", "omniroute-gateway", "run", "smoke"]).unwrap();
+    assert_eq!(args.provider, ProviderChoice::OmniRoute);
+
+    let args = Args::try_parse_from(["IDEOCODE", "--provider", "omni", "run", "smoke"]).unwrap();
+    assert_eq!(args.provider, ProviderChoice::OmniRoute);
 }
 
 #[test]
