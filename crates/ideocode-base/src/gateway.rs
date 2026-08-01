@@ -19,9 +19,10 @@
 use anyhow::Result;
 use futures::SinkExt;
 use futures::stream::StreamExt;
-use std::net::SocketAddr;
+use std::collections::HashMap;
+use std::net::{IpAddr, SocketAddr};
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpListener;
 use tokio_tungstenite::tungstenite::Message;
@@ -40,6 +41,89 @@ pub use registry::DeviceRegistry;
 /// Default gateway port ("jc" on phone keypad = 52, but we use 7643)
 pub const DEFAULT_PORT: u16 = 7643;
 const WEBSOCKET_KEEPALIVE_INTERVAL_SECS: u64 = 20;
+
+/// Max failed pairing attempts per IP within `PAIR_RATE_WINDOW`.
+const PAIR_MAX_ATTEMPTS: usize = 10;
+const PAIR_RATE_WINDOW: Duration = Duration::from_secs(300);
+
+/// Sliding-window throttle for `POST /pair` so a 6-digit pairing code cannot
+/// be brute-forced. Attempts are counted per peer IP.
+#[derive(Debug, Default)]
+struct PairRateLimiter {
+    attempts: HashMap<IpAddr, Vec<Instant>>,
+}
+
+impl PairRateLimiter {
+    /// Register one pairing attempt. Returns `false` (reject with 429) when the
+    /// peer has exceeded the attempt budget within the sliding window.
+    fn attempt(&mut self, ip: IpAddr) -> bool {
+        let now = Instant::now();
+        let attempts = self.attempts.entry(ip).or_default();
+        attempts.retain(|t| now.duration_since(*t) < PAIR_RATE_WINDOW);
+        if attempts.len() >= PAIR_MAX_ATTEMPTS {
+            return false;
+        }
+        attempts.push(now);
+        true
+    }
+
+    /// Clear the throttling state for a peer after a successful pairing.
+    fn clear(&mut self, ip: IpAddr) {
+        self.attempts.remove(&ip);
+    }
+}
+
+/// True when a browser `Origin` header belongs to the local machine or a
+/// private/LAN network, i.e. an origin the pairing flow is designed to serve.
+/// Public websites get no CORS headers, so they cannot drive pairing attempts
+/// or reuse gateway credentials from a browser.
+fn is_trusted_origin(origin: &str) -> bool {
+    let Some(rest) = origin.split_once("://").map(|(_, r)| r) else {
+        return false;
+    };
+    let host_port = rest.split('/').next().unwrap_or(rest);
+    let host = if let Some(r) = host_port.strip_prefix('[') {
+        r.split(']').next().unwrap_or("")
+    } else {
+        host_port.split(':').next().unwrap_or(host_port)
+    };
+    is_trusted_host(host)
+}
+
+fn is_trusted_host(host: &str) -> bool {
+    if host.eq_ignore_ascii_case("localhost") {
+        return true;
+    }
+    match host.parse::<IpAddr>() {
+        Ok(IpAddr::V4(v4)) => {
+            let octets = v4.octets();
+            let cgnat = octets[0] == 100 && (octets[1] & 0xc0) == 0x40;
+            v4.is_loopback()
+                || v4.is_private()
+                || v4.is_link_local()
+                || v4.is_unspecified()
+                || cgnat
+        }
+        Ok(IpAddr::V6(v6)) => {
+            v6.is_loopback()
+                || v6.is_unique_local()
+                || v6.is_unicast_link_local()
+                || v6.is_unspecified()
+        }
+        Err(_) => false,
+    }
+}
+
+fn extract_origin(headers: &str) -> Option<String> {
+    headers.lines().find_map(|line| {
+        let (name, value) = line.split_once(':')?;
+        if name.eq_ignore_ascii_case("origin") {
+            Some(value.trim().to_string())
+        } else {
+            None
+        }
+    })
+}
 
 /// Gateway configuration
 #[derive(Debug, Clone)]
@@ -83,14 +167,18 @@ pub async fn run_gateway(
     logging::info(&format!("WebSocket gateway listening on {}", addr));
 
     let registry = Arc::new(tokio::sync::RwLock::new(DeviceRegistry::load()));
+    let pair_limiter = Arc::new(std::sync::Mutex::new(PairRateLimiter::default()));
 
     loop {
         let (tcp_stream, peer_addr) = listener.accept().await?;
         let registry = Arc::clone(&registry);
+        let pair_limiter = Arc::clone(&pair_limiter);
         let client_tx = client_tx.clone();
 
         tokio::spawn(async move {
-            if let Err(e) = handle_connection(tcp_stream, peer_addr, registry, client_tx).await {
+            if let Err(e) =
+                handle_connection(tcp_stream, peer_addr, registry, pair_limiter, client_tx).await
+            {
                 logging::error(&format!(
                     "Gateway connection error from {}: {}",
                     peer_addr, e
@@ -109,6 +197,7 @@ async fn handle_connection(
     tcp_stream: tokio::net::TcpStream,
     peer_addr: SocketAddr,
     registry: Arc<tokio::sync::RwLock<DeviceRegistry>>,
+    pair_limiter: Arc<std::sync::Mutex<PairRateLimiter>>,
     client_tx: tokio::sync::mpsc::UnboundedSender<GatewayClient>,
 ) -> Result<()> {
     let mut peek_buf = [0u8; 2048];
@@ -123,7 +212,7 @@ async fn handle_connection(
     if is_websocket {
         handle_ws_connection(tcp_stream, peer_addr, registry, client_tx).await
     } else {
-        handle_http(tcp_stream, peer_addr, registry).await
+        handle_http(tcp_stream, peer_addr, registry, pair_limiter).await
     }
 }
 
@@ -327,11 +416,19 @@ fn find_header_end(data: &[u8]) -> Option<usize> {
     data.windows(4).position(|w| w == b"\r\n\r\n")
 }
 
-fn http_response(status: u16, status_text: &str, body: &str) -> Vec<u8> {
+fn http_response(status: u16, status_text: &str, body: &str, cors_origin: Option<&str>) -> Vec<u8> {
+    let cors = match cors_origin {
+        Some(origin) if is_trusted_origin(origin) => format!(
+            "Access-Control-Allow-Origin: {}\r\nAccess-Control-Allow-Headers: Content-Type, Authorization\r\n",
+            origin
+        ),
+        _ => String::new(),
+    };
     format!(
-        "HTTP/1.1 {} {}\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Headers: Content-Type\r\n\r\n{}",
-        status, status_text, body.len(), body
-    ).into_bytes()
+        "HTTP/1.1 {} {}\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n{}",
+        status, status_text, body.len(), cors
+    )
+    .into_bytes()
 }
 
 /// Handle a plain HTTP request (not WebSocket).
@@ -343,6 +440,7 @@ async fn handle_http(
     mut tcp_stream: tokio::net::TcpStream,
     peer_addr: SocketAddr,
     registry: Arc<tokio::sync::RwLock<DeviceRegistry>>,
+    pair_limiter: Arc<std::sync::Mutex<PairRateLimiter>>,
 ) -> Result<()> {
     let mut buf = vec![0u8; 8192];
     let mut filled = 0usize;
@@ -413,6 +511,8 @@ async fn handle_http(
         method, path_base, peer_addr
     ));
 
+    let cors_origin = extract_origin(&headers_text);
+
     let response = match (method, path_base) {
         ("GET", "/health") => {
             let body = serde_json::json!({
@@ -420,24 +520,50 @@ async fn handle_http(
                 "version": ideocode_build_meta::version(),
                 "gateway": true,
             });
-            http_response(200, "OK", &body.to_string())
+            http_response(200, "OK", &body.to_string(), cors_origin.as_deref())
         }
 
         ("POST", "/pair") => {
+            let throttled = {
+                let mut limiter = pair_limiter.lock().unwrap_or_else(|p| p.into_inner());
+                !limiter.attempt(peer_addr.ip())
+            };
+            if throttled {
+                let body = serde_json::json!({"error": "Too many pairing attempts. Try again later."});
+                let response = http_response(
+                    429,
+                    "Too Many Requests",
+                    &body.to_string(),
+                    cors_origin.as_deref(),
+                );
+                tcp_stream.write_all(&response).await?;
+                tcp_stream.shutdown().await?;
+                return Ok(());
+            }
             // Extract JSON body (after \r\n\r\n)
             let body_str = request.split("\r\n\r\n").nth(1).unwrap_or("");
-            handle_pair_request(body_str, &registry).await
+            handle_pair_request(body_str, &registry, &pair_limiter, peer_addr.ip(), cors_origin)
+                .await
         }
 
         ("OPTIONS", _) => {
-            // CORS preflight
-            "HTTP/1.1 204 No Content\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, POST, OPTIONS\r\nAccess-Control-Allow-Headers: Content-Type, Authorization\r\nAccess-Control-Max-Age: 86400\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
-            .to_string().into_bytes()
+            // CORS preflight - CORS headers are only emitted for trusted origins
+            if let Some(origin) = cors_origin.as_deref().filter(|o| is_trusted_origin(o)) {
+                format!(
+                    "HTTP/1.1 204 No Content\r\nAccess-Control-Allow-Origin: {}\r\nAccess-Control-Allow-Methods: GET, POST, OPTIONS\r\nAccess-Control-Allow-Headers: Content-Type, Authorization\r\nAccess-Control-Max-Age: 86400\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
+                    origin
+                )
+                .into_bytes()
+            } else {
+                "HTTP/1.1 204 No Content\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
+                    .to_string()
+                    .into_bytes()
+            }
         }
 
         _ => {
             let body = serde_json::json!({"error": "Not found"});
-            http_response(404, "Not Found", &body.to_string())
+            http_response(404, "Not Found", &body.to_string(), cors_origin.as_deref())
         }
     };
 
@@ -469,6 +595,9 @@ async fn handle_http(
 async fn handle_pair_request(
     body: &str,
     registry: &Arc<tokio::sync::RwLock<DeviceRegistry>>,
+    pair_limiter: &Arc<std::sync::Mutex<PairRateLimiter>>,
+    peer_ip: IpAddr,
+    cors_origin: Option<String>,
 ) -> Vec<u8> {
     #[derive(serde::Deserialize)]
     struct PairRequest {
@@ -482,7 +611,7 @@ async fn handle_pair_request(
         Ok(r) => r,
         Err(e) => {
             let body = serde_json::json!({"error": format!("Invalid JSON: {}", e)});
-            return http_response(400, "Bad Request", &body.to_string());
+            return http_response(400, "Bad Request", &body.to_string(), cors_origin.as_deref());
         }
     };
 
@@ -491,10 +620,16 @@ async fn handle_pair_request(
     // Reload from disk - pairing codes are generated by `IDEOCODE pair` CLI
     *reg = DeviceRegistry::load();
 
-    if !reg.validate_code(&req.code) {
+    if !reg.validate_code(req.code.trim()) {
         let body = serde_json::json!({"error": "Invalid or expired pairing code"});
-        return http_response(401, "Unauthorized", &body.to_string());
+        return http_response(401, "Unauthorized", &body.to_string(), cors_origin.as_deref());
     }
+
+    // Successful pairing resets the throttle for this peer.
+    pair_limiter
+        .lock()
+        .unwrap_or_else(|p| p.into_inner())
+        .clear(peer_ip);
 
     let token = reg.pair_device(
         req.device_id.clone(),
@@ -512,7 +647,7 @@ async fn handle_pair_request(
         "server_name": "IDEOCODE",
         "server_version": ideocode_build_meta::version(),
     });
-    http_response(200, "OK", &body.to_string())
+    http_response(200, "OK", &body.to_string(), cors_origin.as_deref())
 }
 
 #[cfg(test)]

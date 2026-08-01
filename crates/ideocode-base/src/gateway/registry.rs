@@ -60,6 +60,13 @@ impl DeviceRegistry {
             expires_at: expires.to_rfc3339(),
         });
 
+        // Keep only the most recent codes so an unbounded registry cannot
+        // accumulate stale entries.
+        if self.pending_codes.len() > 20 {
+            let keep_from = self.pending_codes.len() - 20;
+            self.pending_codes = self.pending_codes.split_off(keep_from);
+        }
+
         let _ = self.save();
         code
     }

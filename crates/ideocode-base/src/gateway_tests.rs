@@ -139,6 +139,57 @@ fn test_find_header_end() {
 }
 
 #[test]
+fn test_pair_rate_limiter_throttles_after_budget() {
+    use std::net::IpAddr;
+    let mut limiter = super::PairRateLimiter::default();
+    let ip: IpAddr = "192.168.1.50".parse().unwrap();
+
+    for _ in 0..super::PAIR_MAX_ATTEMPTS {
+        assert!(limiter.attempt(ip), "attempts within budget must be allowed");
+    }
+    assert!(
+        !limiter.attempt(ip),
+        "attempts past the budget must be rejected"
+    );
+
+    limiter.clear(ip);
+    assert!(limiter.attempt(ip), "clear resets the budget");
+}
+
+#[test]
+fn test_is_trusted_origin() {
+    assert!(super::is_trusted_origin("http://localhost:3000"));
+    assert!(super::is_trusted_origin("http://127.0.0.1:7643"));
+    assert!(super::is_trusted_origin("http://192.168.1.10:8080"));
+    assert!(super::is_trusted_origin("http://100.64.0.5:7643"));
+    assert!(super::is_trusted_origin("http://10.0.0.5"));
+    assert!(!super::is_trusted_origin("https://evil.example.com"));
+    assert!(!super::is_trusted_origin("not-a-url"));
+    assert!(!super::is_trusted_origin(""));
+}
+
+#[test]
+fn test_http_response_emits_cors_only_for_trusted_origin() {
+    let trusted = String::from_utf8(super::http_response(
+        200,
+        "OK",
+        "{}",
+        Some("http://192.168.1.5"),
+    ))
+    .unwrap();
+    assert!(trusted.contains("Access-Control-Allow-Origin: http://192.168.1.5"));
+
+    let untrusted = String::from_utf8(super::http_response(
+        200,
+        "OK",
+        "{}",
+        Some("https://evil.example.com"),
+    ))
+    .unwrap();
+    assert!(!untrusted.contains("Access-Control-Allow-Origin"));
+}
+
+#[test]
 fn test_authorize_ws_device_valid_token() {
     let mut registry = DeviceRegistry::default();
     let token = registry.pair_device("dev-1".to_string(), "iPhone".to_string(), None);
