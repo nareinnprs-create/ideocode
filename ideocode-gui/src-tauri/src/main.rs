@@ -5,6 +5,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands;
+mod gateway;
 
 use commands::ChatState;
 use std::fs::{self, OpenOptions};
@@ -62,6 +63,11 @@ fn log_error(msg: String) {
 
 fn main() {
     init_panic_hook();
+
+    // Keep the built-in Baanzon Verso engine running in the background: the
+    // supervisor auto-installs, auto-logs-in, and self-heals it within a 600s
+    // budget whenever it becomes unreachable.
+    gateway::spawn_supervisor();
 
     if let Err(e) = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())

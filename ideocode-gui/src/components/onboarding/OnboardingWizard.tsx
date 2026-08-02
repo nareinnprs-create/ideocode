@@ -13,6 +13,7 @@ const THEMES = [
 ] as const;
 
 const PROVIDERS = [
+  { id: "baanzon-verso", label: "Baanzon Verso", models: "Built-in AI (auto routing)" },
   { id: "openai", label: "OpenAI", models: "GPT-4o, GPT-4o-mini" },
   { id: "anthropic", label: "Anthropic", models: "Claude 3.5 Sonnet, Haiku" },
   { id: "google", label: "Google Gemini", models: "Gemini 2.5 Pro, Flash" },
@@ -20,6 +21,7 @@ const PROVIDERS = [
 ];
 
 const DEFAULT_MODEL_BY_PROVIDER: Record<string, string> = {
+  "baanzon-verso": "auto",
   openai: "gpt-4o",
   anthropic: "claude-3-5-sonnet",
   google: "gemini-2.5-pro",
@@ -33,7 +35,7 @@ interface Props {
 export function OnboardingWizard({ onComplete }: Props) {
   const [step, setStep] = useState<Step>("welcome");
   const [theme, setTheme] = useState<Theme>("midnight");
-  const [provider, setProvider] = useState("openai");
+  const [provider, setProvider] = useState("baanzon-verso");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -46,7 +48,7 @@ export function OnboardingWizard({ onComplete }: Props) {
       const settings: AppSettings = {
         theme,
         active_provider: provider,
-        active_model: DEFAULT_MODEL_BY_PROVIDER[provider] ?? "gpt-4o",
+        active_model: DEFAULT_MODEL_BY_PROVIDER[provider] ?? "auto",
         font_size: 13,
         font_family: "JetBrains Mono",
         tab_size: 2,

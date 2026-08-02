@@ -190,7 +190,6 @@ IDEOCODE login --provider openrouter
 IDEOCODE login --provider deepseek
 IDEOCODE login --provider ollama
 IDEOCODE login --provider lmstudio
-IDEOCODE login --provider omniroute
 
 # Custom endpoint
 IDEOCODE provider add my-api \
@@ -213,7 +212,7 @@ IDEOCODE provider add my-api \
 | DeepSeek | OpenAI-compat | API key |
 | Ollama | Local | None |
 | LM Studio | Local | None |
-| OmniRoute | Local gateway | None (zero-config) |
+| Baanzon Verso | Built-in AI (local) | None (zero-config) |
 
 Use `/account` inside the TUI to manage multiple accounts per provider and switch between them on the fly.
 

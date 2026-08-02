@@ -506,14 +506,11 @@ mod tests {
     #[test]
     fn omniroute_profile_is_local_openai_compatible_without_required_api_key() {
         assert_eq!(OMNIROUTE_PROFILE.id, "omniroute");
-        assert_eq!(OMNIROUTE_PROFILE.display_name, "OmniRoute");
+        assert_eq!(OMNIROUTE_PROFILE.display_name, "Baanzon Verso");
         assert_eq!(OMNIROUTE_PROFILE.api_base, "http://localhost:20128/v1");
         assert_eq!(OMNIROUTE_PROFILE.api_key_env, "OMNIROUTE_API_KEY");
         assert_eq!(OMNIROUTE_PROFILE.env_file, "omniroute.env");
-        assert_eq!(
-            OMNIROUTE_PROFILE.setup_url,
-            "https://github.com/diegosouzapw/OmniRoute"
-        );
+        assert_eq!(OMNIROUTE_PROFILE.setup_url, "http://localhost:20128");
         assert_eq!(OMNIROUTE_PROFILE.default_model, Some("auto"));
         const {
             assert!(!OMNIROUTE_PROFILE.requires_api_key);

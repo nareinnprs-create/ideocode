@@ -404,11 +404,11 @@ pub const OLLAMA_PROFILE: OpenAiCompatibleProfile = OpenAiCompatibleProfile {
 // no-auth-localhost pattern as LM Studio / Ollama.
 pub const OMNIROUTE_PROFILE: OpenAiCompatibleProfile = OpenAiCompatibleProfile {
     id: "omniroute",
-    display_name: "OmniRoute",
+    display_name: "Baanzon Verso",
     api_base: "http://localhost:20128/v1",
     api_key_env: "OMNIROUTE_API_KEY",
     env_file: "omniroute.env",
-    setup_url: "https://github.com/diegosouzapw/OmniRoute",
+    setup_url: "http://localhost:20128",
     default_model: Some("auto"),
     requires_api_key: false,
 };
@@ -1061,12 +1061,12 @@ pub const OLLAMA_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescript
 
 pub const OMNIROUTE_LOGIN_PROVIDER: LoginProviderDescriptor = LoginProviderDescriptor {
     id: "omniroute",
-    display_name: "OmniRoute",
+    display_name: "Baanzon Verso",
     auth_kind: LoginProviderAuthKind::Local,
     auth_state_key: LoginProviderAuthStateKey::OpenRouterLike,
     auth_status_method: "local endpoint",
     aliases: &["omni-route", "omniroute-gateway", "omni"],
-    menu_detail: "free local AI gateway (zero-config, 290+ providers)",
+    menu_detail: "Baanzon Verso - built-in local AI assistant (zero-config)",
     recommended: false,
     target: LoginProviderTarget::OpenAiCompatible(OMNIROUTE_PROFILE),
     order: LoginProviderSurfaceOrder::new(Some(42), Some(42), Some(42), Some(42), Some(42)),

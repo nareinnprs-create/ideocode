@@ -1757,6 +1757,10 @@ async fn init_provider_with_options(
             {
                 availability.has_omniroute = true;
                 crate::logging::info("[TIMING] auto_provider_bootstrap: omniroute_gateway=up");
+                // Keep the Baanzon Verso engine running in the background once it
+                // is in use: the supervisor restarts it within a 600s budget if it
+                // ever becomes unreachable.
+                crate::cli::omniroute::spawn_supervisor();
             }
 
             if availability.has_omniroute {
@@ -1767,7 +1771,7 @@ async fn init_provider_with_options(
                     "auto".to_string(),
                 ))?;
                 init_notice(
-                    "Using OmniRoute local AI gateway (zero-config; use /model to switch)",
+                    "Using Baanzon Verso (built-in AI; use /model to switch)",
                 );
                 Arc::new(ideocode_provider_openrouter_runtime::OpenRouterProvider::new()?)
             } else if availability.has_any_provider() {

@@ -35,6 +35,21 @@ pub struct ProviderStatus {
 pub fn list_providers() -> Vec<Provider> {
     vec![
         Provider {
+            id: "baanzon-verso".into(),
+            name: "Baanzon Verso".into(),
+            api_key_env: "OMNIROUTE_API_KEY".into(),
+            is_configured: true,
+            models: vec![Model {
+                id: "auto".into(),
+                name: "Baanzon Verso (auto)".into(),
+                max_tokens: 128000,
+                supports_vision: true,
+                supports_tools: true,
+                cost_per_1k_input: None,
+                cost_per_1k_output: None,
+            }],
+        },
+        Provider {
             id: "openai".into(),
             name: "OpenAI".into(),
             api_key_env: "OPENAI_API_KEY".into(),
@@ -152,12 +167,20 @@ pub fn list_providers() -> Vec<Provider> {
 
 #[tauri::command]
 pub fn get_provider_status() -> ProviderStatus {
+    let active_provider = std::env::var("IDEOCODE_PROVIDER")
+        .unwrap_or_else(|_| "baanzon-verso".into());
+    let active_provider = if active_provider == "omniroute" {
+        "baanzon-verso".into()
+    } else {
+        active_provider
+    };
+    let api_key_configured = active_provider == "baanzon-verso"
+        || std::env::var("OPENAI_API_KEY").map(|k| !k.is_empty()).unwrap_or(false)
+        || std::env::var("ANTHROPIC_API_KEY").map(|k| !k.is_empty()).unwrap_or(false);
     ProviderStatus {
-        active_provider: std::env::var("IDEOCODE_PROVIDER")
-            .unwrap_or_else(|_| "openai".into()),
+        active_provider,
         active_model: std::env::var("IDEOCODE_MODEL")
-            .unwrap_or_else(|_| "gpt-4o".into()),
-        api_key_configured: std::env::var("OPENAI_API_KEY").map(|k| !k.is_empty()).unwrap_or(false)
-            || std::env::var("ANTHROPIC_API_KEY").map(|k| !k.is_empty()).unwrap_or(false),
+            .unwrap_or_else(|_| "auto".into()),
+        api_key_configured,
     }
 }
