@@ -22,6 +22,7 @@ target-ttest*/
 # GUI dependencies and build artifacts
 ideocode-gui/node_modules/
 ideocode-gui/dist/
+ideocode-gui/public/monaco/
 ideocode-gui/src-tauri/target/
 ideocode-gui/src-tauri/.cargo/
 /releases/

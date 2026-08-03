@@ -6,10 +6,12 @@ import { useAppStore } from "../../stores/appStore";
 import { getSettings } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
 
-// Configure Monaco to use bundled files
+// Configure Monaco to use the bundled files (copied to public/monaco/vs by
+// scripts/copy-monaco.mjs so the editor works fully offline and matches the
+// CSP, which only allows same-origin scripts).
 loader.config({
   paths: {
-    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs",
+    vs: "/monaco/vs",
   },
 });
 

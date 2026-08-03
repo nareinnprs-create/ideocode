@@ -1,9 +1,34 @@
 {
+  "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Default capabilities for IDEOCODE",
+  "description": "Default capabilities for the main window",
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "shell:allow-open"
+    "shell:allow-open",
+    {
+      "identifier": "shell:allow-spawn",
+      "allow": [
+        { "name": "cmd", "cmd": "cmd", "args": true },
+        { "name": "cmd.exe", "cmd": "cmd.exe", "args": true },
+        { "name": "sh", "cmd": "sh", "args": true },
+        { "name": "bash", "cmd": "bash", "args": true },
+        { "name": "zsh", "cmd": "zsh", "args": true },
+        { "name": "pwsh", "cmd": "pwsh", "args": true },
+        { "name": "powershell", "cmd": "powershell", "args": true }
+      ]
+    },
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        { "name": "cmd", "cmd": "cmd", "args": true },
+        { "name": "cmd.exe", "cmd": "cmd.exe", "args": true },
+        { "name": "sh", "cmd": "sh", "args": true },
+        { "name": "bash", "cmd": "bash", "args": true },
+        { "name": "zsh", "cmd": "zsh", "args": true },
+        { "name": "pwsh", "cmd": "pwsh", "args": true },
+        { "name": "powershell", "cmd": "powershell", "args": true }
+      ]
+    }
   ]
 }
