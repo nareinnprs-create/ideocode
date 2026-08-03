@@ -1,0 +1,22 @@
+{
+  "version": "0.63.0",
+  "date": "2026-08-03",
+  "title": "Baanzon Verso built-in AI, zero-config gateway fallback, and cross-platform hardening",
+  "highlights": [
+    "OmniRoute is now Baanzon Verso: the built-in AI ships vendored with auto-install and a self-heal supervisor",
+    "A local AI gateway provides a zero-config fallback when no provider is configured",
+    "Full Windows support is verified: the app-core suite passes 987/987 on Windows"
+  ],
+  "improvements": [
+    "GUI sessions launch and reload reliably across platforms",
+    "Subprocess tool calls use arg-based invocation and panel toggles are fixed in the TUI",
+    "Background-task waits report progress deterministically"
+  ],
+  "fixes": [
+    "Gateway pairing and CORS are hardened",
+    "Provider runtime edge cases are fixed",
+    "GUI backend blocks path traversal and restricts shell permissions",
+    "Session IDs are sanitized and Cursor auth is isolated per session",
+    "Windows compile blockers are resolved so the release builds and passes its suite"
+  ]
+}

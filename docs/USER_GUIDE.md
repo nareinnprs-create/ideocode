@@ -1,6 +1,6 @@
 # IDEOCODE User Guide
 
-> Version 0.62.0 · July 2026
+> Version 0.63.0 · August 2026
 
 IDEOCODE is a next-generation AI coding agent harness built for multi-session workflows, infinite customizability, and performance. This guide covers everything from installation to advanced features.
 
