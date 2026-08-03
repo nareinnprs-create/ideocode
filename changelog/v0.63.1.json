@@ -1,0 +1,8 @@
+{
+  "version": "0.63.1",
+  "date": "2026-08-03",
+  "fixes": [
+    "The macOS GUI bundle now ships with proper app icons (previously the bundle failed with 'No matching IconType')",
+    "Desktop app icons are the real IDEOCode icon instead of blank placeholders"
+  ]
+}
