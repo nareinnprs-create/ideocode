@@ -1,2317 +1,2447 @@
 {
-  "total": 3180,
+  "total": 3249,
   "totals_by_pattern": {
-    "dot_ok": 1163,
-    "let_underscore": 1183,
-    "unwrap_or_default": 834
+    "dot_ok": 1179,
+    "let_underscore": 1202,
+    "unwrap_or_default": 868
   },
   "tracked_files": {
-    "crates/IDEOCODE-app-core/src/agent.rs": {
+    "crates/ideocode-app-core/src/agent.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-app-core/src/agent/inline_tail.rs": {
+    "crates/ideocode-app-core/src/agent/inline_tail.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/agent/interrupts.rs": {
+    "crates/ideocode-app-core/src/agent/interrupts.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/agent/streaming.rs": {
+    "crates/ideocode-app-core/src/agent/streaming.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/agent/turn_execution.rs": {
+    "crates/ideocode-app-core/src/agent/turn_execution.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/agent/turn_loops.rs": {
+    "crates/ideocode-app-core/src/agent/turn_loops.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-app-core/src/agent/turn_streaming_mpsc.rs": {
+    "crates/ideocode-app-core/src/agent/turn_streaming_mpsc.rs": {
       "dot_ok": 0,
       "let_underscore": 49,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-app-core/src/agent/utils.rs": {
+    "crates/ideocode-app-core/src/agent/utils.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/ambient/directives.rs": {
+    "crates/ideocode-app-core/src/ambient/directives.rs": {
       "dot_ok": 2,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/ambient/manager.rs": {
+    "crates/ideocode-app-core/src/ambient/manager.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/ambient/persistence.rs": {
+    "crates/ideocode-app-core/src/ambient/persistence.rs": {
       "dot_ok": 0,
       "let_underscore": 6,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/ambient/runner.rs": {
+    "crates/ideocode-app-core/src/ambient/runner.rs": {
       "dot_ok": 0,
       "let_underscore": 14,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/ambient/scheduler.rs": {
+    "crates/ideocode-app-core/src/ambient/scheduler.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-app-core/src/catchup.rs": {
+    "crates/ideocode-app-core/src/catchup.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 5
     },
-    "crates/IDEOCODE-app-core/src/channel.rs": {
+    "crates/ideocode-app-core/src/channel.rs": {
       "dot_ok": 0,
       "let_underscore": 5,
       "unwrap_or_default": 5
     },
-    "crates/IDEOCODE-app-core/src/external_auth.rs": {
+    "crates/ideocode-app-core/src/external_auth.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/lib.rs": {
+    "crates/ideocode-app-core/src/lib.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/network_retry.rs": {
+    "crates/ideocode-app-core/src/network_retry.rs": {
       "dot_ok": 0,
       "let_underscore": 4,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/notifications.rs": {
+    "crates/ideocode-app-core/src/notifications.rs": {
       "dot_ok": 0,
       "let_underscore": 5,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/overnight.rs": {
+    "crates/ideocode-app-core/src/overnight.rs": {
       "dot_ok": 12,
       "let_underscore": 10,
       "unwrap_or_default": 8
     },
-    "crates/IDEOCODE-app-core/src/perf.rs": {
+    "crates/ideocode-app-core/src/perf.rs": {
       "dot_ok": 9,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/replay.rs": {
+    "crates/ideocode-app-core/src/replay.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/restart_snapshot.rs": {
+    "crates/ideocode-app-core/src/restart_snapshot.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server.rs": {
+    "crates/ideocode-app-core/src/server.rs": {
       "dot_ok": 4,
       "let_underscore": 18,
       "unwrap_or_default": 5
     },
-    "crates/IDEOCODE-app-core/src/server/await_members_state.rs": {
+    "crates/ideocode-app-core/src/server/await_members_state.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/server/client_actions.rs": {
+    "crates/ideocode-app-core/src/server/client_actions.rs": {
       "dot_ok": 1,
       "let_underscore": 41,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/server/client_comm_channels.rs": {
+    "crates/ideocode-app-core/src/server/client_comm_channels.rs": {
       "dot_ok": 0,
       "let_underscore": 8,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/client_comm_context.rs": {
+    "crates/ideocode-app-core/src/server/client_comm_context.rs": {
       "dot_ok": 0,
       "let_underscore": 6,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-app-core/src/server/client_comm_message.rs": {
+    "crates/ideocode-app-core/src/server/client_comm_message.rs": {
       "dot_ok": 0,
       "let_underscore": 7,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-app-core/src/server/client_lifecycle.rs": {
+    "crates/ideocode-app-core/src/server/client_lifecycle.rs": {
       "dot_ok": 0,
       "let_underscore": 30,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/client_lifecycle_logging.rs": {
+    "crates/ideocode-app-core/src/server/client_lifecycle_logging.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/client_lightweight_control.rs": {
+    "crates/ideocode-app-core/src/server/client_lightweight_control.rs": {
       "dot_ok": 0,
       "let_underscore": 5,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/client_session.rs": {
+    "crates/ideocode-app-core/src/server/client_session.rs": {
       "dot_ok": 8,
       "let_underscore": 14,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/client_state.rs": {
+    "crates/ideocode-app-core/src/server/client_state.rs": {
       "dot_ok": 2,
       "let_underscore": 1,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-app-core/src/server/comm_await.rs": {
+    "crates/ideocode-app-core/src/server/comm_await.rs": {
       "dot_ok": 0,
       "let_underscore": 9,
       "unwrap_or_default": 5
     },
-    "crates/IDEOCODE-app-core/src/server/comm_control.rs": {
+    "crates/ideocode-app-core/src/server/comm_control.rs": {
       "dot_ok": 0,
       "let_underscore": 37,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-app-core/src/server/comm_graph.rs": {
+    "crates/ideocode-app-core/src/server/comm_graph.rs": {
       "dot_ok": 0,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/comm_plan.rs": {
+    "crates/ideocode-app-core/src/server/comm_plan.rs": {
       "dot_ok": 0,
       "let_underscore": 19,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-app-core/src/server/comm_session.rs": {
+    "crates/ideocode-app-core/src/server/comm_session.rs": {
       "dot_ok": 4,
       "let_underscore": 12,
       "unwrap_or_default": 9
     },
-    "crates/IDEOCODE-app-core/src/server/comm_sync.rs": {
+    "crates/ideocode-app-core/src/server/comm_sync.rs": {
       "dot_ok": 0,
       "let_underscore": 16,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/debug_ambient.rs": {
+    "crates/ideocode-app-core/src/server/debug_ambient.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/debug_command_exec.rs": {
+    "crates/ideocode-app-core/src/server/debug_command_exec.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/debug_events.rs": {
+    "crates/ideocode-app-core/src/server/debug_events.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-app-core/src/server/debug_server_state.rs": {
+    "crates/ideocode-app-core/src/server/debug_server_state.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 5
     },
-    "crates/IDEOCODE-app-core/src/server/debug_swarm_read.rs": {
+    "crates/ideocode-app-core/src/server/debug_swarm_read.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-app-core/src/server/debug_swarm_write.rs": {
+    "crates/ideocode-app-core/src/server/debug_swarm_write.rs": {
       "dot_ok": 0,
       "let_underscore": 3,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-app-core/src/server/debug_testers.rs": {
+    "crates/ideocode-app-core/src/server/debug_testers.rs": {
       "dot_ok": 1,
       "let_underscore": 8,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/durable_state.rs": {
+    "crates/ideocode-app-core/src/server/durable_state.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/server/file_activity.rs": {
+    "crates/ideocode-app-core/src/server/file_activity.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/headless.rs": {
+    "crates/ideocode-app-core/src/server/headless.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/jade_relay.rs": {
+    "crates/ideocode-app-core/src/server/jade_relay.rs": {
       "dot_ok": 2,
       "let_underscore": 8,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-app-core/src/server/lifecycle.rs": {
+    "crates/ideocode-app-core/src/server/lifecycle.rs": {
       "dot_ok": 8,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/live_turn.rs": {
+    "crates/ideocode-app-core/src/server/live_turn.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/provider_control.rs": {
+    "crates/ideocode-app-core/src/server/provider_control.rs": {
       "dot_ok": 1,
-      "let_underscore": 30,
+      "let_underscore": 32,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/reload.rs": {
+    "crates/ideocode-app-core/src/server/reload.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/reload_recovery.rs": {
+    "crates/ideocode-app-core/src/server/reload_recovery.rs": {
       "dot_ok": 3,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/reload_state.rs": {
+    "crates/ideocode-app-core/src/server/reload_state.rs": {
       "dot_ok": 1,
       "let_underscore": 13,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server/socket.rs": {
+    "crates/ideocode-app-core/src/server/socket.rs": {
       "dot_ok": 1,
       "let_underscore": 7,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/server/state.rs": {
+    "crates/ideocode-app-core/src/server/state.rs": {
       "dot_ok": 2,
       "let_underscore": 2,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/server/swarm.rs": {
+    "crates/ideocode-app-core/src/server/swarm.rs": {
       "dot_ok": 8,
       "let_underscore": 6,
       "unwrap_or_default": 7
     },
-    "crates/IDEOCODE-app-core/src/server/swarm_channels.rs": {
+    "crates/ideocode-app-core/src/server/swarm_channels.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/server/swarm_mutation_state.rs": {
+    "crates/ideocode-app-core/src/server/swarm_mutation_state.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/server/swarm_persistence.rs": {
+    "crates/ideocode-app-core/src/server/swarm_persistence.rs": {
       "dot_ok": 3,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/server/util.rs": {
+    "crates/ideocode-app-core/src/server/util.rs": {
       "dot_ok": 13,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/server_spawn.rs": {
+    "crates/ideocode-app-core/src/server_spawn.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/session_active_pids.rs": {
+    "crates/ideocode-app-core/src/session_active_pids.rs": {
       "dot_ok": 6,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/session_effort.rs": {
+    "crates/ideocode-app-core/src/session_effort.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/session_launch.rs": {
+    "crates/ideocode-app-core/src/session_launch.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/ssh_remote.rs": {
+    "crates/ideocode-app-core/src/ssh_remote.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/startup_profile.rs": {
+    "crates/ideocode-app-core/src/startup_profile.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/telemetry_state.rs": {
+    "crates/ideocode-app-core/src/telemetry_state.rs": {
       "dot_ok": 18,
       "let_underscore": 7,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/agentgrep.rs": {
+    "crates/ideocode-app-core/src/tool/agentgrep.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/agentgrep/args.rs": {
+    "crates/ideocode-app-core/src/tool/agentgrep/args.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/tool/agentgrep/context.rs": {
+    "crates/ideocode-app-core/src/tool/agentgrep/context.rs": {
       "dot_ok": 17,
       "let_underscore": 1,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-app-core/src/tool/ambient.rs": {
+    "crates/ideocode-app-core/src/tool/ai_explain.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-app-core/src/tool/ai_plan.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 2
+    },
+    "crates/ideocode-app-core/src/tool/ai_refactor.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-app-core/src/tool/ambient.rs": {
       "dot_ok": 4,
       "let_underscore": 2,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/tool/apply_patch.rs": {
+    "crates/ideocode-app-core/src/tool/apply_patch.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/tool/bash.rs": {
+    "crates/ideocode-app-core/src/tool/bash.rs": {
       "dot_ok": 16,
       "let_underscore": 12,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-app-core/src/tool/bg.rs": {
+    "crates/ideocode-app-core/src/tool/bg.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/tool/browser.rs": {
+    "crates/ideocode-app-core/src/tool/browser.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-app-core/src/tool/communicate.rs": {
+    "crates/ideocode-app-core/src/tool/communicate.rs": {
       "dot_ok": 0,
       "let_underscore": 4,
       "unwrap_or_default": 8
     },
-    "crates/IDEOCODE-app-core/src/tool/communicate/transport.rs": {
+    "crates/ideocode-app-core/src/tool/communicate/transport.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/computer/osa.rs": {
+    "crates/ideocode-app-core/src/tool/computer/osa.rs": {
       "dot_ok": 0,
       "let_underscore": 4,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/computer/screen.rs": {
+    "crates/ideocode-app-core/src/tool/computer/screen.rs": {
       "dot_ok": 1,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/computer/setup.rs": {
+    "crates/ideocode-app-core/src/tool/computer/setup.rs": {
       "dot_ok": 0,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/computer/sys.rs": {
+    "crates/ideocode-app-core/src/tool/computer/sys.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-app-core/src/tool/computer/win.rs": {
+    "crates/ideocode-app-core/src/tool/computer/win.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/conversation_search.rs": {
+    "crates/ideocode-app-core/src/tool/conversation_search.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/tool/discover.rs": {
+    "crates/ideocode-app-core/src/tool/discover.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 5
     },
-    "crates/IDEOCODE-app-core/src/tool/gmail.rs": {
+    "crates/ideocode-app-core/src/tool/gmail.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 8
     },
-    "crates/IDEOCODE-app-core/src/tool/goal.rs": {
+    "crates/ideocode-app-core/src/tool/goal.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-app-core/src/tool/ls.rs": {
+    "crates/ideocode-app-core/src/tool/ls.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/mcp.rs": {
+    "crates/ideocode-app-core/src/tool/mcp.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-app-core/src/tool/mod.rs": {
+    "crates/ideocode-app-core/src/tool/mod.rs": {
       "dot_ok": 0,
       "let_underscore": 3,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/tool/open.rs": {
+    "crates/ideocode-app-core/src/tool/open.rs": {
       "dot_ok": 1,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/patch.rs": {
+    "crates/ideocode-app-core/src/tool/patch.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/tool/read.rs": {
+    "crates/ideocode-app-core/src/tool/read.rs": {
       "dot_ok": 1,
       "let_underscore": 2,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/tool/selfdev/build_queue.rs": {
+    "crates/ideocode-app-core/src/tool/selfdev/build_queue.rs": {
       "dot_ok": 1,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/selfdev/mod.rs": {
+    "crates/ideocode-app-core/src/tool/selfdev/mod.rs": {
       "dot_ok": 8,
       "let_underscore": 4,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/selfdev/reload.rs": {
+    "crates/ideocode-app-core/src/tool/selfdev/reload.rs": {
       "dot_ok": 0,
       "let_underscore": 9,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-app-core/src/tool/selfdev/setup.rs": {
+    "crates/ideocode-app-core/src/tool/selfdev/setup.rs": {
       "dot_ok": 7,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/selfdev/status.rs": {
+    "crates/ideocode-app-core/src/tool/selfdev/status.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/session_search.rs": {
+    "crates/ideocode-app-core/src/tool/session_search.rs": {
       "dot_ok": 2,
       "let_underscore": 4,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/tool/session_search_index.rs": {
+    "crates/ideocode-app-core/src/tool/session_search_index.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-app-core/src/tool/todo.rs": {
+    "crates/ideocode-app-core/src/tool/todo.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 6
     },
-    "crates/IDEOCODE-app-core/src/tool/webfetch.rs": {
+    "crates/ideocode-app-core/src/tool/webfetch.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/tool/websearch.rs": {
+    "crates/ideocode-app-core/src/tool/websearch.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-app-core/src/tool/write.rs": {
+    "crates/ideocode-app-core/src/tool/write.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/turn_cancel_registry.rs": {
+    "crates/ideocode-app-core/src/turn_cancel_registry.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-app-core/src/update.rs": {
+    "crates/ideocode-app-core/src/update.rs": {
       "dot_ok": 2,
       "let_underscore": 6,
       "unwrap_or_default": 9
     },
-    "crates/IDEOCODE-app-core/src/update_metadata.rs": {
+    "crates/ideocode-app-core/src/update_metadata.rs": {
       "dot_ok": 1,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/update_rate_limit.rs": {
+    "crates/ideocode-app-core/src/update_rate_limit.rs": {
       "dot_ok": 3,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-app-core/src/usage_openai.rs": {
+    "crates/ideocode-app-core/src/usage_openai.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/auth/account_store.rs": {
+    "crates/ideocode-base/src/auth/account_store.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/auth/antigravity.rs": {
+    "crates/ideocode-base/src/auth/antigravity.rs": {
       "dot_ok": 8,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/auth/claude.rs": {
+    "crates/ideocode-base/src/auth/claude.rs": {
       "dot_ok": 9,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/auth/codex.rs": {
+    "crates/ideocode-base/src/auth/codex.rs": {
       "dot_ok": 6,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/auth/copilot.rs": {
+    "crates/ideocode-base/src/auth/copilot.rs": {
       "dot_ok": 5,
       "let_underscore": 1,
       "unwrap_or_default": 8
     },
-    "crates/IDEOCODE-base/src/auth/cursor.rs": {
-      "dot_ok": 10,
+    "crates/ideocode-base/src/auth/cursor.rs": {
+      "dot_ok": 9,
       "let_underscore": 5,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/auth/external.rs": {
+    "crates/ideocode-base/src/auth/external.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-base/src/auth/gemini.rs": {
+    "crates/ideocode-base/src/auth/gemini.rs": {
       "dot_ok": 4,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/auth/google.rs": {
+    "crates/ideocode-base/src/auth/google.rs": {
       "dot_ok": 4,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/auth/lifecycle.rs": {
+    "crates/ideocode-base/src/auth/lifecycle.rs": {
       "dot_ok": 4,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/auth/login_flows.rs": {
+    "crates/ideocode-base/src/auth/login_flows.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/auth/mod.rs": {
+    "crates/ideocode-base/src/auth/mod.rs": {
       "dot_ok": 4,
       "let_underscore": 0,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-base/src/auth/oauth.rs": {
+    "crates/ideocode-base/src/auth/oauth.rs": {
       "dot_ok": 4,
       "let_underscore": 17,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-base/src/auth/refresh_state.rs": {
+    "crates/ideocode-base/src/auth/refresh_state.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/auth/test_sandbox.rs": {
+    "crates/ideocode-base/src/auth/test_sandbox.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/auth/validation.rs": {
+    "crates/ideocode-base/src/auth/validation.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/background.rs": {
+    "crates/ideocode-base/src/background.rs": {
       "dot_ok": 14,
       "let_underscore": 17,
       "unwrap_or_default": 9
     },
-    "crates/IDEOCODE-base/src/browser.rs": {
+    "crates/ideocode-base/src/browser.rs": {
       "dot_ok": 5,
       "let_underscore": 6,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-base/src/bus.rs": {
+    "crates/ideocode-base/src/bus.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/claude_live.rs": {
+    "crates/ideocode-base/src/claude_live.rs": {
       "dot_ok": 1,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/client_input.rs": {
+    "crates/ideocode-base/src/client_input.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/compaction.rs": {
+    "crates/ideocode-base/src/compaction.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/config.rs": {
+    "crates/ideocode-base/src/config.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/config/config_file.rs": {
+    "crates/ideocode-base/src/config/config_file.rs": {
       "dot_ok": 1,
       "let_underscore": 2,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-base/src/copilot_usage.rs": {
+    "crates/ideocode-base/src/copilot_usage.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/dictation.rs": {
+    "crates/ideocode-base/src/dictation.rs": {
       "dot_ok": 5,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/embedding.rs": {
+    "crates/ideocode-base/src/embedding.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/gateway.rs": {
+    "crates/ideocode-base/src/gateway.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/gateway/auth.rs": {
+    "crates/ideocode-base/src/gateway/auth.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/gateway/registry.rs": {
+    "crates/ideocode-base/src/gateway/registry.rs": {
       "dot_ok": 0,
       "let_underscore": 4,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/generated_image.rs": {
+    "crates/ideocode-base/src/generated_image.rs": {
       "dot_ok": 5,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/github.rs": {
+    "crates/ideocode-base/src/github.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/gmail.rs": {
+    "crates/ideocode-base/src/gmail.rs": {
       "dot_ok": 9,
       "let_underscore": 1,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-base/src/goal.rs": {
+    "crates/ideocode-base/src/goal.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-base/src/hooks.rs": {
+    "crates/ideocode-base/src/hooks.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/import.rs": {
+    "crates/ideocode-base/src/import.rs": {
       "dot_ok": 3,
       "let_underscore": 1,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-base/src/login_qr.rs": {
+    "crates/ideocode-base/src/login_qr.rs": {
       "dot_ok": 4,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/mcp/client.rs": {
+    "crates/ideocode-base/src/mcp/client.rs": {
       "dot_ok": 0,
       "let_underscore": 4,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/mcp/protocol.rs": {
+    "crates/ideocode-base/src/mcp/protocol.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-base/src/mcp/schema_cache.rs": {
+    "crates/ideocode-base/src/mcp/schema_cache.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/memory.rs": {
+    "crates/ideocode-base/src/memory.rs": {
       "dot_ok": 1,
       "let_underscore": 7,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-base/src/memory/activity.rs": {
+    "crates/ideocode-base/src/memory/activity.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/memory/cache.rs": {
+    "crates/ideocode-base/src/memory/cache.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/memory/pending.rs": {
+    "crates/ideocode-base/src/memory/pending.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/memory_agent.rs": {
+    "crates/ideocode-base/src/memory_agent.rs": {
       "dot_ok": 0,
       "let_underscore": 6,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-base/src/memory_log.rs": {
+    "crates/ideocode-base/src/memory_log.rs": {
       "dot_ok": 2,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/memory_rerank.rs": {
+    "crates/ideocode-base/src/memory_rerank.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/message.rs": {
+    "crates/ideocode-base/src/message.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/message/notifications.rs": {
+    "crates/ideocode-base/src/message/notifications.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/model_pricing.rs": {
+    "crates/ideocode-base/src/model_pricing.rs": {
       "dot_ok": 2,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/platform.rs": {
+    "crates/ideocode-base/src/platform.rs": {
       "dot_ok": 1,
       "let_underscore": 7,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/process_memory.rs": {
+    "crates/ideocode-base/src/process_memory.rs": {
       "dot_ok": 30,
       "let_underscore": 6,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/process_title.rs": {
+    "crates/ideocode-base/src/process_title.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/prompt.rs": {
+    "crates/ideocode-base/src/prompt.rs": {
       "dot_ok": 10,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/provider/account_failover.rs": {
+    "crates/ideocode-base/src/provider/account_failover.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-base/src/provider/antigravity.rs": {
+    "crates/ideocode-base/src/provider/antigravity.rs": {
       "dot_ok": 2,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/provider/catalog_routes.rs": {
+    "crates/ideocode-base/src/provider/catalog_routes.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-base/src/provider/image_clamp.rs": {
-      "dot_ok": 4,
-      "let_underscore": 0,
-      "unwrap_or_default": 0
-    },
-    "crates/IDEOCODE-base/src/provider/IDEOCODE.rs": {
+    "crates/ideocode-base/src/provider/ideocode.rs": {
       "dot_ok": 0,
       "let_underscore": 4,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/provider/mod.rs": {
+    "crates/ideocode-base/src/provider/image_clamp.rs": {
+      "dot_ok": 4,
+      "let_underscore": 0,
+      "unwrap_or_default": 0
+    },
+    "crates/ideocode-base/src/provider/mod.rs": {
       "dot_ok": 3,
       "let_underscore": 1,
       "unwrap_or_default": 15
     },
-    "crates/IDEOCODE-base/src/provider/model_catalog_service.rs": {
+    "crates/ideocode-base/src/provider/model_catalog_service.rs": {
       "dot_ok": 6,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/provider/models.rs": {
+    "crates/ideocode-base/src/provider/models.rs": {
       "dot_ok": 4,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-base/src/provider/openai.rs": {
+    "crates/ideocode-base/src/provider/openai.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/provider/openrouter.rs": {
+    "crates/ideocode-base/src/provider/openrouter.rs": {
       "dot_ok": 6,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/provider/pricing.rs": {
+    "crates/ideocode-base/src/provider/pricing.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/provider/selection.rs": {
+    "crates/ideocode-base/src/provider/selection.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/provider/startup.rs": {
+    "crates/ideocode-base/src/provider/startup.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/provider_activity.rs": {
+    "crates/ideocode-base/src/provider_activity.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/provider_catalog.rs": {
+    "crates/ideocode-base/src/provider_catalog.rs": {
       "dot_ok": 7,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/registry.rs": {
+    "crates/ideocode-base/src/registry.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/runtime_memory_log.rs": {
+    "crates/ideocode-base/src/runtime_memory_log.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/safety.rs": {
+    "crates/ideocode-base/src/safety.rs": {
       "dot_ok": 4,
       "let_underscore": 7,
       "unwrap_or_default": 8
     },
-    "crates/IDEOCODE-base/src/secret_input.rs": {
+    "crates/ideocode-base/src/secret_input.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/session.rs": {
+    "crates/ideocode-base/src/session.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/session/crash.rs": {
+    "crates/ideocode-base/src/session/crash.rs": {
       "dot_ok": 2,
       "let_underscore": 6,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/session/maintenance.rs": {
+    "crates/ideocode-base/src/session/maintenance.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/session/persistence.rs": {
+    "crates/ideocode-base/src/session/persistence.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/session/storage_paths.rs": {
+    "crates/ideocode-base/src/session/storage_paths.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/session_metrics.rs": {
+    "crates/ideocode-base/src/session_metrics.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/side_panel.rs": {
+    "crates/ideocode-base/src/side_panel.rs": {
       "dot_ok": 2,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/sidecar.rs": {
+    "crates/ideocode-base/src/sidecar.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-base/src/skill.rs": {
+    "crates/ideocode-base/src/skill.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 5
     },
-    "crates/IDEOCODE-base/src/soft_interrupt_store.rs": {
+    "crates/ideocode-base/src/soft_interrupt_store.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/sponsors/provenance.rs": {
+    "crates/ideocode-base/src/sponsors/provenance.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/subscription_api.rs": {
+    "crates/ideocode-base/src/subscription_api.rs": {
       "dot_ok": 3,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/subscription_catalog.rs": {
+    "crates/ideocode-base/src/subscription_catalog.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/telegram.rs": {
+    "crates/ideocode-base/src/telegram.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-base/src/todo.rs": {
+    "crates/ideocode-base/src/todo.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/transport/unix.rs": {
+    "crates/ideocode-base/src/transport/unix.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/transport/windows.rs": {
+    "crates/ideocode-base/src/transport/windows.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/usage.rs": {
+    "crates/ideocode-base/src/usage.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 5
     },
-    "crates/IDEOCODE-base/src/usage/accessors.rs": {
+    "crates/ideocode-base/src/usage/accessors.rs": {
       "dot_ok": 2,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/usage/api_keys.rs": {
+    "crates/ideocode-base/src/usage/api_keys.rs": {
       "dot_ok": 5,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/usage/cache.rs": {
+    "crates/ideocode-base/src/usage/cache.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/usage/model.rs": {
+    "crates/ideocode-base/src/usage/model.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-base/src/usage/openai_helpers.rs": {
+    "crates/ideocode-base/src/usage/openai_helpers.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-base/src/usage/provider_fetch.rs": {
+    "crates/ideocode-base/src/usage/provider_fetch.rs": {
       "dot_ok": 5,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-build-meta/build.rs": {
+    "crates/ideocode-build-meta/build.rs": {
       "dot_ok": 12,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-build-meta/src/lib.rs": {
+    "crates/ideocode-build-meta/src/lib.rs": {
       "dot_ok": 5,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-build-support/src/lib.rs": {
+    "crates/ideocode-build-support/src/lib.rs": {
       "dot_ok": 2,
       "let_underscore": 5,
       "unwrap_or_default": 6
     },
-    "crates/IDEOCODE-build-support/src/paths.rs": {
+    "crates/ideocode-build-support/src/paths.rs": {
       "dot_ok": 18,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-build-support/src/platform_support.rs": {
+    "crates/ideocode-build-support/src/platform_support.rs": {
       "dot_ok": 0,
       "let_underscore": 7,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-build-support/src/source_state.rs": {
+    "crates/ideocode-build-support/src/source_state.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-build-support/src/storage_helpers.rs": {
+    "crates/ideocode-build-support/src/storage_helpers.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-config-types/src/lib.rs": {
+    "crates/ideocode-config-types/src/lib.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-core/src/stdin_detect.rs": {
+    "crates/ideocode-core/src/stdin_detect.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-core/src/util.rs": {
+    "crates/ideocode-core/src/util.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/build.rs": {
+    "crates/ideocode-desktop/build.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-desktop/src/canvas.rs": {
+    "crates/ideocode-desktop/src/canvas.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-desktop/src/desktop_benchmark.rs": {
+    "crates/ideocode-desktop/src/desktop_benchmark.rs": {
       "dot_ok": 8,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-desktop/src/desktop_benchmarks_run.rs": {
+    "crates/ideocode-desktop/src/desktop_benchmarks_run.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 6
     },
-    "crates/IDEOCODE-desktop/src/desktop_benchmarks_scroll.rs": {
+    "crates/ideocode-desktop/src/desktop_benchmarks_scroll.rs": {
       "dot_ok": 0,
       "let_underscore": 9,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-desktop/src/desktop_benchmarks_transcript.rs": {
+    "crates/ideocode-desktop/src/desktop_benchmarks_transcript.rs": {
       "dot_ok": 4,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/desktop_capture.rs": {
+    "crates/ideocode-desktop/src/desktop_capture.rs": {
       "dot_ok": 3,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/desktop_config.rs": {
+    "crates/ideocode-desktop/src/desktop_config.rs": {
       "dot_ok": 5,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-desktop/src/desktop_events_glue.rs": {
+    "crates/ideocode-desktop/src/desktop_events_glue.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-desktop/src/desktop_issue_cache.rs": {
+    "crates/ideocode-desktop/src/desktop_issue_cache.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 7
     },
-    "crates/IDEOCODE-desktop/src/desktop_jobs.rs": {
+    "crates/ideocode-desktop/src/desktop_jobs.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-desktop/src/desktop_log.rs": {
+    "crates/ideocode-desktop/src/desktop_log.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-desktop/src/desktop_prefs.rs": {
+    "crates/ideocode-desktop/src/desktop_prefs.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-desktop/src/desktop_profiling.rs": {
+    "crates/ideocode-desktop/src/desktop_profiling.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-desktop/src/desktop_reload.rs": {
+    "crates/ideocode-desktop/src/desktop_reload.rs": {
       "dot_ok": 8,
       "let_underscore": 8,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/desktop_rich_text.rs": {
+    "crates/ideocode-desktop/src/desktop_rich_text.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-desktop/src/desktop_session_events.rs": {
+    "crates/ideocode-desktop/src/desktop_session_events.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 16
     },
-    "crates/IDEOCODE-desktop/src/desktop_ui_engine.rs": {
+    "crates/ideocode-desktop/src/desktop_ui_engine.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/desktop_worker_host.rs": {
+    "crates/ideocode-desktop/src/desktop_worker_host.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-desktop/src/hero_mask.rs": {
+    "crates/ideocode-desktop/src/hero_mask.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-desktop/src/main.rs": {
+    "crates/ideocode-desktop/src/main.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-desktop/src/power_inhibit.rs": {
+    "crates/ideocode-desktop/src/power_inhibit.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/render_helpers.rs": {
+    "crates/ideocode-desktop/src/render_helpers.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/session_data.rs": {
+    "crates/ideocode-desktop/src/session_data.rs": {
       "dot_ok": 5,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-desktop/src/session_launch/server_io.rs": {
+    "crates/ideocode-desktop/src/session_launch/server_io.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/single_session.rs": {
+    "crates/ideocode-desktop/src/session_launch/terminal.rs": {
+      "dot_ok": 0,
+      "let_underscore": 1,
+      "unwrap_or_default": 0
+    },
+    "crates/ideocode-desktop/src/single_session.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 6
     },
-    "crates/IDEOCODE-desktop/src/single_session/commands.rs": {
+    "crates/ideocode-desktop/src/single_session/commands.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-desktop/src/single_session/input.rs": {
+    "crates/ideocode-desktop/src/single_session/input.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/single_session/issue_browser.rs": {
+    "crates/ideocode-desktop/src/single_session/issue_browser.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/single_session/markdown.rs": {
+    "crates/ideocode-desktop/src/single_session/markdown.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-desktop/src/single_session/overlay_render.rs": {
+    "crates/ideocode-desktop/src/single_session/overlay_render.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
       "unwrap_or_default": 8
     },
-    "crates/IDEOCODE-desktop/src/single_session/overlays.rs": {
+    "crates/ideocode-desktop/src/single_session/overlays.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/single_session/tool_lines.rs": {
+    "crates/ideocode-desktop/src/single_session/tool_lines.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-desktop/src/single_session/welcome.rs": {
+    "crates/ideocode-desktop/src/single_session/welcome.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-desktop/src/single_session_render.rs": {
+    "crates/ideocode-desktop/src/single_session_render.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/single_session_render/inline_markdown.rs": {
+    "crates/ideocode-desktop/src/single_session_render/inline_markdown.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-desktop/src/single_session_render/inline_widget_chrome.rs": {
+    "crates/ideocode-desktop/src/single_session_render/inline_widget_chrome.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-desktop/src/single_session_render/motion/streaming_reveal.rs": {
+    "crates/ideocode-desktop/src/single_session_render/motion/streaming_reveal.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/single_session_render/motion_composer.rs": {
+    "crates/ideocode-desktop/src/single_session_render/motion_composer.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/single_session_render/scrollbar.rs": {
+    "crates/ideocode-desktop/src/single_session_render/scrollbar.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-desktop/src/single_session_render/selection_caret.rs": {
+    "crates/ideocode-desktop/src/single_session_render/selection_caret.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop/src/single_session_render/text_areas.rs": {
+    "crates/ideocode-desktop/src/single_session_render/text_areas.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-desktop/src/single_session_render/transcript_cards.rs": {
+    "crates/ideocode-desktop/src/single_session_render/transcript_cards.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-desktop/src/workspace.rs": {
+    "crates/ideocode-desktop/src/workspace.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 9
     },
-    "crates/IDEOCODE-desktop/src/workspace_vertices.rs": {
+    "crates/ideocode-desktop/src/workspace_vertices.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop2/src/capture.rs": {
+    "crates/ideocode-desktop2/src/capture.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-desktop2/src/clipboard.rs": {
+    "crates/ideocode-desktop2/src/clipboard.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-desktop2/src/editor.rs": {
+    "crates/ideocode-desktop2/src/editor.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop2/src/harness.rs": {
+    "crates/ideocode-desktop2/src/harness.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-desktop2/src/main.rs": {
+    "crates/ideocode-desktop2/src/main.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-embedding/src/lib.rs": {
+    "crates/ideocode-embedding/src/lib.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-fuzzy/src/lib.rs": {
+    "crates/ideocode-fuzzy/src/lib.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-harness-api-server/src/lib.rs": {
+    "crates/ideocode-harness-api-server/src/lib.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-harness-api-server/src/translate.rs": {
+    "crates/ideocode-harness-api-server/src/translate.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-harness-api/examples/harness_repl.rs": {
+    "crates/ideocode-harness-api/examples/harness_repl.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-import-core/src/lib.rs": {
+    "crates/ideocode-import-core/src/lib.rs": {
       "dot_ok": 10,
       "let_underscore": 0,
       "unwrap_or_default": 16
     },
-    "crates/IDEOCODE-import-core/src/repo_ranking.rs": {
+    "crates/ideocode-import-core/src/repo_ranking.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-logging/src/lib.rs": {
+    "crates/ideocode-logging/src/lib.rs": {
       "dot_ok": 5,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-memory-types/src/graph.rs": {
+    "crates/ideocode-memory-types/src/graph.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-message-types/src/lib.rs": {
+    "crates/ideocode-message-types/src/lib.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-notify-email/src/lib.rs": {
+    "crates/ideocode-notify-email/src/lib.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-overnight-core/src/lib.rs": {
+    "crates/ideocode-overnight-core/src/lib.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-plan/src/bridge.rs": {
+    "crates/ideocode-plan/src/bridge.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-plan/src/dag/mod.rs": {
+    "crates/ideocode-plan/src/dag/mod.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-plan/src/dag/ops.rs": {
+    "crates/ideocode-plan/src/dag/ops.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-productivity-core/src/aggregate.rs": {
+    "crates/ideocode-productivity-core/src/aggregate.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-productivity-core/src/scan.rs": {
+    "crates/ideocode-productivity-core/src/scan.rs": {
       "dot_ok": 5,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-protocol/src/comm_format.rs": {
+    "crates/ideocode-protocol/src/comm_format.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-protocol/src/lib.rs": {
+    "crates/ideocode-protocol/src/lib.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-anthropic-runtime/src/lib.rs": {
+    "crates/ideocode-provider-anthropic-runtime/src/lib.rs": {
       "dot_ok": 4,
       "let_underscore": 14,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-provider-anthropic/src/lib.rs": {
+    "crates/ideocode-provider-anthropic/src/lib.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-provider-antigravity-runtime/src/lib.rs": {
+    "crates/ideocode-provider-antigravity-runtime/src/lib.rs": {
       "dot_ok": 2,
       "let_underscore": 18,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-provider-antigravity/src/lib.rs": {
+    "crates/ideocode-provider-antigravity/src/lib.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-bedrock/src/lib.rs": {
+    "crates/ideocode-provider-bedrock/src/lib.rs": {
       "dot_ok": 18,
       "let_underscore": 9,
       "unwrap_or_default": 5
     },
-    "crates/IDEOCODE-provider-claude-cli-runtime/src/lib.rs": {
+    "crates/ideocode-provider-claude-cli-runtime/src/lib.rs": {
       "dot_ok": 8,
       "let_underscore": 5,
       "unwrap_or_default": 5
     },
-    "crates/IDEOCODE-provider-copilot-runtime/src/lib.rs": {
+    "crates/ideocode-provider-copilot-runtime/src/lib.rs": {
       "dot_ok": 5,
-      "let_underscore": 20,
+      "let_underscore": 18,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-provider-core/src/attempt_tracker.rs": {
+    "crates/ideocode-provider-core/src/attempt_tracker.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-core/src/auth_mode.rs": {
+    "crates/ideocode-provider-core/src/auth_mode.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-core/src/failover.rs": {
+    "crates/ideocode-provider-core/src/failover.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-core/src/fingerprint.rs": {
+    "crates/ideocode-provider-core/src/fingerprint.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-provider-core/src/models.rs": {
+    "crates/ideocode-provider-core/src/models.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-core/src/openai_schema.rs": {
+    "crates/ideocode-provider-core/src/openai_schema.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-provider-core/src/pricing.rs": {
+    "crates/ideocode-provider-core/src/pricing.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-core/src/reasoning.rs": {
+    "crates/ideocode-provider-core/src/reasoning.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-provider-core/src/retry_after.rs": {
+    "crates/ideocode-provider-core/src/retry_after.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-cursor-runtime/src/agent_transport.rs": {
+    "crates/ideocode-provider-cursor-runtime/src/agent_transport.rs": {
       "dot_ok": 4,
       "let_underscore": 9,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-cursor-runtime/src/lib.rs": {
+    "crates/ideocode-provider-cursor-runtime/src/lib.rs": {
       "dot_ok": 3,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-doctor/src/lifecycle_driver.rs": {
+    "crates/ideocode-provider-doctor/src/lifecycle_driver.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-doctor/src/live_provider_probes.rs": {
+    "crates/ideocode-provider-doctor/src/live_provider_probes.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 7
     },
-    "crates/IDEOCODE-provider-doctor/src/provider_e2e.rs": {
+    "crates/ideocode-provider-doctor/src/provider_e2e.rs": {
       "dot_ok": 1,
       "let_underscore": 2,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-provider-env/src/lib.rs": {
+    "crates/ideocode-provider-env/src/lib.rs": {
       "dot_ok": 4,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-gemini-runtime/src/lib.rs": {
+    "crates/ideocode-provider-gemini-runtime/src/lib.rs": {
       "dot_ok": 4,
       "let_underscore": 23,
       "unwrap_or_default": 6
     },
-    "crates/IDEOCODE-provider-gemini/src/lib.rs": {
+    "crates/ideocode-provider-gemini/src/lib.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-provider-metadata/src/lib.rs": {
+    "crates/ideocode-provider-metadata/src/lib.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-openai-runtime/src/chatgpt_web.rs": {
+    "crates/ideocode-provider-openai-runtime/src/chatgpt_web.rs": {
       "dot_ok": 8,
       "let_underscore": 5,
       "unwrap_or_default": 8
     },
-    "crates/IDEOCODE-provider-openai-runtime/src/lib.rs": {
+    "crates/ideocode-provider-openai-runtime/src/lib.rs": {
       "dot_ok": 3,
       "let_underscore": 2,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-provider-openai-runtime/src/openai_provider_impl.rs": {
+    "crates/ideocode-provider-openai-runtime/src/openai_provider_impl.rs": {
       "dot_ok": 1,
       "let_underscore": 6,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-openai-runtime/src/openai_rate_limit_format.rs": {
+    "crates/ideocode-provider-openai-runtime/src/openai_rate_limit_format.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-provider-openai-runtime/src/openai_stream_runtime.rs": {
+    "crates/ideocode-provider-openai-runtime/src/openai_stream_runtime.rs": {
       "dot_ok": 0,
       "let_underscore": 5,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-provider-openai/src/request.rs": {
+    "crates/ideocode-provider-openai/src/request.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-provider-openai/src/stream.rs": {
+    "crates/ideocode-provider-openai/src/stream.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 6
     },
-    "crates/IDEOCODE-provider-openrouter-runtime/src/lib.rs": {
+    "crates/ideocode-provider-openrouter-runtime/src/lib.rs": {
       "dot_ok": 23,
       "let_underscore": 0,
       "unwrap_or_default": 9
     },
-    "crates/IDEOCODE-provider-openrouter-runtime/src/openrouter_provider_impl.rs": {
+    "crates/ideocode-provider-openrouter-runtime/src/openrouter_provider_impl.rs": {
       "dot_ok": 2,
       "let_underscore": 3,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-provider-openrouter-runtime/src/openrouter_sse_stream.rs": {
-      "dot_ok": 1,
+    "crates/ideocode-provider-openrouter-runtime/src/openrouter_sse_stream.rs": {
+      "dot_ok": 3,
       "let_underscore": 7,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-openrouter/src/lib.rs": {
+    "crates/ideocode-provider-openrouter/src/lib.rs": {
       "dot_ok": 14,
       "let_underscore": 4,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-provider-openrouter/src/request.rs": {
+    "crates/ideocode-provider-openrouter/src/request.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-render-core/src/math.rs": {
+    "crates/ideocode-render-core/src/math.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-render-core/src/preprocess.rs": {
+    "crates/ideocode-render-core/src/preprocess.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-session-types/src/lib.rs": {
+    "crates/ideocode-session-types/src/lib.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-setup-hints/src/cli_launch_hints.rs": {
+    "crates/ideocode-setup-hints/src/cli_launch_hints.rs": {
       "dot_ok": 0,
       "let_underscore": 4,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-setup-hints/src/keymap/external.rs": {
+    "crates/ideocode-setup-hints/src/keymap/external.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-setup-hints/src/keymap/macos_hotkeys.rs": {
+    "crates/ideocode-setup-hints/src/keymap/macos_hotkeys.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-setup-hints/src/keymap/mod.rs": {
+    "crates/ideocode-setup-hints/src/keymap/mod.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-setup-hints/src/launch_hotkeys.rs": {
+    "crates/ideocode-setup-hints/src/launch_hotkeys.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-setup-hints/src/lib.rs": {
+    "crates/ideocode-setup-hints/src/lib.rs": {
       "dot_ok": 6,
       "let_underscore": 20,
       "unwrap_or_default": 14
     },
-    "crates/IDEOCODE-setup-hints/src/macos_launcher.rs": {
+    "crates/ideocode-setup-hints/src/macos_launcher.rs": {
       "dot_ok": 1,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-setup-hints/src/macos_terminal.rs": {
+    "crates/ideocode-setup-hints/src/macos_terminal.rs": {
       "dot_ok": 5,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-setup-hints/src/windows_setup.rs": {
+    "crates/ideocode-setup-hints/src/windows_setup.rs": {
       "dot_ok": 2,
       "let_underscore": 11,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-storage/src/active_pids.rs": {
+    "crates/ideocode-storage/src/active_pids.rs": {
       "dot_ok": 15,
       "let_underscore": 9,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-storage/src/lib.rs": {
+    "crates/ideocode-storage/src/lib.rs": {
       "dot_ok": 0,
       "let_underscore": 13,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-swarm-core/src/lib.rs": {
+    "crates/ideocode-swarm-core/src/lib.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-telemetry-core/src/lib.rs": {
+    "crates/ideocode-telemetry-core/src/lib.rs": {
       "dot_ok": 7,
       "let_underscore": 10,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-telemetry-core/src/lifecycle.rs": {
+    "crates/ideocode-telemetry-core/src/lifecycle.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-telemetry-core/src/state_support.rs": {
+    "crates/ideocode-telemetry-core/src/state_support.rs": {
       "dot_ok": 22,
       "let_underscore": 8,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-terminal-launch/src/lib.rs": {
+    "crates/ideocode-terminal-launch/src/lib.rs": {
       "dot_ok": 4,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-core/src/keybind.rs": {
+    "crates/ideocode-tui-core/src/keybind.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-markdown/src/lib.rs": {
+    "crates/ideocode-tui-markdown/src/lib.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui-markdown/src/markdown_context.rs": {
+    "crates/ideocode-tui-markdown/src/markdown_context.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-markdown/src/markdown_latex_image.rs": {
+    "crates/ideocode-tui-markdown/src/markdown_latex_image.rs": {
       "dot_ok": 4,
       "let_underscore": 5,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-markdown/src/markdown_mermaid_fallback.rs": {
+    "crates/ideocode-tui-markdown/src/markdown_mermaid_fallback.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-markdown/src/markdown_render_full.rs": {
+    "crates/ideocode-tui-markdown/src/markdown_render_full.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-markdown/src/markdown_render_lazy.rs": {
+    "crates/ideocode-tui-markdown/src/markdown_render_lazy.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-markdown/src/markdown_wrap.rs": {
+    "crates/ideocode-tui-markdown/src/markdown_wrap.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui-mermaid/src/debug.rs": {
+    "crates/ideocode-tui-mermaid/src/debug.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-mermaid/src/lib.rs": {
+    "crates/ideocode-tui-mermaid/src/lib.rs": {
       "dot_ok": 2,
       "let_underscore": 4,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-tui-mermaid/src/mermaid_active.rs": {
+    "crates/ideocode-tui-mermaid/src/mermaid_active.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui-mermaid/src/mermaid_cache_render.rs": {
+    "crates/ideocode-tui-mermaid/src/mermaid_cache_render.rs": {
       "dot_ok": 9,
       "let_underscore": 4,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui-mermaid/src/mermaid_content.rs": {
+    "crates/ideocode-tui-mermaid/src/mermaid_content.rs": {
       "dot_ok": 4,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-mermaid/src/mermaid_debug.rs": {
+    "crates/ideocode-tui-mermaid/src/mermaid_debug.rs": {
       "dot_ok": 1,
       "let_underscore": 6,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-mermaid/src/mermaid_inline.rs": {
+    "crates/ideocode-tui-mermaid/src/mermaid_inline.rs": {
       "dot_ok": 9,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-mermaid/src/mermaid_runtime.rs": {
+    "crates/ideocode-tui-mermaid/src/mermaid_runtime.rs": {
       "dot_ok": 18,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-mermaid/src/mermaid_svg.rs": {
+    "crates/ideocode-tui-mermaid/src/mermaid_svg.rs": {
       "dot_ok": 19,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-mermaid/src/mermaid_viewport.rs": {
+    "crates/ideocode-tui-mermaid/src/mermaid_viewport.rs": {
       "dot_ok": 8,
       "let_underscore": 3,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui-mermaid/src/mermaid_widget.rs": {
+    "crates/ideocode-tui-mermaid/src/mermaid_widget.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-permissions/src/lib.rs": {
+    "crates/ideocode-tui-permissions/src/lib.rs": {
       "dot_ok": 0,
       "let_underscore": 4,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui-render/src/layout.rs": {
+    "crates/ideocode-tui-render/src/layout.rs": {
       "dot_ok": 4,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-render/src/swarm_gallery.rs": {
+    "crates/ideocode-tui-render/src/swarm_gallery.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-tui-usage-overlay/src/lib.rs": {
+    "crates/ideocode-tui-usage-overlay/src/lib.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui-visual-debug/src/lib.rs": {
+    "crates/ideocode-tui-visual-debug/src/lib.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui-workspace/src/workspace_map.rs": {
+    "crates/ideocode-tui-workspace/src/workspace_map.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/app.rs": {
+    "crates/ideocode-tui/src/tui/app.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui/src/tui/app/auth.rs": {
+    "crates/ideocode-tui/src/tui/app/auth.rs": {
       "dot_ok": 7,
       "let_underscore": 3,
       "unwrap_or_default": 12
     },
-    "crates/IDEOCODE-tui/src/tui/app/auth_account_commands.rs": {
+    "crates/ideocode-tui/src/tui/app/auth_account_commands.rs": {
       "dot_ok": 0,
       "let_underscore": 3,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-tui/src/tui/app/auth_account_picker.rs": {
+    "crates/ideocode-tui/src/tui/app/auth_account_picker.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 9
     },
-    "crates/IDEOCODE-tui/src/tui/app/auth_account_picker_saved_accounts.rs": {
+    "crates/ideocode-tui/src/tui/app/auth_account_picker_saved_accounts.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-tui/src/tui/app/catchup.rs": {
+    "crates/ideocode-tui/src/tui/app/catchup.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/commands.rs": {
+    "crates/ideocode-tui/src/tui/app/commands.rs": {
       "dot_ok": 4,
       "let_underscore": 9,
-      "unwrap_or_default": 20
+      "unwrap_or_default": 21
     },
-    "crates/IDEOCODE-tui/src/tui/app/commands_improve.rs": {
+    "crates/ideocode-tui/src/tui/app/commands_improve.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
       "unwrap_or_default": 8
     },
-    "crates/IDEOCODE-tui/src/tui/app/commands_overnight.rs": {
+    "crates/ideocode-tui/src/tui/app/commands_overnight.rs": {
       "dot_ok": 5,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/commands_review.rs": {
+    "crates/ideocode-tui/src/tui/app/commands_review.rs": {
       "dot_ok": 5,
       "let_underscore": 6,
       "unwrap_or_default": 6
     },
-    "crates/IDEOCODE-tui/src/tui/app/conversation_state.rs": {
+    "crates/ideocode-tui/src/tui/app/conversation_state.rs": {
       "dot_ok": 0,
       "let_underscore": 4,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/app/copy_selection.rs": {
+    "crates/ideocode-tui/src/tui/app/copy_selection.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui/src/tui/app/debug.rs": {
+    "crates/ideocode-tui/src/tui/app/debug.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/debug_bench.rs": {
+    "crates/ideocode-tui/src/tui/app/debug_bench.rs": {
       "dot_ok": 2,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/app/debug_cmds.rs": {
+    "crates/ideocode-tui/src/tui/app/debug_cmds.rs": {
       "dot_ok": 10,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/debug_profile.rs": {
+    "crates/ideocode-tui/src/tui/app/debug_profile.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/debug_script.rs": {
+    "crates/ideocode-tui/src/tui/app/debug_script.rs": {
       "dot_ok": 1,
       "let_underscore": 4,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/dictation.rs": {
+    "crates/ideocode-tui/src/tui/app/dictation.rs": {
       "dot_ok": 0,
       "let_underscore": 5,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/app/handterm_native_scroll.rs": {
+    "crates/ideocode-tui/src/tui/app/handterm_native_scroll.rs": {
       "dot_ok": 0,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/helpers.rs": {
+    "crates/ideocode-tui/src/tui/app/helpers.rs": {
       "dot_ok": 13,
       "let_underscore": 2,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-tui/src/tui/app/hotkey_feedback.rs": {
+    "crates/ideocode-tui/src/tui/app/hotkey_feedback.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/app/inline_interactive.rs": {
+    "crates/ideocode-tui/src/tui/app/inline_interactive.rs": {
       "dot_ok": 6,
-      "let_underscore": 11,
+      "let_underscore": 12,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-tui/src/tui/app/inline_interactive/helpers.rs": {
+    "crates/ideocode-tui/src/tui/app/inline_interactive/helpers.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/app/inline_interactive/preview.rs": {
+    "crates/ideocode-tui/src/tui/app/inline_interactive/preview.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/app/input.rs": {
+    "crates/ideocode-tui/src/tui/app/input.rs": {
       "dot_ok": 8,
       "let_underscore": 2,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/local.rs": {
+    "crates/ideocode-tui/src/tui/app/local.rs": {
       "dot_ok": 0,
       "let_underscore": 5,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/model_context.rs": {
+    "crates/ideocode-tui/src/tui/app/model_context.rs": {
       "dot_ok": 1,
       "let_underscore": 3,
       "unwrap_or_default": 6
     },
-    "crates/IDEOCODE-tui/src/tui/app/navigation.rs": {
+    "crates/ideocode-tui/src/tui/app/navigation.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/app/onboarding_flow.rs": {
+    "crates/ideocode-tui/src/tui/app/onboarding_flow.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/onboarding_flow_control.rs": {
+    "crates/ideocode-tui/src/tui/app/onboarding_flow_control.rs": {
       "dot_ok": 1,
       "let_underscore": 3,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui/src/tui/app/onboarding_repair.rs": {
+    "crates/ideocode-tui/src/tui/app/onboarding_repair.rs": {
       "dot_ok": 5,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/remote.rs": {
+    "crates/ideocode-tui/src/tui/app/remote.rs": {
       "dot_ok": 0,
       "let_underscore": 11,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/remote/input_dispatch.rs": {
+    "crates/ideocode-tui/src/tui/app/remote/input_dispatch.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/remote/key_handling.rs": {
+    "crates/ideocode-tui/src/tui/app/remote/key_handling.rs": {
       "dot_ok": 0,
       "let_underscore": 19,
-      "unwrap_or_default": 10
+      "unwrap_or_default": 11
     },
-    "crates/IDEOCODE-tui/src/tui/app/remote/reconnect.rs": {
+    "crates/ideocode-tui/src/tui/app/remote/reconnect.rs": {
       "dot_ok": 4,
       "let_underscore": 5,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-tui/src/tui/app/remote/server_events.rs": {
+    "crates/ideocode-tui/src/tui/app/remote/server_events.rs": {
       "dot_ok": 8,
       "let_underscore": 1,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-tui/src/tui/app/remote/session_persistence.rs": {
+    "crates/ideocode-tui/src/tui/app/remote/session_persistence.rs": {
       "dot_ok": 0,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/run_shell.rs": {
+    "crates/ideocode-tui/src/tui/app/run_shell.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/runtime_memory.rs": {
+    "crates/ideocode-tui/src/tui/app/runtime_memory.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/shortcut_hints.rs": {
+    "crates/ideocode-tui/src/tui/app/shortcut_hints.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui/src/tui/app/split_view.rs": {
+    "crates/ideocode-tui/src/tui/app/split_view.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/app/state_ui.rs": {
+    "crates/ideocode-tui/src/tui/app/state_ui.rs": {
       "dot_ok": 4,
       "let_underscore": 9,
       "unwrap_or_default": 11
     },
-    "crates/IDEOCODE-tui/src/tui/app/state_ui_input_helpers.rs": {
+    "crates/ideocode-tui/src/tui/app/state_ui_input_helpers.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 5
     },
-    "crates/IDEOCODE-tui/src/tui/app/state_ui_maintenance.rs": {
+    "crates/ideocode-tui/src/tui/app/state_ui_maintenance.rs": {
       "dot_ok": 2,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/state_ui_messages.rs": {
+    "crates/ideocode-tui/src/tui/app/state_ui_messages.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/app/subscribe_nudge.rs": {
+    "crates/ideocode-tui/src/tui/app/subscribe_nudge.rs": {
       "dot_ok": 3,
       "let_underscore": 1,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui/src/tui/app/support.rs": {
+    "crates/ideocode-tui/src/tui/app/support.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/swarm_hint.rs": {
+    "crates/ideocode-tui/src/tui/app/swarm_hint.rs": {
       "dot_ok": 1,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/app/terminal_liveness.rs": {
+    "crates/ideocode-tui/src/tui/app/terminal_liveness.rs": {
       "dot_ok": 2,
       "let_underscore": 1,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/app/todos_view.rs": {
+    "crates/ideocode-tui/src/tui/app/todos_view.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 5
     },
-    "crates/IDEOCODE-tui/src/tui/app/tui_lifecycle.rs": {
+    "crates/ideocode-tui/src/tui/app/tui_lifecycle.rs": {
       "dot_ok": 9,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/app/tui_lifecycle_runtime.rs": {
+    "crates/ideocode-tui/src/tui/app/tui_lifecycle_runtime.rs": {
       "dot_ok": 5,
       "let_underscore": 6,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-tui/src/tui/app/tui_state.rs": {
+    "crates/ideocode-tui/src/tui/app/tui_state.rs": {
       "dot_ok": 5,
       "let_underscore": 0,
       "unwrap_or_default": 6
     },
-    "crates/IDEOCODE-tui/src/tui/app/turn.rs": {
+    "crates/ideocode-tui/src/tui/app/turn.rs": {
       "dot_ok": 0,
       "let_underscore": 14,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui/src/tui/app/turn_memory.rs": {
+    "crates/ideocode-tui/src/tui/app/turn_memory.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui/src/tui/app/turn_notify.rs": {
+    "crates/ideocode-tui/src/tui/app/turn_notify.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui/src/tui/app/ui_prefs.rs": {
+    "crates/ideocode-tui/src/tui/app/ui_prefs.rs": {
       "dot_ok": 1,
-      "let_underscore": 1,
+      "let_underscore": 9,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/info_widget.rs": {
+    "crates/ideocode-tui/src/tui/info_widget.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/info_widget_swarm_background.rs": {
+    "crates/ideocode-tui/src/tui/info_widget_swarm_background.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/info_widget_timeline.rs": {
+    "crates/ideocode-tui/src/tui/info_widget_timeline.rs": {
       "dot_ok": 2,
       "let_underscore": 2,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/login_picker.rs": {
+    "crates/ideocode-tui/src/tui/login_picker.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui/src/tui/memory_profile.rs": {
+    "crates/ideocode-tui/src/tui/memory_profile.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/mod.rs": {
+    "crates/ideocode-tui/src/tui/mod.rs": {
       "dot_ok": 2,
       "let_underscore": 1,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/remote_diff.rs": {
+    "crates/ideocode-tui/src/tui/remote_diff.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-tui/src/tui/screenshot.rs": {
+    "crates/ideocode-tui/src/tui/screenshot.rs": {
       "dot_ok": 0,
       "let_underscore": 4,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/session_picker.rs": {
+    "crates/ideocode-tui/src/tui/session_picker.rs": {
       "dot_ok": 1,
       "let_underscore": 5,
       "unwrap_or_default": 6
     },
-    "crates/IDEOCODE-tui/src/tui/session_picker/filter.rs": {
+    "crates/ideocode-tui/src/tui/session_picker/filter.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-tui/src/tui/session_picker/loading.rs": {
+    "crates/ideocode-tui/src/tui/session_picker/loading.rs": {
       "dot_ok": 33,
       "let_underscore": 1,
       "unwrap_or_default": 24
     },
-    "crates/IDEOCODE-tui/src/tui/session_picker/render.rs": {
+    "crates/ideocode-tui/src/tui/session_picker/render.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/test_harness.rs": {
+    "crates/ideocode-tui/src/tui/test_harness.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui/src/tui/theme_detect.rs": {
+    "crates/ideocode-tui/src/tui/theme_detect.rs": {
       "dot_ok": 4,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/ui.rs": {
+    "crates/ideocode-tui/src/tui/ui.rs": {
       "dot_ok": 4,
       "let_underscore": 1,
-      "unwrap_or_default": 3
+      "unwrap_or_default": 4
     },
-    "crates/IDEOCODE-tui/src/tui/ui/url.rs": {
+    "crates/ideocode-tui/src/tui/ui/url.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/ui_changelog.rs": {
+    "crates/ideocode-tui/src/tui/ui_achievements.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_build_panel.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_changelog.rs": {
       "dot_ok": 3,
       "let_underscore": 2,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/ui_diagram_pane.rs": {
+    "crates/ideocode-tui/src/tui/ui_cicd.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_completion.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_diagram_pane.rs": {
       "dot_ok": 1,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/ui_file_diff.rs": {
+    "crates/ideocode-tui/src/tui/ui_docker.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 2
+    },
+    "crates/ideocode-tui/src/tui/ui_export.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_file_diff.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/ui_frame_metrics.rs": {
+    "crates/ideocode-tui/src/tui/ui_frame_metrics.rs": {
       "dot_ok": 11,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/ui_header.rs": {
+    "crates/ideocode-tui/src/tui/ui_gamification.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_git_panel.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_header.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 3
     },
-    "crates/IDEOCODE-tui/src/tui/ui_inline_image.rs": {
-      "dot_ok": 5,
-      "let_underscore": 0,
-      "unwrap_or_default": 1
-    },
-    "crates/IDEOCODE-tui/src/tui/ui_inline_interactive.rs": {
+    "crates/ideocode-tui/src/tui/ui_import.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/ui_input.rs": {
+    "crates/ideocode-tui/src/tui/ui_inline_image.rs": {
+      "dot_ok": 5,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_inline_interactive.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_input.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 2
     },
-    "crates/IDEOCODE-tui/src/tui/ui_messages.rs": {
-      "dot_ok": 5,
-      "let_underscore": 0,
-      "unwrap_or_default": 9
-    },
-    "crates/IDEOCODE-tui/src/tui/ui_onboarding.rs": {
+    "crates/ideocode-tui/src/tui/ui_integration.rs": {
       "dot_ok": 0,
       "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/tui/ui_pinned.rs": {
-      "dot_ok": 1,
-      "let_underscore": 1,
-      "unwrap_or_default": 0
-    },
-    "crates/IDEOCODE-tui/src/tui/ui_status.rs": {
-      "dot_ok": 1,
-      "let_underscore": 0,
-      "unwrap_or_default": 0
-    },
-    "crates/IDEOCODE-tui/src/tui/ui_todo_changes.rs": {
-      "dot_ok": 1,
-      "let_underscore": 0,
-      "unwrap_or_default": 0
-    },
-    "crates/IDEOCODE-tui/src/tui/ui_tools.rs": {
-      "dot_ok": 1,
-      "let_underscore": 0,
-      "unwrap_or_default": 12
-    },
-    "crates/IDEOCODE-tui/src/tui/ui_tools/batch.rs": {
-      "dot_ok": 1,
-      "let_underscore": 0,
-      "unwrap_or_default": 0
-    },
-    "crates/IDEOCODE-tui/src/tui/ui_viewport.rs": {
+    "crates/ideocode-tui/src/tui/ui_log_viewer.rs": {
       "dot_ok": 2,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-tui/src/tui/workspace_client.rs": {
+    "crates/ideocode-tui/src/tui/ui_macros.rs": {
+      "dot_ok": 2,
+      "let_underscore": 0,
+      "unwrap_or_default": 0
+    },
+    "crates/ideocode-tui/src/tui/ui_mascot.rs": {
       "dot_ok": 0,
-      "let_underscore": 5,
+      "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-tui/src/video_export.rs": {
-      "dot_ok": 4,
-      "let_underscore": 2,
+    "crates/ideocode-tui/src/tui/ui_messages.rs": {
+      "dot_ok": 5,
+      "let_underscore": 0,
+      "unwrap_or_default": 9
+    },
+    "crates/ideocode-tui/src/tui/ui_onboarding.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
       "unwrap_or_default": 1
     },
-    "crates/IDEOCODE-update-core/src/lib.rs": {
+    "crates/ideocode-tui/src/tui/ui_palette.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_personality.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 2
+    },
+    "crates/ideocode-tui/src/tui/ui_pinned.rs": {
+      "dot_ok": 1,
+      "let_underscore": 1,
+      "unwrap_or_default": 0
+    },
+    "crates/ideocode-tui/src/tui/ui_search_panel.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_share.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_shell_cache.rs": {
+      "dot_ok": 1,
+      "let_underscore": 0,
+      "unwrap_or_default": 4
+    },
+    "crates/ideocode-tui/src/tui/ui_sidebar.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_status.rs": {
+      "dot_ok": 1,
+      "let_underscore": 0,
+      "unwrap_or_default": 0
+    },
+    "crates/ideocode-tui/src/tui/ui_templates.rs": {
       "dot_ok": 3,
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
-    "crates/IDEOCODE-usage-types/src/lib.rs": {
+    "crates/ideocode-tui/src/tui/ui_todo_changes.rs": {
+      "dot_ok": 1,
+      "let_underscore": 0,
+      "unwrap_or_default": 0
+    },
+    "crates/ideocode-tui/src/tui/ui_tools.rs": {
+      "dot_ok": 1,
+      "let_underscore": 0,
+      "unwrap_or_default": 12
+    },
+    "crates/ideocode-tui/src/tui/ui_tools/batch.rs": {
+      "dot_ok": 1,
+      "let_underscore": 0,
+      "unwrap_or_default": 0
+    },
+    "crates/ideocode-tui/src/tui/ui_viewport.rs": {
+      "dot_ok": 2,
+      "let_underscore": 0,
+      "unwrap_or_default": 0
+    },
+    "crates/ideocode-tui/src/tui/ui_widgets.rs": {
+      "dot_ok": 0,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/ui_workspace.rs": {
+      "dot_ok": 3,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/tui/workspace_client.rs": {
+      "dot_ok": 0,
+      "let_underscore": 5,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-tui/src/video_export.rs": {
+      "dot_ok": 4,
+      "let_underscore": 2,
+      "unwrap_or_default": 1
+    },
+    "crates/ideocode-update-core/src/lib.rs": {
+      "dot_ok": 3,
+      "let_underscore": 0,
+      "unwrap_or_default": 0
+    },
+    "crates/ideocode-usage-types/src/lib.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
       "unwrap_or_default": 0
@@ -2366,6 +2496,11 @@
       "let_underscore": 0,
       "unwrap_or_default": 0
     },
+    "src/cli/local_repl.rs": {
+      "dot_ok": 3,
+      "let_underscore": 0,
+      "unwrap_or_default": 1
+    },
     "src/cli/login.rs": {
       "dot_ok": 0,
       "let_underscore": 1,
@@ -2374,6 +2509,11 @@
     "src/cli/login/scriptable.rs": {
       "dot_ok": 0,
       "let_underscore": 2,
+      "unwrap_or_default": 0
+    },
+    "src/cli/omniroute.rs": {
+      "dot_ok": 0,
+      "let_underscore": 9,
       "unwrap_or_default": 0
     },
     "src/cli/provider_init.rs": {
@@ -2395,6 +2535,11 @@
       "dot_ok": 2,
       "let_underscore": 10,
       "unwrap_or_default": 0
+    },
+    "src/cli/tool_commands.rs": {
+      "dot_ok": 1,
+      "let_underscore": 0,
+      "unwrap_or_default": 2
     },
     "src/cli/tui_launch.rs": {
       "dot_ok": 0,
