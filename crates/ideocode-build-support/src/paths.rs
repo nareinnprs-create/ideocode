@@ -578,11 +578,13 @@ pub fn is_ideocode_repo(dir: &Path) -> bool {
         return false;
     }
 
-    // Read Cargo.toml and check package name
-    if let Ok(content) = std::fs::read_to_string(&cargo_toml)
-        && content.contains("name = \"IDEOCODE\"")
-    {
-        return true;
+    // Read Cargo.toml and check package name (the workspace root package is
+    // `ideocode`, lowercase; older checkouts may still use `IDEOCODE`).
+    if let Ok(content) = std::fs::read_to_string(&cargo_toml) {
+        let lower = content.to_ascii_lowercase();
+        if lower.contains("name = \"ideocode\"") {
+            return true;
+        }
     }
 
     false

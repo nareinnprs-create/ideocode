@@ -76,15 +76,22 @@ fn rate_limit_backoff(
     Some(
         retry_after_secs
             .map(Duration::from_secs)
-            .or_else(|| {
-                // checked_add: a garbage reset header must not panic here.
-                let reset_at =
-                    SystemTime::UNIX_EPOCH.checked_add(Duration::from_secs(reset_epoch_secs?))?;
-                reset_at.duration_since(now).ok()
+            .or_else(|| match reset_epoch_secs {
+                Some(reset_epoch) => {
+                    match SystemTime::UNIX_EPOCH.checked_add(Duration::from_secs(reset_epoch)) {
+                        // A reset epoch beyond the representable SystemTime range
+                        // is a bogus far-future value; clamp to the maximum
+                        // backoff rather than treating it as "no hint" (which
+                        // would silently pick the shorter fallback window).
+                        None => Some(RATE_LIMIT_BACKOFF_MAX),
+                        Some(reset_at) => reset_at.duration_since(now).ok(),
+                    }
+                }
+                None => None,
             })
             .filter(|backoff| !backoff.is_zero())
-            .unwrap_or(RATE_LIMIT_BACKOFF_FALLBACK)
-            .min(RATE_LIMIT_BACKOFF_MAX),
+            .map(|backoff| backoff.min(RATE_LIMIT_BACKOFF_MAX))
+            .unwrap_or(RATE_LIMIT_BACKOFF_FALLBACK),
     )
 }
 

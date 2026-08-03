@@ -138,7 +138,31 @@ pub fn reload_process_alive(pid: u32) -> bool {
         matches!(err.raw_os_error(), Some(libc::EPERM))
     }
 
-    #[cfg(not(unix))]
+    #[cfg(windows)]
+    {
+        use windows_sys::Win32::Foundation::{CloseHandle, ERROR_INVALID_PARAMETER, STILL_ACTIVE};
+        use windows_sys::Win32::System::Threading::{
+            GetExitCodeProcess, OpenProcess, PROCESS_QUERY_LIMITED_INFORMATION,
+        };
+
+        unsafe {
+            let handle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, pid);
+            if handle.is_null() {
+                // A pid that maps to no process yields ERROR_INVALID_PARAMETER;
+                // ERROR_ACCESS_DENIED means the process exists but we lack the
+                // rights to query it (mirrors the Unix EPERM -> alive case).
+                return std::io::Error::last_os_error().raw_os_error()
+                    != Some(ERROR_INVALID_PARAMETER as i32);
+            }
+            let mut exit_code: u32 = 0;
+            let still_alive =
+                GetExitCodeProcess(handle, &mut exit_code) != 0 && exit_code == STILL_ACTIVE as u32;
+            CloseHandle(handle);
+            still_alive
+        }
+    }
+
+    #[cfg(not(any(unix, windows)))]
     {
         let _ = pid;
         true

@@ -1920,26 +1920,26 @@ mod tests {
         assert!(
             request
                 .to_ascii_lowercase()
-                .contains("x-IDEOCODE-discovery-request-id: request-test-1"),
+                .contains("x-ideocode-discovery-request-id: request-test-1"),
             "{request}"
         );
         assert!(
             request
                 .to_ascii_lowercase()
-                .contains("x-IDEOCODE-discovery-benchmark: 1"),
+                .contains("x-ideocode-discovery-benchmark: 1"),
             "{request}"
         );
         for expected in [
-            "x-IDEOCODE-discovery-session-id: session-test-1",
-            "x-IDEOCODE-discovery-session-metadata: 1",
-            "x-IDEOCODE-discovery-self-dev: 1",
-            "x-IDEOCODE-discovery-debug: 0",
-            "x-IDEOCODE-discovery-canary: 1",
-            "x-IDEOCODE-discovery-execution-mode: agent_turn",
-            "x-IDEOCODE-discovery-build-channel: selfdev",
-            "x-IDEOCODE-discovery-git-checkout: 1",
-            "x-IDEOCODE-discovery-ci: 0",
-            "x-IDEOCODE-discovery-ran-from-cargo: 1",
+            "x-ideocode-discovery-session-id: session-test-1",
+            "x-ideocode-discovery-session-metadata: 1",
+            "x-ideocode-discovery-self-dev: 1",
+            "x-ideocode-discovery-debug: 0",
+            "x-ideocode-discovery-canary: 1",
+            "x-ideocode-discovery-execution-mode: agent_turn",
+            "x-ideocode-discovery-build-channel: selfdev",
+            "x-ideocode-discovery-git-checkout: 1",
+            "x-ideocode-discovery-ci: 0",
+            "x-ideocode-discovery-ran-from-cargo: 1",
         ] {
             assert!(request.to_ascii_lowercase().contains(expected), "{request}");
         }
@@ -2009,11 +2009,11 @@ mod tests {
             "{request}"
         );
         assert!(
-            lower.contains("x-IDEOCODE-discovery-request-id: aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"),
+            lower.contains("x-ideocode-discovery-request-id: aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"),
             "{request}"
         );
         assert!(
-            lower.contains("x-IDEOCODE-discovery-benchmark: 1"),
+            lower.contains("x-ideocode-discovery-benchmark: 1"),
             "{request}"
         );
         assert!(request.contains("\"suggestion_kind\":\"known_product\""));

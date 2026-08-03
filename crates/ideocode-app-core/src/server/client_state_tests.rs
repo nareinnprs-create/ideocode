@@ -19,6 +19,23 @@ use std::time::Instant;
 use tokio::io::AsyncReadExt;
 use tokio::sync::{Mutex, RwLock, mpsc};
 
+/// Read one newline-terminated event frame. The server writes a JSON body plus
+/// trailing newline and never closes the connection, so relying on
+/// `read_to_end` (EOF) deadlocks against the Windows named-pipe transport where
+/// closing the write half does not propagate EOF to the reader.
+async fn read_one_frame<R: tokio::io::AsyncRead + Unpin>(reader: &mut R) -> Vec<u8> {
+    let mut frame = Vec::new();
+    let mut buf = [0u8; 4096];
+    loop {
+        let read = reader.read(&mut buf).await.expect("read frame bytes");
+        assert!(read > 0, "connection closed before frame terminator");
+        frame.extend_from_slice(&buf[..read]);
+        if frame.contains(&b'\n') {
+            return frame;
+        }
+    }
+}
+
 struct MockProvider;
 
 #[async_trait]
@@ -179,11 +196,7 @@ async fn handle_get_history_falls_back_to_persisted_snapshot_when_agent_is_busy(
     drop(busy_guard);
     drop(writer);
 
-    let mut bytes = Vec::new();
-    stream_b
-        .read_to_end(&mut bytes)
-        .await
-        .expect("read history event bytes");
+    let bytes = read_one_frame(&mut stream_b).await;
     let mut cursor = std::io::Cursor::new(bytes);
     let mut line = String::new();
     cursor.read_line(&mut line).expect("read first line");
@@ -259,11 +272,7 @@ async fn handle_get_model_catalog_does_not_wait_for_busy_agent_lock() {
     drop(busy_guard);
     drop(writer);
 
-    let mut bytes = Vec::new();
-    stream_b
-        .read_to_end(&mut bytes)
-        .await
-        .expect("read model catalog event bytes");
+    let bytes = read_one_frame(&mut stream_b).await;
     let mut cursor = std::io::Cursor::new(bytes);
     let mut line = String::new();
     cursor.read_line(&mut line).expect("read first line");

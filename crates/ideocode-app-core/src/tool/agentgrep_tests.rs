@@ -185,7 +185,8 @@ fn build_grep_args_includes_scope_flags() {
     assert!(args.paths_only);
     assert!(args.hidden);
     assert!(args.no_ignore);
-    assert_eq!(args.path.as_deref(), Some("/tmp/root/src"));
+    let expected_path = ctx.resolve_path(Path::new("src")).display().to_string();
+    assert_eq!(args.path.as_deref(), Some(expected_path.as_str()));
     assert_eq!(args.glob.as_deref(), Some("src/**/*.rs"));
 }
 
@@ -214,7 +215,8 @@ fn build_grep_args_drops_match_all_glob() {
     let args = build_grep_args(&params, &ctx).unwrap();
     assert_eq!(args.query, "agentgrep");
     assert_eq!(args.file_type.as_deref(), Some("rs"));
-    assert_eq!(args.path.as_deref(), Some("/tmp/root/."));
+    let expected_path = ctx.resolve_path(Path::new(".")).display().to_string();
+    assert_eq!(args.path.as_deref(), Some(expected_path.as_str()));
     assert_eq!(args.glob, None);
 }
 
@@ -311,7 +313,8 @@ fn build_find_args_allows_glob_only_search() {
 
     let args = build_find_args(&params, &ctx).expect("glob-only find should be valid");
     assert!(args.query_parts.is_empty());
-    assert_eq!(args.path.as_deref(), Some("/tmp/root/."));
+    let expected_path = ctx.resolve_path(Path::new(".")).display().to_string();
+    assert_eq!(args.path.as_deref(), Some(expected_path.as_str()));
     assert_eq!(args.glob.as_deref(), Some("**/*release*"));
     assert_eq!(args.max_files, 25);
     assert!(args.paths_only);
@@ -383,7 +386,8 @@ fn build_smart_args_uses_terms() {
     assert!(args.debug_plan);
     assert!(args.debug_score);
     assert_eq!(args.file_type.as_deref(), Some("rs"));
-    assert_eq!(args.path.as_deref(), Some("/workspace/repo"));
+    let expected_path = ctx.resolve_path(Path::new("repo")).display().to_string();
+    assert_eq!(args.path.as_deref(), Some(expected_path.as_str()));
     assert_eq!(query.subject, "auth_status");
     assert_eq!(query.relation.as_str(), "rendered");
     assert_eq!(query.path_hint.as_deref(), Some("src/tui"));
@@ -531,7 +535,8 @@ fn build_outline_args_accepts_file_field() {
 
     let args = build_outline_args(&params, &ctx, None).unwrap();
     assert_eq!(args.file, "src/tool/agentgrep.rs");
-    assert_eq!(args.path.as_deref(), Some("/workspace/repo"));
+    let expected_path = ctx.resolve_path(Path::new("repo")).display().to_string();
+    assert_eq!(args.path.as_deref(), Some(expected_path.as_str()));
 }
 
 #[test]
@@ -583,7 +588,7 @@ fn build_outline_args_treats_file_valued_path_as_outline_target() {
 fn build_outline_args_does_not_duplicate_file_valued_path_when_file_is_also_set() {
     let temp = tempfile::tempdir().expect("tempdir");
     let relative_file = "src/tool/todo.rs";
-    let absolute_file = temp.path().join(relative_file);
+    let absolute_file = temp.path().join("src").join("tool").join("todo.rs");
     fs::create_dir_all(absolute_file.parent().expect("file parent")).expect("mkdir");
     fs::write(&absolute_file, "pub fn save_todos() {}\n").expect("write file");
     let ctx = test_ctx(temp.path());
@@ -631,9 +636,10 @@ async fn execute_runs_linked_grep() {
         )
         .await
         .expect("tool output");
-    assert!(output.output.contains("query: auth_status"));
-    assert!(output.output.contains("src/app.rs"));
-    assert!(output.output.contains("@ 1 pub fn auth_status() {}"));
+    assert!(output.output.contains("query: auth_status"), "{}", output.output);
+    let expected_hit = Path::new("src").join("app.rs").to_string_lossy().into_owned();
+    assert!(output.output.contains(&expected_hit), "{}", output.output);
+    assert!(output.output.contains("@ 1 pub fn auth_status() {}"), "{}", output.output);
 }
 
 #[tokio::test]
@@ -707,9 +713,9 @@ async fn execute_runs_linked_grep_when_path_points_to_file() {
         )
         .await
         .expect("tool output for exact-file path");
-    assert!(output.output.contains("app.rs"));
-    assert!(!output.output.contains("src/other.rs"));
-    assert!(!output.output.contains("other.rs"));
+    assert!(output.output.contains("app.rs"), "{}", output.output);
+    assert!(!output.output.contains("src/other.rs"), "{}", output.output);
+    assert!(!output.output.contains("other.rs"), "{}", output.output);
 }
 
 #[tokio::test]
@@ -838,15 +844,22 @@ fn bash_exposure_collects_file_and_line_hits() {
         &mut file_mtime_cache,
     );
 
-    assert!(focus.contains("src/tool/lsp.rs"));
+    let expected_file = Path::new("src")
+        .join("tool")
+        .join("lsp.rs")
+        .to_string_lossy()
+        .into_owned();
+    assert!(focus.contains(&expected_file), "focus: {:?}", focus);
     assert!(
         context
             .known_files
             .iter()
-            .any(|entry| entry.path == "src/tool/lsp.rs")
+            .any(|entry| entry.path == expected_file),
+        "known_files: {:?}",
+        context.known_files
     );
     assert!(context.known_regions.iter().any(|entry| {
-        entry.path == "src/tool/lsp.rs" && entry.start_line == 42 && entry.end_line == 42
+        entry.path == expected_file && entry.start_line == 42 && entry.end_line == 42
     }));
 }
 

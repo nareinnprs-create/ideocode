@@ -794,13 +794,20 @@ mod pick_newest_candidate_tests {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 mod newest_reload_candidate_integration_tests {
     //! End-to-end-ish coverage that drives `newest_reload_candidate` through the
     //! REAL channel resolution (`build::shared_server_update_candidate`) against
     //! a temp `IDEOCODE_HOME`. This reproduces the field "/update -> new client,
     //! stale server" state and proves the fix: a self-dev daemon now reloads into
     //! the freshly installed release instead of its old pinned binary.
+    //!
+    //! `#[cfg(unix)]`: the assertions require `canonicalize` to resolve the
+    //! channel path *through a symlink* to `versions/<version>/<binary>` (the
+    //! parent dir name is the version). On Windows the channel "symlink" is a
+    //! real file copy (see `platform_support::atomic_symlink_swap`), so the
+    //! canonical path stays `builds/<channel>/<binary>` and these expectations
+    //! cannot hold.
     use super::{newer_binary_available, newest_reload_candidate};
     use crate::build;
     use std::path::Path;
@@ -816,7 +823,11 @@ mod newest_reload_candidate_integration_tests {
         std::fs::create_dir_all(&dir).expect("create version dir");
         let path = dir.join(build::binary_name());
         std::fs::write(&path, format!("binary for {version}")).expect("write binary");
-        std::fs::File::open(&path)
+        // Open with write access: on Windows, setting mtime through a read-only
+        // handle fails with `Access is denied` (missing FILE_WRITE_ATTRIBUTES).
+        std::fs::File::options()
+            .write(true)
+            .open(&path)
             .expect("open binary")
             .set_modified(mtime)
             .expect("set mtime");
@@ -1001,7 +1012,9 @@ mod newest_reload_candidate_integration_tests {
         std::fs::create_dir_all(&dir).expect("create version dir");
         let payload = dir.join("IDEOCODE-linux-x86_64.bin");
         std::fs::write(&payload, format!("payload for {version}")).expect("write payload");
-        std::fs::File::open(&payload)
+        std::fs::File::options()
+            .write(true)
+            .open(&payload)
             .expect("open payload")
             .set_modified(payload_mtime)
             .expect("set payload mtime");
@@ -1011,7 +1024,9 @@ mod newest_reload_candidate_integration_tests {
             "#!/usr/bin/env sh\nexec ./IDEOCODE-linux-x86_64.bin \"$@\"\n",
         )
         .expect("write wrapper");
-        std::fs::File::open(&wrapper)
+        std::fs::File::options()
+            .write(true)
+            .open(&wrapper)
             .expect("open wrapper")
             .set_modified(wrapper_mtime)
             .expect("set wrapper mtime");
