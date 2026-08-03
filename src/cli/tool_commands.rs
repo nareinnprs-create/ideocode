@@ -77,7 +77,12 @@ async fn run_tool_run(name: &str, input: Value) -> Result<()> {
         println!("{}", output.output);
     }
     for img in &output.images {
-        println!("[Image: {} ({}, {} bytes)]", img.label.as_deref().unwrap_or("untitled"), img.media_type, img.data.len());
+        println!(
+            "[Image: {} ({}, {} bytes)]",
+            img.label.as_deref().unwrap_or("untitled"),
+            img.media_type,
+            img.data.len()
+        );
     }
 
     Ok(())
@@ -89,7 +94,7 @@ fn render_tool_help(def: &ToolDefinition, schema: &Value) -> String {
     out.push_str(&format!("Description: {}\n", def.description));
 
     if let Some(properties) = schema.get("properties").and_then(|p| p.as_object()) {
-        out.push_str(&format!("\nParameters:\n"));
+        out.push_str("\nParameters:\n");
         let required = schema
             .get("required")
             .and_then(|r| r.as_array())
@@ -135,8 +140,11 @@ fn render_tool_help(def: &ToolDefinition, schema: &Value) -> String {
         }
     }
 
-    out.push_str(&format!("\nExample:\n"));
-    out.push_str(&format!("  ideocode tool run {} '{{\"param\": \"value\"}}'\n", def.name));
+    out.push_str("\nExample:\n");
+    out.push_str(&format!(
+        "  ideocode tool run {} '{{\"param\": \"value\"}}'\n",
+        def.name
+    ));
 
     out
 }
@@ -147,7 +155,11 @@ async fn run_tool_help(name: &str) -> Result<()> {
 
     let def = defs.iter().find(|d| d.name == name).with_context(|| {
         let names: Vec<&str> = defs.iter().map(|d| d.name.as_str()).collect();
-        format!("Unknown tool '{}'. Available tools: {}", name, names.join(", "))
+        format!(
+            "Unknown tool '{}'. Available tools: {}",
+            name,
+            names.join(", ")
+        )
     })?;
 
     print!("{}", render_tool_help(def, &def.input_schema));

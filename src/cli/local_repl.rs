@@ -20,10 +20,7 @@ pub async fn run_shell() -> Result<()> {
     println!("Type a tool name and JSON arguments, or 'help' for tool list, or 'quit' to exit.");
     println!();
 
-    loop {
-        let Some(line) = read_line("> ") else {
-            break;
-        };
+    while let Some(line) = read_line("> ") {
         let line = line.trim().to_string();
         if line.is_empty() {
             continue;
@@ -67,10 +64,16 @@ async fn print_help(registry: &Registry) {
     println!("Example: bash {{\"cmd\": \"ls -la\"}}");
     println!("         read {{\"file_path\": \"src/main.rs\"}}");
     println!();
-    println!("Available via CLI: `ideocode tool list`, `ideocode tool run <name> <json>`, `ideocode tool info <name>`");
+    println!(
+        "Available via CLI: `ideocode tool list`, `ideocode tool run <name> <json>`, `ideocode tool info <name>`"
+    );
 }
 
-async fn run_command(registry: &Registry, line: &str, cwd: &Option<std::path::PathBuf>) -> Result<()> {
+async fn run_command(
+    registry: &Registry,
+    line: &str,
+    cwd: &Option<std::path::PathBuf>,
+) -> Result<()> {
     let trimmed = line.trim();
     let split_at = trimmed.find(char::is_whitespace).unwrap_or(trimmed.len());
     let tool_name = &trimmed[..split_at];
@@ -107,7 +110,12 @@ async fn run_command(registry: &Registry, line: &str, cwd: &Option<std::path::Pa
         println!("{}", output.output);
     }
     for img in &output.images {
-        println!("[Image: {} ({}, {} bytes)]", img.label.as_deref().unwrap_or("untitled"), img.media_type, img.data.len());
+        println!(
+            "[Image: {} ({}, {} bytes)]",
+            img.label.as_deref().unwrap_or("untitled"),
+            img.media_type,
+            img.data.len()
+        );
     }
 
     Ok(())

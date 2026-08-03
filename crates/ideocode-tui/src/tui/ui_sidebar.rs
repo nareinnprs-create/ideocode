@@ -8,13 +8,16 @@
 //! overlaying on top of the chat. The chat area shrinks to accommodate.
 //! Tab/Shift+Tab cycles panels; Esc closes sidebar.
 
-use crate::tui::ui_shell_cache;
+use crate::tui::TuiState;
 use crate::tui::color_support::rgb;
+use crate::tui::ui_shell_cache;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, Borders, Paragraph, Wrap};
-use std::time::Duration;
+use std::net::TcpStream;
+use std::sync::{Mutex, OnceLock};
+use std::time::{Duration, Instant};
 
 /// Convenience wrapper: runs a cached shell command and returns its output as a single String.
 fn shell_output(cmd: &str, ttl_secs: u64) -> String {
@@ -126,6 +129,7 @@ pub fn render_sidebar_chrome(
     frame: &mut Frame,
     area: Rect,
     active_panel: SidebarPanel,
+    app: &dyn TuiState,
 ) {
     if area.width < 5 || area.height < 3 {
         return;
@@ -226,10 +230,10 @@ pub fn render_sidebar_chrome(
         height: inner.height.saturating_sub(2),
     };
 
-    render_panel_content(frame, content_area, active_panel);
+    render_panel_content(frame, content_area, active_panel, app);
 }
 
-fn render_panel_content(frame: &mut Frame, area: Rect, panel: SidebarPanel) {
+fn render_panel_content(frame: &mut Frame, area: Rect, panel: SidebarPanel, app: &dyn TuiState) {
     if area.width == 0 || area.height == 0 {
         return;
     }
@@ -242,7 +246,7 @@ fn render_panel_content(frame: &mut Frame, area: Rect, panel: SidebarPanel) {
         SidebarPanel::Log => render_log_panel(frame, area),
         SidebarPanel::Docker => render_docker_panel(frame, area),
         SidebarPanel::Cicd => render_cicd_panel(frame, area),
-        SidebarPanel::Provider => render_provider_panel(frame, area),
+        SidebarPanel::Provider => render_provider_panel(frame, area, app),
         SidebarPanel::Profiler => render_profiler_panel(frame, area),
         SidebarPanel::Debugger => render_debugger_panel(frame, area),
         SidebarPanel::Split => render_split_panel(frame, area),
@@ -255,7 +259,9 @@ fn render_file_explorer(frame: &mut Frame, area: Rect) {
     let mut lines: Vec<Line<'static>> = Vec::new();
     lines.push(Line::from(Span::styled(
         " File Explorer",
-        Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+        Style::default()
+            .fg(neon_cyan())
+            .add_modifier(Modifier::BOLD),
     )));
     lines.push(Line::from(""));
     if output.is_empty() {
@@ -265,17 +271,17 @@ fn render_file_explorer(frame: &mut Frame, area: Rect) {
         )));
     } else {
         for line in output.lines().take(area.height.saturating_sub(3) as usize) {
-            let truncated: String = line.chars().take(area.width.saturating_sub(2) as usize).collect();
+            let truncated: String = line
+                .chars()
+                .take(area.width.saturating_sub(2) as usize)
+                .collect();
             lines.push(Line::from(Span::styled(
                 format!("  {}", truncated),
                 Style::default().fg(rgb(180, 180, 200)),
             )));
         }
     }
-    frame.render_widget(
-        Paragraph::new(lines).wrap(Wrap { trim: false }),
-        area,
-    );
+    frame.render_widget(Paragraph::new(lines).wrap(Wrap { trim: false }), area);
 }
 
 fn render_git_panel(frame: &mut Frame, area: Rect) {
@@ -286,7 +292,9 @@ fn render_git_panel(frame: &mut Frame, area: Rect) {
     let mut lines: Vec<Line<'static>> = Vec::new();
     lines.push(Line::from(Span::styled(
         " Git",
-        Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+        Style::default()
+            .fg(neon_cyan())
+            .add_modifier(Modifier::BOLD),
     )));
     lines.push(Line::from(""));
 
@@ -294,7 +302,12 @@ fn render_git_panel(frame: &mut Frame, area: Rect) {
     let branch_name = branch.trim().lines().next().unwrap_or("(unknown)");
     lines.push(Line::from(vec![
         Span::styled("  Branch: ", Style::default().fg(dim_color())),
-        Span::styled(branch_name.to_string(), Style::default().fg(neon_green()).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            branch_name.to_string(),
+            Style::default()
+                .fg(neon_green())
+                .add_modifier(Modifier::BOLD),
+        ),
     ]));
 
     // Status summary
@@ -305,13 +318,19 @@ fn render_git_panel(frame: &mut Frame, area: Rect) {
         if modified > 0 {
             lines.push(Line::from(vec![
                 Span::styled("  M ", Style::default().fg(neon_yellow())),
-                Span::styled(format!("{} modified", modified), Style::default().fg(rgb(180, 180, 200))),
+                Span::styled(
+                    format!("{} modified", modified),
+                    Style::default().fg(rgb(180, 180, 200)),
+                ),
             ]));
         }
         if untracked > 0 {
             lines.push(Line::from(vec![
                 Span::styled("  ? ", Style::default().fg(neon_purple())),
-                Span::styled(format!("{} untracked", untracked), Style::default().fg(rgb(180, 180, 200))),
+                Span::styled(
+                    format!("{} untracked", untracked),
+                    Style::default().fg(rgb(180, 180, 200)),
+                ),
             ]));
         }
         if modified == 0 && untracked == 0 {
@@ -327,10 +346,15 @@ fn render_git_panel(frame: &mut Frame, area: Rect) {
         lines.push(Line::from(""));
         lines.push(Line::from(Span::styled(
             "  Recent:",
-            Style::default().fg(dim_color()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(dim_color())
+                .add_modifier(Modifier::BOLD),
         )));
         for entry in log.lines().take(5) {
-            let truncated: String = entry.chars().take(area.width.saturating_sub(4) as usize).collect();
+            let truncated: String = entry
+                .chars()
+                .take(area.width.saturating_sub(4) as usize)
+                .collect();
             lines.push(Line::from(Span::styled(
                 format!("  {}", truncated),
                 Style::default().fg(rgb(180, 180, 200)),
@@ -338,17 +362,16 @@ fn render_git_panel(frame: &mut Frame, area: Rect) {
         }
     }
 
-    frame.render_widget(
-        Paragraph::new(lines).wrap(Wrap { trim: false }),
-        area,
-    );
+    frame.render_widget(Paragraph::new(lines).wrap(Wrap { trim: false }), area);
 }
 
 fn render_search_panel(frame: &mut Frame, area: Rect) {
     let lines = vec![
         Line::from(Span::styled(
             " Search",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )),
         Line::from(""),
         Line::from(Span::styled(
@@ -373,7 +396,9 @@ fn render_build_panel(frame: &mut Frame, area: Rect) {
     let mut lines: Vec<Line<'static>> = Vec::new();
     lines.push(Line::from(Span::styled(
         " Build Output",
-        Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+        Style::default()
+            .fg(neon_cyan())
+            .add_modifier(Modifier::BOLD),
     )));
     lines.push(Line::from(""));
     if output.is_empty() {
@@ -388,7 +413,10 @@ fn render_build_panel(frame: &mut Frame, area: Rect) {
     } else {
         for line in output.lines().take(area.height.saturating_sub(3) as usize) {
             let is_error = line.contains("error") || line.contains("warning");
-            let truncated: String = line.chars().take(area.width.saturating_sub(2) as usize).collect();
+            let truncated: String = line
+                .chars()
+                .take(area.width.saturating_sub(2) as usize)
+                .collect();
             let style = if is_error {
                 Style::default().fg(rgb(255, 80, 80))
             } else {
@@ -397,10 +425,7 @@ fn render_build_panel(frame: &mut Frame, area: Rect) {
             lines.push(Line::from(Span::styled(format!("  {}", truncated), style)));
         }
     }
-    frame.render_widget(
-        Paragraph::new(lines).wrap(Wrap { trim: false }),
-        area,
-    );
+    frame.render_widget(Paragraph::new(lines).wrap(Wrap { trim: false }), area);
 }
 
 fn render_log_panel(frame: &mut Frame, area: Rect) {
@@ -413,7 +438,9 @@ fn render_log_panel(frame: &mut Frame, area: Rect) {
     let mut lines: Vec<Line<'static>> = Vec::new();
     lines.push(Line::from(Span::styled(
         " Session Log",
-        Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+        Style::default()
+            .fg(neon_cyan())
+            .add_modifier(Modifier::BOLD),
     )));
     lines.push(Line::from(""));
 
@@ -421,7 +448,10 @@ fn render_log_panel(frame: &mut Frame, area: Rect) {
         if let Ok(content) = std::fs::read_to_string(&log_file) {
             let tail_lines: Vec<&str> = content.lines().rev().take(20).collect();
             for line in tail_lines.into_iter().rev() {
-                let truncated: String = line.chars().take(area.width.saturating_sub(2) as usize).collect();
+                let truncated: String = line
+                    .chars()
+                    .take(area.width.saturating_sub(2) as usize)
+                    .collect();
                 lines.push(Line::from(Span::styled(
                     format!("  {}", truncated),
                     Style::default().fg(rgb(180, 180, 200)),
@@ -435,10 +465,7 @@ fn render_log_panel(frame: &mut Frame, area: Rect) {
         )));
     }
 
-    frame.render_widget(
-        Paragraph::new(lines).wrap(Wrap { trim: false }),
-        area,
-    );
+    frame.render_widget(Paragraph::new(lines).wrap(Wrap { trim: false }), area);
 }
 
 fn render_docker_panel(frame: &mut Frame, area: Rect) {
@@ -449,7 +476,9 @@ fn render_docker_panel(frame: &mut Frame, area: Rect) {
     let mut lines: Vec<Line<'static>> = Vec::new();
     lines.push(Line::from(Span::styled(
         " Docker Containers",
-        Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+        Style::default()
+            .fg(neon_cyan())
+            .add_modifier(Modifier::BOLD),
     )));
     lines.push(Line::from(""));
     if output.is_empty() || output.contains("Cannot connect") {
@@ -459,20 +488,22 @@ fn render_docker_panel(frame: &mut Frame, area: Rect) {
         )));
     } else {
         for line in output.lines().take(area.height.saturating_sub(3) as usize) {
-            let truncated: String = line.chars().take(area.width.saturating_sub(2) as usize).collect();
+            let truncated: String = line
+                .chars()
+                .take(area.width.saturating_sub(2) as usize)
+                .collect();
             let is_header = line.contains("NAMES") || line.contains("───");
             let style = if is_header {
-                Style::default().fg(dim_color()).add_modifier(Modifier::BOLD)
+                Style::default()
+                    .fg(dim_color())
+                    .add_modifier(Modifier::BOLD)
             } else {
                 Style::default().fg(rgb(180, 180, 200))
             };
             lines.push(Line::from(Span::styled(format!("  {}", truncated), style)));
         }
     }
-    frame.render_widget(
-        Paragraph::new(lines).wrap(Wrap { trim: false }),
-        area,
-    );
+    frame.render_widget(Paragraph::new(lines).wrap(Wrap { trim: false }), area);
 }
 
 fn render_cicd_panel(frame: &mut Frame, area: Rect) {
@@ -483,7 +514,9 @@ fn render_cicd_panel(frame: &mut Frame, area: Rect) {
     let mut lines: Vec<Line<'static>> = Vec::new();
     lines.push(Line::from(Span::styled(
         " CI/CD Pipelines",
-        Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+        Style::default()
+            .fg(neon_cyan())
+            .add_modifier(Modifier::BOLD),
     )));
     lines.push(Line::from(""));
     if output.is_empty() || output.contains("unavailable") {
@@ -493,7 +526,10 @@ fn render_cicd_panel(frame: &mut Frame, area: Rect) {
         )));
     } else {
         for line in output.lines().take(area.height.saturating_sub(3) as usize) {
-            let truncated: String = line.chars().take(area.width.saturating_sub(2) as usize).collect();
+            let truncated: String = line
+                .chars()
+                .take(area.width.saturating_sub(2) as usize)
+                .collect();
             let style = if line.contains("completed") || line.contains("success") {
                 Style::default().fg(neon_green())
             } else if line.contains("failure") || line.contains("failed") {
@@ -506,54 +542,119 @@ fn render_cicd_panel(frame: &mut Frame, area: Rect) {
             lines.push(Line::from(Span::styled(format!("  {}", truncated), style)));
         }
     }
-    frame.render_widget(
-        Paragraph::new(lines).wrap(Wrap { trim: false }),
-        area,
-    );
+    frame.render_widget(Paragraph::new(lines).wrap(Wrap { trim: false }), area);
 }
 
-fn render_provider_panel(frame: &mut Frame, area: Rect) {
-    let lines = vec![
+/// Cached TCP probe for the built-in Baanzon Verso gateway (local engine on
+/// port 20128). Probes every few seconds at most so the sidebar never stalls.
+static GATEWAY_CACHE: OnceLock<Mutex<Option<(Instant, bool)>>> = OnceLock::new();
+
+pub(crate) fn baanzon_gateway_online() -> bool {
+    let cache = GATEWAY_CACHE.get_or_init(|| Mutex::new(None));
+    let Ok(mut guard) = cache.lock() else {
+        return false;
+    };
+    if let Some((at, ok)) = *guard
+        && at.elapsed() < Duration::from_secs(3)
+    {
+        return ok;
+    }
+    let Ok(addr) = "127.0.0.1:20128".parse() else {
+        return false;
+    };
+    let ok = TcpStream::connect_timeout(&addr, Duration::from_millis(250)).is_ok();
+    *guard = Some((Instant::now(), ok));
+    ok
+}
+
+fn render_provider_panel(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
+    let provider = app.provider_name();
+    let model = app.provider_model();
+    let upstream = app.upstream_provider();
+    let status_detail = app.status_detail();
+    let gateway_online = baanzon_gateway_online();
+
+    let provider_display = if provider.trim().is_empty() {
+        "None (no provider configured)".to_string()
+    } else {
+        provider.clone()
+    };
+
+    let mut lines = vec![
         Line::from(Span::styled(
             " Provider Manager",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )),
         Line::from(""),
         Line::from(vec![
             Span::styled("  Active: ", Style::default().fg(dim_color())),
-            Span::styled("Claude", Style::default().fg(neon_green()).add_modifier(Modifier::BOLD)),
+            Span::styled(
+                provider_display,
+                Style::default()
+                    .fg(neon_green())
+                    .add_modifier(Modifier::BOLD),
+            ),
         ]),
         Line::from(vec![
             Span::styled("  Model: ", Style::default().fg(dim_color())),
-            Span::styled("sonnet-4-20250514", Style::default().fg(rgb(180, 180, 200))),
+            Span::styled(model, Style::default().fg(rgb(180, 180, 200))),
         ]),
-        Line::from(""),
-        Line::from(Span::styled(
-            "  [p] Switch model",
-            Style::default().fg(dim_color()),
-        )),
-        Line::from(Span::styled(
-            "  [v] Full provider UI",
-            Style::default().fg(dim_color()),
-        )),
-        Line::from(""),
-        Line::from(Span::styled(
-            "  Supported providers:",
-            Style::default().fg(dim_color()).add_modifier(Modifier::BOLD),
-        )),
-        Line::from(Span::styled(
-            "  Anthropic / OpenAI / Google",
-            Style::default().fg(rgb(180, 180, 200)),
-        )),
-        Line::from(Span::styled(
-            "  AWS Bedrock / Azure / OpenRouter",
-            Style::default().fg(rgb(180, 180, 200)),
-        )),
-        Line::from(Span::styled(
-            "  GitHub Copilot / Ollama / xAI",
-            Style::default().fg(rgb(180, 180, 200)),
-        )),
     ];
+    if let Some(up) = upstream {
+        lines.push(Line::from(vec![
+            Span::styled("  Upstream: ", Style::default().fg(dim_color())),
+            Span::styled(up, Style::default().fg(rgb(180, 180, 200))),
+        ]));
+    }
+    if let Some(detail) = status_detail {
+        lines.push(Line::from(vec![
+            Span::styled("  Status: ", Style::default().fg(dim_color())),
+            Span::styled(detail, Style::default().fg(rgb(180, 180, 200))),
+        ]));
+    }
+    lines.push(Line::from(""));
+    lines.push(Line::from(Span::styled(
+        if gateway_online {
+            "  Built-in Baanzon Verso engine: ONLINE"
+        } else {
+            "  Built-in Baanzon Verso engine: starting"
+        },
+        Style::default().fg(if gateway_online {
+            neon_green()
+        } else {
+            dim_color()
+        }),
+    )));
+    lines.push(Line::from(""));
+    lines.push(Line::from(Span::styled(
+        "  [p] Switch model",
+        Style::default().fg(dim_color()),
+    )));
+    lines.push(Line::from(Span::styled(
+        "  [v] Full provider UI",
+        Style::default().fg(dim_color()),
+    )));
+    lines.push(Line::from(""));
+    lines.push(Line::from(Span::styled(
+        "  Available providers:",
+        Style::default()
+            .fg(dim_color())
+            .add_modifier(Modifier::BOLD),
+    )));
+    lines.push(Line::from(Span::styled(
+        "  Baanzon Verso (built-in, free)",
+        Style::default().fg(rgb(180, 180, 200)),
+    )));
+    lines.push(Line::from(Span::styled(
+        "  Anthropic / OpenAI / Google",
+        Style::default().fg(rgb(180, 180, 200)),
+    )));
+    lines.push(Line::from(Span::styled(
+        "  GitHub Copilot / Ollama / xAI",
+        Style::default().fg(rgb(180, 180, 200)),
+    )));
     frame.render_widget(Paragraph::new(lines), area);
 }
 
@@ -561,7 +662,9 @@ fn render_profiler_panel(frame: &mut Frame, area: Rect) {
     let lines = vec![
         Line::from(Span::styled(
             " Performance",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )),
         Line::from(""),
         Line::from(Span::styled(
@@ -584,7 +687,9 @@ fn render_debugger_panel(frame: &mut Frame, area: Rect) {
     let lines = vec![
         Line::from(Span::styled(
             " Debugger",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )),
         Line::from(""),
         Line::from(Span::styled(
@@ -608,7 +713,9 @@ fn render_split_panel(frame: &mut Frame, area: Rect) {
     let lines = vec![
         Line::from(Span::styled(
             " Split Terminal",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )),
         Line::from(""),
         Line::from(Span::styled(

@@ -27,6 +27,49 @@ fn local_endpoint_troubleshooting_hint(api_base: &str, model: &str) -> &'static 
 // SSE Stream Parser
 // ============================================================================
 
+/// Whether the endpoint is the built-in Baanzon Verso gateway (local engine on
+/// port 20128). The gateway accepts the `auto` sentinel as a model and serves
+/// the best free-tier model; when a provider profile pins a model the gateway
+/// does not expose, requests must fall back instead of failing hard.
+fn is_baanzon_gateway(api_base: &str) -> bool {
+    let lower = api_base.to_ascii_lowercase();
+    lower.contains("127.0.0.1:20128")
+        || lower.contains("localhost:20128")
+        || lower.contains("[::1]:20128")
+}
+
+/// Resolve the `auto` model sentinel against the built-in gateway's `/models`
+/// listing, so a fresh no-auth install requests a concrete, served model id
+/// instead of a 404. `None` when the listing cannot be reached/parsed; the
+/// caller keeps the original `auto` model in that case.
+async fn resolve_baanzon_auto_model(client: &Client, api_base: &str) -> Option<String> {
+    let url = format!("{}/models", api_base);
+    let response = client.get(&url).send().await.ok()?;
+    if !response.status().is_success() {
+        ideocode_base::logging::warn(&format!(
+            "Baanzon gateway /models returned status {}; keeping auto model",
+            response.status()
+        ));
+        return None;
+    }
+    let value: Value = response.json().await.ok()?;
+    let first_model = value
+        .get("data")
+        .and_then(|data| data.as_array())
+        .and_then(|models| {
+            models
+                .iter()
+                .find_map(|model| model.get("id").and_then(|id| id.as_str()))
+        })
+        .map(String::from);
+    if first_model.is_none() {
+        ideocode_base::logging::warn(
+            "Baanzon gateway /models returned no model ids; keeping auto model",
+        );
+    }
+    first_model
+}
+
 #[expect(
     clippy::too_many_arguments,
     reason = "stream helpers thread transport, auth, request, event channel, and pin state explicitly"
@@ -43,6 +86,26 @@ pub(super) async fn run_stream_with_retries(
 ) {
     let mut last_error = None;
     let mut next_retry_delay = None;
+
+    // The built-in gateway's `auto` sentinel resolves to whatever free model it
+    // currently serves. Query `/models` once so the request carries a concrete
+    // id the gateway definitely knows, instead of relying on `auto` support.
+    let mut effective_model = model.clone();
+    let mut request = request;
+    if model.eq_ignore_ascii_case("auto") && is_baanzon_gateway(&api_base) {
+        if let Some(resolved) = resolve_baanzon_auto_model(&client, &api_base).await {
+            ideocode_base::logging::info(&format!(
+                "Baanzon gateway: resolved auto model -> {}",
+                resolved
+            ));
+            request["model"] = serde_json::json!(resolved);
+            effective_model = resolved;
+        } else {
+            ideocode_base::logging::info(
+                "Baanzon gateway: could not resolve auto model, sending auto as-is",
+            );
+        }
+    }
 
     for attempt in 0..MAX_RETRIES {
         if attempt > 0 {
@@ -64,7 +127,7 @@ pub(super) async fn run_stream_with_retries(
             "API stream attempt {}/{} over HTTPS transport (model: {}, endpoint: {}, auth: {})",
             attempt + 1,
             MAX_RETRIES,
-            model,
+            effective_model,
             api_base,
             auth.label()
         ));
@@ -94,7 +157,7 @@ pub(super) async fn run_stream_with_retries(
             request.clone(),
             attempt_tx,
             Arc::clone(&provider_pin),
-            model.clone(),
+            effective_model.clone(),
         )
         .await
         {
@@ -128,7 +191,8 @@ pub(super) async fn run_stream_with_retries(
                             e
                         ));
                     }
-                    next_retry_delay = ideocode_provider_core::retry_after::retry_after_from_error(&e);
+                    next_retry_delay =
+                        ideocode_provider_core::retry_after::retry_after_from_error(&e);
                     last_error = Some(e);
                     continue;
                 }
@@ -393,5 +457,51 @@ mod tests {
         assert!(is_retryable_error(
             "chat request failed\n  status: 429 unknown\n  response: {}"
         ));
+    }
+
+    #[test]
+    fn baanzon_gateway_detection() {
+        assert!(is_baanzon_gateway("http://127.0.0.1:20128/v1"));
+        assert!(is_baanzon_gateway("http://localhost:20128/v1"));
+        assert!(!is_baanzon_gateway("https://openrouter.ai/api/v1"));
+        assert!(!is_baanzon_gateway("http://127.0.0.1:11434/v1"));
+        assert!(!is_baanzon_gateway("http://127.0.0.1:1234/v1"));
+    }
+
+    #[tokio::test]
+    async fn resolve_baanzon_auto_model_parses_models_listing() {
+        use std::io::{Read, Write};
+        use std::net::TcpListener;
+
+        let listener = TcpListener::bind("127.0.0.1:0").expect("bind mock server");
+        let addr = listener.local_addr().expect("mock addr");
+        std::thread::spawn(move || {
+            let (mut stream, _) = listener.accept().expect("accept mock request");
+            let mut request = vec![0u8; 4096];
+            let _n = stream.read(&mut request).unwrap_or(0);
+            let body = r#"{"data":[{"id":"free-model-a"},{"id":"free-model-b"}]}"#;
+            let response = format!(
+                "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
+                body.len(),
+                body
+            );
+            stream
+                .write_all(response.as_bytes())
+                .expect("write mock response");
+        });
+
+        let client = reqwest::Client::new();
+        let resolved = resolve_baanzon_auto_model(&client, &format!("http://{addr}/v1")).await;
+        assert_eq!(resolved.as_deref(), Some("free-model-a"));
+    }
+
+    #[tokio::test]
+    async fn resolve_baanzon_auto_model_returns_none_when_unreachable() {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").expect("bind");
+        let addr = listener.local_addr().expect("addr");
+        drop(listener);
+        let client = reqwest::Client::new();
+        let resolved = resolve_baanzon_auto_model(&client, &format!("http://{addr}/v1")).await;
+        assert!(resolved.is_none());
     }
 }

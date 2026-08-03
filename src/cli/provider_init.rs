@@ -1584,6 +1584,18 @@ async fn init_provider_with_options(
         | ProviderChoice::GeminiApi
         | ProviderChoice::OpenaiCompatible => {
             disable_subscription_runtime_mode();
+            if matches!(choice, ProviderChoice::OmniRoute) {
+                // An explicit `--provider omniroute` must bring the local Baanzon
+                // Verso engine up itself: the auto-detect path starts it, but the
+                // explicit path previously never did, so every request hit a
+                // connection-refused localhost:20128 on a fresh machine.
+                if !crate::cli::omniroute::ensure_gateway().await? {
+                    crate::logging::warn(
+                        "Baanzon Verso engine is not reachable yet; it will keep retrying in the background.",
+                    );
+                }
+                crate::cli::omniroute::spawn_supervisor();
+            }
             let profile = profile_for_choice(choice)
                 .ok_or_else(|| anyhow::anyhow!("missing provider profile for choice"))?;
             if std::env::var_os("IDEOCODE_NAMED_PROVIDER_PROFILE").is_none() {
@@ -1785,13 +1797,21 @@ async fn init_provider_with_options(
                 && !availability.has_omniroute
                 && std::env::var_os("IDEOCODE_PROVIDER_PROFILE_ACTIVE").is_none()
                 && std::env::var_os("IDEOCODE_NAMED_PROVIDER_PROFILE").is_none()
-                && crate::cli::omniroute::ensure_gateway().await?
             {
-                availability.has_omniroute = true;
-                crate::logging::info("[TIMING] auto_provider_bootstrap: omniroute_gateway=up");
+                let gateway_up = crate::cli::omniroute::ensure_gateway().await?;
+                if gateway_up {
+                    availability.has_omniroute = true;
+                    crate::logging::info("[TIMING] auto_provider_bootstrap: omniroute_gateway=up");
+                } else {
+                    crate::logging::warn(
+                        "Baanzon Verso engine is not reachable yet; keeping the background supervisor active so it can recover without a restart.",
+                    );
+                }
                 // Keep the Baanzon Verso engine running in the background once it
-                // is in use: the supervisor restarts it within a 600s budget if it
-                // ever becomes unreachable.
+                // is the only available provider: the supervisor restarts it within
+                // a 600s budget if it ever becomes unreachable. It also retries a
+                // failed first-run startup (e.g. node/npm not yet installed), so a
+                // transient failure does not leave the TUI provider-less.
                 crate::cli::omniroute::spawn_supervisor();
             }
 
@@ -1802,9 +1822,7 @@ async fn init_provider_with_options(
                 crate::provider::activation::apply_openai_compatible_runtime(Some(
                     "auto".to_string(),
                 ))?;
-                init_notice(
-                    "Using Baanzon Verso (built-in AI; use /model to switch)",
-                );
+                init_notice("Using Baanzon Verso (built-in AI; use /model to switch)");
                 Arc::new(ideocode_provider_openrouter_runtime::OpenRouterProvider::new()?)
             } else if availability.has_any_provider() {
                 let multi = provider::MultiProvider::from_auth_status(availability.auth_status);

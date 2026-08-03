@@ -3203,8 +3203,9 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
         }
     } else if swarm_page_active {
         let members = app.inline_swarm_members();
-        let spinner_frame =
-            (app.animation_elapsed() * ideocode_tui_render::swarm_gallery::STRIP_SPINNER_FPS) as usize;
+        let spinner_frame = (app.animation_elapsed()
+            * ideocode_tui_render::swarm_gallery::STRIP_SPINNER_FPS)
+            as usize;
         let lines = super::info_widget::swarm_gallery::render_swarm_page_lines(
             &members,
             app.swarm_panel_selected(),
@@ -3462,7 +3463,11 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
         let is_processing = app.is_processing();
 
         let status_icon = if is_processing { "⚡" } else { "●" };
-        let status_color = if is_processing { rgb(0, 240, 255) } else { rgb(0, 230, 118) };
+        let status_color = if is_processing {
+            rgb(0, 240, 255)
+        } else {
+            rgb(0, 230, 118)
+        };
         let status_text = if is_processing { "thinking" } else { "ready" };
 
         let short_model = if model.len() > 28 {
@@ -3472,24 +3477,47 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
         };
 
         let line1 = Line::from(vec![
-            Span::styled(" IDEOCODE ", Style::default().fg(rgb(139, 92, 246)).add_modifier(Modifier::BOLD)),
+            Span::styled(
+                " IDEOCODE ",
+                Style::default()
+                    .fg(rgb(139, 92, 246))
+                    .add_modifier(Modifier::BOLD),
+            ),
             Span::styled("│", Style::default().fg(dim_color())),
-            Span::styled(format!(" {} ", status_icon), Style::default().fg(status_color)),
-            Span::styled(status_text, Style::default().fg(status_color).add_modifier(Modifier::BOLD)),
+            Span::styled(
+                format!(" {} ", status_icon),
+                Style::default().fg(status_color),
+            ),
+            Span::styled(
+                status_text,
+                Style::default()
+                    .fg(status_color)
+                    .add_modifier(Modifier::BOLD),
+            ),
             Span::styled(" │ ", Style::default().fg(dim_color())),
-            Span::styled(format!("🧠 {}", short_model), Style::default().fg(rgb(255, 0, 255))),
+            Span::styled(
+                format!("🧠 {}", short_model),
+                Style::default().fg(rgb(255, 0, 255)),
+            ),
             if !provider.is_empty() {
-                Span::styled(format!(" │ 🔗 {}", provider), Style::default().fg(rgb(139, 92, 246)))
+                Span::styled(
+                    format!(" │ 🔗 {}", provider),
+                    Style::default().fg(rgb(139, 92, 246)),
+                )
             } else {
                 Span::styled("", Style::default())
             },
         ]);
 
-        let line2_spans = vec![
-            Span::styled("─".repeat(header_area.width as usize), Style::default().fg(dim_color())),
-        ];
+        let line2_spans = vec![Span::styled(
+            "─".repeat(header_area.width as usize),
+            Style::default().fg(dim_color()),
+        )];
 
-        frame.render_widget(Paragraph::new(vec![line1, Line::from(line2_spans)]), header_area);
+        frame.render_widget(
+            Paragraph::new(vec![line1, Line::from(line2_spans)]),
+            header_area,
+        );
     }
 
     // Toast notifications (top-right)
@@ -3507,12 +3535,17 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     }
 
     // Mood indicator (top-left)
-    let mood_area = Rect { x: area.x + 1, y: area.y, width: 8, height: 1 };
+    let mood_area = Rect {
+        x: area.x + 1,
+        y: area.y,
+        width: 8,
+        height: 1,
+    };
     crate::tui::ui_integration::render_mood_indicator(frame, mood_area, app);
 
     // Sidebar panel system (right side, renders over overlays)
     if sidebar_active {
-        crate::tui::ui_integration::render_sidebar(frame, full_area);
+        crate::tui::ui_integration::render_sidebar(frame, full_area, app);
     }
 
     // Session timer in status bar

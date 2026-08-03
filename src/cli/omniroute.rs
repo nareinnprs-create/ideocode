@@ -31,8 +31,11 @@ const GATEWAY_DIR_NAME: &str = "baanzon-verso";
 const SETUP_COMPLETE_SENTINEL: &str = "baanzon-setup-complete";
 /// Maximum self-heal budget: the engine must recover within 600 seconds.
 pub const SUPERVISOR_RECOVERY_BUDGET: Duration = Duration::from_secs(600);
-/// How long a cold ensure blocks before handing control to the supervisor.
-const COLD_START_BUDGET: Duration = Duration::from_secs(30);
+/// On Windows a first-run engine start can be noticeably slower (cold npm
+/// installs, antivirus scanning, slower process spawn), so give a cold ensure
+/// more headroom before handing control to the background supervisor.
+#[cfg(windows)]
+const COLD_START_BUDGET_WINDOWS: Duration = Duration::from_secs(120);
 
 /// Returns true when the engine's TCP port accepts connections.
 pub async fn gateway_reachable() -> bool {
@@ -127,13 +130,42 @@ fn find_on_path(names: &[&str]) -> Option<PathBuf> {
         })
 }
 
+/// Well-known install locations checked when the toolchain is missing from
+/// PATH (common on Windows: Node bundled by an installer or nvm-windows, or a
+/// PATH that was set before Node was installed).
+#[cfg(windows)]
+fn known_toolchain_dirs() -> Vec<PathBuf> {
+    let mut dirs = Vec::new();
+    if let Some(program_files) = std::env::var_os("ProgramFiles") {
+        dirs.push(PathBuf::from(&program_files).join("nodejs"));
+    }
+    if let Some(appdata) = std::env::var_os("APPDATA") {
+        dirs.push(PathBuf::from(&appdata).join("nvm").join("current"));
+    }
+    dirs
+}
+
+#[cfg(not(windows))]
+fn known_toolchain_dirs() -> Vec<PathBuf> {
+    Vec::new()
+}
+
+fn find_in_known_dirs(names: &[&str]) -> Option<PathBuf> {
+    known_toolchain_dirs().into_iter().find_map(|dir| {
+        names
+            .iter()
+            .find(|name| dir.join(name).is_file())
+            .map(|name| dir.join(name))
+    })
+}
+
 fn find_node() -> Option<PathBuf> {
     let names: &[&str] = if cfg!(windows) {
         &["node.exe", "node"]
     } else {
         &["node"]
     };
-    find_on_path(names)
+    find_on_path(names).or_else(|| find_in_known_dirs(names))
 }
 
 fn find_npm() -> Option<PathBuf> {
@@ -142,13 +174,14 @@ fn find_npm() -> Option<PathBuf> {
     } else {
         &["npm"]
     };
-    find_on_path(names)
+    find_on_path(names).or_else(|| find_in_known_dirs(names))
 }
 
 /// Spawns the vendored gateway detached from the terminal.
 fn spawn_gateway(bin: &Path, data_dir: &Path) -> std::io::Result<std::process::Child> {
-    let node = find_node()
-        .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::NotFound, "node not found on PATH"))?;
+    let node = find_node().ok_or_else(|| {
+        std::io::Error::new(std::io::ErrorKind::NotFound, "node not found on PATH")
+    })?;
     let mut cmd = Command::new(node);
     cmd.arg(bin)
         .env("DATA_DIR", data_dir)
@@ -235,15 +268,14 @@ fn install_vendored_gateway() -> Result<bool> {
         }
         Ok(output) => {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            crate::logging::error(&format!(
-                "Baanzon Verso install failed: {}",
-                stderr.trim()
-            ));
-            let _ = std::fs::write(&gateway_log_path(), format!("npm install failed:\n{stderr}"));
+            crate::logging::error(&format!("Baanzon Verso install failed: {}", stderr.trim()));
+            let _ = std::fs::write(gateway_log_path(), format!("npm install failed:\n{stderr}"));
             Ok(false)
         }
         Err(err) => {
-            crate::logging::error(&format!("Could not run npm to install Baanzon Verso: {err}"));
+            crate::logging::error(&format!(
+                "Could not run npm to install Baanzon Verso: {err}"
+            ));
             Ok(false)
         }
     }
@@ -254,8 +286,10 @@ fn install_vendored_gateway() -> Result<bool> {
 /// are replaced; functional identifiers and env-var names are left untouched.
 fn apply_brand_patch() -> Result<()> {
     let pkg = vendored_pkg_dir()?;
-    let replacements: [(&str, &str); 2] =
-        [("OmniRoute", "Baanzon Verso"), ("omniroute.online", "baanzonverso.local")];
+    let replacements: [(&str, &str); 2] = [
+        ("OmniRoute", "Baanzon Verso"),
+        ("omniroute.online", "baanzonverso.local"),
+    ];
     let mut patched = 0usize;
     for dir in ["dist", ".build", "public"] {
         let target = pkg.join(dir);
@@ -263,7 +297,9 @@ fn apply_brand_patch() -> Result<()> {
             patch_dir(&target, &replacements, &mut patched);
         }
     }
-    crate::logging::info(&format!("Baanzon Verso branding applied ({patched} files patched)"));
+    crate::logging::info(&format!(
+        "Baanzon Verso branding applied ({patched} files patched)"
+    ));
     Ok(())
 }
 
@@ -277,16 +313,12 @@ fn patch_dir(dir: &Path, replacements: &[(&str, &str)], patched: &mut usize) {
             patch_dir(&path, replacements, patched);
             continue;
         }
-        let Some(ext) = path
-            .extension()
-            .map(|e| e.to_string_lossy().to_lowercase())
-        else {
+        let Some(ext) = path.extension().map(|e| e.to_string_lossy().to_lowercase()) else {
             continue;
         };
         if !matches!(
             ext.as_str(),
-            "js" | "mjs" | "cjs" | "html" | "htm" | "json" | "css" | "txt" | "svg" | "map"
-                | "xml"
+            "js" | "mjs" | "cjs" | "html" | "htm" | "json" | "css" | "txt" | "svg" | "map" | "xml"
         ) {
             continue;
         }
@@ -360,7 +392,20 @@ fn provision_gateway() -> Result<bool> {
 /// connect to it. Never errors on a missing or failing gateway; it only reports
 /// hard failures that deserve propagation.
 pub async fn ensure_gateway() -> Result<bool> {
-    ensure_gateway_with_budget(COLD_START_BUDGET).await
+    ensure_gateway_with_budget(default_cold_start_budget()).await
+}
+
+/// The cold-start wait budget for the platform: Windows gets more headroom
+/// than the default 30s (see [`COLD_START_BUDGET_WINDOWS`]).
+fn default_cold_start_budget() -> Duration {
+    #[cfg(windows)]
+    {
+        COLD_START_BUDGET_WINDOWS
+    }
+    #[cfg(not(windows))]
+    {
+        COLD_START_BUDGET
+    }
 }
 
 /// Like [`ensure_gateway`] but bounds how long the initial wait may take. Longer
@@ -381,10 +426,8 @@ pub async fn ensure_gateway_with_budget(budget: Duration) -> Result<bool> {
         return Ok(false);
     }
 
-    if !is_vendored_installed() {
-        if !install_vendored_gateway()? {
-            return ensure_global_gateway().await;
-        }
+    if !is_vendored_installed() && !install_vendored_gateway()? {
+        return ensure_global_gateway().await;
     }
     let _ = provision_gateway()?;
 
@@ -490,10 +533,8 @@ mod tests {
 
     #[test]
     fn setup_sentinel_round_trips_in_temp_dir() {
-        let dir = std::env::temp_dir().join(format!(
-            "baanzon-sentinel-test-{}",
-            std::process::id()
-        ));
+        let dir =
+            std::env::temp_dir().join(format!("baanzon-sentinel-test-{}", std::process::id()));
         let path = dir.join(SETUP_COMPLETE_SENTINEL);
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();

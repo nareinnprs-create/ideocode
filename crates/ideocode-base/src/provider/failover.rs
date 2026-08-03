@@ -77,6 +77,7 @@ impl MultiProvider {
             msg.push_str(&extra_guidance.join(" "));
         }
         msg.push_str(" Use `/usage` to check limits and `/login <provider>` to re-authenticate.");
+        msg.push_str(" If you have no API keys at all, the built-in Baanzon Verso engine (free, no signup) can be used: install Node.js/npm and restart IDEOCODE.");
         anyhow::anyhow!(msg)
     }
 }

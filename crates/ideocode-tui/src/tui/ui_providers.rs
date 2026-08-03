@@ -6,7 +6,9 @@ use crossterm::event::{KeyCode, KeyModifiers};
 use ratatui::prelude::*;
 use ratatui::widgets::*;
 
-fn rgb(r: u8, g: u8, b: u8) -> Color { Color::Rgb(r, g, b) }
+fn rgb(r: u8, g: u8, b: u8) -> Color {
+    Color::Rgb(r, g, b)
+}
 
 const PANEL_BG: Color = Color::Rgb(12, 12, 28);
 const PANEL_BORDER: Color = Color::Rgb(60, 60, 100);
@@ -20,6 +22,7 @@ const SUCCESS_FG: Color = Color::Rgb(0, 255, 100);
 const WARN_FG: Color = Color::Yellow;
 
 const BUILTIN_PROVIDERS: &[(&str, &str, &str)] = &[
+    ("baanzon", "Baanzon Verso (built-in)", "auto"),
     ("claude", "Anthropic (Claude)", "claude-fable-5"),
     ("openai", "OpenAI (GPT)", "gpt-5.6-sol"),
     ("copilot", "GitHub Copilot", "claude-sonnet-4"),
@@ -33,16 +36,51 @@ const BUILTIN_PROVIDERS: &[(&str, &str, &str)] = &[
 const COMPATIBLE_PROVIDERS: &[(&str, &str, &str, &str)] = &[
     ("github-models", "GitHub Models", "gpt-4o", "GITHUB_TOKEN"),
     ("groq", "Groq", "llama-3.1-8b-instant", "GROQ_API_KEY"),
-    ("togetherai", "Together AI", "meta-llama-3.1-8b-instruct", "TOGETHER_API_KEY"),
-    ("fireworks", "Fireworks AI", "accounts/fireworks/models/default", "FIREWORKS_API_KEY"),
+    (
+        "togetherai",
+        "Together AI",
+        "meta-llama-3.1-8b-instruct",
+        "TOGETHER_API_KEY",
+    ),
+    (
+        "fireworks",
+        "Fireworks AI",
+        "accounts/fireworks/models/default",
+        "FIREWORKS_API_KEY",
+    ),
     ("deepseek", "DeepSeek", "deepseek-chat", "DEEPSEEK_API_KEY"),
-    ("sambanova", "SambaNova", "Meta-Llama-3.1-8B-Instruct", "SAMBANOVA_API_KEY"),
-    ("mistral", "Mistral", "mistral-large-latest", "MISTRAL_API_KEY"),
-    ("perplexity", "Perplexity", "sonar-medium-online", "PERPLEXITY_API_KEY"),
-    ("replicate", "Replicate", "meta/meta-llama-3.1-8b-instruct", "REPLICATE_API_TOKEN"),
+    (
+        "sambanova",
+        "SambaNova",
+        "Meta-Llama-3.1-8B-Instruct",
+        "SAMBANOVA_API_KEY",
+    ),
+    (
+        "mistral",
+        "Mistral",
+        "mistral-large-latest",
+        "MISTRAL_API_KEY",
+    ),
+    (
+        "perplexity",
+        "Perplexity",
+        "sonar-medium-online",
+        "PERPLEXITY_API_KEY",
+    ),
+    (
+        "replicate",
+        "Replicate",
+        "meta/meta-llama-3.1-8b-instruct",
+        "REPLICATE_API_TOKEN",
+    ),
     ("zhipu", "Zhipu AI", "glm-4-plus", "ZHIPU_DIRECT_API_KEY"),
     ("cerebras", "Cerebras", "llama3.1-8b", "CEREBRAS_API_KEY"),
-    ("nvidia", "NVIDIA NIM", "deepseek-ai/deepseek-r1", "NVIDIA_API_KEY"),
+    (
+        "nvidia",
+        "NVIDIA NIM",
+        "deepseek-ai/deepseek-r1",
+        "NVIDIA_API_KEY",
+    ),
     ("xai", "xAI (Grok)", "grok-2", "XAI_API_KEY"),
     ("minimax", "MiniMax", "MiniMax-M2.7", "MINIMAX_API_KEY"),
     ("huggingface", "Hugging Face", "zai-org/GLM-4.7", "HF_TOKEN"),
@@ -104,7 +142,11 @@ pub fn toggle_provider_panel(state: &mut ProviderPanelState) {
     }
 }
 
-pub fn handle_provider_keys(state: &mut ProviderPanelState, code: KeyCode, _modifiers: KeyModifiers) -> bool {
+pub fn handle_provider_keys(
+    state: &mut ProviderPanelState,
+    code: KeyCode,
+    _modifiers: KeyModifiers,
+) -> bool {
     if !state.visible {
         return false;
     }
@@ -132,7 +174,11 @@ pub fn handle_provider_keys(state: &mut ProviderPanelState, code: KeyCode, _modi
                 return true;
             }
             KeyCode::BackTab => {
-                state.add_focus = if state.add_focus == 0 { 3 } else { state.add_focus - 1 };
+                state.add_focus = if state.add_focus == 0 {
+                    3
+                } else {
+                    state.add_focus - 1
+                };
                 return true;
             }
             KeyCode::Enter => {
@@ -239,14 +285,13 @@ pub fn handle_provider_keys(state: &mut ProviderPanelState, code: KeyCode, _modi
             return true;
         }
         KeyCode::Char('t') => {
-            if state.tab == ProviderTab::Test
-                && state.selected < COMPATIBLE_PROVIDERS.len() {
-                    state.test_provider = COMPATIBLE_PROVIDERS[state.selected].0.to_string();
-                    state.test_result = Some(format!(
-                        "Testing {} API endpoint...",
-                        COMPATIBLE_PROVIDERS[state.selected].1
-                    ));
-                }
+            if state.tab == ProviderTab::Test && state.selected < COMPATIBLE_PROVIDERS.len() {
+                state.test_provider = COMPATIBLE_PROVIDERS[state.selected].0.to_string();
+                state.test_result = Some(format!(
+                    "Testing {} API endpoint...",
+                    COMPATIBLE_PROVIDERS[state.selected].1
+                ));
+            }
             return true;
         }
         KeyCode::Char('?') | KeyCode::Char('/') => {
@@ -255,7 +300,7 @@ pub fn handle_provider_keys(state: &mut ProviderPanelState, code: KeyCode, _modi
                  [1-4] Switch tabs | [↑/↓] Navigate | [a] Add custom\n\
                  [t] Test endpoint | [Esc/q] Close\n\n\
                  Tabs:\n\
-                 [1] Core - 8 built-in providers (Claude, OpenAI, etc.)\n\
+                 [1] Core - built-in providers (Baanzon Verso, Claude, OpenAI)\n\
                  [2] Compatible - 21+ OpenAI-compatible (DeepSeek, Groq, etc.)\n\
                  [3] Custom - Your custom providers\n\
                  [4] Test - Test provider endpoints"
@@ -315,7 +360,10 @@ fn draw_tab_bar(f: &mut Frame, area: Rect, state: &ProviderPanelState) {
     let mut spans = Vec::new();
     for (label, tab) in &tabs {
         let style = if *tab == &state.tab {
-            Style::default().fg(rgb(0, 0, 0)).bg(HEADER_FG).add_modifier(Modifier::BOLD)
+            Style::default()
+                .fg(rgb(0, 0, 0))
+                .bg(HEADER_FG)
+                .add_modifier(Modifier::BOLD)
         } else {
             Style::default().fg(DIM_FG)
         };
@@ -340,8 +388,15 @@ fn draw_tab_bar(f: &mut Frame, area: Rect, state: &ProviderPanelState) {
 
     if area.height > 1 {
         let help_line = Line::from(help_spans);
-        let help_area = Rect { y: area.y + 1, height: 1, ..area };
-        f.render_widget(Paragraph::new(help_line).alignment(Alignment::Left), help_area);
+        let help_area = Rect {
+            y: area.y + 1,
+            height: 1,
+            ..area
+        };
+        f.render_widget(
+            Paragraph::new(help_line).alignment(Alignment::Left),
+            help_area,
+        );
     }
 }
 
@@ -372,9 +427,11 @@ fn draw_provider_list(f: &mut Frame, area: Rect, state: &ProviderPanelState) {
                 .collect();
 
             let list = List::new(items)
-                .block(Block::default().title(" Core Providers (8) ").title_style(
-                    Style::default().fg(HEADER_FG).add_modifier(Modifier::BOLD),
-                ))
+                .block(
+                    Block::default()
+                        .title(format!(" Core Providers ({}) ", BUILTIN_PROVIDERS.len()))
+                        .title_style(Style::default().fg(HEADER_FG).add_modifier(Modifier::BOLD)),
+                )
                 .highlight_style(Style::default().fg(ACTIVE_FG).add_modifier(Modifier::BOLD));
 
             let mut list_state = ListState::default();
@@ -413,9 +470,11 @@ fn draw_provider_list(f: &mut Frame, area: Rect, state: &ProviderPanelState) {
                 .collect();
 
             let list = List::new(items)
-                .block(Block::default().title(" OpenAI-Compatible (21+) ").title_style(
-                    Style::default().fg(HEADER_FG).add_modifier(Modifier::BOLD),
-                ))
+                .block(
+                    Block::default()
+                        .title(" OpenAI-Compatible (21+) ")
+                        .title_style(Style::default().fg(HEADER_FG).add_modifier(Modifier::BOLD)),
+                )
                 .highlight_style(Style::default().fg(ACTIVE_FG).add_modifier(Modifier::BOLD));
 
             let mut list_state = ListState::default();
@@ -425,14 +484,21 @@ fn draw_provider_list(f: &mut Frame, area: Rect, state: &ProviderPanelState) {
         ProviderTab::Custom => {
             let help = vec![
                 Line::from(""),
-                Line::from(vec![
-                    Span::styled("  No custom providers configured.", Style::default().fg(DIM_FG)),
-                ]),
+                Line::from(vec![Span::styled(
+                    "  No custom providers configured.",
+                    Style::default().fg(DIM_FG),
+                )]),
                 Line::from(""),
                 Line::from(vec![
                     Span::styled("  Press ", Style::default().fg(DIM_FG)),
-                    Span::styled("a", Style::default().fg(KEY_FG).add_modifier(Modifier::BOLD)),
-                    Span::styled(" to add a custom OpenAI-compatible provider.", Style::default().fg(DIM_FG)),
+                    Span::styled(
+                        "a",
+                        Style::default().fg(KEY_FG).add_modifier(Modifier::BOLD),
+                    ),
+                    Span::styled(
+                        " to add a custom OpenAI-compatible provider.",
+                        Style::default().fg(DIM_FG),
+                    ),
                 ]),
                 Line::from(""),
                 Line::from(vec![
@@ -441,21 +507,26 @@ fn draw_provider_list(f: &mut Frame, area: Rect, state: &ProviderPanelState) {
                     Span::styled(":", Style::default().fg(DIM_FG)),
                 ]),
                 Line::from(""),
-                Line::from(vec![
-                    Span::styled("    [providers.my-api]", Style::default().fg(SUCCESS_FG)),
-                ]),
-                Line::from(vec![
-                    Span::styled("    type = \"openai-compatible\"", Style::default().fg(INACTIVE_FG)),
-                ]),
-                Line::from(vec![
-                    Span::styled("    base_url = \"https://api.example.com/v1\"", Style::default().fg(INACTIVE_FG)),
-                ]),
-                Line::from(vec![
-                    Span::styled("    api_key_env = \"MY_API_KEY\"", Style::default().fg(INACTIVE_FG)),
-                ]),
-                Line::from(vec![
-                    Span::styled("    default_model = \"my-model\"", Style::default().fg(INACTIVE_FG)),
-                ]),
+                Line::from(vec![Span::styled(
+                    "    [providers.my-api]",
+                    Style::default().fg(SUCCESS_FG),
+                )]),
+                Line::from(vec![Span::styled(
+                    "    type = \"openai-compatible\"",
+                    Style::default().fg(INACTIVE_FG),
+                )]),
+                Line::from(vec![Span::styled(
+                    "    base_url = \"https://api.example.com/v1\"",
+                    Style::default().fg(INACTIVE_FG),
+                )]),
+                Line::from(vec![Span::styled(
+                    "    api_key_env = \"MY_API_KEY\"",
+                    Style::default().fg(INACTIVE_FG),
+                )]),
+                Line::from(vec![Span::styled(
+                    "    default_model = \"my-model\"",
+                    Style::default().fg(INACTIVE_FG),
+                )]),
                 Line::from(""),
                 Line::from(vec![
                     Span::styled("  Then set the env var: ", Style::default().fg(DIM_FG)),
@@ -465,7 +536,10 @@ fn draw_provider_list(f: &mut Frame, area: Rect, state: &ProviderPanelState) {
                 Line::from(vec![
                     Span::styled("  Use ", Style::default().fg(DIM_FG)),
                     Span::styled("/model", Style::default().fg(ACCENT_FG)),
-                    Span::styled(" to see and switch to your custom provider.", Style::default().fg(DIM_FG)),
+                    Span::styled(
+                        " to see and switch to your custom provider.",
+                        Style::default().fg(DIM_FG),
+                    ),
                 ]),
             ];
 
@@ -489,7 +563,10 @@ fn draw_provider_list(f: &mut Frame, area: Rect, state: &ProviderPanelState) {
                     let indicator = if i == state.selected { " ► " } else { "   " };
                     let is_testing = state.test_provider == *id;
                     let status_span = if is_testing {
-                        Span::styled(" TESTING...", Style::default().fg(WARN_FG).add_modifier(Modifier::BOLD))
+                        Span::styled(
+                            " TESTING...",
+                            Style::default().fg(WARN_FG).add_modifier(Modifier::BOLD),
+                        )
                     } else {
                         Span::raw("")
                     };
@@ -506,9 +583,11 @@ fn draw_provider_list(f: &mut Frame, area: Rect, state: &ProviderPanelState) {
                 .collect();
 
             let list = List::new(items)
-                .block(Block::default().title(" Test Provider Endpoints ").title_style(
-                    Style::default().fg(HEADER_FG).add_modifier(Modifier::BOLD),
-                ))
+                .block(
+                    Block::default()
+                        .title(" Test Provider Endpoints ")
+                        .title_style(Style::default().fg(HEADER_FG).add_modifier(Modifier::BOLD)),
+                )
                 .highlight_style(Style::default().fg(ACTIVE_FG).add_modifier(Modifier::BOLD));
 
             let mut list_state = ListState::default();
@@ -578,25 +657,39 @@ fn draw_test_result(f: &mut Frame, area: Rect, result: &str) {
     let inner = block.inner(area);
     f.render_widget(block, area);
 
-    let text: Vec<Line> = result.lines().map(|l| Line::from(
-        Span::styled(l, Style::default().fg(SUCCESS_FG))
-    )).collect();
+    let text: Vec<Line> = result
+        .lines()
+        .map(|l| Line::from(Span::styled(l, Style::default().fg(SUCCESS_FG))))
+        .collect();
 
-    let paragraph = Paragraph::new(text)
-        .wrap(Wrap { trim: false });
+    let paragraph = Paragraph::new(text).wrap(Wrap { trim: false });
     f.render_widget(paragraph, inner);
 }
 
 fn draw_status_bar(f: &mut Frame, area: Rect, _state: &ProviderPanelState) {
-    let info = vec![
-        Line::from(vec![
-            Span::styled("  Tip: ", Style::default().fg(DIM_FG)),
-            Span::styled("Set env vars for providers, then use ", Style::default().fg(DIM_FG)),
-            Span::styled("/model", Style::default().fg(ACCENT_FG)),
-            Span::styled(" to switch. Custom providers: edit ", Style::default().fg(DIM_FG)),
-            Span::styled("~/.ideocode/config.toml", Style::default().fg(ACCENT_FG)),
-        ]),
-    ];
+    let gateway_online = crate::tui::ui_sidebar::baanzon_gateway_online();
+    let info = vec![Line::from(vec![
+        Span::styled("  Built-in engine: ", Style::default().fg(DIM_FG)),
+        Span::styled(
+            if gateway_online {
+                "Baanzon Verso ONLINE"
+            } else {
+                "Baanzon Verso starting"
+            },
+            Style::default().fg(if gateway_online { SUCCESS_FG } else { WARN_FG }),
+        ),
+        Span::styled("   Tip: ", Style::default().fg(DIM_FG)),
+        Span::styled(
+            "Set env vars for providers, then use ",
+            Style::default().fg(DIM_FG),
+        ),
+        Span::styled("/model", Style::default().fg(ACCENT_FG)),
+        Span::styled(
+            " to switch. Custom providers: edit ",
+            Style::default().fg(DIM_FG),
+        ),
+        Span::styled("~/.ideocode/config.toml", Style::default().fg(ACCENT_FG)),
+    ])];
 
     let paragraph = Paragraph::new(info).block(
         Block::default()

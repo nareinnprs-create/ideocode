@@ -30,7 +30,10 @@ struct OverlayState {
     gesture_selected: usize,
     file_explorer_visible: bool,
     file_explorer_selected: usize,
-    #[allow(dead_code, reason = "kept for file-explorer state persistence across panel toggle")]
+    #[allow(
+        dead_code,
+        reason = "kept for file-explorer state persistence across panel toggle"
+    )]
     file_explorer_cwd: String,
     git_panel_visible: bool,
     search_panel_visible: bool,
@@ -52,7 +55,10 @@ struct OverlayState {
     provider_panel_state: crate::tui::ui_providers::ProviderPanelState,
     mood: AIMood,
     personality_mode: PersonalityMode,
-    #[allow(dead_code, reason = "kept for theme state persistence across panel toggle")]
+    #[allow(
+        dead_code,
+        reason = "kept for theme state persistence across panel toggle"
+    )]
     active_theme: usize,
     #[allow(dead_code, reason = "kept for achievements UI; not yet wired")]
     achievements_unlocked: usize,
@@ -67,18 +73,37 @@ struct OverlayState {
 impl OverlayState {
     fn new() -> Self {
         Self {
-            gesture_visible: false, gesture_selected: 0,
-            file_explorer_visible: false, file_explorer_selected: 0, file_explorer_cwd: String::new(),
-            git_panel_visible: false, search_panel_visible: false, search_query: String::new(),
-            search_results: Vec::new(), search_selected: 0,
-            log_viewer_visible: false, log_lines: Vec::new(), log_scroll: 0,
-            build_panel_visible: false, build_output: Vec::new(), build_scroll: 0, build_running: false,
-            debugger_visible: false, docker_visible: false, cicd_visible: false, profiler_visible: false,
-            provider_panel_visible: false, provider_panel_state: crate::tui::ui_providers::ProviderPanelState::default(),
-            mood: AIMood::Chill, personality_mode: PersonalityMode::Professional,
-            active_theme: 0, achievements_unlocked: 0, achievements_total: 16,
+            gesture_visible: false,
+            gesture_selected: 0,
+            file_explorer_visible: false,
+            file_explorer_selected: 0,
+            file_explorer_cwd: String::new(),
+            git_panel_visible: false,
+            search_panel_visible: false,
+            search_query: String::new(),
+            search_results: Vec::new(),
+            search_selected: 0,
+            log_viewer_visible: false,
+            log_lines: Vec::new(),
+            log_scroll: 0,
+            build_panel_visible: false,
+            build_output: Vec::new(),
+            build_scroll: 0,
+            build_running: false,
+            debugger_visible: false,
+            docker_visible: false,
+            cicd_visible: false,
+            profiler_visible: false,
+            provider_panel_visible: false,
+            provider_panel_state: crate::tui::ui_providers::ProviderPanelState::default(),
+            mood: AIMood::Chill,
+            personality_mode: PersonalityMode::Professional,
+            active_theme: 0,
+            achievements_unlocked: 0,
+            achievements_total: 16,
             session_started_at: Some(Instant::now()),
-            split_visible: false, split_layout: super::ui_split::default_split(),
+            split_visible: false,
+            split_layout: super::ui_split::default_split(),
         }
     }
 }
@@ -90,46 +115,66 @@ pub struct SearchResult {
     pub text: String,
 }
 
-#[derive(Debug, Clone, PartialEq)]
-#[derive(Default)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub enum AIMood {
-    Happy, Focused, Confused, Excited, Thinking, Concerned, Celebrating, #[default]
+    Happy,
+    Focused,
+    Confused,
+    Excited,
+    Thinking,
+    Concerned,
+    Celebrating,
+    #[default]
     Chill,
 }
-
 
 impl AIMood {
     pub fn icon(&self) -> &str {
         match self {
-            AIMood::Happy => "😊", AIMood::Focused => "🎯", AIMood::Confused => "🤔",
-            AIMood::Excited => "🎉", AIMood::Thinking => "💭", AIMood::Concerned => "😟",
-            AIMood::Celebrating => "🥳", AIMood::Chill => "😌",
+            AIMood::Happy => "😊",
+            AIMood::Focused => "🎯",
+            AIMood::Confused => "🤔",
+            AIMood::Excited => "🎉",
+            AIMood::Thinking => "💭",
+            AIMood::Concerned => "😟",
+            AIMood::Celebrating => "🥳",
+            AIMood::Chill => "😌",
         }
     }
     pub fn color(&self) -> Color {
         match self {
-            AIMood::Happy => neon_green(), AIMood::Focused => neon_cyan(),
-            AIMood::Confused => neon_yellow(), AIMood::Excited => neon_magenta(),
-            AIMood::Thinking => neon_purple(), AIMood::Concerned => neon_orange(),
-            AIMood::Celebrating => neon_pink(), AIMood::Chill => neon_blue(),
+            AIMood::Happy => neon_green(),
+            AIMood::Focused => neon_cyan(),
+            AIMood::Confused => neon_yellow(),
+            AIMood::Excited => neon_magenta(),
+            AIMood::Thinking => neon_purple(),
+            AIMood::Concerned => neon_orange(),
+            AIMood::Celebrating => neon_pink(),
+            AIMood::Chill => neon_blue(),
         }
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
-#[derive(Default)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub enum PersonalityMode {
     #[default]
-    Professional, Casual, GenZ, Academic, Witty, Zen,
+    Professional,
+    Casual,
+    GenZ,
+    Academic,
+    Witty,
+    Zen,
 }
-
 
 impl PersonalityMode {
     pub fn icon(&self) -> &str {
         match self {
-            PersonalityMode::Professional => "👔", PersonalityMode::Casual => "😎",
-            PersonalityMode::GenZ => "🔥", PersonalityMode::Academic => "🎓",
-            PersonalityMode::Witty => "😏", PersonalityMode::Zen => "🧘",
+            PersonalityMode::Professional => "👔",
+            PersonalityMode::Casual => "😎",
+            PersonalityMode::GenZ => "🔥",
+            PersonalityMode::Academic => "🎓",
+            PersonalityMode::Witty => "😏",
+            PersonalityMode::Zen => "🧘",
         }
     }
 }
@@ -137,26 +182,50 @@ impl PersonalityMode {
 // ── Toast Manager ────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum ToastKind { Success, Info, Warning, Error, Achievement, Celebration }
+pub enum ToastKind {
+    Success,
+    Info,
+    Warning,
+    Error,
+    Achievement,
+    Celebration,
+}
 
 impl ToastKind {
     fn color(&self) -> Color {
-        match self { ToastKind::Success => neon_green(), ToastKind::Info => neon_cyan(),
-            ToastKind::Warning => neon_yellow(), ToastKind::Error => rgb(255, 80, 80),
-            ToastKind::Achievement => neon_purple(), ToastKind::Celebration => neon_magenta() }
+        match self {
+            ToastKind::Success => neon_green(),
+            ToastKind::Info => neon_cyan(),
+            ToastKind::Warning => neon_yellow(),
+            ToastKind::Error => rgb(255, 80, 80),
+            ToastKind::Achievement => neon_purple(),
+            ToastKind::Celebration => neon_magenta(),
+        }
     }
     fn icon(&self) -> &str {
-        match self { ToastKind::Success => "✅", ToastKind::Info => "ℹ️",
-            ToastKind::Warning => "⚠️", ToastKind::Error => "❌",
-            ToastKind::Achievement => "🏆", ToastKind::Celebration => "🎉" }
+        match self {
+            ToastKind::Success => "✅",
+            ToastKind::Info => "ℹ️",
+            ToastKind::Warning => "⚠️",
+            ToastKind::Error => "❌",
+            ToastKind::Achievement => "🏆",
+            ToastKind::Celebration => "🎉",
+        }
     }
 }
 
 #[derive(Debug, Clone)]
-struct Toast { message: String, kind: ToastKind, created_at: Instant, duration: Duration }
+struct Toast {
+    message: String,
+    kind: ToastKind,
+    created_at: Instant,
+    duration: Duration,
+}
 
 impl Toast {
-    fn is_expired(&self) -> bool { self.created_at.elapsed() >= self.duration }
+    fn is_expired(&self) -> bool {
+        self.created_at.elapsed() >= self.duration
+    }
     fn fade_alpha(&self) -> f32 {
         let remaining = self.duration.saturating_sub(self.created_at.elapsed());
         remaining.as_secs_f32().clamp(0.0, 1.0)
@@ -164,36 +233,76 @@ impl Toast {
 }
 
 #[derive(Debug, Default)]
-struct ToastManagerState { toasts: VecDeque<Toast>, max_visible: usize }
+struct ToastManagerState {
+    toasts: VecDeque<Toast>,
+    max_visible: usize,
+}
 
 impl ToastManagerState {
-    fn new() -> Self { Self { toasts: VecDeque::new(), max_visible: 3 } }
+    fn new() -> Self {
+        Self {
+            toasts: VecDeque::new(),
+            max_visible: 3,
+        }
+    }
     fn push(&mut self, message: &str, kind: ToastKind, duration: Duration) {
-        self.toasts.push_back(Toast { message: message.to_string(), kind, created_at: Instant::now(), duration });
+        self.toasts.push_back(Toast {
+            message: message.to_string(),
+            kind,
+            created_at: Instant::now(),
+            duration,
+        });
         self.toasts.retain(|t| !t.is_expired());
     }
     fn render(&mut self, frame: &mut Frame, area: Rect) {
         self.toasts.retain(|t| !t.is_expired());
         let visible: Vec<&Toast> = self.toasts.iter().take(self.max_visible).collect();
-        if visible.is_empty() { return; }
+        if visible.is_empty() {
+            return;
+        }
         let toast_width = 40.min(area.width as usize);
         let x = area.x + area.width.saturating_sub(toast_width as u16);
         for (i, toast) in visible.iter().enumerate() {
             let y = area.y + i as u16;
-            if y + 1 > area.y + area.height { break; }
+            if y + 1 > area.y + area.height {
+                break;
+            }
             let alpha = toast.fade_alpha();
-            let color = if alpha < 1.0 { let (r, g, b) = color_to_rgb(toast.kind.color()); rgb((r as f32 * alpha) as u8, (g as f32 * alpha) as u8, (b as f32 * alpha) as u8) } else { toast.kind.color() };
+            let color = if alpha < 1.0 {
+                let (r, g, b) = color_to_rgb(toast.kind.color());
+                rgb(
+                    (r as f32 * alpha) as u8,
+                    (g as f32 * alpha) as u8,
+                    (b as f32 * alpha) as u8,
+                )
+            } else {
+                toast.kind.color()
+            };
             let line = Line::from(vec![
-                Span::styled(format!(" {} ", toast.kind.icon()), Style::default().fg(color)),
+                Span::styled(
+                    format!(" {} ", toast.kind.icon()),
+                    Style::default().fg(color),
+                ),
                 Span::styled(toast.message.clone(), Style::default().fg(color)),
             ]);
-            frame.render_widget(Paragraph::new(line), Rect { x, y, width: toast_width as u16, height: 1 });
+            frame.render_widget(
+                Paragraph::new(line),
+                Rect {
+                    x,
+                    y,
+                    width: toast_width as u16,
+                    height: 1,
+                },
+            );
         }
     }
 }
 
 fn color_to_rgb(c: Color) -> (u8, u8, u8) {
-    match c { Color::Rgb(r, g, b) => (r, g, b), _ => (128, 128, 128) }
+    match c {
+        Color::Rgb(r, g, b) => (r, g, b),
+        _ => (128, 128, 128),
+    }
 }
 
 // ── PUBLIC API ───────────────────────────────────────────────────────
@@ -201,28 +310,72 @@ fn color_to_rgb(c: Color) -> (u8, u8, u8) {
 pub fn push_toast(message: &str, kind: ToastKind) {
     TOAST_MANAGER.with(|s| s.borrow_mut().push(message, kind, Duration::from_secs(4)));
 }
-pub fn push_toast_success(m: &str) { push_toast(m, ToastKind::Success); }
-pub fn push_toast_info(m: &str) { push_toast(m, ToastKind::Info); }
-pub fn push_toast_warning(m: &str) { push_toast(m, ToastKind::Warning); }
-pub fn push_toast_error(m: &str) { push_toast(m, ToastKind::Error); }
-pub fn push_toast_achievement(m: &str) { push_toast(m, ToastKind::Achievement); }
-pub fn push_toast_celebration(m: &str) { push_toast(m, ToastKind::Celebration); }
+pub fn push_toast_success(m: &str) {
+    push_toast(m, ToastKind::Success);
+}
+pub fn push_toast_info(m: &str) {
+    push_toast(m, ToastKind::Info);
+}
+pub fn push_toast_warning(m: &str) {
+    push_toast(m, ToastKind::Warning);
+}
+pub fn push_toast_error(m: &str) {
+    push_toast(m, ToastKind::Error);
+}
+pub fn push_toast_achievement(m: &str) {
+    push_toast(m, ToastKind::Achievement);
+}
+pub fn push_toast_celebration(m: &str) {
+    push_toast(m, ToastKind::Celebration);
+}
 
 pub fn render_toasts(frame: &mut Frame, area: Rect) {
     TOAST_MANAGER.with(|s| s.borrow_mut().render(frame, area));
 }
 
-pub fn set_mood(mood: AIMood) { OVERLAY_STATE.with(|s| s.borrow_mut().mood = mood); }
-pub fn get_mood() -> AIMood { OVERLAY_STATE.with(|s| s.borrow().mood.clone()) }
-pub fn set_personality(mode: PersonalityMode) { OVERLAY_STATE.with(|s| s.borrow_mut().personality_mode = mode); }
+pub fn set_mood(mood: AIMood) {
+    OVERLAY_STATE.with(|s| s.borrow_mut().mood = mood);
+}
+pub fn get_mood() -> AIMood {
+    OVERLAY_STATE.with(|s| s.borrow().mood.clone())
+}
+pub fn set_personality(mode: PersonalityMode) {
+    OVERLAY_STATE.with(|s| s.borrow_mut().personality_mode = mode);
+}
 
-pub fn show_gesture_pad() { OVERLAY_STATE.with(|s| s.borrow_mut().gesture_visible = true); }
-pub fn hide_gesture_pad() { OVERLAY_STATE.with(|s| s.borrow_mut().gesture_visible = false); }
-pub fn toggle_gesture_pad() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.gesture_visible = !st.gesture_visible; st.gesture_selected = 0; }); }
-pub fn gesture_move_up() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); if st.gesture_selected > 0 { st.gesture_selected -= 1; } }); }
-pub fn gesture_move_down() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.gesture_selected = (st.gesture_selected + 1).min(12); }); }
-pub fn gesture_selected() -> usize { OVERLAY_STATE.with(|s| s.borrow().gesture_selected) }
-pub fn gesture_pad_visible() -> bool { OVERLAY_STATE.with(|s| s.borrow().gesture_visible) }
+pub fn show_gesture_pad() {
+    OVERLAY_STATE.with(|s| s.borrow_mut().gesture_visible = true);
+}
+pub fn hide_gesture_pad() {
+    OVERLAY_STATE.with(|s| s.borrow_mut().gesture_visible = false);
+}
+pub fn toggle_gesture_pad() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.gesture_visible = !st.gesture_visible;
+        st.gesture_selected = 0;
+    });
+}
+pub fn gesture_move_up() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        if st.gesture_selected > 0 {
+            st.gesture_selected -= 1;
+        }
+    });
+}
+pub fn gesture_move_down() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.gesture_selected = (st.gesture_selected + 1).min(12);
+    });
+}
+pub fn gesture_selected() -> usize {
+    OVERLAY_STATE.with(|s| s.borrow().gesture_selected)
+}
+pub fn gesture_pad_visible() -> bool {
+    OVERLAY_STATE.with(|s| s.borrow().gesture_visible)
+}
 
 pub fn gesture_navigate_up() {
     OVERLAY_STATE.with(|s| {
@@ -238,7 +391,9 @@ pub fn gesture_navigate_down() {
 }
 pub fn gesture_activate() {
     let index = OVERLAY_STATE.with(|s| s.borrow().gesture_selected);
-    OVERLAY_STATE.with(|s| { s.borrow_mut().gesture_visible = false; });
+    OVERLAY_STATE.with(|s| {
+        s.borrow_mut().gesture_visible = false;
+    });
     match index {
         0 => toggle_file_explorer(),
         1 => toggle_git_panel(),
@@ -257,29 +412,101 @@ pub fn gesture_activate() {
     }
 }
 
-pub fn toggle_file_explorer() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.file_explorer_visible = !st.file_explorer_visible; }); }
-pub fn toggle_git_panel() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.git_panel_visible = !st.git_panel_visible; }); }
-pub fn toggle_search_panel() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.search_panel_visible = !st.search_panel_visible; }); }
-pub fn toggle_log_viewer() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.log_viewer_visible = !st.log_viewer_visible; }); }
-pub fn toggle_build_panel() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.build_panel_visible = !st.build_panel_visible; }); }
-pub fn toggle_debugger() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.debugger_visible = !st.debugger_visible; }); }
-pub fn toggle_docker() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.docker_visible = !st.docker_visible; }); }
-pub fn toggle_cicd() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.cicd_visible = !st.cicd_visible; }); }
-pub fn toggle_profiler() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.profiler_visible = !st.profiler_visible; }); }
-pub fn toggle_provider_panel() { OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.provider_panel_visible = !st.provider_panel_visible; st.provider_panel_state.visible = st.provider_panel_visible; if st.provider_panel_visible { st.provider_panel_state.selected = 0; st.provider_panel_state.scroll = 0; } }); }
-pub fn provider_panel_visible() -> bool { OVERLAY_STATE.with(|s| s.borrow().provider_panel_visible) }
+pub fn toggle_file_explorer() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.file_explorer_visible = !st.file_explorer_visible;
+    });
+}
+pub fn toggle_git_panel() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.git_panel_visible = !st.git_panel_visible;
+    });
+}
+pub fn toggle_search_panel() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.search_panel_visible = !st.search_panel_visible;
+    });
+}
+pub fn toggle_log_viewer() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.log_viewer_visible = !st.log_viewer_visible;
+    });
+}
+pub fn toggle_build_panel() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.build_panel_visible = !st.build_panel_visible;
+    });
+}
+pub fn toggle_debugger() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.debugger_visible = !st.debugger_visible;
+    });
+}
+pub fn toggle_docker() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.docker_visible = !st.docker_visible;
+    });
+}
+pub fn toggle_cicd() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.cicd_visible = !st.cicd_visible;
+    });
+}
+pub fn toggle_profiler() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.profiler_visible = !st.profiler_visible;
+    });
+}
+pub fn toggle_provider_panel() {
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.provider_panel_visible = !st.provider_panel_visible;
+        st.provider_panel_state.visible = st.provider_panel_visible;
+        if st.provider_panel_visible {
+            st.provider_panel_state.selected = 0;
+            st.provider_panel_state.scroll = 0;
+        }
+    });
+}
+pub fn provider_panel_visible() -> bool {
+    OVERLAY_STATE.with(|s| s.borrow().provider_panel_visible)
+}
 
 pub fn set_search_results(results: Vec<SearchResult>) {
-    OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.search_results = results; st.search_selected = 0; });
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.search_results = results;
+        st.search_selected = 0;
+    });
 }
 pub fn set_build_output(lines: Vec<String>, running: bool) {
-    OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.build_output = lines; st.build_running = running; st.build_scroll = 0; });
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.build_output = lines;
+        st.build_running = running;
+        st.build_scroll = 0;
+    });
 }
 pub fn set_log_lines(lines: Vec<String>) {
-    OVERLAY_STATE.with(|s| { let mut st = s.borrow_mut(); st.log_lines = lines; st.log_scroll = 0; });
+    OVERLAY_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.log_lines = lines;
+        st.log_scroll = 0;
+    });
 }
 
-pub fn init() { push_toast_info("Welcome to IDEOCODE! 🚀"); }
+pub fn init() {
+    push_toast_info("Welcome to IDEOCODE! 🚀");
+}
 
 // ════════════════════════════════════════════════════════════════════════
 // RENDER FUNCTIONS — All accept &dyn TuiState for real data
@@ -293,7 +520,10 @@ pub fn render_mood_indicator(frame: &mut Frame, area: Rect, _app: &dyn TuiState)
         let color = mood.color();
         let line = Line::from(vec![
             Span::styled(format!("{} ", mood.icon()), Style::default().fg(color)),
-            Span::styled("AI", Style::default().fg(color).add_modifier(Modifier::BOLD)),
+            Span::styled(
+                "AI",
+                Style::default().fg(color).add_modifier(Modifier::BOLD),
+            ),
         ]);
         frame.render_widget(Paragraph::new(line), area);
     });
@@ -309,7 +539,9 @@ pub fn render_session_timer(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
         Span::styled("⏱️ ", Style::default().fg(neon_cyan())),
         Span::styled(
             format!("{:02}:{:02}:{:02}", h, m, sec),
-            Style::default().fg(neon_green()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_green())
+                .add_modifier(Modifier::BOLD),
         ),
     ]);
     frame.render_widget(Paragraph::new(line), area);
@@ -338,7 +570,11 @@ pub fn render_network_indicator(frame: &mut Frame, area: Rect, app: &dyn TuiStat
     let line = Line::from(vec![
         Span::styled(icon, Style::default()),
         Span::styled(
-            format!("{} {}", model.chars().take(15).collect::<String>(), if app.is_processing() { "⚡" } else { "" }),
+            format!(
+                "{} {}",
+                model.chars().take(15).collect::<String>(),
+                if app.is_processing() { "⚡" } else { "" }
+            ),
             Style::default().fg(color),
         ),
     ]);
@@ -351,13 +587,19 @@ pub fn render_wordcount(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     let input_words = input.split_whitespace().count();
     let input_chars = input.chars().count();
     let messages = app.display_messages();
-    let total_words: usize = messages.iter().map(|m| m.content.split_whitespace().count()).sum();
+    let total_words: usize = messages
+        .iter()
+        .map(|m| m.content.split_whitespace().count())
+        .sum();
     let total_chars: usize = messages.iter().map(|m| m.content.chars().count()).sum();
 
     let line = Line::from(vec![
         Span::styled("📝 ", Style::default().fg(neon_cyan())),
         Span::styled(
-            format!("{}w {}c | {}w {}c", input_words, input_chars, total_words, total_chars),
+            format!(
+                "{}w {}c | {}w {}c",
+                input_words, input_chars, total_words, total_chars
+            ),
             Style::default().fg(dim_color()),
         ),
     ]);
@@ -368,7 +610,9 @@ pub fn render_wordcount(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
 pub fn render_gesture_pad(frame: &mut Frame, area: Rect) {
     OVERLAY_STATE.with(|s| {
         let st = s.borrow();
-        if !st.gesture_visible { return; }
+        if !st.gesture_visible {
+            return;
+        }
 
         let actions = [
             ("1", "File Explorer", "📂"),
@@ -394,7 +638,9 @@ pub fn render_gesture_pad(frame: &mut Frame, area: Rect) {
         let mut lines = Vec::new();
         lines.push(Line::from(Span::styled(
             "⚡ Quick Actions (Esc to close)",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )));
 
         for (i, (key, label, icon)) in actions.iter().enumerate() {
@@ -402,23 +648,40 @@ pub fn render_gesture_pad(frame: &mut Frame, area: Rect) {
             lines.push(Line::from(vec![
                 Span::styled(
                     if is_selected { "▸ " } else { "  " },
-                    Style::default().fg(if is_selected { neon_green() } else { dim_color() }),
+                    Style::default().fg(if is_selected {
+                        neon_green()
+                    } else {
+                        dim_color()
+                    }),
                 ),
                 Span::styled(format!("{} ", icon), Style::default()),
-                Span::styled(
-                    format!("[{}] ", key),
-                    Style::default().fg(neon_yellow()),
-                ),
+                Span::styled(format!("[{}] ", key), Style::default().fg(neon_yellow())),
                 Span::styled(
                     label.to_string(),
                     Style::default()
-                        .fg(if is_selected { neon_cyan() } else { dim_color() })
-                        .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                        .fg(if is_selected {
+                            neon_cyan()
+                        } else {
+                            dim_color()
+                        })
+                        .add_modifier(if is_selected {
+                            Modifier::BOLD
+                        } else {
+                            Modifier::empty()
+                        }),
                 ),
             ]));
         }
 
-        frame.render_widget(Paragraph::new(lines), Rect { x, y, width: pad_width as u16, height: pad_height });
+        frame.render_widget(
+            Paragraph::new(lines),
+            Rect {
+                x,
+                y,
+                width: pad_width as u16,
+                height: pad_height,
+            },
+        );
     });
 }
 
@@ -426,18 +689,27 @@ pub fn render_gesture_pad(frame: &mut Frame, area: Rect) {
 pub fn render_file_explorer(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     OVERLAY_STATE.with(|s| {
         let st = s.borrow();
-        if !st.file_explorer_visible { return; }
+        if !st.file_explorer_visible {
+            return;
+        }
 
         let dir = app.working_dir().unwrap_or_else(|| ".".to_string());
         let entries = get_dir_entries(&dir);
 
         let panel_width = 30.min(area.width as usize / 3);
-        let panel_area = Rect { x: area.x, y: area.y, width: panel_width as u16, height: area.height };
+        let panel_area = Rect {
+            x: area.x,
+            y: area.y,
+            width: panel_width as u16,
+            height: area.height,
+        };
 
         let mut lines = Vec::new();
         lines.push(Line::from(Span::styled(
             "📂 File Explorer",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )));
         lines.push(Line::from(Span::styled(
             format!("  {}", dir.chars().take(28).collect::<String>()),
@@ -447,18 +719,34 @@ pub fn render_file_explorer(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
 
         for (i, entry) in entries.iter().enumerate().take(area.height as usize - 4) {
             let is_selected = i == st.file_explorer_selected;
-            let (icon, color) = if entry.is_dir { ("📁", neon_blue()) } else { ("📄", dim_color()) };
+            let (icon, color) = if entry.is_dir {
+                ("📁", neon_blue())
+            } else {
+                ("📄", dim_color())
+            };
             lines.push(Line::from(vec![
                 Span::styled(
                     if is_selected { "▸ " } else { "  " },
-                    Style::default().fg(if is_selected { neon_green() } else { Color::Black }),
+                    Style::default().fg(if is_selected {
+                        neon_green()
+                    } else {
+                        Color::Black
+                    }),
                 ),
                 Span::styled(format!("{} ", icon), Style::default().fg(color)),
                 Span::styled(
                     entry.name.chars().take(24).collect::<String>(),
                     Style::default()
-                        .fg(if is_selected { neon_cyan() } else { dim_color() })
-                        .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                        .fg(if is_selected {
+                            neon_cyan()
+                        } else {
+                            dim_color()
+                        })
+                        .add_modifier(if is_selected {
+                            Modifier::BOLD
+                        } else {
+                            Modifier::empty()
+                        }),
                 ),
             ]));
         }
@@ -467,14 +755,19 @@ pub fn render_file_explorer(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     });
 }
 
-struct DirEntry { name: String, is_dir: bool }
+struct DirEntry {
+    name: String,
+    is_dir: bool,
+}
 
 fn get_dir_entries(dir: &str) -> Vec<DirEntry> {
     let mut entries = Vec::new();
     if let Ok(rd) = std::fs::read_dir(dir) {
         for entry in rd.flatten().take(100) {
             let name = entry.file_name().to_string_lossy().to_string();
-            if name.starts_with('.') { continue; }
+            if name.starts_with('.') {
+                continue;
+            }
             let is_dir = entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false);
             entries.push(DirEntry { name, is_dir });
         }
@@ -487,20 +780,41 @@ fn get_dir_entries(dir: &str) -> Vec<DirEntry> {
 pub fn render_git_panel(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     OVERLAY_STATE.with(|s| {
         let st = s.borrow();
-        if !st.git_panel_visible { return; }
+        if !st.git_panel_visible {
+            return;
+        }
 
         let panel_height = (area.height / 3).max(6);
-        let panel_area = Rect { x: area.x, y: area.y, width: area.width, height: panel_height };
+        let panel_area = Rect {
+            x: area.x,
+            y: area.y,
+            width: area.width,
+            height: panel_height,
+        };
 
         let branch = app.git_branch().unwrap_or_else(|| "detached".to_string());
         let is_processing = app.is_processing();
 
         let mut lines = Vec::new();
         lines.push(Line::from(vec![
-            Span::styled("🔀 Git: ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)),
-            Span::styled(branch, Style::default().fg(neon_green()).add_modifier(Modifier::BOLD)),
             Span::styled(
-                if is_processing { " (AI working...)" } else { "" },
+                "🔀 Git: ",
+                Style::default()
+                    .fg(neon_cyan())
+                    .add_modifier(Modifier::BOLD),
+            ),
+            Span::styled(
+                branch,
+                Style::default()
+                    .fg(neon_green())
+                    .add_modifier(Modifier::BOLD),
+            ),
+            Span::styled(
+                if is_processing {
+                    " (AI working...)"
+                } else {
+                    ""
+                },
                 Style::default().fg(neon_yellow()),
             ),
         ]));
@@ -540,17 +854,37 @@ pub fn render_git_panel(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
 pub fn render_search_panel(frame: &mut Frame, area: Rect) {
     OVERLAY_STATE.with(|s| {
         let st = s.borrow();
-        if !st.search_panel_visible { return; }
+        if !st.search_panel_visible {
+            return;
+        }
 
         let panel_height = (area.height / 3).max(4);
-        let panel_area = Rect { x: area.x, y: area.y, width: area.width, height: panel_height };
+        let panel_area = Rect {
+            x: area.x,
+            y: area.y,
+            width: area.width,
+            height: panel_height,
+        };
 
         let mut lines = Vec::new();
         lines.push(Line::from(vec![
-            Span::styled("🔍 Search: ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)),
             Span::styled(
-                if st.search_query.is_empty() { "type to search...".to_string() } else { st.search_query.clone() },
-                Style::default().fg(if st.search_query.is_empty() { dim_color() } else { neon_green() }),
+                "🔍 Search: ",
+                Style::default()
+                    .fg(neon_cyan())
+                    .add_modifier(Modifier::BOLD),
+            ),
+            Span::styled(
+                if st.search_query.is_empty() {
+                    "type to search...".to_string()
+                } else {
+                    st.search_query.clone()
+                },
+                Style::default().fg(if st.search_query.is_empty() {
+                    dim_color()
+                } else {
+                    neon_green()
+                }),
             ),
             Span::styled(
                 format!(" ({} results)", st.search_results.len()),
@@ -558,7 +892,12 @@ pub fn render_search_panel(frame: &mut Frame, area: Rect) {
             ),
         ]));
 
-        for (i, result) in st.search_results.iter().take(panel_height as usize - 2).enumerate() {
+        for (i, result) in st
+            .search_results
+            .iter()
+            .take(panel_height as usize - 2)
+            .enumerate()
+        {
             let is_selected = i == st.search_selected;
             lines.push(Line::from(vec![
                 Span::styled(
@@ -572,8 +911,16 @@ pub fn render_search_panel(frame: &mut Frame, area: Rect) {
                 Span::styled(
                     result.text.chars().take(60).collect::<String>(),
                     Style::default()
-                        .fg(if is_selected { neon_cyan() } else { dim_color() })
-                        .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                        .fg(if is_selected {
+                            neon_cyan()
+                        } else {
+                            dim_color()
+                        })
+                        .add_modifier(if is_selected {
+                            Modifier::BOLD
+                        } else {
+                            Modifier::empty()
+                        }),
                 ),
             ]));
         }
@@ -586,23 +933,42 @@ pub fn render_search_panel(frame: &mut Frame, area: Rect) {
 pub fn render_log_viewer(frame: &mut Frame, area: Rect) {
     OVERLAY_STATE.with(|s| {
         let st = s.borrow();
-        if !st.log_viewer_visible { return; }
+        if !st.log_viewer_visible {
+            return;
+        }
 
         let panel_height = (area.height / 3).max(4);
-        let panel_area = Rect { x: area.x, y: area.y + area.height - panel_height, width: area.width, height: panel_height };
+        let panel_area = Rect {
+            x: area.x,
+            y: area.y + area.height - panel_height,
+            width: area.width,
+            height: panel_height,
+        };
 
         let mut lines = Vec::new();
         lines.push(Line::from(Span::styled(
             "📜 Log Viewer (Ctrl+G to close)",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )));
 
         let start = st.log_scroll;
-        for line in st.log_lines.iter().skip(start).take(panel_height as usize - 2) {
-            let color = if line.contains("ERROR") { rgb(255, 80, 80) }
-                else if line.contains("WARN") { neon_yellow() }
-                else if line.contains("INFO") { neon_green() }
-                else { dim_color() };
+        for line in st
+            .log_lines
+            .iter()
+            .skip(start)
+            .take(panel_height as usize - 2)
+        {
+            let color = if line.contains("ERROR") {
+                rgb(255, 80, 80)
+            } else if line.contains("WARN") {
+                neon_yellow()
+            } else if line.contains("INFO") {
+                neon_green()
+            } else {
+                dim_color()
+            };
             lines.push(Line::from(Span::styled(
                 format!("  {}", line.chars().take(100).collect::<String>()),
                 Style::default().fg(color),
@@ -617,25 +983,54 @@ pub fn render_log_viewer(frame: &mut Frame, area: Rect) {
 pub fn render_build_panel(frame: &mut Frame, area: Rect) {
     OVERLAY_STATE.with(|s| {
         let st = s.borrow();
-        if !st.build_panel_visible { return; }
+        if !st.build_panel_visible {
+            return;
+        }
 
         let panel_height = (area.height / 3).max(4);
-        let panel_area = Rect { x: area.x, y: area.y + area.height - panel_height, width: area.width, height: panel_height };
+        let panel_area = Rect {
+            x: area.x,
+            y: area.y + area.height - panel_height,
+            width: area.width,
+            height: panel_height,
+        };
 
         let mut lines = Vec::new();
         lines.push(Line::from(vec![
-            Span::styled("🔨 Build", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)),
             Span::styled(
-                if st.build_running { " ⏳ running..." } else { " ✅ done" },
-                Style::default().fg(if st.build_running { neon_yellow() } else { neon_green() }),
+                "🔨 Build",
+                Style::default()
+                    .fg(neon_cyan())
+                    .add_modifier(Modifier::BOLD),
+            ),
+            Span::styled(
+                if st.build_running {
+                    " ⏳ running..."
+                } else {
+                    " ✅ done"
+                },
+                Style::default().fg(if st.build_running {
+                    neon_yellow()
+                } else {
+                    neon_green()
+                }),
             ),
         ]));
 
         let start = st.build_scroll;
-        for line in st.build_output.iter().skip(start).take(panel_height as usize - 2) {
-            let color = if line.contains("error") { rgb(255, 80, 80) }
-                else if line.contains("warning") { neon_yellow() }
-                else { dim_color() };
+        for line in st
+            .build_output
+            .iter()
+            .skip(start)
+            .take(panel_height as usize - 2)
+        {
+            let color = if line.contains("error") {
+                rgb(255, 80, 80)
+            } else if line.contains("warning") {
+                neon_yellow()
+            } else {
+                dim_color()
+            };
             lines.push(Line::from(Span::styled(
                 format!("  {}", line.chars().take(100).collect::<String>()),
                 Style::default().fg(color),
@@ -686,24 +1081,39 @@ pub fn render_docker_panel(frame: &mut Frame, area: Rect) {
 pub fn render_cicd_panel(frame: &mut Frame, area: Rect) {
     OVERLAY_STATE.with(|s| {
         let st = s.borrow();
-        if !st.cicd_visible { return; }
+        if !st.cicd_visible {
+            return;
+        }
 
         let panel_height = (area.height / 3).max(4);
-        let panel_area = Rect { x: area.x, y: area.y, width: area.width, height: panel_height };
+        let panel_area = Rect {
+            x: area.x,
+            y: area.y,
+            width: area.width,
+            height: panel_height,
+        };
 
         let mut lines = Vec::new();
         lines.push(Line::from(Span::styled(
             "🚀 CI/CD Status",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )));
 
         // Try to get GitHub Actions status
-        let runs = run_command("gh run list --limit 5 2>/dev/null || echo 'GitHub CLI not available'");
+        let runs =
+            run_command("gh run list --limit 5 2>/dev/null || echo 'GitHub CLI not available'");
         for line in runs.iter().take(panel_height as usize - 2) {
-            let color = if line.contains("success") || line.contains("completed") { neon_green() }
-                else if line.contains("failure") || line.contains("failed") { rgb(255, 80, 80) }
-                else if line.contains("in_progress") || line.contains("running") { neon_yellow() }
-                else { dim_color() };
+            let color = if line.contains("success") || line.contains("completed") {
+                neon_green()
+            } else if line.contains("failure") || line.contains("failed") {
+                rgb(255, 80, 80)
+            } else if line.contains("in_progress") || line.contains("running") {
+                neon_yellow()
+            } else {
+                dim_color()
+            };
             lines.push(Line::from(Span::styled(
                 format!("  {}", line.chars().take(80).collect::<String>()),
                 Style::default().fg(color),
@@ -718,15 +1128,24 @@ pub fn render_cicd_panel(frame: &mut Frame, area: Rect) {
 pub fn render_debugger_panel(frame: &mut Frame, area: Rect) {
     OVERLAY_STATE.with(|s| {
         let st = s.borrow();
-        if !st.debugger_visible { return; }
+        if !st.debugger_visible {
+            return;
+        }
 
         let panel_height = (area.height / 3).max(4);
-        let panel_area = Rect { x: area.x, y: area.y, width: area.width, height: panel_height };
+        let panel_area = Rect {
+            x: area.x,
+            y: area.y,
+            width: area.width,
+            height: panel_height,
+        };
 
         let lines = vec![
             Line::from(Span::styled(
                 "🐛 Debugger (GDB/LLDB)",
-                Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+                Style::default()
+                    .fg(neon_cyan())
+                    .add_modifier(Modifier::BOLD),
             )),
             Line::from(Span::styled(
                 "  Attach to process or start debugging session",
@@ -746,10 +1165,17 @@ pub fn render_debugger_panel(frame: &mut Frame, area: Rect) {
 pub fn render_profiler_panel(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     OVERLAY_STATE.with(|s| {
         let st = s.borrow();
-        if !st.profiler_visible { return; }
+        if !st.profiler_visible {
+            return;
+        }
 
         let panel_height = (area.height / 3).max(4);
-        let panel_area = Rect { x: area.x, y: area.y, width: area.width, height: panel_height };
+        let panel_area = Rect {
+            x: area.x,
+            y: area.y,
+            width: area.width,
+            height: panel_height,
+        };
 
         let tokens = app.streaming_tokens();
         let tps = app.output_tps();
@@ -758,7 +1184,9 @@ pub fn render_profiler_panel(frame: &mut Frame, area: Rect, app: &dyn TuiState) 
         let mut lines = Vec::new();
         lines.push(Line::from(Span::styled(
             "📊 Performance Profiler",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )));
         lines.push(Line::from(vec![
             Span::styled("  Input tokens: ", Style::default().fg(dim_color())),
@@ -769,12 +1197,18 @@ pub fn render_profiler_panel(frame: &mut Frame, area: Rect, app: &dyn TuiState) 
         if let Some(tps_val) = tps {
             lines.push(Line::from(vec![
                 Span::styled("  Speed: ", Style::default().fg(dim_color())),
-                Span::styled(format!("{:.1} tok/s", tps_val), Style::default().fg(neon_green())),
+                Span::styled(
+                    format!("{:.1} tok/s", tps_val),
+                    Style::default().fg(neon_green()),
+                ),
             ]));
         }
         lines.push(Line::from(vec![
             Span::styled("  Elapsed: ", Style::default().fg(dim_color())),
-            Span::styled(format!("{:.1}s", elapsed.as_secs_f32()), Style::default().fg(neon_yellow())),
+            Span::styled(
+                format!("{:.1}s", elapsed.as_secs_f32()),
+                Style::default().fg(neon_yellow()),
+            ),
         ]));
 
         // Memory usage
@@ -797,22 +1231,45 @@ pub fn render_profiler_panel(frame: &mut Frame, area: Rect, app: &dyn TuiState) 
 pub fn render_provider_panel(frame: &mut Frame, area: Rect) {
     OVERLAY_STATE.with(|s| {
         let st = s.borrow();
-        if !st.provider_panel_visible { return; }
+        if !st.provider_panel_visible {
+            return;
+        }
         // Calculate panel area - full width, 70% height centered
         let panel_w = (area.width * 80 / 100).max(60);
         let panel_h = (area.height * 70 / 100).max(20);
         let x = area.x + (area.width.saturating_sub(panel_w)) / 2;
         let y = area.y + (area.height.saturating_sub(panel_h)) / 2;
-        let panel_area = Rect { x, y, width: panel_w, height: panel_h };
+        let panel_area = Rect {
+            x,
+            y,
+            width: panel_w,
+            height: panel_h,
+        };
         crate::tui::ui_providers::draw_provider_panel(frame, panel_area, &st.provider_panel_state);
     });
 }
 
-pub fn handle_provider_panel_keys(code: crossterm::event::KeyCode, modifiers: crossterm::event::KeyModifiers) -> bool {
+pub fn handle_provider_panel_keys(
+    code: crossterm::event::KeyCode,
+    modifiers: crossterm::event::KeyModifiers,
+) -> bool {
     OVERLAY_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        if !st.provider_panel_visible { return false; }
-        crate::tui::ui_providers::handle_provider_keys(&mut st.provider_panel_state, code, modifiers)
+        if !st.provider_panel_visible {
+            return false;
+        }
+        let handled = crate::tui::ui_providers::handle_provider_keys(
+            &mut st.provider_panel_state,
+            code,
+            modifiers,
+        );
+        if handled {
+            // `handle_provider_keys` closes the panel (Esc/q) by clearing only the
+            // inner `visible` flag. Mirror that to the outer gate so the overlay
+            // does not stay rendered as a dead, uncloseable panel.
+            st.provider_panel_visible = st.provider_panel_state.visible;
+        }
+        handled
     })
 }
 
@@ -903,7 +1360,9 @@ pub fn render_memory_visual(frame: &mut Frame, area: Rect) {
 
 pub fn render_performance_overlay(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     let visible = OVERLAY_STATE.with(|s| s.borrow().profiler_visible);
-    if !visible { return; }
+    if !visible {
+        return;
+    }
 
     let _elapsed = app.elapsed().unwrap_or(Duration::ZERO);
     let (_tokens_in, _tokens_out) = app.streaming_tokens();
@@ -920,7 +1379,9 @@ pub fn render_performance_overlay(frame: &mut Frame, area: Rect, app: &dyn TuiSt
         network_out_kb: 0.0,
     };
     let lines = super::ui_performance::render_performance_dashboard(&metrics, true);
-    if lines.is_empty() { return; }
+    if lines.is_empty() {
+        return;
+    }
 
     let panel_height = (lines.len() as u16 + 2).min(area.height / 2);
     let panel_area = Rect {
@@ -936,7 +1397,9 @@ pub fn render_performance_overlay(frame: &mut Frame, area: Rect, app: &dyn TuiSt
 
 pub fn render_custom_widgets(frame: &mut Frame, area: Rect) {
     let widgets = get_default_widgets();
-    if widgets.is_empty() { return; }
+    if widgets.is_empty() {
+        return;
+    }
 
     let mut all_lines = Vec::new();
     for widget in &widgets {
@@ -973,13 +1436,19 @@ impl ThemeApiState {
     }
 }
 
-pub fn toggle_theme_api() { THEME_API_STATE.with(|s| s.borrow_mut().visible = !s.borrow().visible); }
-pub fn theme_api_visible() -> bool { THEME_API_STATE.with(|s| s.borrow().visible) }
+pub fn toggle_theme_api() {
+    THEME_API_STATE.with(|s| s.borrow_mut().visible = !s.borrow().visible);
+}
+pub fn theme_api_visible() -> bool {
+    THEME_API_STATE.with(|s| s.borrow().visible)
+}
 
 pub fn render_theme_api_overlay(frame: &mut Frame, area: Rect) {
     THEME_API_STATE.with(|s| {
         let st = s.borrow();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
 
         let lines = super::ui_theme_api::render_theme_api_preview(&st.current_theme);
         let panel_height = (lines.len() as u16 + 2).min(area.height / 2);
@@ -1008,7 +1477,12 @@ struct MacroState {
 
 impl MacroState {
     fn new() -> Self {
-        Self { recording: false, macro_name: String::new(), action_count: 0, visible: false }
+        Self {
+            recording: false,
+            macro_name: String::new(),
+            action_count: 0,
+            visible: false,
+        }
     }
 }
 
@@ -1017,16 +1491,24 @@ pub fn toggle_macro_recorder() {
         let mut st = s.borrow_mut();
         st.recording = !st.recording;
         st.visible = st.recording;
-        if st.recording { st.action_count = 0; }
+        if st.recording {
+            st.action_count = 0;
+        }
     });
 }
-pub fn toggle_macro_list() { MACRO_STATE.with(|s| s.borrow_mut().visible = !s.borrow().visible); }
-pub fn macro_recording() -> bool { MACRO_STATE.with(|s| s.borrow().recording) }
+pub fn toggle_macro_list() {
+    MACRO_STATE.with(|s| s.borrow_mut().visible = !s.borrow().visible);
+}
+pub fn macro_recording() -> bool {
+    MACRO_STATE.with(|s| s.borrow().recording)
+}
 
 pub fn render_macro_overlay(frame: &mut Frame, area: Rect) {
     MACRO_STATE.with(|s| {
         let st = s.borrow();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
 
         let lines = if st.recording {
             super::ui_macros::render_macro_recorder(true, &st.macro_name, st.action_count)
@@ -1059,7 +1541,12 @@ struct PaletteState {
 
 impl PaletteState {
     fn new() -> Self {
-        Self { visible: false, selected: 0, filter: String::new(), category_index: 0 }
+        Self {
+            visible: false,
+            selected: 0,
+            filter: String::new(),
+            category_index: 0,
+        }
     }
 
     fn filtered_commands(&self) -> Vec<super::ui_palette::PaletteCommand> {
@@ -1072,7 +1559,10 @@ impl PaletteState {
             4 => super::ui_palette::CommandCategory::Files,
             _ => super::ui_palette::CommandCategory::Tools,
         };
-        let by_category: Vec<_> = all.into_iter().filter(|cmd| cmd.category == category).collect();
+        let by_category: Vec<_> = all
+            .into_iter()
+            .filter(|cmd| cmd.category == category)
+            .collect();
         super::ui_palette::filter_commands(&by_category, &self.filter)
     }
 }
@@ -1085,13 +1575,21 @@ pub fn toggle_command_palette() {
         st.filter.clear();
     });
 }
-pub fn command_palette_visible() -> bool { PALETTE_STATE.with(|s| s.borrow().visible) }
+pub fn command_palette_visible() -> bool {
+    PALETTE_STATE.with(|s| s.borrow().visible)
+}
 
 pub fn palette_navigate_up() {
-    PALETTE_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = st.selected.saturating_sub(1); });
+    PALETTE_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.selected = st.selected.saturating_sub(1);
+    });
 }
 pub fn palette_navigate_down() {
-    PALETTE_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = (st.selected + 1).min(15); });
+    PALETTE_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.selected = (st.selected + 1).min(15);
+    });
 }
 pub fn palette_type_char(c: char) {
     PALETTE_STATE.with(|s| {
@@ -1115,16 +1613,28 @@ pub fn palette_selected_command() -> Option<String> {
     })
 }
 pub fn palette_next_category() {
-    PALETTE_STATE.with(|s| { let mut st = s.borrow_mut(); st.category_index = (st.category_index + 1) % 6; });
+    PALETTE_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.category_index = (st.category_index + 1) % 6;
+    });
 }
 pub fn palette_prev_category() {
-    PALETTE_STATE.with(|s| { let mut st = s.borrow_mut(); st.category_index = if st.category_index == 0 { 5 } else { st.category_index - 1 }; });
+    PALETTE_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.category_index = if st.category_index == 0 {
+            5
+        } else {
+            st.category_index - 1
+        };
+    });
 }
 
 pub fn render_command_palette_overlay(frame: &mut Frame, area: Rect) {
     PALETTE_STATE.with(|s| {
         let st = s.borrow();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
 
         let category = match st.category_index {
             0 => super::ui_palette::CommandCategory::Recent,
@@ -1135,7 +1645,12 @@ pub fn render_command_palette_overlay(frame: &mut Frame, area: Rect) {
             _ => super::ui_palette::CommandCategory::Tools,
         };
         let commands = st.filtered_commands();
-        let lines = super::ui_palette::render_command_palette(&commands, st.selected, &st.filter, &category);
+        let lines = super::ui_palette::render_command_palette(
+            &commands,
+            st.selected,
+            &st.filter,
+            &category,
+        );
         let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
         let panel_width = 50.min(area.width);
         let panel_area = Rect {
@@ -1261,7 +1776,12 @@ fn get_process_memory_mb() -> (f32, f32) {
     if let Ok(status) = std::fs::read_to_string("/proc/self/status") {
         for line in status.lines() {
             if line.starts_with("VmRSS:") {
-                let kb: f32 = line.split_whitespace().nth(1).unwrap_or("0").parse().unwrap_or(0.0);
+                let kb: f32 = line
+                    .split_whitespace()
+                    .nth(1)
+                    .unwrap_or("0")
+                    .parse()
+                    .unwrap_or(0.0);
                 return (kb / 1024.0, 4096.0);
             }
         }
@@ -1277,17 +1797,15 @@ fn get_process_memory_mb() -> (f32, f32) {
 // ── Helper: default widgets ───────────────────────────────────────────
 
 fn get_default_widgets() -> Vec<super::ui_widgets::CustomWidget> {
-    use super::ui_widgets::{CustomWidget, WidgetType, WidgetStyle, WidgetPosition};
+    use super::ui_widgets::{CustomWidget, WidgetPosition, WidgetStyle, WidgetType};
     let now = chrono::Local::now();
-    vec![
-        CustomWidget {
-            name: "clock".to_string(),
-            widget_type: WidgetType::Clock,
-            position: WidgetPosition::BottomLeft,
-            style: WidgetStyle::default(),
-            content: now.format("%H:%M:%S").to_string(),
-        },
-    ]
+    vec![CustomWidget {
+        name: "clock".to_string(),
+        widget_type: WidgetType::Clock,
+        position: WidgetPosition::BottomLeft,
+        style: WidgetStyle::default(),
+        content: now.format("%H:%M:%S").to_string(),
+    }]
 }
 
 // ════════════════════════════════════════════════════════════════════════
@@ -1307,7 +1825,10 @@ struct MentorState {
 
 impl MentorState {
     fn new() -> Self {
-        Self { visible: false, level: super::ui_mentor::MentorLevel::Beginner }
+        Self {
+            visible: false,
+            level: super::ui_mentor::MentorLevel::Beginner,
+        }
     }
 }
 
@@ -1321,12 +1842,16 @@ pub fn toggle_mentor_mode() {
         }
     });
 }
-pub fn mentor_mode_visible() -> bool { MENTOR_STATE.with(|s| s.borrow().visible) }
+pub fn mentor_mode_visible() -> bool {
+    MENTOR_STATE.with(|s| s.borrow().visible)
+}
 
 pub fn render_mentor_overlay(frame: &mut Frame, area: Rect) {
     MENTOR_STATE.with(|s| {
         let st = s.borrow();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
         let line = super::ui_mentor::render_mentor_indicator(&st.level);
         let pos = Rect {
             x: area.x + 1,
@@ -1351,7 +1876,10 @@ struct MascotState {
 
 impl MascotState {
     fn new() -> Self {
-        Self { visible: false, mood: super::ui_mascot::MascotMood::Happy }
+        Self {
+            visible: false,
+            mood: super::ui_mascot::MascotMood::Happy,
+        }
     }
 }
 
@@ -1365,7 +1893,9 @@ pub fn toggle_mascot() {
 pub fn render_mascot_overlay(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     MASCOT_STATE.with(|s| {
         let st = s.borrow();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
 
         let mood = if app.is_processing() {
             super::ui_mascot::MascotMood::Thinking
@@ -1397,17 +1927,23 @@ struct ChallengeState {
 }
 
 impl ChallengeState {
-    fn new() -> Self { Self { visible: false } }
+    fn new() -> Self {
+        Self { visible: false }
+    }
 }
 
 pub fn toggle_daily_challenge() {
-    CHALLENGE_STATE.with(|s| { s.borrow_mut().visible = !s.borrow().visible; });
+    CHALLENGE_STATE.with(|s| {
+        s.borrow_mut().visible = !s.borrow().visible;
+    });
 }
 
 pub fn render_daily_challenge_overlay(frame: &mut Frame, area: Rect) {
     CHALLENGE_STATE.with(|s| {
         let st = s.borrow();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
 
         let challenge = super::ui_challenge::get_daily_challenge();
         let lines = super::ui_challenge::render_daily_challenge(&challenge);
@@ -1434,17 +1970,23 @@ struct MemeState {
 }
 
 impl MemeState {
-    fn new() -> Self { Self { visible: false } }
+    fn new() -> Self {
+        Self { visible: false }
+    }
 }
 
 pub fn toggle_meme_generator() {
-    MEME_STATE.with(|s| { s.borrow_mut().visible = !s.borrow().visible; });
+    MEME_STATE.with(|s| {
+        s.borrow_mut().visible = !s.borrow().visible;
+    });
 }
 
 pub fn render_meme_overlay(frame: &mut Frame, area: Rect) {
     MEME_STATE.with(|s| {
         let st = s.borrow();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
 
         let lines = super::ui_meme::render_meme_generator();
         let panel_height = (lines.len() as u16 + 2).min(area.height / 2);
@@ -1475,7 +2017,10 @@ impl ThemePickerState {
         let saved = super::app::ui_prefs::selected_theme();
         let themes = super::ui_theme_picker::get_builtin_themes();
         let selected = themes.iter().position(|t| t.name == saved).unwrap_or(0);
-        Self { visible: false, selected }
+        Self {
+            visible: false,
+            selected,
+        }
     }
 }
 
@@ -1514,14 +2059,19 @@ pub fn theme_picker_selected_name() -> String {
     THEME_PICKER_STATE.with(|s| {
         let st = s.borrow();
         let themes = super::ui_theme_picker::get_builtin_themes();
-        themes.get(st.selected).map(|t| t.name.to_string()).unwrap_or_default()
+        themes
+            .get(st.selected)
+            .map(|t| t.name.to_string())
+            .unwrap_or_default()
     })
 }
 
 pub fn render_theme_picker_overlay(frame: &mut Frame, area: Rect) {
     THEME_PICKER_STATE.with(|s| {
         let st = s.borrow();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
 
         let themes = super::ui_theme_picker::get_builtin_themes();
         let lines = super::ui_theme_picker::render_theme_list(&themes, st.selected);
@@ -1549,7 +2099,12 @@ struct TemplateState {
 }
 
 impl TemplateState {
-    fn new() -> Self { Self { visible: false, selected: 0 } }
+    fn new() -> Self {
+        Self {
+            visible: false,
+            selected: 0,
+        }
+    }
 }
 
 pub fn toggle_templates() {
@@ -1563,7 +2118,9 @@ pub fn toggle_templates() {
 pub fn render_template_overlay(frame: &mut Frame, area: Rect) {
     TEMPLATE_STATE.with(|s| {
         let st = s.borrow();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
 
         let templates = super::ui_templates::get_templates();
         let lines = super::ui_templates::render_template_selector(&templates, st.selected);
@@ -1595,7 +2152,12 @@ struct WorkspaceOverlayState {
 }
 
 impl WorkspaceOverlayState {
-    fn new() -> Self { Self { visible: false, selected: 0 } }
+    fn new() -> Self {
+        Self {
+            visible: false,
+            selected: 0,
+        }
+    }
 }
 
 pub fn toggle_workspace_profiles() {
@@ -1609,13 +2171,18 @@ pub fn toggle_workspace_profiles() {
 pub fn render_workspace_overlay(frame: &mut Frame, area: Rect, current_dir: &str) {
     WORKSPACE_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
 
         let profiles = super::ui_workspace::get_workspace_profiles();
         // Clamp selection
-        if st.selected >= profiles.len() { st.selected = profiles.len().saturating_sub(1); }
+        if st.selected >= profiles.len() {
+            st.selected = profiles.len().saturating_sub(1);
+        }
 
-        let lines = super::ui_workspace::render_workspace_profiles(&profiles, st.selected, current_dir);
+        let lines =
+            super::ui_workspace::render_workspace_profiles(&profiles, st.selected, current_dir);
         let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
         let panel_width = 50.min(area.width);
         let panel_area = Rect {
@@ -1632,14 +2199,21 @@ pub fn render_workspace_overlay(frame: &mut Frame, area: Rect, current_dir: &str
     });
 }
 
-pub fn workspace_visible() -> bool { WORKSPACE_STATE.with(|s| s.borrow().visible) }
+pub fn workspace_visible() -> bool {
+    WORKSPACE_STATE.with(|s| s.borrow().visible)
+}
 pub fn workspace_navigate_up() {
-    WORKSPACE_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = st.selected.saturating_sub(1); });
+    WORKSPACE_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.selected = st.selected.saturating_sub(1);
+    });
 }
 pub fn workspace_navigate_down() {
     WORKSPACE_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        let max = super::ui_workspace::get_workspace_profiles().len().saturating_sub(1);
+        let max = super::ui_workspace::get_workspace_profiles()
+            .len()
+            .saturating_sub(1);
         st.selected = (st.selected + 1).min(max);
     });
 }
@@ -1656,7 +2230,12 @@ struct ExportOverlayState {
 }
 
 impl ExportOverlayState {
-    fn new() -> Self { Self { visible: false, selected: 0 } }
+    fn new() -> Self {
+        Self {
+            visible: false,
+            selected: 0,
+        }
+    }
 }
 
 pub fn toggle_export() {
@@ -1670,10 +2249,14 @@ pub fn toggle_export() {
 pub fn render_export_overlay(frame: &mut Frame, area: Rect) {
     EXPORT_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
 
         let formats = super::ui_export::get_export_formats();
-        if st.selected >= formats.len() { st.selected = formats.len().saturating_sub(1); }
+        if st.selected >= formats.len() {
+            st.selected = formats.len().saturating_sub(1);
+        }
 
         let lines = super::ui_export::render_export_selector(&formats, st.selected);
         let panel_height = (lines.len() as u16 + 2).min(area.height / 2);
@@ -1692,14 +2275,21 @@ pub fn render_export_overlay(frame: &mut Frame, area: Rect) {
     });
 }
 
-pub fn export_visible() -> bool { EXPORT_STATE.with(|s| s.borrow().visible) }
+pub fn export_visible() -> bool {
+    EXPORT_STATE.with(|s| s.borrow().visible)
+}
 pub fn export_navigate_up() {
-    EXPORT_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = st.selected.saturating_sub(1); });
+    EXPORT_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.selected = st.selected.saturating_sub(1);
+    });
 }
 pub fn export_navigate_down() {
     EXPORT_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        let max = super::ui_export::get_export_formats().len().saturating_sub(1);
+        let max = super::ui_export::get_export_formats()
+            .len()
+            .saturating_sub(1);
         st.selected = (st.selected + 1).min(max);
     });
 }
@@ -1717,12 +2307,21 @@ pub fn toggle_compact_mode() {
         super::app::ui_prefs::save_compact_mode(new);
     });
 }
-pub fn is_compact_mode() -> bool { COMPACT_STATE.with(|s| *s.borrow()) }
+pub fn is_compact_mode() -> bool {
+    COMPACT_STATE.with(|s| *s.borrow())
+}
 
 pub fn render_compact_mode_overlay(frame: &mut Frame, area: Rect) {
-    if !is_compact_mode() { return; }
+    if !is_compact_mode() {
+        return;
+    }
     let toggle_line = super::ui_compact::render_compact_mode_toggle(true);
-    let pos = Rect { x: area.x, y: area.y + area.height.saturating_sub(1), width: 25, height: 1 };
+    let pos = Rect {
+        x: area.x,
+        y: area.y + area.height.saturating_sub(1),
+        width: 25,
+        height: 1,
+    };
     frame.render_widget(Paragraph::new(toggle_line), pos);
 }
 
@@ -1739,12 +2338,21 @@ pub fn toggle_big_mode() {
         super::app::ui_prefs::save_big_mode(new);
     });
 }
-pub fn is_big_mode() -> bool { BIG_STATE.with(|s| *s.borrow()) }
+pub fn is_big_mode() -> bool {
+    BIG_STATE.with(|s| *s.borrow())
+}
 
 pub fn render_big_mode_overlay(frame: &mut Frame, area: Rect) {
-    if !is_big_mode() { return; }
+    if !is_big_mode() {
+        return;
+    }
     let toggle_line = super::ui_big::render_big_mode_toggle(true);
-    let pos = Rect { x: area.x + area.width.saturating_sub(25), y: area.y + area.height.saturating_sub(1), width: 25, height: 1 };
+    let pos = Rect {
+        x: area.x + area.width.saturating_sub(25),
+        y: area.y + area.height.saturating_sub(1),
+        width: 25,
+        height: 1,
+    };
     frame.render_widget(Paragraph::new(toggle_line), pos);
 }
 
@@ -1764,7 +2372,12 @@ struct ImportOverlayState {
 }
 
 impl ImportOverlayState {
-    fn new() -> Self { Self { visible: false, selected: 0 } }
+    fn new() -> Self {
+        Self {
+            visible: false,
+            selected: 0,
+        }
+    }
 }
 
 pub fn toggle_import() {
@@ -1775,16 +2388,23 @@ pub fn toggle_import() {
     });
 }
 
-pub fn import_visible() -> bool { IMPORT_STATE.with(|s| s.borrow().visible) }
+pub fn import_visible() -> bool {
+    IMPORT_STATE.with(|s| s.borrow().visible)
+}
 
 pub fn import_navigate_up() {
-    IMPORT_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = st.selected.saturating_sub(1); });
+    IMPORT_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.selected = st.selected.saturating_sub(1);
+    });
 }
 
 pub fn import_navigate_down() {
     IMPORT_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        let max = super::ui_import::detect_competitor_tools().len().saturating_sub(1);
+        let max = super::ui_import::detect_competitor_tools()
+            .len()
+            .saturating_sub(1);
         st.selected = (st.selected + 1).min(max);
     });
 }
@@ -1792,10 +2412,14 @@ pub fn import_navigate_down() {
 pub fn render_import_overlay(frame: &mut Frame, area: Rect) {
     IMPORT_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
 
         let tools = super::ui_import::detect_competitor_tools();
-        if st.selected >= tools.len() { st.selected = tools.len().saturating_sub(1); }
+        if st.selected >= tools.len() {
+            st.selected = tools.len().saturating_sub(1);
+        }
 
         let lines = super::ui_import::render_import_selector(&tools, st.selected);
         let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
@@ -1827,7 +2451,13 @@ struct PluginOverlayState {
 }
 
 impl PluginOverlayState {
-    fn new() -> Self { Self { visible: false, selected: 0, filter: String::new() } }
+    fn new() -> Self {
+        Self {
+            visible: false,
+            selected: 0,
+            filter: String::new(),
+        }
+    }
 }
 
 pub fn toggle_plugins() {
@@ -1838,16 +2468,23 @@ pub fn toggle_plugins() {
     });
 }
 
-pub fn plugin_visible() -> bool { PLUGIN_STATE.with(|s| s.borrow().visible) }
+pub fn plugin_visible() -> bool {
+    PLUGIN_STATE.with(|s| s.borrow().visible)
+}
 
 pub fn plugin_navigate_up() {
-    PLUGIN_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = st.selected.saturating_sub(1); });
+    PLUGIN_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.selected = st.selected.saturating_sub(1);
+    });
 }
 
 pub fn plugin_navigate_down() {
     PLUGIN_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        let max = super::ui_plugins::get_available_plugins().len().saturating_sub(1);
+        let max = super::ui_plugins::get_available_plugins()
+            .len()
+            .saturating_sub(1);
         st.selected = (st.selected + 1).min(max);
     });
 }
@@ -1855,10 +2492,14 @@ pub fn plugin_navigate_down() {
 pub fn render_plugin_overlay(frame: &mut Frame, area: Rect) {
     PLUGIN_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
 
         let plugins = super::ui_plugins::get_available_plugins();
-        if st.selected >= plugins.len() { st.selected = plugins.len().saturating_sub(1); }
+        if st.selected >= plugins.len() {
+            st.selected = plugins.len().saturating_sub(1);
+        }
 
         let lines = super::ui_plugins::render_plugin_list(&plugins, st.selected, &st.filter);
         let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
@@ -1897,7 +2538,12 @@ pub fn render_progressive_indicator(frame: &mut Frame, area: Rect, app: &dyn Tui
     };
     let level = super::ui_progressive::determine_level(&stats);
     let line = super::ui_progressive::render_level_indicator(&level);
-    let pos = Rect { x: area.x, y: area.y + 1, width: 20, height: 1 };
+    let pos = Rect {
+        x: area.x,
+        y: area.y + 1,
+        width: 20,
+        height: 1,
+    };
     frame.render_widget(Paragraph::new(line), pos);
 }
 
@@ -1907,20 +2553,29 @@ thread_local! {
     static VOICE_STATE_REF: RefCell<super::ui_voice::VoiceState> = const { RefCell::new(super::ui_voice::VoiceState::Inactive) };
 }
 
-pub fn set_voice_state(state: super::ui_voice::VoiceState) { VOICE_STATE_REF.with(|s| *s.borrow_mut() = state); }
+pub fn set_voice_state(state: super::ui_voice::VoiceState) {
+    VOICE_STATE_REF.with(|s| *s.borrow_mut() = state);
+}
 pub fn render_voice_indicator(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     let line = if let Some(key_label) = app.dictation_key_label() {
         Line::from(vec![
             Span::styled("🎤 ", Style::default().fg(neon_cyan())),
             Span::styled(
                 format!("{} to dictate", key_label),
-                Style::default().fg(neon_cyan()).add_modifier(Modifier::ITALIC),
+                Style::default()
+                    .fg(neon_cyan())
+                    .add_modifier(Modifier::ITALIC),
             ),
         ])
     } else {
         VOICE_STATE_REF.with(|s| super::ui_voice::render_voice_indicator(&s.borrow()))
     };
-    let pos = Rect { x: area.x + 21, y: area.y + 1, width: 22, height: 1 };
+    let pos = Rect {
+        x: area.x + 21,
+        y: area.y + 1,
+        width: 22,
+        height: 1,
+    };
     frame.render_widget(Paragraph::new(line), pos);
 }
 
@@ -1935,7 +2590,12 @@ pub fn render_streak(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     let current = activity_score / 5;
     let longest = current.max(3);
     let line = super::ui_gamification::render_streak(current, longest);
-    let pos = Rect { x: area.x, y: area.y + 2, width: 20, height: 1 };
+    let pos = Rect {
+        x: area.x,
+        y: area.y + 2,
+        width: 20,
+        height: 1,
+    };
     frame.render_widget(Paragraph::new(line), pos);
 }
 
@@ -1951,7 +2611,12 @@ struct TutorialOverlayState {
 }
 
 impl TutorialOverlayState {
-    fn new() -> Self { Self { visible: false, step: super::ui_tutorial::TutorialStep::Welcome } }
+    fn new() -> Self {
+        Self {
+            visible: false,
+            step: super::ui_tutorial::TutorialStep::Welcome,
+        }
+    }
 }
 
 pub fn toggle_tutorial() {
@@ -1961,14 +2626,32 @@ pub fn toggle_tutorial() {
         st.step = super::ui_tutorial::TutorialStep::Welcome;
     });
 }
-pub fn tutorial_visible() -> bool { TUTORIAL_STATE.with(|s| s.borrow().visible) }
-pub fn tutorial_next() { TUTORIAL_STATE.with(|s| { let mut st = s.borrow_mut(); if let Some(next) = st.step.next() { st.step = next; } }); }
-pub fn tutorial_prev() { TUTORIAL_STATE.with(|s| { let mut st = s.borrow_mut(); if let Some(prev) = st.step.prev() { st.step = prev; } }); }
+pub fn tutorial_visible() -> bool {
+    TUTORIAL_STATE.with(|s| s.borrow().visible)
+}
+pub fn tutorial_next() {
+    TUTORIAL_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        if let Some(next) = st.step.next() {
+            st.step = next;
+        }
+    });
+}
+pub fn tutorial_prev() {
+    TUTORIAL_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        if let Some(prev) = st.step.prev() {
+            st.step = prev;
+        }
+    });
+}
 
 pub fn render_tutorial_overlay(frame: &mut Frame, area: Rect) {
     TUTORIAL_STATE.with(|s| {
         let st = s.borrow();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
         let mut lines = super::ui_tutorial::render_tutorial_step(&st.step);
         lines.push(Line::from(""));
         lines.push(super::ui_tutorial::render_navigation_hints(&st.step));
@@ -1983,7 +2666,12 @@ pub fn render_tutorial_overlay(frame: &mut Frame, area: Rect) {
         let block = Block::default()
             .borders(Borders::ALL)
             .border_style(Style::default().fg(glass_border_color()))
-            .title(Span::styled(" Tutorial ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)))
+            .title(Span::styled(
+                " Tutorial ",
+                Style::default()
+                    .fg(neon_cyan())
+                    .add_modifier(Modifier::BOLD),
+            ))
             .style(Style::default().bg(rgb(10, 10, 20)));
         frame.render_widget(Paragraph::new(lines).block(block), panel_area);
     });
@@ -1995,27 +2683,46 @@ thread_local! {
     static ACHIEVEMENTS_STATE: RefCell<bool> = const { RefCell::new(false) };
 }
 
-pub fn toggle_achievements() { ACHIEVEMENTS_STATE.with(|s| *s.borrow_mut() = !*s.borrow()); }
-pub fn achievements_visible() -> bool { ACHIEVEMENTS_STATE.with(|s| *s.borrow()) }
+pub fn toggle_achievements() {
+    ACHIEVEMENTS_STATE.with(|s| *s.borrow_mut() = !*s.borrow());
+}
+pub fn achievements_visible() -> bool {
+    ACHIEVEMENTS_STATE.with(|s| *s.borrow())
+}
 
 pub fn render_achievements_overlay(frame: &mut Frame, area: Rect) {
-    if !ACHIEVEMENTS_STATE.with(|s| *s.borrow()) { return; }
+    if !ACHIEVEMENTS_STATE.with(|s| *s.borrow()) {
+        return;
+    }
     let achievements = super::ui_achievements::default_achievements();
-    let (unlocked, total) = (achievements.iter().filter(|a| a.unlocked).count(), achievements.len());
+    let (unlocked, total) = (
+        achievements.iter().filter(|a| a.unlocked).count(),
+        achievements.len(),
+    );
     let mut lines = vec![
         Line::from(Span::styled(
             format!(" Achievements ({}/{})", unlocked, total),
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )),
         Line::from(""),
     ];
     for a in &achievements {
         let icon = if a.unlocked { &a.icon } else { "🔒" };
-        let name_color = if a.unlocked { neon_green() } else { dim_color() };
+        let name_color = if a.unlocked {
+            neon_green()
+        } else {
+            dim_color()
+        };
         lines.push(Line::from(vec![
             Span::styled(format!("{} ", icon), Style::default()),
             Span::styled(a.name.clone(), Style::default().fg(name_color)),
-            if a.unlocked { Span::styled(" ✓", Style::default().fg(neon_green())) } else { Span::styled("", Style::default()) },
+            if a.unlocked {
+                Span::styled(" ✓", Style::default().fg(neon_green()))
+            } else {
+                Span::styled("", Style::default())
+            },
         ]));
     }
     let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
@@ -2029,7 +2736,12 @@ pub fn render_achievements_overlay(frame: &mut Frame, area: Rect) {
     let block = Block::default()
         .borders(Borders::ALL)
         .border_style(Style::default().fg(glass_border_color()))
-        .title(Span::styled(" Achievements ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)))
+        .title(Span::styled(
+            " Achievements ",
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
+        ))
         .style(Style::default().bg(rgb(10, 10, 20)));
     frame.render_widget(Paragraph::new(lines).block(block), panel_area);
 }
@@ -2041,7 +2753,9 @@ pub fn render_achievements_overlay(frame: &mut Frame, area: Rect) {
 pub fn toggle_reactions() {
     // No-op: reactions are now per-message via reaction_mode
 }
-pub fn reactions_visible() -> bool { reaction_mode_active() }
+pub fn reactions_visible() -> bool {
+    reaction_mode_active()
+}
 
 pub fn render_reactions_overlay(frame: &mut Frame, area: Rect) {
     render_reaction_picker(frame, area);
@@ -2053,18 +2767,37 @@ thread_local! {
     static HUMOR_VISIBLE: RefCell<bool> = const { RefCell::new(false) };
 }
 
-pub fn toggle_humor() { HUMOR_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow()); }
-pub fn humor_visible() -> bool { HUMOR_VISIBLE.with(|s| *s.borrow()) }
+pub fn toggle_humor() {
+    HUMOR_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow());
+}
+pub fn humor_visible() -> bool {
+    HUMOR_VISIBLE.with(|s| *s.borrow())
+}
 
 pub fn render_humor_overlay(frame: &mut Frame, area: Rect) {
-    if !HUMOR_VISIBLE.with(|s| *s.borrow()) { return; }
+    if !HUMOR_VISIBLE.with(|s| *s.borrow()) {
+        return;
+    }
     let greeting = super::ui_humor::time_greeting();
     let fun_fact = super::ui_humor::fact();
     let lines = vec![
-        Line::from(Span::styled(greeting, Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD))),
+        Line::from(Span::styled(
+            greeting,
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
+        )),
         Line::from(""),
-        Line::from(Span::styled("Fun fact:", Style::default().fg(neon_yellow()).add_modifier(Modifier::BOLD))),
-        Line::from(Span::styled(fun_fact.to_string(), Style::default().fg(dim_color()))),
+        Line::from(Span::styled(
+            "Fun fact:",
+            Style::default()
+                .fg(neon_yellow())
+                .add_modifier(Modifier::BOLD),
+        )),
+        Line::from(Span::styled(
+            fun_fact.to_string(),
+            Style::default().fg(dim_color()),
+        )),
     ];
     let panel_area = Rect {
         x: area.x + area.width.saturating_sub(45),
@@ -2085,15 +2818,25 @@ thread_local! {
     static COMPLETION_VISIBLE: RefCell<bool> = const { RefCell::new(false) };
 }
 
-pub fn toggle_completion() { COMPLETION_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow()); }
-pub fn completion_visible() -> bool { COMPLETION_VISIBLE.with(|s| *s.borrow()) }
+pub fn toggle_completion() {
+    COMPLETION_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow());
+}
+pub fn completion_visible() -> bool {
+    COMPLETION_VISIBLE.with(|s| *s.borrow())
+}
 
 pub fn render_completion_overlay(frame: &mut Frame, area: Rect, input: &str) {
-    if !COMPLETION_VISIBLE.with(|s| *s.borrow()) { return; }
-    if input.is_empty() { return; }
+    if !COMPLETION_VISIBLE.with(|s| *s.borrow()) {
+        return;
+    }
+    if input.is_empty() {
+        return;
+    }
     let engine = super::ui_completion::AutocompleteEngine::new();
     let completions = engine.get_completions(input);
-    if completions.is_empty() { return; }
+    if completions.is_empty() {
+        return;
+    }
     let lines = super::ui_completion::render_completions(&completions, 0);
     let panel_height = (lines.len() as u16 + 2).min(10);
     let panel_width = 35.min(area.width);
@@ -2112,17 +2855,26 @@ thread_local! {
     static SOCIAL_VISIBLE: RefCell<bool> = const { RefCell::new(false) };
 }
 
-pub fn toggle_social() { SOCIAL_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow()); }
-pub fn social_visible() -> bool { SOCIAL_VISIBLE.with(|s| *s.borrow()) }
+pub fn toggle_social() {
+    SOCIAL_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow());
+}
+pub fn social_visible() -> bool {
+    SOCIAL_VISIBLE.with(|s| *s.borrow())
+}
 
 /// Render social/leaderboard overlay using real session metrics
 pub fn render_social_overlay(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
-    if !SOCIAL_VISIBLE.with(|s| *s.borrow()) { return; }
+    if !SOCIAL_VISIBLE.with(|s| *s.borrow()) {
+        return;
+    }
     let msg_count = app.display_user_message_count() + app.compacted_hidden_user_prompts();
     let tokens: u64 = app.streaming_tokens().0 + app.streaming_tokens().1;
-    let entries = vec![
-        super::ui_social::LeaderboardEntry { rank: 1, name: "You".to_string(), score: tokens.max(100), achievements: (msg_count / 10).max(1) },
-    ];
+    let entries = vec![super::ui_social::LeaderboardEntry {
+        rank: 1,
+        name: "You".to_string(),
+        score: tokens.max(100),
+        achievements: (msg_count / 10).max(1),
+    }];
     let lines = super::ui_social::render_leaderboard(&entries);
     let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
     let panel_width = 35.min(area.width);
@@ -2135,7 +2887,12 @@ pub fn render_social_overlay(frame: &mut Frame, area: Rect, app: &dyn TuiState) 
     let block = Block::default()
         .borders(Borders::ALL)
         .border_style(Style::default().fg(glass_border_color()))
-        .title(Span::styled(" Leaderboard ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)))
+        .title(Span::styled(
+            " Leaderboard ",
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
+        ))
         .style(Style::default().bg(rgb(10, 10, 20)));
     frame.render_widget(Paragraph::new(lines).block(block), panel_area);
 }
@@ -2153,23 +2910,55 @@ struct QuizOverlayState {
 }
 
 impl QuizOverlayState {
-    fn new() -> Self { Self { visible: false, question_index: 0, selected: 0 } }
+    fn new() -> Self {
+        Self {
+            visible: false,
+            question_index: 0,
+            selected: 0,
+        }
+    }
 }
 
 pub fn toggle_quiz() {
-    QUIZ_STATE.with(|s| { let mut st = s.borrow_mut(); st.visible = !st.visible; st.question_index = 0; st.selected = 0; });
+    QUIZ_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.visible = !st.visible;
+        st.question_index = 0;
+        st.selected = 0;
+    });
 }
-pub fn quiz_visible() -> bool { QUIZ_STATE.with(|s| s.borrow().visible) }
-pub fn quiz_navigate_up() { QUIZ_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = st.selected.saturating_sub(1); }); }
-pub fn quiz_navigate_down() { QUIZ_STATE.with(|s| { let mut st = s.borrow_mut(); st.selected = (st.selected + 1).min(3); }); }
+pub fn quiz_visible() -> bool {
+    QUIZ_STATE.with(|s| s.borrow().visible)
+}
+pub fn quiz_navigate_up() {
+    QUIZ_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.selected = st.selected.saturating_sub(1);
+    });
+}
+pub fn quiz_navigate_down() {
+    QUIZ_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.selected = (st.selected + 1).min(3);
+    });
+}
 
 pub fn render_quiz_overlay(frame: &mut Frame, area: Rect) {
     QUIZ_STATE.with(|s| {
         let st = s.borrow();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
         let questions = super::ui_quiz::quiz_questions();
-        if st.question_index >= questions.len() { return; }
-        let lines = super::ui_quiz::render_quiz_question(&questions[st.question_index], st.selected, st.question_index + 1, questions.len());
+        if st.question_index >= questions.len() {
+            return;
+        }
+        let lines = super::ui_quiz::render_quiz_question(
+            &questions[st.question_index],
+            st.selected,
+            st.question_index + 1,
+            questions.len(),
+        );
         let panel_height = (lines.len() as u16 + 2).min(area.height * 2 / 3);
         let panel_width = 50.min(area.width);
         let panel_area = Rect {
@@ -2181,7 +2970,12 @@ pub fn render_quiz_overlay(frame: &mut Frame, area: Rect) {
         let block = Block::default()
             .borders(Borders::ALL)
             .border_style(Style::default().fg(glass_border_color()))
-            .title(Span::styled(" Personality Quiz ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)))
+            .title(Span::styled(
+                " Personality Quiz ",
+                Style::default()
+                    .fg(neon_cyan())
+                    .add_modifier(Modifier::BOLD),
+            ))
             .style(Style::default().bg(rgb(10, 10, 20)));
         frame.render_widget(Paragraph::new(lines).block(block), panel_area);
     });
@@ -2193,11 +2987,17 @@ thread_local! {
     static SHARE_VISIBLE: RefCell<bool> = const { RefCell::new(false) };
 }
 
-pub fn toggle_share() { SHARE_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow()); }
-pub fn share_visible() -> bool { SHARE_VISIBLE.with(|s| *s.borrow()) }
+pub fn toggle_share() {
+    SHARE_VISIBLE.with(|s| *s.borrow_mut() = !*s.borrow());
+}
+pub fn share_visible() -> bool {
+    SHARE_VISIBLE.with(|s| *s.borrow())
+}
 
 pub fn render_share_overlay(frame: &mut Frame, area: Rect) {
-    if !SHARE_VISIBLE.with(|s| *s.borrow()) { return; }
+    if !SHARE_VISIBLE.with(|s| *s.borrow()) {
+        return;
+    }
     let config = super::ui_share::SharedConfig::new("My IDEOCODE Setup", "User");
     let mut lines = super::ui_share::render_config_preview(&config);
     lines.push(Line::from(""));
@@ -2213,7 +3013,12 @@ pub fn render_share_overlay(frame: &mut Frame, area: Rect) {
     let block = Block::default()
         .borders(Borders::ALL)
         .border_style(Style::default().fg(glass_border_color()))
-        .title(Span::styled(" Share Config ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)))
+        .title(Span::styled(
+            " Share Config ",
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
+        ))
         .style(Style::default().bg(rgb(10, 10, 20)));
     frame.render_widget(Paragraph::new(lines).block(block), panel_area);
 }
@@ -2224,13 +3029,19 @@ thread_local! {
     static PREVIEW_STATE: RefCell<Option<super::ui_preview::PreviewType>> = const { RefCell::new(None) };
 }
 
-pub fn show_preview(preview: super::ui_preview::PreviewType) { PREVIEW_STATE.with(|s| *s.borrow_mut() = Some(preview)); }
-pub fn hide_preview() { PREVIEW_STATE.with(|s| *s.borrow_mut() = None); }
+pub fn show_preview(preview: super::ui_preview::PreviewType) {
+    PREVIEW_STATE.with(|s| *s.borrow_mut() = Some(preview));
+}
+pub fn hide_preview() {
+    PREVIEW_STATE.with(|s| *s.borrow_mut() = None);
+}
 
 pub fn render_preview_overlay(frame: &mut Frame, area: Rect) {
     PREVIEW_STATE.with(|s| {
         let st = s.borrow();
-        let Some(ref preview) = *st else { return; };
+        let Some(ref preview) = *st else {
+            return;
+        };
         let lines = super::ui_preview::render_preview(preview);
         let panel_height = (lines.len() as u16 + 2).min(area.height / 2);
         let panel_width = 50.min(area.width);
@@ -2254,16 +3065,24 @@ thread_local! {
     static THEME_BROWSER_STATE: RefCell<bool> = const { RefCell::new(false) };
 }
 
-pub fn toggle_theme_browser() { THEME_BROWSER_STATE.with(|s| *s.borrow_mut() = !*s.borrow()); }
-pub fn theme_browser_visible() -> bool { THEME_BROWSER_STATE.with(|s| *s.borrow()) }
+pub fn toggle_theme_browser() {
+    THEME_BROWSER_STATE.with(|s| *s.borrow_mut() = !*s.borrow());
+}
+pub fn theme_browser_visible() -> bool {
+    THEME_BROWSER_STATE.with(|s| *s.borrow())
+}
 
 pub fn render_theme_browser_overlay(frame: &mut Frame, area: Rect) {
-    if !THEME_BROWSER_STATE.with(|s| *s.borrow()) { return; }
+    if !THEME_BROWSER_STATE.with(|s| *s.borrow()) {
+        return;
+    }
     let themes = super::ui_themes::Theme::all();
     let mut lines = vec![
         Line::from(Span::styled(
             " Theme Browser",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )),
         Line::from(""),
     ];
@@ -2298,16 +3117,24 @@ thread_local! {
     static PERSONALITY_SELECTOR_STATE: RefCell<bool> = const { RefCell::new(false) };
 }
 
-pub fn toggle_personality_selector() { PERSONALITY_SELECTOR_STATE.with(|s| *s.borrow_mut() = !*s.borrow()); }
-pub fn personality_selector_visible() -> bool { PERSONALITY_SELECTOR_STATE.with(|s| *s.borrow()) }
+pub fn toggle_personality_selector() {
+    PERSONALITY_SELECTOR_STATE.with(|s| *s.borrow_mut() = !*s.borrow());
+}
+pub fn personality_selector_visible() -> bool {
+    PERSONALITY_SELECTOR_STATE.with(|s| *s.borrow())
+}
 
 /// Render personality mode selector using current state
 pub fn render_personality_overlay(frame: &mut Frame, area: Rect) {
-    if !PERSONALITY_SELECTOR_STATE.with(|s| *s.borrow()) { return; }
+    if !PERSONALITY_SELECTOR_STATE.with(|s| *s.borrow()) {
+        return;
+    }
     let current = OVERLAY_STATE.with(|s| {
         let st = s.borrow();
         match st.personality_mode {
-            PersonalityMode::Professional => super::ui_personality_modes::PersonalityMode::Professional,
+            PersonalityMode::Professional => {
+                super::ui_personality_modes::PersonalityMode::Professional
+            }
             PersonalityMode::Casual => super::ui_personality_modes::PersonalityMode::Casual,
             PersonalityMode::GenZ => super::ui_personality_modes::PersonalityMode::GenZ,
             PersonalityMode::Academic => super::ui_personality_modes::PersonalityMode::Academic,
@@ -2327,7 +3154,12 @@ pub fn render_personality_overlay(frame: &mut Frame, area: Rect) {
     let block = Block::default()
         .borders(Borders::ALL)
         .border_style(Style::default().fg(glass_border_color()))
-        .title(Span::styled(" Personality Mode ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)))
+        .title(Span::styled(
+            " Personality Mode ",
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
+        ))
         .style(Style::default().bg(rgb(10, 10, 20)));
     frame.render_widget(Paragraph::new(lines).block(block), panel_area);
 }
@@ -2344,18 +3176,31 @@ struct CinematicState {
 }
 
 impl CinematicState {
-    fn new() -> Self { Self { visible: false, step: 0 } }
+    fn new() -> Self {
+        Self {
+            visible: false,
+            step: 0,
+        }
+    }
 }
 
 pub fn toggle_cinematic() {
-    CINEMATIC_STATE.with(|s| { let mut st = s.borrow_mut(); st.visible = !st.visible; st.step = 0; });
+    CINEMATIC_STATE.with(|s| {
+        let mut st = s.borrow_mut();
+        st.visible = !st.visible;
+        st.step = 0;
+    });
 }
-pub fn cinematic_visible() -> bool { CINEMATIC_STATE.with(|s| s.borrow().visible) }
+pub fn cinematic_visible() -> bool {
+    CINEMATIC_STATE.with(|s| s.borrow().visible)
+}
 
 pub fn render_cinematic_overlay(frame: &mut Frame, area: Rect) {
     CINEMATIC_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
         st.step += 1;
         let mut lines = super::ui_cinematic::render_logo_reveal(st.step.min(10));
         lines.push(super::ui_cinematic::render_tagline(0.5));
@@ -2386,10 +3231,17 @@ pub fn record_mouse_click() {
 pub fn render_keyboard_wizard_tip(frame: &mut Frame, area: Rect) {
     KEYBOARD_WIZARD_STATE.with(|s| {
         let mut st = s.borrow_mut();
-        let Some(tip_text) = st.next_tip() else { return; };
+        let Some(tip_text) = st.next_tip() else {
+            return;
+        };
         let line = Line::from(vec![
             Span::styled("💡 ", Style::default().fg(neon_yellow())),
-            Span::styled("Did you know? ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)),
+            Span::styled(
+                "Did you know? ",
+                Style::default()
+                    .fg(neon_cyan())
+                    .add_modifier(Modifier::BOLD),
+            ),
             Span::styled(tip_text.to_string(), Style::default().fg(dim_color())),
         ]);
         frame.render_widget(Paragraph::new(line), area);
@@ -2434,7 +3286,9 @@ pub fn split_push_to_active(line: String) {
 pub fn render_split_overlay(frame: &mut Frame, area: Rect) {
     OVERLAY_STATE.with(|s| {
         let st = s.borrow();
-        if !st.split_visible { return; }
+        if !st.split_visible {
+            return;
+        }
         super::ui_split::render_split_layout(&st.split_layout, frame, area);
     });
 }
@@ -2508,12 +3362,14 @@ pub fn sidebar_set_panel(panel: super::ui_sidebar::SidebarPanel) {
     super::app::ui_prefs::save_sidebar_panel(panel.label());
 }
 
-pub fn render_sidebar(frame: &mut Frame, area: Rect) {
+pub fn render_sidebar(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     SIDEBAR_STATE.with(|s| {
         let st = s.borrow();
-        if !st.visible { return; }
+        if !st.visible {
+            return;
+        }
         let sidebar_area = super::ui_sidebar::compute_sidebar_area(area);
-        super::ui_sidebar::render_sidebar_chrome(frame, sidebar_area, st.active_panel);
+        super::ui_sidebar::render_sidebar_chrome(frame, sidebar_area, st.active_panel, app);
     });
 }
 
