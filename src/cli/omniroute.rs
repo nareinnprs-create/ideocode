@@ -365,7 +365,14 @@ pub async fn ensure_gateway() -> Result<bool> {
 
 /// Like [`ensure_gateway`] but bounds how long the initial wait may take. Longer
 /// recovery is handed off to the supervisor.
+///
+/// Set `IDEOCODE_DISABLE_BAANZON_GATEWAY` to opt out of the built-in gateway
+/// entirely (offline/enterprise/CI environments that must not auto-install or
+/// auto-start it, and deterministic tests).
 pub async fn ensure_gateway_with_budget(budget: Duration) -> Result<bool> {
+    if std::env::var_os("IDEOCODE_DISABLE_BAANZON_GATEWAY").is_some() {
+        return Ok(false);
+    }
     if gateway_healthy().await {
         return Ok(true);
     }

@@ -627,7 +627,7 @@ fn desktop_reload_handoff_watcher_releases_ready_child() -> Result<()> {
         spawned_at: Instant::now(),
     };
 
-    assert_eq!(watcher.poll()?, DesktopReloadHandoffPoll::Waiting);
+    assert_eq!(watcher.poll_with_placement(None)?, DesktopReloadHandoffPoll::Waiting);
     std::fs::write(&ready_file, b"ready")?;
     let final_placement = DesktopReloadWindowPlacement {
         position: Some(PhysicalPosition::new(640, 360)),

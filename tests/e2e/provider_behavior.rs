@@ -938,9 +938,10 @@ async fn test_system_prompt_no_claude_code_identity() -> Result<()> {
         identity_portion
     );
 
-    // Should identify as IDEOCODE
+    // Should identify as IDEOCODE. Check the original casing: the lowercased
+    // copy above is only used for the "claude code" negative check.
     assert!(
-        lower_identity.contains("IDEOCODE"),
+        identity_portion.contains("IDEOCODE"),
         "System prompt should identify as IDEOCODE. Found: {}",
         identity_portion
     );

@@ -7,15 +7,26 @@
 //! Connects to the harness API socket (`~/.IDEOCODE/IDEOCODE-api.sock`, served by
 //! `IDEOCODE-harness-api-bridge`) on a background thread, attaches a session,
 //! and forwards streamed events to the UI thread over a channel.
+//!
+//! The connection uses a Unix domain socket, so the worker is Unix-only. On
+//! Windows it reports that the harness connection is unsupported so the app
+//! still boots and the crate stays compilable on every platform.
 
-use ideocode_harness_api::{ApiEvent, ApiRequest, ClientFrame, HarnessClient, write_frame};
-use std::io::BufReader;
-use std::path::PathBuf;
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::mpsc::{Receiver, Sender, channel};
+
+#[cfg(unix)]
+use ideocode_harness_api::{ApiEvent, ApiRequest, ClientFrame, HarnessClient, write_frame};
+#[cfg(unix)]
+use std::path::PathBuf;
+#[cfg(unix)]
+use std::io::BufReader;
+#[cfg(unix)]
+use std::sync::atomic::{AtomicU64, Ordering};
+#[cfg(unix)]
 use std::sync::{Arc, Mutex};
 
 /// UI-facing updates produced by the connection worker.
+#[cfg_attr(not(unix), allow(dead_code))]
 #[derive(Debug)]
 pub enum HarnessUpdate {
     Status(String),
@@ -24,7 +35,8 @@ pub enum HarnessUpdate {
     TurnDone,
 }
 
-pub fn api_socket_path() -> PathBuf {
+#[cfg(unix)]
+fn api_socket_path() -> PathBuf {
     if let Ok(custom) = std::env::var("IDEOCODE_API_SOCKET") {
         return PathBuf::from(custom);
     }
@@ -49,6 +61,7 @@ pub fn spawn(redraw: impl Fn() + Send + 'static) -> (Receiver<HarnessUpdate>, Se
     (update_rx, outgoing_tx)
 }
 
+#[cfg(unix)]
 fn run(
     send: &impl Fn(HarnessUpdate),
     outgoing: Receiver<String>,
@@ -118,4 +131,15 @@ fn run(
             _ => {}
         }
     }
+}
+
+#[cfg(not(unix))]
+fn run(
+    send: &impl Fn(HarnessUpdate),
+    _outgoing: Receiver<String>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    send(HarnessUpdate::Status(
+        "harness API connection requires Unix sockets (unsupported on Windows)".into(),
+    ));
+    Ok(())
 }

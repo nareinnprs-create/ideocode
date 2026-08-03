@@ -1092,7 +1092,6 @@ pub(crate) async fn run_acp_command(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::path::Path;
 
     #[test]
     fn acp_tool_kind_maps_core_tools() {
@@ -1186,7 +1185,10 @@ mod tests {
     fn cwd_must_be_absolute() {
         let params = json!({"cwd": "relative"});
         assert!(cwd_from_params(&params).is_err());
-        let params = json!({"cwd": "/tmp"});
-        assert_eq!(cwd_from_params(&params).unwrap(), Path::new("/tmp"));
+        // Use a platform-absolute path: on Windows a bare `/tmp` is
+        // drive-relative (rooted but not absolute) and would be rejected.
+        let absolute = std::env::temp_dir();
+        let params = json!({"cwd": absolute.to_str().expect("utf8 temp dir")});
+        assert_eq!(cwd_from_params(&params).unwrap(), absolute);
     }
 }

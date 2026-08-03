@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 use crate::test_support::*;
 
+#[cfg(unix)]
 #[tokio::test]
 async fn test_websocket_transport_matches_unix_socket_for_subscribe_history_message_and_resume()
 -> Result<()> {

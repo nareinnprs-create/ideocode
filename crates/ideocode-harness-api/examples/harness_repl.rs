@@ -15,34 +15,49 @@
 //! Until the server-side adapter lands (milestone 2), run with `--demo` to
 //! exercise the client against an in-process scripted server:
 //!   cargo run -p IDEOCODE-harness-api --example harness_repl -- --demo
+//!
+//! The example talks over a Unix socket, so it is Unix-only; on Windows it
+//! prints that the endpoint is unsupported.
 
 use ideocode_harness_api::{
     API_VERSION_MAJOR, ApiEvent, ApiRequest, HarnessClient, ServerFrame, write_frame,
 };
+
+#[cfg(unix)]
 use std::io::{BufRead, BufReader, Write};
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
     if args.first().map(String::as_str) == Some("--demo") {
+        #[cfg(unix)]
         run_demo();
+        #[cfg(not(unix))]
+        println!("harness_repl demo requires Unix sockets (unsupported on Windows)");
         return;
     }
-    let socket = args.first().cloned().unwrap_or_else(default_socket_path);
-    let message = args
-        .get(1)
-        .cloned()
-        .unwrap_or_else(|| "hello from the harness API reference client".to_string());
-    let stream = std::os::unix::net::UnixStream::connect(&socket)
-        .unwrap_or_else(|e| panic!("connect {socket}: {e}"));
-    let reader = BufReader::new(stream.try_clone().expect("clone stream"));
-    run_session(HarnessClient::new(reader, stream), &message);
+    #[cfg(unix)]
+    {
+        let socket = args.first().cloned().unwrap_or_else(default_socket_path);
+        let message = args
+            .get(1)
+            .cloned()
+            .unwrap_or_else(|| "hello from the harness API reference client".to_string());
+        let stream = std::os::unix::net::UnixStream::connect(&socket)
+            .unwrap_or_else(|e| panic!("connect {socket}: {e}"));
+        let reader = BufReader::new(stream.try_clone().expect("clone stream"));
+        run_session(HarnessClient::new(reader, stream), &message);
+    }
+    #[cfg(not(unix))]
+    println!("harness_repl requires a Unix socket endpoint (unsupported on Windows)");
 }
 
+#[cfg(unix)]
 fn default_socket_path() -> String {
     let home = std::env::var("HOME").expect("HOME not set");
     format!("{home}/.IDEOCODE/IDEOCODE-api.sock")
 }
 
+#[cfg(unix)]
 fn run_session<R: BufRead, W: Write>(mut client: HarnessClient<R, W>, message: &str) {
     let hello = client.hello("harness_repl/0.1").expect("handshake");
     print_event(&hello);
@@ -78,6 +93,7 @@ fn run_session<R: BufRead, W: Write>(mut client: HarnessClient<R, W>, message: &
     }
 }
 
+#[cfg(unix)]
 fn print_event(frame: &ServerFrame) {
     match &frame.event {
         ApiEvent::TextDelta { text, .. } => {
@@ -91,6 +107,7 @@ fn print_event(frame: &ServerFrame) {
 
 /// Scripted in-process server so the client flow can be exercised before the
 /// real server adapter exists.
+#[cfg(unix)]
 fn run_demo() {
     let (client_stream, server_stream) =
         std::os::unix::net::UnixStream::pair().expect("socketpair");

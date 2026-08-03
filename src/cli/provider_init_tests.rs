@@ -177,22 +177,26 @@ fn test_auto_init_login_selection_preserves_order() {
     );
     assert_eq!(
         resolve_login_selection("11", &providers).map(|provider| provider.id),
-        Some("alibaba-coding-plan")
+        Some("cerebras")
     );
     assert_eq!(
         resolve_login_selection("12", &providers).map(|provider| provider.id),
-        Some("cursor")
+        Some("alibaba-coding-plan")
     );
     assert_eq!(
         resolve_login_selection("13", &providers).map(|provider| provider.id),
-        Some("copilot")
+        Some("cursor")
     );
     assert_eq!(
         resolve_login_selection("14", &providers).map(|provider| provider.id),
-        Some("gemini")
+        Some("copilot")
     );
     assert_eq!(
         resolve_login_selection("15", &providers).map(|provider| provider.id),
+        Some("gemini")
+    );
+    assert_eq!(
+        resolve_login_selection("16", &providers).map(|provider| provider.id),
         Some("antigravity")
     );
 }
@@ -835,6 +839,7 @@ async fn auto_provider_noninteractive_skips_untrusted_external_auth_instead_of_b
         "IDEOCODE_RUNTIME_PROVIDER",
         "IDEOCODE_ACTIVE_PROVIDER",
         "IDEOCODE_INITIAL_PROVIDER_EXPLICIT",
+        "IDEOCODE_DISABLE_BAANZON_GATEWAY",
     ]
     .iter()
     .map(|k| (k.to_string(), std::env::var(k).ok()))
@@ -855,6 +860,11 @@ async fn auto_provider_noninteractive_skips_untrusted_external_auth_instead_of_b
     ] {
         crate::env::remove_var(key);
     }
+    // The Baanzon Verso auto-fallback is out of scope for this test: a live
+    // local gateway would make auto-init legitimately succeed via the built-in
+    // assistant. Opt out so the external-auth path below is exercised
+    // deterministically regardless of whether the engine is running.
+    crate::env::set_var("IDEOCODE_DISABLE_BAANZON_GATEWAY", "1");
 
     let opencode_path = crate::auth::claude::ExternalClaudeAuthSource::OpenCode
         .path()

@@ -17,14 +17,25 @@
 //! This keeps the daemon untouched while the API surface stabilizes. Once
 //! proven, the same translation can move in-process behind a `hello` sniff on
 //! the main socket.
+//!
+//! The bridge uses Unix domain sockets, so the accept loop is Unix-only. On
+//! Windows the crate still compiles (`run_bridge` reports that the bridge is
+//! unsupported) so the workspace stays green on every platform.
 
 pub mod translate;
 
-use anyhow::{Context, Result};
-use ideocode_harness_api::{API_VERSION_MAJOR, ApiEvent, ErrorCode, ServerFrame};
-use serde_json::Value;
+use anyhow::Result;
 use std::path::PathBuf;
+
+#[cfg(unix)]
+use anyhow::Context;
+#[cfg(unix)]
+use ideocode_harness_api::{API_VERSION_MAJOR, ApiEvent, ErrorCode, ServerFrame};
+#[cfg(unix)]
+use serde_json::Value;
+#[cfg(unix)]
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+#[cfg(unix)]
 use tokio::net::{UnixListener, UnixStream};
 
 pub fn api_socket_path() -> PathBuf {
@@ -56,6 +67,7 @@ fn ideocode_home() -> PathBuf {
 }
 
 /// Run the bridge accept loop forever.
+#[cfg(unix)]
 pub async fn run_bridge(api_socket: PathBuf, legacy_socket: PathBuf) -> Result<()> {
     let _ = std::fs::remove_file(&api_socket);
     if let Some(parent) = api_socket.parent() {
@@ -79,6 +91,13 @@ pub async fn run_bridge(api_socket: PathBuf, legacy_socket: PathBuf) -> Result<(
     }
 }
 
+/// The bridge requires Unix sockets, which are unsupported on Windows.
+#[cfg(not(unix))]
+pub async fn run_bridge(_api_socket: PathBuf, _legacy_socket: PathBuf) -> Result<()> {
+    anyhow::bail!("the harness API bridge requires Unix sockets and is not supported on Windows")
+}
+
+#[cfg(unix)]
 async fn handle_api_client(stream: UnixStream, legacy_socket: PathBuf) -> Result<()> {
     let (read_half, mut write_half) = stream.into_split();
     let mut reader = BufReader::new(read_half);
@@ -174,6 +193,7 @@ async fn handle_api_client(stream: UnixStream, legacy_socket: PathBuf) -> Result
     }
 }
 
+#[cfg(unix)]
 async fn write_json_line<W, T>(writer: &mut W, value: &T) -> Result<()>
 where
     W: AsyncWriteExt + Unpin,

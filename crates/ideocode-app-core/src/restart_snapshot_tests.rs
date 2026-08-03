@@ -108,11 +108,18 @@ fn clear_snapshot_removes_saved_file() {
 fn arm_auto_restore_from_recent_crashes_captures_dead_active_sessions() {
     let _guard = TestEnvGuard::new().expect("setup test env");
 
-    let mut child = std::process::Command::new("sh")
-        .arg("-c")
-        .arg("exit 0")
-        .spawn()
-        .expect("spawn child");
+    let mut child = if cfg!(windows) {
+        std::process::Command::new("cmd")
+            .args(["/c", "exit 0"])
+            .spawn()
+            .expect("spawn child")
+    } else {
+        std::process::Command::new("sh")
+            .arg("-c")
+            .arg("exit 0")
+            .spawn()
+            .expect("spawn child")
+    };
     let dead_pid = child.id();
     let _ = child.wait().expect("wait for child");
 
@@ -148,11 +155,18 @@ fn arm_auto_restore_from_recent_crashes_captures_dead_active_sessions() {
 fn arm_auto_restore_from_recent_crashes_ignores_old_crashes() {
     let _guard = TestEnvGuard::new().expect("setup test env");
 
-    let mut child = std::process::Command::new("sh")
-        .arg("-c")
-        .arg("exit 0")
-        .spawn()
-        .expect("spawn child");
+    let mut child = if cfg!(windows) {
+        std::process::Command::new("cmd")
+            .args(["/c", "exit 0"])
+            .spawn()
+            .expect("spawn child")
+    } else {
+        std::process::Command::new("sh")
+            .arg("-c")
+            .arg("exit 0")
+            .spawn()
+            .expect("spawn child")
+    };
     let dead_pid = child.id();
     let _ = child.wait().expect("wait for child");
 

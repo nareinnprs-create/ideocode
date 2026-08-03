@@ -386,6 +386,9 @@ fn ensure_with_budget(budget: Duration) -> bool {
 /// must complete within [`SUPERVISOR_RECOVERY_BUDGET`] (600s) or the loop keeps
 /// retrying and logs.
 pub fn spawn_supervisor() {
+    if std::env::var_os("IDEOCODE_DISABLE_BAANZON_GATEWAY").is_some() {
+        return;
+    }
     std::thread::Builder::new()
         .name("IDEOCODE-gui-baanzon-verso".to_string())
         .spawn(|| {

@@ -247,9 +247,19 @@ fn isolated_launcher_env() -> (
 ) {
     let lock = lock_env();
     let temp = tempfile::tempdir().expect("tempdir");
-    let env = EnvVarGuard::capture(&["IDEOCODE_INSTALL_DIR", "IDEOCODE_HOME", "HOME", "USERPROFILE"]);
+    let env = EnvVarGuard::capture(&[
+        "IDEOCODE_INSTALL_DIR",
+        "IDEOCODE_HOME",
+        "HOME",
+        "USERPROFILE",
+        "LOCALAPPDATA",
+    ]);
     crate::env::set_var("HOME", temp.path());
     crate::env::set_var("USERPROFILE", temp.path());
+    // On Windows launcher_dir() falls back to LOCALAPPDATA (not the sandbox
+    // HOME) once IDEOCODE_HOME is blank, so point it under the sandbox to keep
+    // the home-default assertion deterministic.
+    crate::env::set_var("LOCALAPPDATA", temp.path().join("AppData").join("Local"));
     crate::env::remove_var("IDEOCODE_INSTALL_DIR");
     crate::env::remove_var("IDEOCODE_HOME");
     (lock, env, temp)

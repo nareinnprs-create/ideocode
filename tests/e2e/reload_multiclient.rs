@@ -82,6 +82,7 @@ async fn subscribe_new_session(socket_path: &std::path::Path) -> Result<(server:
 /// any client triggers a reload, because a reload restarts the whole server.
 /// This exercises `handle_reload`'s fan-out across every live session's
 /// `event_txs`, not just the triggering session.
+#[cfg(unix)]
 #[tokio::test]
 async fn reload_notifies_clients_across_independent_sessions() -> Result<()> {
     let _env = setup_test_env()?;
@@ -134,6 +135,7 @@ async fn reload_notifies_clients_across_independent_sessions() -> Result<()> {
 /// When a client takes over a live session (the multi-client reconnect path),
 /// the SUCCESSOR connection must still receive the reload notification and the
 /// superseded connection must be cleanly disconnected -- not left hanging.
+#[cfg(unix)]
 #[tokio::test]
 async fn reload_notifies_successor_after_session_takeover() -> Result<()> {
     let _env = setup_test_env()?;
@@ -203,6 +205,7 @@ async fn reload_notifies_successor_after_session_takeover() -> Result<()> {
 /// terminal state (Reloading and/or Done) without hanging. This drives the
 /// graceful-shutdown interrupt path inside `run_turn_streaming_mpsc` where the
 /// server fires each session's shutdown signal mid-stream.
+#[cfg(unix)]
 #[tokio::test]
 async fn reload_interrupts_in_flight_streaming_turn_without_hanging() -> Result<()> {
     let _env = setup_test_env()?;
@@ -289,6 +292,7 @@ async fn reload_interrupts_in_flight_streaming_turn_without_hanging() -> Result<
 /// The reload marker must be active around the time clients are told to
 /// reconnect, so that a client which disconnects mid-reload is classified as
 /// `Reloading` rather than `Crashed` by `disconnect_disposition`.
+#[cfg(unix)]
 #[tokio::test]
 async fn reload_marker_is_active_when_clients_are_notified() -> Result<()> {
     let _env = setup_test_env()?;

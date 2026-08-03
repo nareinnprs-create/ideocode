@@ -120,6 +120,14 @@ pub enum ProviderChoice {
         alias = "alibaba-coding"
     )]
     AlibabaCodingPlan,
+    #[value(alias = "github", alias = "gh-models")]
+    GitHubModels,
+    #[value(alias = "samba", alias = "sambanova-cloud")]
+    Sambanova,
+    #[value(alias = "replicate-ai")]
+    Replicate,
+    #[value(alias = "zhipu", alias = "bigmodel")]
+    ZhipuDirect,
     #[value(alias = "compat", alias = "custom")]
     OpenaiCompatible,
     Cursor,
@@ -183,6 +191,10 @@ impl ProviderChoice {
             Self::Chutes => "chutes",
             Self::Cerebras => "cerebras",
             Self::AlibabaCodingPlan => "alibaba-coding-plan",
+            Self::GitHubModels => "github-models",
+            Self::Sambanova => "sambanova",
+            Self::Replicate => "replicate",
+            Self::ZhipuDirect => "zhipu-direct",
             Self::OpenaiCompatible => "openai-compatible",
             Self::Cursor => "cursor",
             Self::Copilot => "copilot",
@@ -364,6 +376,22 @@ const PROVIDER_CHOICE_LOGIN_PROVIDERS: &[(ProviderChoice, LoginProviderDescripto
     (
         ProviderChoice::AlibabaCodingPlan,
         crate::provider_catalog::ALIBABA_CODING_PLAN_LOGIN_PROVIDER,
+    ),
+    (
+        ProviderChoice::GitHubModels,
+        crate::provider_catalog::GITHUB_MODELS_LOGIN_PROVIDER,
+    ),
+    (
+        ProviderChoice::Sambanova,
+        crate::provider_catalog::SAMBANOVA_LOGIN_PROVIDER,
+    ),
+    (
+        ProviderChoice::Replicate,
+        crate::provider_catalog::REPLICATE_LOGIN_PROVIDER,
+    ),
+    (
+        ProviderChoice::ZhipuDirect,
+        crate::provider_catalog::ZHIPU_DIRECT_LOGIN_PROVIDER,
     ),
     (
         ProviderChoice::OpenaiCompatible,
@@ -1549,6 +1577,10 @@ async fn init_provider_with_options(
         | ProviderChoice::Chutes
         | ProviderChoice::Cerebras
         | ProviderChoice::AlibabaCodingPlan
+        | ProviderChoice::GitHubModels
+        | ProviderChoice::Sambanova
+        | ProviderChoice::Replicate
+        | ProviderChoice::ZhipuDirect
         | ProviderChoice::GeminiApi
         | ProviderChoice::OpenaiCompatible => {
             disable_subscription_runtime_mode();

@@ -134,8 +134,14 @@ impl Provider for RetentionReadinessProvider {
             .unwrap_or_else(|poisoned| poisoned.into_inner())
             .push(transcript.clone());
 
-        let latest = transcript.last().cloned().unwrap_or_default();
-        if latest.contains("D7_RECOVER")
+        // The agent wraps each turn with system-reminder user messages, so the
+        // boundary label can appear anywhere in the transcript, not only as the
+        // final message. Detect the current phase by its label, giving the
+        // D7 > D1 > D0 phases priority since earlier labels persist in context.
+        let is_d7 = transcript.iter().any(|text| text.contains("D7_RECOVER"));
+        let is_d1 = transcript.iter().any(|text| text.contains("D1_RETURN"));
+        let is_d0 = transcript.iter().any(|text| text.contains("D0_ACTIVATE"));
+        if is_d7
             && self
                 .fail_d7_once
                 .swap(false, std::sync::atomic::Ordering::SeqCst)
@@ -143,17 +149,16 @@ impl Provider for RetentionReadinessProvider {
             anyhow::bail!("synthetic provider outage");
         }
 
-        let has_d0 = transcript.iter().any(|text| text.contains("D0_ACTIVATE"));
+        let has_d0 = is_d0;
         let has_d0_value = transcript.iter().any(|text| text.contains("VALUE_D0"));
-        let has_d1 = transcript.iter().any(|text| text.contains("D1_RETURN"));
+        let has_d1 = is_d1;
         let has_d1_value = transcript.iter().any(|text| text.contains("CONTINUITY_D1"));
-        let answer = if latest.contains("D0_ACTIVATE") {
-            "VALUE_D0"
-        } else if latest.contains("D1_RETURN") && has_d0 && has_d0_value {
-            "CONTINUITY_D1"
-        } else if latest.contains("D7_RECOVER") && has_d0 && has_d0_value && has_d1 && has_d1_value
-        {
+        let answer = if is_d7 && has_d0 && has_d0_value && has_d1 && has_d1_value {
             "COMPOUNDED_D7"
+        } else if is_d1 && has_d0 && has_d0_value {
+            "CONTINUITY_D1"
+        } else if is_d0 {
+            "VALUE_D0"
         } else {
             "CONTEXT_LOST"
         };
