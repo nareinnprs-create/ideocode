@@ -17,10 +17,6 @@ name = "ideocode_base"
 path = "src/lib.rs"
 
 [dependencies]
-# Memory allocator (reduces fragmentation for long-running server)
-tikv-jemalloc-ctl = { version = "0.6", optional = true }
-tikv-jemalloc-sys = { version = "0.6", optional = true }
-
 # Async runtime
 tokio = { version = "1", features = ["fs", "io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"] }
 futures = "0.3"
@@ -139,6 +135,14 @@ embeddings = ["dep:ideocode-embedding"]
 # ideocode-provider-bedrock (aws-sdk); forward there. Without it the Bedrock
 # provider still compiles but live calls return an explanatory error.
 bedrock = ["ideocode-provider-bedrock/aws-sdk"]
+
+[target.'cfg(not(windows))'.dependencies]
+# Memory allocator (reduces fragmentation for long-running server). jemalloc
+# cannot build on Windows MSVC (autotools build needs sh + make, untested
+# upstream); on Windows the jemalloc features compile as no-ops that fall back
+# to the system allocator.
+tikv-jemalloc-ctl = { version = "0.6", optional = true }
+tikv-jemalloc-sys = { version = "0.6", optional = true }
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_System_Power", "Win32_System_Threading"] }

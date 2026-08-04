@@ -4,11 +4,11 @@
 // SPDX-License-Identifier: MIT
 use crate::logging;
 use anyhow::{Result, anyhow};
-#[cfg(feature = "jemalloc")]
+#[cfg(all(feature = "jemalloc", not(windows)))]
 use libc::c_char;
 use serde::Serialize;
 use std::collections::VecDeque;
-#[cfg(feature = "jemalloc")]
+#[cfg(all(feature = "jemalloc", not(windows)))]
 use std::ffi::CString;
 use std::path::Path;
 use std::path::PathBuf;
@@ -16,7 +16,7 @@ use std::sync::{Mutex, OnceLock};
 
 const MAX_HISTORY_SAMPLES: usize = 512;
 
-#[cfg(feature = "jemalloc")]
+#[cfg(all(feature = "jemalloc", not(windows)))]
 struct JemallocStatsMibs {
     epoch: tikv_jemalloc_ctl::epoch_mib,
     allocated: tikv_jemalloc_ctl::stats::allocated_mib,
@@ -27,7 +27,7 @@ struct JemallocStatsMibs {
     retained: tikv_jemalloc_ctl::stats::retained_mib,
 }
 
-#[cfg(feature = "jemalloc-prof")]
+#[cfg(all(feature = "jemalloc-prof", not(windows)))]
 struct JemallocProfilingMibs {
     enabled: tikv_jemalloc_ctl::profiling::prof_mib,
 }
@@ -201,7 +201,7 @@ pub fn history(limit: usize) -> Vec<ProcessMemoryHistoryEntry> {
 }
 
 pub fn allocator_info() -> AllocatorInfo {
-    #[cfg(feature = "jemalloc")]
+    #[cfg(all(feature = "jemalloc", not(windows)))]
     {
         let stats = jemalloc_stats();
         let profiling = jemalloc_profiling_info();
@@ -214,7 +214,7 @@ pub fn allocator_info() -> AllocatorInfo {
         }
     }
 
-    #[cfg(not(feature = "jemalloc"))]
+    #[cfg(any(not(feature = "jemalloc"), windows))]
     {
         let stats = glibc_malloc_stats();
         AllocatorInfo {
@@ -289,14 +289,14 @@ fn glibc_malloc_stats() -> Option<AllocatorStats> {
 
 #[cfg(all(
     not(all(target_os = "linux", target_env = "gnu")),
-    not(feature = "jemalloc")
+    any(not(feature = "jemalloc"), windows)
 ))]
 fn glibc_malloc_stats() -> Option<AllocatorStats> {
     None
 }
 
 pub fn purge_allocator() -> Result<AllocatorTuningInfo> {
-    #[cfg(feature = "jemalloc")]
+    #[cfg(all(feature = "jemalloc", not(windows)))]
     {
         logging::info("purging jemalloc allocator arenas");
         let _ = jemalloc_void_ctl("thread.idle");
@@ -332,7 +332,7 @@ pub fn purge_allocator() -> Result<AllocatorTuningInfo> {
         })
     }
 
-    #[cfg(all(not(target_os = "linux"), not(feature = "jemalloc")))]
+    #[cfg(all(not(target_os = "linux"), any(not(feature = "jemalloc"), windows)))]
     {
         logging::warn("allocator purge requested but no purge mechanism is available");
         Err(anyhow!(
@@ -345,7 +345,7 @@ pub fn set_allocator_decay_ms(dirty_ms: isize, muzzy_ms: isize) -> Result<Alloca
     logging::info(&format!(
         "setting allocator decay dirty_ms={dirty_ms} muzzy_ms={muzzy_ms}"
     ));
-    #[cfg(feature = "jemalloc")]
+    #[cfg(all(feature = "jemalloc", not(windows)))]
     {
         unsafe {
             tikv_jemalloc_ctl::raw::write(b"arenas.dirty_decay_ms\0", dirty_ms)
@@ -373,7 +373,7 @@ pub fn set_allocator_decay_ms(dirty_ms: isize, muzzy_ms: isize) -> Result<Alloca
         }))
     }
 
-    #[cfg(not(feature = "jemalloc"))]
+    #[cfg(any(not(feature = "jemalloc"), windows))]
     {
         let _ = (dirty_ms, muzzy_ms);
         logging::warn("allocator decay update requested but jemalloc feature is disabled");
@@ -384,7 +384,7 @@ pub fn set_allocator_decay_ms(dirty_ms: isize, muzzy_ms: isize) -> Result<Alloca
 }
 
 pub fn set_allocator_profiling_active(active: bool) -> Result<()> {
-    #[cfg(feature = "jemalloc-prof")]
+    #[cfg(all(feature = "jemalloc-prof", not(windows)))]
     {
         unsafe {
             tikv_jemalloc_ctl::raw::write(b"prof.active\0", active)
@@ -392,7 +392,7 @@ pub fn set_allocator_profiling_active(active: bool) -> Result<()> {
         }
     }
 
-    #[cfg(not(feature = "jemalloc-prof"))]
+    #[cfg(any(not(feature = "jemalloc-prof"), windows))]
     {
         let _ = active;
         Err(anyhow!(
@@ -402,7 +402,7 @@ pub fn set_allocator_profiling_active(active: bool) -> Result<()> {
 }
 
 pub fn dump_allocator_profile(path: Option<&Path>) -> Result<PathBuf> {
-    #[cfg(feature = "jemalloc-prof")]
+    #[cfg(all(feature = "jemalloc-prof", not(windows)))]
     {
         let output_path = match path {
             Some(path) => path.to_path_buf(),
@@ -424,7 +424,7 @@ pub fn dump_allocator_profile(path: Option<&Path>) -> Result<PathBuf> {
         Ok(output_path)
     }
 
-    #[cfg(not(feature = "jemalloc-prof"))]
+    #[cfg(any(not(feature = "jemalloc-prof"), windows))]
     {
         let _ = path;
         Err(anyhow!(
@@ -434,7 +434,7 @@ pub fn dump_allocator_profile(path: Option<&Path>) -> Result<PathBuf> {
 }
 
 pub fn set_allocator_profile_prefix(prefix: &str) -> Result<()> {
-    #[cfg(feature = "jemalloc-prof")]
+    #[cfg(all(feature = "jemalloc-prof", not(windows)))]
     {
         let c_prefix =
             CString::new(prefix).map_err(|_| anyhow!("heap profile prefix contains NUL byte"))?;
@@ -444,7 +444,7 @@ pub fn set_allocator_profile_prefix(prefix: &str) -> Result<()> {
         }
     }
 
-    #[cfg(not(feature = "jemalloc-prof"))]
+    #[cfg(any(not(feature = "jemalloc-prof"), windows))]
     {
         let _ = prefix;
         Err(anyhow!(
@@ -484,7 +484,7 @@ pub fn estimate_json_bytes<T: Serialize>(value: &T) -> usize {
 /// arenas; on Linux system-allocator builds it calls `malloc_trim(0)`; on
 /// other platforms it is a no-op.
 pub fn release_retained_heap(reason: &str) {
-    #[cfg(feature = "jemalloc")]
+    #[cfg(all(feature = "jemalloc", not(windows)))]
     {
         if let Err(err) = purge_allocator() {
             logging::info(&format!("jemalloc purge ({reason}) failed: {err}"));
@@ -509,7 +509,7 @@ pub fn release_retained_heap(reason: &str) {
         ));
     }
 
-    #[cfg(all(not(target_os = "linux"), not(feature = "jemalloc")))]
+    #[cfg(all(not(target_os = "linux"), any(not(feature = "jemalloc"), windows)))]
     {
         let _ = reason;
     }
@@ -744,7 +744,7 @@ fn read_linux_memory_info(status: &str) -> Option<OsProcessMemoryInfo> {
     }
 }
 
-#[cfg(feature = "jemalloc-prof")]
+#[cfg(all(feature = "jemalloc-prof", not(windows)))]
 fn default_heap_profile_path() -> Result<PathBuf> {
     let base = crate::storage::ideocode_dir()?
         .join("profiles")
@@ -754,7 +754,7 @@ fn default_heap_profile_path() -> Result<PathBuf> {
     Ok(base.join(format!("IDEOCODE-{}-{}.heap", pid, timestamp)))
 }
 
-#[cfg(feature = "jemalloc")]
+#[cfg(all(feature = "jemalloc", not(windows)))]
 fn jemalloc_stats() -> Option<AllocatorStats> {
     let mibs = jemalloc_stats_mibs()?;
     mibs.epoch.advance().ok()?;
@@ -769,7 +769,7 @@ fn jemalloc_stats() -> Option<AllocatorStats> {
     })
 }
 
-#[cfg(feature = "jemalloc")]
+#[cfg(all(feature = "jemalloc", not(windows)))]
 fn jemalloc_tuning_info() -> Option<AllocatorTuningInfo> {
     let arena_count = tikv_jemalloc_ctl::arenas::narenas::read().ok()?;
     let mut initialized_arenas = 0u64;
@@ -806,7 +806,7 @@ fn jemalloc_tuning_info() -> Option<AllocatorTuningInfo> {
     })
 }
 
-#[cfg(feature = "jemalloc")]
+#[cfg(all(feature = "jemalloc", not(windows)))]
 fn jemalloc_read_dynamic<T: Copy>(name: &str) -> Result<T> {
     let c_name = CString::new(name).map_err(|_| anyhow!("mallctl name contains NUL byte"))?;
     unsafe {
@@ -815,7 +815,7 @@ fn jemalloc_read_dynamic<T: Copy>(name: &str) -> Result<T> {
     }
 }
 
-#[cfg(feature = "jemalloc")]
+#[cfg(all(feature = "jemalloc", not(windows)))]
 fn jemalloc_write_dynamic<T>(name: &str, value: T) -> Result<()> {
     let c_name = CString::new(name).map_err(|_| anyhow!("mallctl name contains NUL byte"))?;
     unsafe {
@@ -824,7 +824,7 @@ fn jemalloc_write_dynamic<T>(name: &str, value: T) -> Result<()> {
     }
 }
 
-#[cfg(feature = "jemalloc")]
+#[cfg(all(feature = "jemalloc", not(windows)))]
 fn jemalloc_void_ctl(name: &str) -> Result<()> {
     let c_name = CString::new(name).map_err(|_| anyhow!("mallctl name contains NUL byte"))?;
     unsafe {
@@ -846,7 +846,7 @@ fn jemalloc_void_ctl(name: &str) -> Result<()> {
     Ok(())
 }
 
-#[cfg(feature = "jemalloc")]
+#[cfg(all(feature = "jemalloc", not(windows)))]
 fn jemalloc_stats_mibs() -> Option<&'static JemallocStatsMibs> {
     static MIBS: OnceLock<Option<JemallocStatsMibs>> = OnceLock::new();
     MIBS.get_or_init(|| {
@@ -863,7 +863,7 @@ fn jemalloc_stats_mibs() -> Option<&'static JemallocStatsMibs> {
     .as_ref()
 }
 
-#[cfg(feature = "jemalloc-prof")]
+#[cfg(all(feature = "jemalloc-prof", not(windows)))]
 fn jemalloc_profiling_info() -> Option<AllocatorProfilingInfo> {
     let mibs = jemalloc_profiling_mibs()?;
     Some(AllocatorProfilingInfo {
@@ -872,7 +872,7 @@ fn jemalloc_profiling_info() -> Option<AllocatorProfilingInfo> {
     })
 }
 
-#[cfg(all(feature = "jemalloc", not(feature = "jemalloc-prof")))]
+#[cfg(all(feature = "jemalloc", not(feature = "jemalloc-prof"), not(windows)))]
 fn jemalloc_profiling_info() -> Option<AllocatorProfilingInfo> {
     Some(AllocatorProfilingInfo {
         available: false,
@@ -880,7 +880,7 @@ fn jemalloc_profiling_info() -> Option<AllocatorProfilingInfo> {
     })
 }
 
-#[cfg(feature = "jemalloc-prof")]
+#[cfg(all(feature = "jemalloc-prof", not(windows)))]
 fn jemalloc_profiling_mibs() -> Option<&'static JemallocProfilingMibs> {
     static MIBS: OnceLock<Option<JemallocProfilingMibs>> = OnceLock::new();
     MIBS.get_or_init(|| {
@@ -1059,7 +1059,7 @@ mod tests {
     #[test]
     fn allocator_info_matches_enabled_allocator_features() {
         let info = allocator_info();
-        if cfg!(feature = "jemalloc") {
+        if cfg!(all(feature = "jemalloc", not(windows))) {
             assert_eq!(info.name, "jemalloc");
             assert_eq!(info.stats_available, info.stats.is_some());
             assert!(info.profiling.is_some());

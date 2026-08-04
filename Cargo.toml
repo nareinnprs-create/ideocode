@@ -129,9 +129,6 @@ path = "src/bin/tui_bench.rs"
 required-features = ["dev-bins"]
 
 [dependencies]
-# Memory allocator (reduces fragmentation for long-running server)
-tikv-jemallocator = { version = "0.6", features = ["unprefixed_malloc_on_supported_platforms"], optional = true }
-
 # Async runtime
 tokio = { version = "1", features = ["fs", "io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"] }
 futures = "0.3"
@@ -232,6 +229,15 @@ bedrock = ["ideocode-tui/bedrock"]
 linux-compat-vendored-openssl = ["ideocode-tui/linux-compat-vendored-openssl"]
 mmdr-size-api = ["ideocode-tui/mmdr-size-api"]
 pdf = ["ideocode-tui/pdf"]
+
+[target.'cfg(not(windows))'.dependencies]
+# Memory allocator (reduces fragmentation for long-running server). The
+# underlying jemalloc C library cannot build on Windows MSVC: its autotools
+# build requires sh + make, and upstream marks the msvc target untested. The
+# jemalloc/jemalloc-prof features stay enabled on Windows (so --all-features is
+# green on all platforms) but compile as no-ops that fall back to the system
+# allocator there.
+tikv-jemallocator = { version = "0.6", features = ["unprefixed_malloc_on_supported_platforms"], optional = true }
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_System_Threading"] }
