@@ -19,6 +19,7 @@
 //! The example talks over a Unix socket, so it is Unix-only; on Windows it
 //! prints that the endpoint is unsupported.
 
+#[cfg(unix)]
 use ideocode_harness_api::{
     API_VERSION_MAJOR, ApiEvent, ApiRequest, HarnessClient, ServerFrame, write_frame,
 };

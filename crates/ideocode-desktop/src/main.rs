@@ -1696,10 +1696,12 @@ async fn run() -> Result<()> {
             Event::AboutToWait => {
                 let surface_renderable = desktop_surface_size_is_renderable(window.inner_size());
                 let now = Instant::now();
-                if let Some(redraw_at) = surface_timeout_redraw_at {
-                    if now >= redraw_at && surface_renderable && !window_occluded {
-                        surface_timeout_redraw_at = None;
-                    }
+                if let Some(redraw_at) = surface_timeout_redraw_at
+                    && now >= redraw_at
+                    && surface_renderable
+                    && !window_occluded
+                {
+                    surface_timeout_redraw_at = None;
                 }
                 let automatic_redraw_allowed = desktop_automatic_redraw_allowed(
                     now,
@@ -1747,11 +1749,11 @@ async fn run() -> Result<()> {
                         interaction_latency.mark("scroll_momentum", about_to_wait_started);
                         paced_redraw_needed = true;
                     }
-                } else if scroll_accumulator.is_active() {
-                    if !app.is_single_session() {
-                        scroll_accumulator.reset();
-                        scroll_metrics_cache.clear();
-                    }
+                } else if scroll_accumulator.is_active()
+                    && !app.is_single_session()
+                {
+                    scroll_accumulator.reset();
+                    scroll_metrics_cache.clear();
                 }
                 let mut workspace_title_changed = false;
                 if animation_tick_due
@@ -1777,16 +1779,15 @@ async fn run() -> Result<()> {
                 {
                     window.request_redraw();
                 }
-                if pending_backend_redraw_since.is_some() {
-                    if automatic_redraw_allowed
-                        && last_backend_redraw_request.is_none_or(|last| {
-                            now.saturating_duration_since(last) >= BACKEND_REDRAW_FRAME_INTERVAL
-                        })
-                    {
-                        last_backend_redraw_request = Some(now);
-                        if automatic_redraw.schedule(true) {
-                            window.request_redraw();
-                        }
+                if pending_backend_redraw_since.is_some()
+                    && automatic_redraw_allowed
+                    && last_backend_redraw_request.is_none_or(|last| {
+                        now.saturating_duration_since(last) >= BACKEND_REDRAW_FRAME_INTERVAL
+                    })
+                {
+                    last_backend_redraw_request = Some(now);
+                    if automatic_redraw.schedule(true) {
+                        window.request_redraw();
                     }
                 }
                 if hot_reloader.poll(&app, &window) {
