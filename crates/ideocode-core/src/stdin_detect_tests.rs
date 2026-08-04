@@ -3,6 +3,7 @@
 // Developer: Narein Rao
 // SPDX-License-Identifier: MIT
 use super::*;
+#[cfg(unix)]
 use std::process::{Command, Stdio};
 
 #[test]

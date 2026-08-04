@@ -2,6 +2,7 @@
 // R&D by Opraiz Cognitive
 // Developer: Narein Rao
 // SPDX-License-Identifier: MIT
+#![cfg_attr(test, allow(clippy::items_after_test_module))]
 use super::{SetupHintsState, StartupHints, read_choice};
 use crate::windows_hotkeys::{self, WindowsHotkey};
 use anyhow::{Context, Result};

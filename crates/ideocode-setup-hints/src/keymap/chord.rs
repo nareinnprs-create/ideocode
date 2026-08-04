@@ -339,8 +339,8 @@ mod tests {
     fn parse_matches_discovered_chord() {
         // A IDEOCODE binding and a terminal binding for the same physical keys must
         // compare equal so the conflict detector can pair them.
-        let IDEOCODE = KeyChord::parse("cmd+k").unwrap();
+        let ideocode = KeyChord::parse("cmd+k").unwrap();
         let terminal = KeyChord::new(true, false, false, false, "k");
-        assert_eq!(IDEOCODE, terminal);
+        assert_eq!(ideocode, terminal);
     }
 }

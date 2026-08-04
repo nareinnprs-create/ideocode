@@ -2,6 +2,7 @@
 // R&D by Opraiz Cognitive
 // Developer: Narein Rao
 // SPDX-License-Identifier: MIT
+#![cfg_attr(test, allow(clippy::items_after_test_module))]
 use super::*;
 
 /// Estimate the height needed for an image in terminal rows

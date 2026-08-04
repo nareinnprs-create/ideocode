@@ -18,6 +18,8 @@
 //!
 //! `/subscribe` renders the full pitch and points at `/login IDEOCODE`.
 
+#![cfg_attr(test, allow(clippy::items_after_test_module))]
+
 use super::{App, AppRuntimeMode, DisplayMessage};
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
@@ -291,7 +293,7 @@ mod tests {
         assert!(weekly_gate_allows(1_000, 1_000 + week));
         assert!(!weekly_gate_allows(1_000, 1_000 + week - 1));
         // Fresh state (never shown) allows immediately.
-        assert!(weekly_gate_allows(0, 0 + week));
+        assert!(weekly_gate_allows(0, week));
         assert!(weekly_gate_allows(0, u64::MAX));
     }
 

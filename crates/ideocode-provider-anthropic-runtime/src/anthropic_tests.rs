@@ -80,9 +80,9 @@ fn test_parse_sse_event_utf8_split_across_chunks() {
     // survive decoding without being replaced by U+FFFD replacement chars.
     let full = "event: content_block_delta\ndata: {\"text\":\"caf\u{e9} \u{1f600}\"}\n\n";
     let mid = full.len() / 2;
-    let mut buffer: Vec<u8> = full[..mid].as_bytes().to_vec();
+    let mut buffer: Vec<u8> = full.as_bytes()[..mid].to_vec();
     assert!(parse_sse_event(&mut buffer).is_none());
-    buffer.extend_from_slice(full[mid..].as_bytes());
+    buffer.extend_from_slice(&full.as_bytes()[mid..]);
     let event = parse_sse_event(&mut buffer).unwrap();
     assert!(event.data.contains('\u{e9}'));
     assert!(event.data.contains('\u{1f600}'));

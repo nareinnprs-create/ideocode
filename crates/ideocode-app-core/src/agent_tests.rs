@@ -1274,6 +1274,7 @@ async fn tool_snapshot_is_stable_without_new_mcp_tools() {
 }
 
 #[test]
+#[allow(clippy::assertions_on_constants)]
 fn empty_post_tool_response_gets_more_than_one_retry() {
     // Regression guard for the Claude Opus 5 benchmark incident. A provider can
     // return an empty response immediately after tool results; that is a

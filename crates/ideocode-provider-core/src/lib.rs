@@ -1370,7 +1370,7 @@ mod tests {
     }
 
     #[test]
-    fn canonical_user_agent_identifies_IDEOCODE() {
+    fn canonical_user_agent_identifies_ideocode() {
         assert!(IDEOCODE_USER_AGENT.starts_with("IDEOCODE/"));
     }
 
