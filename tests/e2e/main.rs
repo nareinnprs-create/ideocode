@@ -14,9 +14,11 @@ mod ambient;
 mod binary_integration;
 mod burst_spawn;
 mod provider_behavior;
+#[cfg(unix)]
 mod reload_multiclient;
 mod safety;
 mod session_flow;
+#[cfg(unix)]
 mod transport;
 #[cfg(windows)]
 mod windows_lifecycle;

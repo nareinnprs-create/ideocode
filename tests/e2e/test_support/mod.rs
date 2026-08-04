@@ -10,16 +10,22 @@
 pub(crate) use crate::mock_provider::MockProvider;
 pub(crate) use anyhow::{Context, Result};
 pub(crate) use async_trait::async_trait;
-pub(crate) use futures::{SinkExt, StreamExt, stream};
+pub(crate) use futures::stream;
+#[cfg(unix)]
+pub(crate) use futures::{SinkExt, StreamExt};
 pub(crate) use ideocode::agent::Agent;
 pub(crate) use ideocode::message::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
-pub(crate) use ideocode::protocol::{Request, ServerEvent};
+pub(crate) use ideocode::protocol::ServerEvent;
+#[cfg(unix)]
+pub(crate) use ideocode::protocol::Request;
 pub(crate) use ideocode::provider::{EventStream, Provider};
 pub(crate) use ideocode::server;
 pub(crate) use ideocode::session::{Session, StoredCompactionState};
 pub(crate) use ideocode::tool::Registry;
 pub(crate) use std::ffi::OsString;
+#[cfg(unix)]
 pub(crate) use std::io::Read;
+#[cfg(unix)]
 pub(crate) use std::net::TcpListener as StdTcpListener;
 #[cfg(unix)]
 use std::os::fd::FromRawFd;
@@ -29,10 +35,14 @@ pub(crate) use std::process::{Child, Command, Stdio};
 pub(crate) use std::sync::Arc;
 pub(crate) use std::sync::Mutex;
 pub(crate) use std::time::{Duration, Instant};
+#[cfg(unix)]
 pub(crate) use tokio::net::TcpStream;
 pub(crate) use tokio::time::timeout;
+#[cfg(unix)]
 pub(crate) use tokio_tungstenite::connect_async;
+#[cfg(unix)]
 pub(crate) use tokio_tungstenite::tungstenite::Message as WsMessage;
+#[cfg(unix)]
 pub(crate) use tokio_tungstenite::tungstenite::client::IntoClientRequest;
 
 static IDEOCODE_HOME_LOCK: std::sync::OnceLock<Mutex<()>> = std::sync::OnceLock::new();
@@ -166,11 +176,13 @@ pub(crate) fn setup_test_env() -> Result<TestEnvGuard> {
     TestEnvGuard::new()
 }
 
+#[cfg(unix)]
 pub(crate) struct EnvVarGuard {
     name: &'static str,
     prev: Option<OsString>,
 }
 
+#[cfg(unix)]
 impl EnvVarGuard {
     pub(crate) fn set(name: &'static str, value: impl AsRef<std::ffi::OsStr>) -> Self {
         let prev = std::env::var_os(name);
@@ -179,6 +191,7 @@ impl EnvVarGuard {
     }
 }
 
+#[cfg(unix)]
 impl Drop for EnvVarGuard {
     fn drop(&mut self) {
         if let Some(prev) = &self.prev {
@@ -189,6 +202,7 @@ impl Drop for EnvVarGuard {
     }
 }
 
+#[cfg(unix)]
 pub(crate) fn reserve_tcp_port() -> Result<u16> {
     let listener = StdTcpListener::bind(("127.0.0.1", 0))?;
     let port = listener.local_addr()?.port();
@@ -196,6 +210,7 @@ pub(crate) fn reserve_tcp_port() -> Result<u16> {
     Ok(port)
 }
 
+#[cfg(unix)]
 pub(crate) async fn wait_for_socket(path: &std::path::Path) -> Result<()> {
     let start = Instant::now();
     while !path.exists() {
@@ -242,6 +257,7 @@ pub(crate) async fn wait_for_server_ready(
     wait_for_debug_socket_ready(debug_socket_path).await
 }
 
+#[cfg(unix)]
 pub(crate) async fn wait_for_tcp_port(port: u16) -> Result<()> {
     let start = Instant::now();
     while start.elapsed() < Duration::from_secs(10) {
@@ -253,6 +269,7 @@ pub(crate) async fn wait_for_tcp_port(port: u16) -> Result<()> {
     anyhow::bail!("Gateway TCP port {} did not open", port)
 }
 
+#[cfg(unix)]
 fn pair_test_device(token: &str) -> Result<()> {
     let mut registry = ideocode::gateway::DeviceRegistry::load();
     let now = chrono::Utc::now().to_rfc3339();
@@ -272,6 +289,7 @@ fn pair_test_device(token: &str) -> Result<()> {
     registry.save()
 }
 
+#[cfg(unix)]
 struct WsTestClient {
     stream: tokio_tungstenite::WebSocketStream<tokio_tungstenite::MaybeTlsStream<TcpStream>>,
     next_id: u64,
@@ -343,6 +361,7 @@ pub(crate) fn flatten_text_blocks(message: &Message) -> String {
         .join("\n")
 }
 
+#[cfg(unix)]
 impl WsTestClient {
     async fn connect(port: u16, token: &str) -> Result<Self> {
         let mut request = format!("ws://127.0.0.1:{port}/ws").into_client_request()?;
@@ -467,6 +486,7 @@ pub(crate) async fn collect_until_history_unix(
     anyhow::bail!("timed out waiting for history event {target_id} over unix socket")
 }
 
+#[cfg(unix)]
 async fn collect_until_done_ws(
     client: &mut WsTestClient,
     target_id: u64,
@@ -484,6 +504,7 @@ async fn collect_until_done_ws(
     anyhow::bail!("timed out waiting for done event {target_id} over websocket")
 }
 
+#[cfg(unix)]
 async fn collect_until_history_ws(
     client: &mut WsTestClient,
     target_id: u64,
@@ -501,6 +522,7 @@ async fn collect_until_history_ws(
     anyhow::bail!("timed out waiting for history event {target_id} over websocket")
 }
 
+#[cfg(unix)]
 pub(crate) fn summarize_history_invariant(event: &ServerEvent) -> Option<String> {
     match event {
         ServerEvent::History {
@@ -535,12 +557,14 @@ pub(crate) fn summarize_history_invariant(event: &ServerEvent) -> Option<String>
     }
 }
 
+#[cfg(unix)]
 pub(crate) struct TransportScenarioResult {
     pub(crate) subscribe_events: Vec<ServerEvent>,
     pub(crate) history_events: Vec<ServerEvent>,
     pub(crate) resume_events: Vec<ServerEvent>,
 }
 
+#[cfg(unix)]
 pub(crate) async fn run_unix_transport_scenario() -> Result<TransportScenarioResult> {
     let runtime_dir = short_runtime_dir(format!(
         "IDEOCODE-ws-e2e-unix-{}",
@@ -658,6 +682,7 @@ pub(crate) async fn run_unix_transport_scenario() -> Result<TransportScenarioRes
     result
 }
 
+#[cfg(unix)]
 pub(crate) async fn run_websocket_transport_scenario() -> Result<TransportScenarioResult> {
     let runtime_dir = short_runtime_dir(format!(
         "IDEOCODE-ws-e2e-websocket-{}",
@@ -756,6 +781,7 @@ pub(crate) async fn run_websocket_transport_scenario() -> Result<TransportScenar
     result
 }
 
+#[cfg(unix)]
 pub(crate) async fn wait_for_default_connected_client_session(
     debug_socket_path: &std::path::Path,
 ) -> Result<String> {
@@ -1080,6 +1106,7 @@ pub(crate) fn abort_server_and_cleanup<T>(
     let _ = std::fs::remove_file(debug_socket_path);
 }
 
+#[cfg(unix)]
 pub(crate) async fn wait_for_connected_client_session(
     debug_socket_path: &std::path::Path,
     timeout: Duration,

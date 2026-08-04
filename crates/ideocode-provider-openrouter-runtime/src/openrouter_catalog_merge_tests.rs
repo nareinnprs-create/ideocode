@@ -130,8 +130,10 @@ fn profile_shadowing_builtin_name_with_other_base_is_user_named() {
 /// user's declared model, and assert the picker still offers it.
 #[tokio::test]
 async fn config_toml_models_survive_a_real_catalog_fetch() {
-    let _lock = ENV_LOCK.lock();
-    let _namespace = EnvVarGuard::remove("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
+    let _namespace = {
+        let _lock = ENV_LOCK.lock();
+        EnvVarGuard::remove("IDEOCODE_OPENROUTER_CACHE_NAMESPACE")
+    };
 
     let api_base = spawn_models_server(
         r#"{
