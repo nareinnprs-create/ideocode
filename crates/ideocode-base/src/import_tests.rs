@@ -985,12 +985,13 @@ fn test_resolve_resume_target_to_ideocode_imports_claude_code_session() {
         )
         .unwrap();
 
-    let resolved =
-        resolve_resume_target_to_IDEOCODE(&ideocode_session_types::ResumeTarget::ClaudeCodeSession {
+    let resolved = resolve_resume_target_to_IDEOCODE(
+        &ideocode_session_types::ResumeTarget::ClaudeCodeSession {
             session_id: "claude-resolve-test".to_string(),
             session_path: transcript_path.to_string_lossy().to_string(),
-        })
-        .unwrap();
+        },
+    )
+    .unwrap();
 
     let imported_id = imported_claude_code_session_id("claude-resolve-test");
     assert_eq!(
@@ -1066,12 +1067,13 @@ fn test_reimporting_claude_session_preserves_ideocode_continuation() {
     assert_eq!(Session::load(&imported_id).unwrap().messages.len(), 3);
 
     // Re-selecting the external entry re-enters import; the continuation must survive.
-    let resumed =
-        resolve_resume_target_to_IDEOCODE(&ideocode_session_types::ResumeTarget::ClaudeCodeSession {
+    let resumed = resolve_resume_target_to_IDEOCODE(
+        &ideocode_session_types::ResumeTarget::ClaudeCodeSession {
             session_id: "claude-continued".to_string(),
             session_path: transcript_path.to_string_lossy().to_string(),
-        })
-        .unwrap();
+        },
+    )
+    .unwrap();
     assert_eq!(
         resumed,
         ideocode_session_types::ResumeTarget::IDEOCODESession {

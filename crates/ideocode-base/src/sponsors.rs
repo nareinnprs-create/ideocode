@@ -27,7 +27,8 @@
 //!   never session content.
 
 /// Public URL explaining IDEOCODE's tool-provider partnerships.
-pub const DISCOVERY_PARTNERS_URL: &str = "https://github.com/nareinnprs-create/ideocode/discovery-tools";
+pub const DISCOVERY_PARTNERS_URL: &str =
+    "https://github.com/nareinnprs-create/ideocode/discovery-tools";
 
 /// Provenance tagging and coarse usage metering for MCP servers connected
 /// as a result of a discovery listing.

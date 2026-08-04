@@ -114,11 +114,7 @@ pub fn get_available_plugins() -> Vec<Plugin> {
 }
 
 /// Render plugin list selector.
-pub fn render_plugin_list(
-    plugins: &[Plugin],
-    selected: usize,
-    filter: &str,
-) -> Vec<Line<'static>> {
+pub fn render_plugin_list(plugins: &[Plugin], selected: usize, filter: &str) -> Vec<Line<'static>> {
     let mut lines = Vec::new();
 
     lines.push(Line::from(Span::styled(
@@ -130,7 +126,11 @@ pub fn render_plugin_list(
 
     let installed_count = plugins.iter().filter(|p| p.installed).count();
     lines.push(Line::from(Span::styled(
-        format!("  {} installed, {} available", installed_count, plugins.len()),
+        format!(
+            "  {} installed, {} available",
+            installed_count,
+            plugins.len()
+        ),
         Style::default().fg(dim_color()),
     )));
     lines.push(Line::from(""));
@@ -143,7 +143,9 @@ pub fn render_plugin_list(
                 return true;
             }
             p.name.to_lowercase().contains(&filter.to_lowercase())
-                || p.description.to_lowercase().contains(&filter.to_lowercase())
+                || p.description
+                    .to_lowercase()
+                    .contains(&filter.to_lowercase())
         })
         .collect();
 
@@ -161,17 +163,22 @@ pub fn render_plugin_list(
         lines.push(Line::from(vec![
             Span::styled(
                 if is_selected { "▸ " } else { "  " },
-                Style::default().fg(if is_selected { neon_green() } else { dim_color() }),
+                Style::default().fg(if is_selected {
+                    neon_green()
+                } else {
+                    dim_color()
+                }),
             ),
-            Span::styled(
-                format!("{} ", plugin.category.icon()),
-                Style::default(),
-            ),
+            Span::styled(format!("{} ", plugin.category.icon()), Style::default()),
             Span::styled(
                 plugin.name.clone(),
                 Style::default()
                     .fg(neon_cyan())
-                    .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                    .add_modifier(if is_selected {
+                        Modifier::BOLD
+                    } else {
+                        Modifier::empty()
+                    }),
             ),
             Span::styled(
                 format!(" v{}", plugin.version),
@@ -190,10 +197,7 @@ pub fn render_plugin_list(
             ]));
             lines.push(Line::from(vec![
                 Span::styled("    Author: ", Style::default().fg(dim_color())),
-                Span::styled(
-                    plugin.author.clone(),
-                    Style::default().fg(neon_magenta()),
-                ),
+                Span::styled(plugin.author.clone(), Style::default().fg(neon_magenta())),
             ]));
         }
     }

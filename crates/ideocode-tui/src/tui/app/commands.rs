@@ -745,7 +745,8 @@ fn handle_subagent_model_command(app: &mut App, trimmed: &str) -> bool {
 
     if app.is_remote {
         app.push_display_message(DisplayMessage::error(
-            "/subagent-model requires a live IDEOCODE server connection in remote mode.".to_string(),
+            "/subagent-model requires a live IDEOCODE server connection in remote mode."
+                .to_string(),
         ));
         return true;
     }
@@ -1645,15 +1646,17 @@ fn handle_export_command(app: &mut App, trimmed: &str) {
             app.set_status_notice("Export picker");
         }
         Some(other) => {
-            app.push_display_message(DisplayMessage::error(
-                format!("Unknown export format: '{}'. Use /export help to see options.", other),
-            ));
+            app.push_display_message(DisplayMessage::error(format!(
+                "Unknown export format: '{}'. Use /export help to see options.",
+                other
+            )));
         }
     }
 }
 
 fn do_export(app: &mut App, format: &crate::tui::ui_export::ExportFormat) {
-    let messages: Vec<(String, String)> = app.display_messages()
+    let messages: Vec<(String, String)> = app
+        .display_messages()
         .iter()
         .map(|m| (m.role.clone(), m.content.clone()))
         .collect();
@@ -1661,20 +1664,20 @@ fn do_export(app: &mut App, format: &crate::tui::ui_export::ExportFormat) {
     match crate::tui::ui_export::export_session(format, &filename, &messages) {
         Ok(path) => {
             app.push_display_message(DisplayMessage::system(format!(
-                "Exported session to {}", path
+                "Exported session to {}",
+                path
             )));
             app.set_status_notice(format!("Exported ({})", format.label()));
         }
         Err(error) => {
-            app.push_display_message(DisplayMessage::error(format!(
-                "Export failed: {}", error
-            )));
+            app.push_display_message(DisplayMessage::error(format!("Export failed: {}", error)));
         }
     }
 }
 
 fn export_to_clipboard(app: &mut App) {
-    let messages: Vec<(String, String)> = app.display_messages()
+    let messages: Vec<(String, String)> = app
+        .display_messages()
         .iter()
         .map(|m| (m.role.clone(), m.content.clone()))
         .collect();
@@ -1697,9 +1700,7 @@ fn export_to_clipboard(app: &mut App) {
             }
         }
         Err(error) => {
-            app.push_display_message(DisplayMessage::error(format!(
-                "Export failed: {}", error
-            )));
+            app.push_display_message(DisplayMessage::error(format!("Export failed: {}", error)));
         }
     }
 }
@@ -3097,16 +3098,17 @@ pub(super) fn handle_swarm_prompt_command(app: &mut App, trimmed: &str) -> bool 
             return true;
         }
     };
-    let path = match ensure_swarm_prompt_edit_path(app.session.working_dir.as_deref(), &ideocode_dir) {
-        Ok(path) => path,
-        Err(error) => {
-            app.push_display_message(DisplayMessage::error(format!(
-                "Failed to prepare the swarm prompt file: {}",
-                error
-            )));
-            return true;
-        }
-    };
+    let path =
+        match ensure_swarm_prompt_edit_path(app.session.working_dir.as_deref(), &ideocode_dir) {
+            Ok(path) => path,
+            Err(error) => {
+                app.push_display_message(DisplayMessage::error(format!(
+                    "Failed to prepare the swarm prompt file: {}",
+                    error
+                )));
+                return true;
+            }
+        };
 
     let editor = std::env::var("VISUAL")
         .or_else(|_| std::env::var("EDITOR"))
@@ -3579,7 +3581,7 @@ pub(super) fn handle_provider_command(app: &mut App, trimmed: &str) -> bool {
              type = \"openai-compatible\"\n\
              base_url = \"https://api.example.com/v1\"\n\
              api_key_env = \"MY_API_KEY\"\n\
-             default_model = \"my-model\""
+             default_model = \"my-model\"",
         ));
         app.set_status_notice("Add custom provider".to_string());
         return true;
@@ -3600,13 +3602,16 @@ pub(super) fn handle_provider_command(app: &mut App, trimmed: &str) -> bool {
              Perplexity, Replicate, Zhipu, Cerebras, NVIDIA, xAI, MiniMax, Hugging Face,\n\
              Moonshot, Nebius, Scaleway, Qwen, LM Studio, Ollama\n\n\
              Custom providers:\n\
-             Add [providers.<name>] blocks to ~/.ideocode/config.toml"
+             Add [providers.<name>] blocks to ~/.ideocode/config.toml",
         ));
         return true;
     }
 
     // /provider <name> - try to switch to the named provider
-    if let Some(name) = rest.strip_prefix("switch ").or_else(|| rest.strip_prefix("use ")) {
+    if let Some(name) = rest
+        .strip_prefix("switch ")
+        .or_else(|| rest.strip_prefix("use "))
+    {
         let name = name.trim().to_lowercase();
         // Map common provider names to their default models
         let model = match name.as_str() {
@@ -3624,15 +3629,17 @@ pub(super) fn handle_provider_command(app: &mut App, trimmed: &str) -> bool {
             match app.provider.set_model(model_name) {
                 Ok(()) => {
                     let active_model = app.finalize_model_switch(model_name);
-                    app.push_display_message(DisplayMessage::system(
-                        format!("✓ Switched to provider '{}' (model: {})", name, active_model),
-                    ));
+                    app.push_display_message(DisplayMessage::system(format!(
+                        "✓ Switched to provider '{}' (model: {})",
+                        name, active_model
+                    )));
                     app.set_status_notice(format!("Provider → {} ({})", name, model_name));
                 }
                 Err(e) => {
-                    app.push_display_message(DisplayMessage::error(
-                        format!("Failed to switch to '{}': {}", name, e),
-                    ));
+                    app.push_display_message(DisplayMessage::error(format!(
+                        "Failed to switch to '{}': {}",
+                        name, e
+                    )));
                     app.set_status_notice("Provider switch failed");
                 }
             }
@@ -3641,9 +3648,10 @@ pub(super) fn handle_provider_command(app: &mut App, trimmed: &str) -> bool {
             match app.provider.set_model(&name) {
                 Ok(()) => {
                     let active_model = app.finalize_model_switch(&name);
-                    app.push_display_message(DisplayMessage::system(
-                        format!("✓ Switched to model: {}", active_model),
-                    ));
+                    app.push_display_message(DisplayMessage::system(format!(
+                        "✓ Switched to model: {}",
+                        active_model
+                    )));
                     app.set_status_notice(format!("Model → {}", name));
                 }
                 Err(e) => {
@@ -3676,20 +3684,19 @@ pub(super) fn handle_attach_command(app: &mut App, trimmed: &str) -> bool {
              Examples:\n\
                /attach screenshot.png\n\
                /attach ./diagram.jpg\n\
-               /attach /tmp/flow.pdf"
+               /attach /tmp/flow.pdf",
         ));
         return true;
     }
 
     let file_path = std::path::Path::new(rest);
     if !file_path.exists() {
-        app.push_display_message(DisplayMessage::error(
-            format!("File not found: {}", rest)
-        ));
+        app.push_display_message(DisplayMessage::error(format!("File not found: {}", rest)));
         return true;
     }
 
-    let ext = file_path.extension()
+    let ext = file_path
+        .extension()
         .and_then(|e| e.to_str())
         .unwrap_or("")
         .to_ascii_lowercase();
@@ -3703,9 +3710,10 @@ pub(super) fn handle_attach_command(app: &mut App, trimmed: &str) -> bool {
         "bmp" => ("image/bmp", true),
         "svg" => ("image/svg+xml", false),
         _ => {
-            app.push_display_message(DisplayMessage::error(
-                format!("Unsupported file type: .{}\nSupported: png, jpg, jpeg, gif, webp, pdf, bmp, svg", ext)
-            ));
+            app.push_display_message(DisplayMessage::error(format!(
+                "Unsupported file type: .{}\nSupported: png, jpg, jpeg, gif, webp, pdf, bmp, svg",
+                ext
+            )));
             return true;
         }
     };
@@ -3716,7 +3724,7 @@ pub(super) fn handle_attach_command(app: &mut App, trimmed: &str) -> bool {
             Ok(data) => {
                 if data.len() > 20 * 1024 * 1024 {
                     app.push_display_message(DisplayMessage::error(
-                        "File too large (max 20MB for multimodal content)".to_string()
+                        "File too large (max 20MB for multimodal content)".to_string(),
                     ));
                     return true;
                 }
@@ -3725,19 +3733,23 @@ pub(super) fn handle_attach_command(app: &mut App, trimmed: &str) -> bool {
                 let placeholder = format!("[image {}]", app.pending_images.len());
                 app.input.push_str(&placeholder);
                 app.cursor_pos = app.input.len();
-                let display_name = file_path.file_name()
+                let display_name = file_path
+                    .file_name()
                     .and_then(|n| n.to_str())
                     .unwrap_or(rest);
-                app.push_display_message(DisplayMessage::system(
-                    format!("Attached: {} ({}, {} KB)\nSend with Enter or add more text first.",
-                        display_name, media_type, data.len() / 1024)
-                ));
+                app.push_display_message(DisplayMessage::system(format!(
+                    "Attached: {} ({}, {} KB)\nSend with Enter or add more text first.",
+                    display_name,
+                    media_type,
+                    data.len() / 1024
+                )));
                 app.set_status_notice(format!("📎 Attached: {}", display_name));
             }
             Err(e) => {
-                app.push_display_message(DisplayMessage::error(
-                    format!("Failed to read file: {}", e)
-                ));
+                app.push_display_message(DisplayMessage::error(format!(
+                    "Failed to read file: {}",
+                    e
+                )));
             }
         }
     } else {
@@ -3745,14 +3757,17 @@ pub(super) fn handle_attach_command(app: &mut App, trimmed: &str) -> bool {
             Ok(content) => {
                 app.input.push_str(&content);
                 app.cursor_pos = app.input.len();
-                app.push_display_message(DisplayMessage::system(
-                    format!("Loaded {} ({} chars) into input.", rest, content.len())
-                ));
+                app.push_display_message(DisplayMessage::system(format!(
+                    "Loaded {} ({} chars) into input.",
+                    rest,
+                    content.len()
+                )));
             }
             Err(e) => {
-                app.push_display_message(DisplayMessage::error(
-                    format!("Failed to read file: {}", e)
-                ));
+                app.push_display_message(DisplayMessage::error(format!(
+                    "Failed to read file: {}",
+                    e
+                )));
             }
         }
     }
@@ -3770,7 +3785,7 @@ pub(super) fn handle_save_image_command(app: &mut App, trimmed: &str) -> bool {
     if app.pending_images.is_empty() {
         app.push_display_message(DisplayMessage::system(
             "No images attached to save.\n\
-             Use /attach <file> to attach an image first."
+             Use /attach <file> to attach an image first.",
         ));
         return true;
     }
@@ -3781,32 +3796,30 @@ pub(super) fn handle_save_image_command(app: &mut App, trimmed: &str) -> bool {
         match rest.parse::<usize>() {
             Ok(n) if n > 0 && n <= app.pending_images.len() => n - 1,
             _ => {
-                app.push_display_message(DisplayMessage::error(
-                    format!("Invalid image number: {}. Use 1-{}.", rest, app.pending_images.len())
-                ));
+                app.push_display_message(DisplayMessage::error(format!(
+                    "Invalid image number: {}. Use 1-{}.",
+                    rest,
+                    app.pending_images.len()
+                )));
                 return true;
             }
         }
     };
 
     let (media_type, data) = &app.pending_images[index];
-    let preview = crate::tui::ui_image_preview::ImagePreview::new(
-        media_type.clone(),
-        data.clone(),
-    );
+    let preview = crate::tui::ui_image_preview::ImagePreview::new(media_type.clone(), data.clone());
 
     let filename = format!("ideocode_image_{}", index + 1);
     match crate::tui::ui_image_preview::save_image_to_desktop(&preview, &filename) {
         Ok(path) => {
-            app.push_display_message(DisplayMessage::system(
-                format!("Image saved to: {}", path)
-            ));
+            app.push_display_message(DisplayMessage::system(format!("Image saved to: {}", path)));
             app.set_status_notice(format!("Image saved → {}", path));
         }
         Err(e) => {
-            app.push_display_message(DisplayMessage::error(
-                format!("Failed to save image: {}", e)
-            ));
+            app.push_display_message(DisplayMessage::error(format!(
+                "Failed to save image: {}",
+                e
+            )));
         }
     }
 

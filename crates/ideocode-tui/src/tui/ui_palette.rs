@@ -190,7 +190,9 @@ pub fn all_commands() -> Vec<PaletteCommand> {
             description: "AI explanations".to_string(),
             category: CommandCategory::Settings,
             shortcut: Some("Alt+5".to_string()),
-            preview: Some("Toggle mentor mode: cycles Beginner → Intermediate → Advanced".to_string()),
+            preview: Some(
+                "Toggle mentor mode: cycles Beginner → Intermediate → Advanced".to_string(),
+            ),
         },
     ]
 }
@@ -240,7 +242,11 @@ pub fn render_command_palette(
                     format!("{} ", cat.label()),
                     Style::default()
                         .fg(if is_active { neon_cyan() } else { dim_color() })
-                        .add_modifier(if is_active { Modifier::BOLD } else { Modifier::empty() }),
+                        .add_modifier(if is_active {
+                            Modifier::BOLD
+                        } else {
+                            Modifier::empty()
+                        }),
                 ),
             ]
         })
@@ -254,13 +260,25 @@ pub fn render_command_palette(
         lines.push(Line::from(vec![
             Span::styled(
                 if is_selected { "▸ " } else { "  " },
-                Style::default().fg(if is_selected { neon_green() } else { dim_color() }),
+                Style::default().fg(if is_selected {
+                    neon_green()
+                } else {
+                    dim_color()
+                }),
             ),
             Span::styled(
                 cmd.name.clone(),
                 Style::default()
-                    .fg(if is_selected { neon_cyan() } else { dim_color() })
-                    .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                    .fg(if is_selected {
+                        neon_cyan()
+                    } else {
+                        dim_color()
+                    })
+                    .add_modifier(if is_selected {
+                        Modifier::BOLD
+                    } else {
+                        Modifier::empty()
+                    }),
             ),
             Span::styled(
                 format!("  {}", cmd.description),
@@ -278,17 +296,18 @@ pub fn render_command_palette(
 
     // Preview
     if let Some(cmd) = commands.get(selected)
-        && let Some(preview) = &cmd.preview {
-            lines.push(Line::from(""));
-            lines.push(Line::from(Span::styled(
-                "─".repeat(40),
-                Style::default().fg(glass_border_color()),
-            )));
-            lines.push(Line::from(Span::styled(
-                preview.clone(),
-                Style::default().fg(neon_green()),
-            )));
-        }
+        && let Some(preview) = &cmd.preview
+    {
+        lines.push(Line::from(""));
+        lines.push(Line::from(Span::styled(
+            "─".repeat(40),
+            Style::default().fg(glass_border_color()),
+        )));
+        lines.push(Line::from(Span::styled(
+            preview.clone(),
+            Style::default().fg(neon_green()),
+        )));
+    }
 
     lines
 }

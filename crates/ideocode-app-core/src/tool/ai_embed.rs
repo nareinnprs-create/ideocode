@@ -23,7 +23,9 @@ struct EmbedInput {
 
 #[async_trait]
 impl Tool for EmbedTool {
-    fn name(&self) -> &str { "embed" }
+    fn name(&self) -> &str {
+        "embed"
+    }
 
     fn description(&self) -> &str {
         "Generate text embeddings using the local embedding model."
@@ -45,7 +47,11 @@ impl Tool for EmbedTool {
         let embedding = crate::embedding::embed(&input.text)?;
         let dims = embedding.len();
         let preview: Vec<f32> = embedding.iter().take(5).copied().collect();
-        let preview_str = preview.iter().map(|v| format!("{:.6}", v)).collect::<Vec<_>>().join(", ");
+        let preview_str = preview
+            .iter()
+            .map(|v| format!("{:.6}", v))
+            .collect::<Vec<_>>()
+            .join(", ");
 
         Ok(ToolOutput::new(format!(
             "Generated {} dimensional embedding for '{}':\n[{}, ...]",
@@ -57,5 +63,9 @@ impl Tool for EmbedTool {
 }
 
 fn truncate(s: &str, max: usize) -> String {
-    if s.len() <= max { s.to_string() } else { format!("{}...", &s[..max]) }
+    if s.len() <= max {
+        s.to_string()
+    } else {
+        format!("{}...", &s[..max])
+    }
 }

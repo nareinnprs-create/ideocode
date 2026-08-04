@@ -40,7 +40,9 @@ fn macros_dir() -> Option<std::path::PathBuf> {
     let home = std::env::var("HOME")
         .or_else(|_| std::env::var("USERPROFILE"))
         .ok()?;
-    let dir = std::path::PathBuf::from(home).join(".ideocode").join("macros");
+    let dir = std::path::PathBuf::from(home)
+        .join(".ideocode")
+        .join("macros");
     std::fs::create_dir_all(&dir).ok()?;
     Some(dir)
 }
@@ -56,16 +58,19 @@ pub fn save_macromac(m: &Macro) -> Result<(), String> {
 
 /// Load all macros from disk.
 pub fn load_macros() -> Vec<Macro> {
-    let Some(dir) = macros_dir() else { return Vec::new() };
+    let Some(dir) = macros_dir() else {
+        return Vec::new();
+    };
     let mut macros = Vec::new();
     if let Ok(entries) = std::fs::read_dir(&dir) {
         for entry in entries.flatten() {
             let path = entry.path();
             if path.extension().and_then(|e| e.to_str()) == Some("json")
                 && let Ok(content) = std::fs::read_to_string(&path)
-                    && let Ok(m) = serde_json::from_str::<Macro>(&content) {
-                        macros.push(m);
-                    }
+                && let Ok(m) = serde_json::from_str::<Macro>(&content)
+            {
+                macros.push(m);
+            }
         }
     }
     macros.sort_by(|a, b| a.name.cmp(&b.name));
@@ -89,9 +94,17 @@ pub fn render_macro_recorder(
     let mut lines = Vec::new();
 
     lines.push(Line::from(Span::styled(
-        if recording { "🔴 Recording" } else { "⏺️ Macro Recorder" },
+        if recording {
+            "🔴 Recording"
+        } else {
+            "⏺️ Macro Recorder"
+        },
         Style::default()
-            .fg(if recording { rgb(255, 80, 80) } else { dim_color() })
+            .fg(if recording {
+                rgb(255, 80, 80)
+            } else {
+                dim_color()
+            })
             .add_modifier(Modifier::BOLD),
     )));
 
@@ -145,13 +158,25 @@ pub fn render_macro_list(macros: &[Macro], selected: usize) -> Vec<Line<'static>
             lines.push(Line::from(vec![
                 Span::styled(
                     if is_selected { "▸ " } else { "  " },
-                    Style::default().fg(if is_selected { neon_green() } else { dim_color() }),
+                    Style::default().fg(if is_selected {
+                        neon_green()
+                    } else {
+                        dim_color()
+                    }),
                 ),
                 Span::styled(
                     mac.name.clone(),
                     Style::default()
-                        .fg(if is_selected { neon_cyan() } else { dim_color() })
-                        .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                        .fg(if is_selected {
+                            neon_cyan()
+                        } else {
+                            dim_color()
+                        })
+                        .add_modifier(if is_selected {
+                            Modifier::BOLD
+                        } else {
+                            Modifier::empty()
+                        }),
                 ),
                 Span::styled(
                     format!(" ({} actions)", mac.actions.len()),
@@ -188,10 +213,7 @@ pub fn render_macro_playback(
                 .fg(neon_green())
                 .add_modifier(Modifier::BOLD),
         )),
-        Line::from(Span::styled(
-            bar,
-            Style::default().fg(neon_cyan()),
-        )),
+        Line::from(Span::styled(bar, Style::default().fg(neon_cyan()))),
         Line::from(Span::styled(
             format!("Action {}/{}", current_action + 1, total_actions),
             Style::default().fg(dim_color()),

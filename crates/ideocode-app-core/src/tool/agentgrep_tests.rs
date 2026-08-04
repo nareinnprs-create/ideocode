@@ -636,10 +636,21 @@ async fn execute_runs_linked_grep() {
         )
         .await
         .expect("tool output");
-    assert!(output.output.contains("query: auth_status"), "{}", output.output);
-    let expected_hit = Path::new("src").join("app.rs").to_string_lossy().into_owned();
+    assert!(
+        output.output.contains("query: auth_status"),
+        "{}",
+        output.output
+    );
+    let expected_hit = Path::new("src")
+        .join("app.rs")
+        .to_string_lossy()
+        .into_owned();
     assert!(output.output.contains(&expected_hit), "{}", output.output);
-    assert!(output.output.contains("@ 1 pub fn auth_status() {}"), "{}", output.output);
+    assert!(
+        output.output.contains("@ 1 pub fn auth_status() {}"),
+        "{}",
+        output.output
+    );
 }
 
 #[tokio::test]

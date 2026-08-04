@@ -27,7 +27,9 @@ struct RefactorInput {
 
 #[async_trait]
 impl Tool for RefactorTool {
-    fn name(&self) -> &str { "refactor" }
+    fn name(&self) -> &str {
+        "refactor"
+    }
 
     fn description(&self) -> &str {
         "Refactor code to improve structure, readability, or performance."
@@ -47,10 +49,18 @@ impl Tool for RefactorTool {
 
     async fn execute(&self, input: Value, _ctx: ToolContext) -> Result<ToolOutput> {
         let input: RefactorInput = serde_json::from_value(input)?;
-        let provider = self.registry.provider.as_ref().ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
+        let provider = self
+            .registry
+            .provider
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
 
         let goal = input.goal.unwrap_or_default();
-        let goal_text = if goal.is_empty() { "improve overall code quality and readability".to_string() } else { goal };
+        let goal_text = if goal.is_empty() {
+            "improve overall code quality and readability".to_string()
+        } else {
+            goal
+        };
 
         let system = format!(
             "You are an expert software architect. Refactor the given code to {}. Show the refactored code and explain each change you made.",
@@ -58,7 +68,10 @@ impl Tool for RefactorTool {
         );
 
         let lang = input.language.as_deref().unwrap_or("");
-        let user_prompt = format!("Refactor this code:\n\n```{lang}\n{}```\nGoal: {}\nProvide the complete refactored version with explanations.", input.code, goal_text);
+        let user_prompt = format!(
+            "Refactor this code:\n\n```{lang}\n{}```\nGoal: {}\nProvide the complete refactored version with explanations.",
+            input.code, goal_text
+        );
 
         let response = provider.complete_simple(&user_prompt, &system).await?;
         Ok(ToolOutput::new(response))

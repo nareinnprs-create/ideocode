@@ -72,7 +72,10 @@ pub fn today_date() -> String {
 /// Generate a sample daily challenge.
 pub fn get_daily_challenge() -> DailyChallenge {
     let date = today_date();
-    let day_seed = date.chars().map(|c| c as u64).fold(0u64, |a, b| a.wrapping_add(b));
+    let day_seed = date
+        .chars()
+        .map(|c| c as u64)
+        .fold(0u64, |a, b| a.wrapping_add(b));
     let challenges = all_challenges();
     let idx = (day_seed as usize) % challenges.len();
     let (title, description, difficulty) = challenges[idx].clone();
@@ -89,26 +92,106 @@ pub fn get_daily_challenge() -> DailyChallenge {
 
 fn all_challenges() -> Vec<(&'static str, &'static str, ChallengeDifficulty)> {
     vec![
-        ("Reverse a String", "Write a function that reverses a string without using built-in reverse methods.", ChallengeDifficulty::Easy),
-        ("FizzBuzz Plus", "FizzBuzz for multiples of 3, 5, and 7. Handle negative numbers too.", ChallengeDifficulty::Easy),
-        ("Palindrome Check", "Check if a string is a palindrome, ignoring spaces and punctuation.", ChallengeDifficulty::Easy),
-        ("Find the Duplicates", "Given a sorted array, find all duplicates in O(n) time.", ChallengeDifficulty::Medium),
-        ("Binary Search", "Implement binary search on a rotated sorted array.", ChallengeDifficulty::Medium),
-        ("Merge Intervals", "Merge all overlapping intervals in a list of [start, end] pairs.", ChallengeDifficulty::Medium),
-        ("LRU Cache", "Design and implement a Least Recently Used (LRU) cache.", ChallengeDifficulty::Hard),
-        ("Tree Traversal", "Implement level-order, in-order, pre-order, and post-order traversal.", ChallengeDifficulty::Hard),
-        ("Rate Limiter", "Design a token bucket rate limiter with burst support.", ChallengeDifficulty::Hard),
-        ("Regex Engine", "Build a simplified regex engine supporting . and * metacharacters.", ChallengeDifficulty::Expert),
-        ("Concurrent MapReduce", "Implement a MapReduce framework in Rust with thread pools.", ChallengeDifficulty::Expert),
-        ("Interpreter", "Write a simple interpreter for a Lisp-like language.", ChallengeDifficulty::Expert),
-        ("Sort Colors", "Sort an array with only 3 distinct values in a single pass.", ChallengeDifficulty::Easy),
-        ("Valid Parentheses", "Check if a string of brackets is valid. Support [], (), {}.", ChallengeDifficulty::Easy),
-        ("Matrix Rotation", "Rotate an NxN matrix 90 degrees in-place.", ChallengeDifficulty::Medium),
-        ("Longest Substring", "Find the longest substring without repeating characters.", ChallengeDifficulty::Medium),
-        ("Word Break", "Determine if a string can be segmented into dictionary words.", ChallengeDifficulty::Hard),
-        ("Trie Implementation", "Implement a Trie with insert, search, and startsWith operations.", ChallengeDifficulty::Hard),
-        ("Stream Dedup", "Remove duplicates from a stream of data with O(1) memory.", ChallengeDifficulty::Expert),
-        ("SQL Parser", "Build a minimal SQL parser that handles SELECT, WHERE, and JOIN.", ChallengeDifficulty::Expert),
+        (
+            "Reverse a String",
+            "Write a function that reverses a string without using built-in reverse methods.",
+            ChallengeDifficulty::Easy,
+        ),
+        (
+            "FizzBuzz Plus",
+            "FizzBuzz for multiples of 3, 5, and 7. Handle negative numbers too.",
+            ChallengeDifficulty::Easy,
+        ),
+        (
+            "Palindrome Check",
+            "Check if a string is a palindrome, ignoring spaces and punctuation.",
+            ChallengeDifficulty::Easy,
+        ),
+        (
+            "Find the Duplicates",
+            "Given a sorted array, find all duplicates in O(n) time.",
+            ChallengeDifficulty::Medium,
+        ),
+        (
+            "Binary Search",
+            "Implement binary search on a rotated sorted array.",
+            ChallengeDifficulty::Medium,
+        ),
+        (
+            "Merge Intervals",
+            "Merge all overlapping intervals in a list of [start, end] pairs.",
+            ChallengeDifficulty::Medium,
+        ),
+        (
+            "LRU Cache",
+            "Design and implement a Least Recently Used (LRU) cache.",
+            ChallengeDifficulty::Hard,
+        ),
+        (
+            "Tree Traversal",
+            "Implement level-order, in-order, pre-order, and post-order traversal.",
+            ChallengeDifficulty::Hard,
+        ),
+        (
+            "Rate Limiter",
+            "Design a token bucket rate limiter with burst support.",
+            ChallengeDifficulty::Hard,
+        ),
+        (
+            "Regex Engine",
+            "Build a simplified regex engine supporting . and * metacharacters.",
+            ChallengeDifficulty::Expert,
+        ),
+        (
+            "Concurrent MapReduce",
+            "Implement a MapReduce framework in Rust with thread pools.",
+            ChallengeDifficulty::Expert,
+        ),
+        (
+            "Interpreter",
+            "Write a simple interpreter for a Lisp-like language.",
+            ChallengeDifficulty::Expert,
+        ),
+        (
+            "Sort Colors",
+            "Sort an array with only 3 distinct values in a single pass.",
+            ChallengeDifficulty::Easy,
+        ),
+        (
+            "Valid Parentheses",
+            "Check if a string of brackets is valid. Support [], (), {}.",
+            ChallengeDifficulty::Easy,
+        ),
+        (
+            "Matrix Rotation",
+            "Rotate an NxN matrix 90 degrees in-place.",
+            ChallengeDifficulty::Medium,
+        ),
+        (
+            "Longest Substring",
+            "Find the longest substring without repeating characters.",
+            ChallengeDifficulty::Medium,
+        ),
+        (
+            "Word Break",
+            "Determine if a string can be segmented into dictionary words.",
+            ChallengeDifficulty::Hard,
+        ),
+        (
+            "Trie Implementation",
+            "Implement a Trie with insert, search, and startsWith operations.",
+            ChallengeDifficulty::Hard,
+        ),
+        (
+            "Stream Dedup",
+            "Remove duplicates from a stream of data with O(1) memory.",
+            ChallengeDifficulty::Expert,
+        ),
+        (
+            "SQL Parser",
+            "Build a minimal SQL parser that handles SELECT, WHERE, and JOIN.",
+            ChallengeDifficulty::Expert,
+        ),
     ]
 }
 
@@ -130,9 +213,7 @@ pub fn render_daily_challenge(challenge: &DailyChallenge) -> Vec<Line<'static>> 
         Line::from(""),
         Line::from(Span::styled(
             format!("   {}", challenge.title),
-            Style::default()
-                .fg(color)
-                .add_modifier(Modifier::BOLD),
+            Style::default().fg(color).add_modifier(Modifier::BOLD),
         )),
         Line::from(Span::styled(
             format!("   {}", challenge.description),
@@ -149,7 +230,11 @@ pub fn render_daily_challenge(challenge: &DailyChallenge) -> Vec<Line<'static>> 
                 Style::default().fg(neon_yellow()),
             ),
             Span::styled(
-                if challenge.solved { " • ✅ Solved" } else { "" },
+                if challenge.solved {
+                    " • ✅ Solved"
+                } else {
+                    ""
+                },
                 Style::default().fg(neon_green()),
             ),
         ]),

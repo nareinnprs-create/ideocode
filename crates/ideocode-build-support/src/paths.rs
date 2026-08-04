@@ -183,7 +183,10 @@ pub fn selfdev_build_command_for_target(
         SelfDevBuildTarget::Tui => vec![("IDEOCODE", "IDEOCODE")],
         SelfDevBuildTarget::Desktop => vec![("IDEOCODE-desktop", "IDEOCODE-desktop")],
         SelfDevBuildTarget::All | SelfDevBuildTarget::Auto => {
-            vec![("IDEOCODE", "IDEOCODE"), ("IDEOCODE-desktop", "IDEOCODE-desktop")]
+            vec![
+                ("IDEOCODE", "IDEOCODE"),
+                ("IDEOCODE-desktop", "IDEOCODE-desktop"),
+            ]
         }
     };
     let wrapper = repo_dir.join("scripts").join("dev_cargo.sh");
@@ -696,7 +699,8 @@ mod tests {
     #[test]
     fn resolve_binary_payload_refuses_ambiguous_payloads() {
         let (temp, wrapper, _payload) = release_install_fixture();
-        std::fs::write(temp.path().join("IDEOCODE-macos-aarch64.bin"), [0u8; 8]).expect("second bin");
+        std::fs::write(temp.path().join("IDEOCODE-macos-aarch64.bin"), [0u8; 8])
+            .expect("second bin");
         assert_eq!(
             resolve_binary_payload(&wrapper),
             std::fs::canonicalize(&wrapper).expect("canonical wrapper")

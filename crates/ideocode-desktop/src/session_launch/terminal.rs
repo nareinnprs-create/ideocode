@@ -310,7 +310,8 @@ mod tests {
 
     #[test]
     fn terminal_env_command_appends_ideocode_invocation_without_shell() -> Result<()> {
-        let command = terminal_env_command("kitty --title 'IDEOCODE Desktop'", &["--resume", "abc"])?;
+        let command =
+            terminal_env_command("kitty --title 'IDEOCODE Desktop'", &["--resume", "abc"])?;
         let args = command
             .get_args()
             .map(|arg| arg.to_string_lossy().into_owned())

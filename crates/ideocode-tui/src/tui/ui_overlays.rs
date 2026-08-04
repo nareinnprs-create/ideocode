@@ -555,7 +555,9 @@ pub(super) fn draw_help_overlay(frame: &mut Frame, area: Rect, scroll: usize, ap
     lines.push(Line::from(""));
     lines.push(Line::from(Span::styled(
         "  IDEOCODE Panels",
-        Style::default().fg(rgb(0, 255, 255)).add_modifier(Modifier::BOLD),
+        Style::default()
+            .fg(rgb(0, 255, 255))
+            .add_modifier(Modifier::BOLD),
     )));
     lines.push(key_entry("Alt+Q", "Gesture pad (quick-access panel grid)"));
     lines.push(key_entry("Alt+E", "File explorer"));

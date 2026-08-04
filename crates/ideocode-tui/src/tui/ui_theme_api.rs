@@ -126,7 +126,11 @@ pub fn render_theme_api_preview(theme: &ThemeAPI) -> Vec<Line<'static>> {
             Span::styled("  Animated: ", Style::default().fg(dim_color())),
             Span::styled(
                 if theme.borders.animated { "Yes" } else { "No" },
-                Style::default().fg(if theme.borders.animated { neon_green() } else { rgb(255, 80, 80) }),
+                Style::default().fg(if theme.borders.animated {
+                    neon_green()
+                } else {
+                    rgb(255, 80, 80)
+                }),
             ),
         ]),
         Line::from(""),

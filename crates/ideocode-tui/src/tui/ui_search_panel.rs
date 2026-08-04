@@ -59,7 +59,9 @@ impl SearchPanelState {
         self.selected = 0;
         self.scroll = 0;
 
-        if query.is_empty() { return; }
+        if query.is_empty() {
+            return;
+        }
 
         let pattern = if self.is_regex {
             query.to_string()
@@ -95,7 +97,9 @@ impl SearchPanelState {
                 let line_num = parts[1].parse::<usize>().unwrap_or(0);
                 let text = parts[2..].join(":");
                 self.results.push(SearchHit {
-                    file, line: line_num, text,
+                    file,
+                    line: line_num,
+                    text,
                     context_before: Vec::new(),
                     context_after: Vec::new(),
                 });
@@ -122,13 +126,17 @@ impl SearchPanelState {
     }
 
     pub fn get_selected_file(&self) -> Option<(&str, usize)> {
-        self.results.get(self.selected).map(|r| (r.file.as_str(), r.line))
+        self.results
+            .get(self.selected)
+            .map(|r| (r.file.as_str(), r.line))
     }
 }
 
 /// Render the search panel.
 pub fn render_search_panel(frame: &mut Frame, area: Rect, state: &SearchPanelState) {
-    if !state.visible { return; }
+    if !state.visible {
+        return;
+    }
 
     let panel_height = (area.height / 2).max(6);
     let panel_area = Rect {
@@ -142,7 +150,12 @@ pub fn render_search_panel(frame: &mut Frame, area: Rect, state: &SearchPanelSta
 
     // Header
     lines.push(Line::from(vec![
-        Span::styled("🔍 Search ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            "🔍 Search ",
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
+        ),
         Span::styled(
             format!("[{}]", state.query),
             Style::default().fg(neon_green()),
@@ -166,22 +179,30 @@ pub fn render_search_panel(frame: &mut Frame, area: Rect, state: &SearchPanelSta
     }
 
     let max_visible = panel_height as usize - 3;
-    for (i, hit) in state.results.iter().skip(state.scroll).take(max_visible).enumerate() {
+    for (i, hit) in state
+        .results
+        .iter()
+        .skip(state.scroll)
+        .take(max_visible)
+        .enumerate()
+    {
         let is_selected = i + state.scroll == state.selected;
         lines.push(Line::from(vec![
-            Span::styled(
-                format!("  {}:", hit.file),
-                Style::default().fg(neon_blue()),
-            ),
-            Span::styled(
-                format!("{}:", hit.line),
-                Style::default().fg(neon_yellow()),
-            ),
+            Span::styled(format!("  {}:", hit.file), Style::default().fg(neon_blue())),
+            Span::styled(format!("{}:", hit.line), Style::default().fg(neon_yellow())),
             Span::styled(
                 hit.text.chars().take(80).collect::<String>(),
                 Style::default()
-                    .fg(if is_selected { neon_cyan() } else { dim_color() })
-                    .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                    .fg(if is_selected {
+                        neon_cyan()
+                    } else {
+                        dim_color()
+                    })
+                    .add_modifier(if is_selected {
+                        Modifier::BOLD
+                    } else {
+                        Modifier::empty()
+                    }),
             ),
         ]));
     }
@@ -200,6 +221,11 @@ fn run_command(program: &str, args: &[&str]) -> Vec<String> {
     std::process::Command::new(program)
         .args(args)
         .output()
-        .map(|o| String::from_utf8_lossy(&o.stdout).lines().map(String::from).collect())
+        .map(|o| {
+            String::from_utf8_lossy(&o.stdout)
+                .lines()
+                .map(String::from)
+                .collect()
+        })
         .unwrap_or_default()
 }

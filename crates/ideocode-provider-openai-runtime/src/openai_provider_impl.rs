@@ -24,7 +24,10 @@ impl Provider for OpenAIProvider {
         self.credential_mode_snapshot()
     }
 
-    fn set_credential_mode(&self, mode: ideocode_provider_core::CredentialMode) -> anyhow::Result<()> {
+    fn set_credential_mode(
+        &self,
+        mode: ideocode_provider_core::CredentialMode,
+    ) -> anyhow::Result<()> {
         OpenAIProvider::set_credential_mode(self, mode)
     }
 
@@ -766,8 +769,8 @@ impl Provider for OpenAIProvider {
         if self.is_browser_only() {
             return vec![CHATGPT_WEB_MODEL.to_string()];
         }
-        let mut models =
-            ideocode_base::provider::cached_openai_model_ids().unwrap_or_else(|| vec![self.model()]);
+        let mut models = ideocode_base::provider::cached_openai_model_ids()
+            .unwrap_or_else(|| vec![self.model()]);
         if !models.iter().any(|model| model == CHATGPT_WEB_MODEL) {
             models.insert(0, CHATGPT_WEB_MODEL.to_string());
         }

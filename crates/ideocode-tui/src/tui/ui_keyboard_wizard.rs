@@ -153,9 +153,7 @@ impl KeyboardWizard {
             ),
             Span::styled(
                 "Did you know? ",
-                Style::default()
-                    .fg(cyan)
-                    .add_modifier(Modifier::BOLD),
+                Style::default().fg(cyan).add_modifier(Modifier::BOLD),
             ),
             Span::styled(tip_owned, Style::default().fg(dim)),
         ])

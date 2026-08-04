@@ -350,8 +350,10 @@ impl GeminiProvider {
     where
         F: Fn(reqwest::Client) -> reqwest::RequestBuilder,
     {
-        use ideocode_provider_core::retry_after::{retry_after, retry_after_from_error, error_with_retry_after};
         use ideocode_provider_core::attempt_tracker::retry_backoff_delay;
+        use ideocode_provider_core::retry_after::{
+            error_with_retry_after, retry_after, retry_after_from_error,
+        };
 
         let mut last_error: Option<anyhow::Error> = None;
         for attempt in 0..MAX_RETRIES {
@@ -362,7 +364,8 @@ impl GeminiProvider {
             };
 
             if attempt > 0 {
-                let delay = last_error.as_ref()
+                let delay = last_error
+                    .as_ref()
                     .and_then(retry_after_from_error)
                     .unwrap_or_else(|| retry_backoff_delay(attempt, RETRY_BASE_DELAY_MS));
                 tokio::time::sleep(delay).await;
@@ -379,17 +382,29 @@ impl GeminiProvider {
                     let body = ideocode_base::util::http_error_body(response, "HTTP error").await;
 
                     if status.as_u16() == 429 || status.as_u16() >= 500 {
-                        let err_msg = format!("Gemini request to {} failed (HTTP {}): {}", url, status, body.trim());
+                        let err_msg = format!(
+                            "Gemini request to {} failed (HTTP {}): {}",
+                            url,
+                            status,
+                            body.trim()
+                        );
                         last_error = Some(error_with_retry_after(err_msg, retry_hint));
                         // Continue to retry
                     } else {
                         return Err(error_with_retry_after(
-                            format!("Gemini request to {} failed (HTTP {}): {}", url, status, body.trim()),
+                            format!(
+                                "Gemini request to {} failed (HTTP {}): {}",
+                                url,
+                                status,
+                                body.trim()
+                            ),
                             retry_hint,
                         ));
                     }
                 }
-                Err(err) if attempt + 1 < MAX_RETRIES && is_transient_gemini_transport_error(&err) => {
+                Err(err)
+                    if attempt + 1 < MAX_RETRIES && is_transient_gemini_transport_error(&err) =>
+                {
                     last_error = Some(err.into());
                     // Continue to retry with backoff
                 }
@@ -398,7 +413,9 @@ impl GeminiProvider {
                 }
             }
         }
-        let err = last_error.unwrap_or_else(|| anyhow::anyhow!("Gemini request failed after {} attempts", MAX_RETRIES));
+        let err = last_error.unwrap_or_else(|| {
+            anyhow::anyhow!("Gemini request failed after {} attempts", MAX_RETRIES)
+        });
         Err(err).with_context(|| format!("Gemini request to {} failed", url))
     }
 

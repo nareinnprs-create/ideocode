@@ -438,7 +438,8 @@ async fn handle_background_output_line(
         }
         Ok(None) => {}
         Err(err) => {
-            let warning = format!("[IDEOCODE warning] failed to parse background progress: {err}\n");
+            let warning =
+                format!("[IDEOCODE warning] failed to parse background progress: {err}\n");
             file.write_all(warning.as_bytes()).await.ok();
             file.flush().await.ok();
         }
@@ -580,10 +581,11 @@ mod utf8_truncation_tests {
     #[tokio::test]
     async fn build_shell_command_uses_disk_backed_scratch_directory() {
         let expected = super::tool_scratch_dir().expect("IDEOCODE scratch directory");
-        let output = build_shell_command("printf '%s\\n%s\\n' \"$TMPDIR\" \"$IDEOCODE_SCRATCH_DIR\"")
-            .output()
-            .await
-            .expect("run bash command");
+        let output =
+            build_shell_command("printf '%s\\n%s\\n' \"$TMPDIR\" \"$IDEOCODE_SCRATCH_DIR\"")
+                .output()
+                .await
+                .expect("run bash command");
         assert!(output.status.success(), "bash command should succeed");
         let stdout = String::from_utf8(output.stdout).expect("utf-8 scratch paths");
         let paths = stdout.lines().collect::<Vec<_>>();

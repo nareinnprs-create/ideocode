@@ -608,7 +608,9 @@ pub fn imported_session_id_for_target(
     target: &ideocode_session_types::ResumeTarget,
 ) -> Option<String> {
     match target {
-        ideocode_session_types::ResumeTarget::IDEOCODESession { session_id } => Some(session_id.clone()),
+        ideocode_session_types::ResumeTarget::IDEOCODESession { session_id } => {
+            Some(session_id.clone())
+        }
         ideocode_session_types::ResumeTarget::ClaudeCodeSession { session_id, .. } => {
             Some(imported_claude_code_session_id(session_id))
         }

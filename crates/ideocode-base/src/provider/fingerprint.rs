@@ -2,4 +2,3 @@
 // R&D by Opraiz Cognitive
 // Developer: Narein Rao
 // SPDX-License-Identifier: MIT
-

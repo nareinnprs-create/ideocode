@@ -145,7 +145,10 @@ fn test_pair_rate_limiter_throttles_after_budget() {
     let ip: IpAddr = "192.168.1.50".parse().unwrap();
 
     for _ in 0..super::PAIR_MAX_ATTEMPTS {
-        assert!(limiter.attempt(ip), "attempts within budget must be allowed");
+        assert!(
+            limiter.attempt(ip),
+            "attempts within budget must be allowed"
+        );
     }
     assert!(
         !limiter.attempt(ip),

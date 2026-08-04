@@ -31,8 +31,8 @@ fn test_provider_choice_aliases_parse() {
     let args = Args::try_parse_from(["IDEOCODE", "--provider", "z.ai", "run", "smoke"]).unwrap();
     assert_eq!(args.provider, ProviderChoice::Zai);
 
-    let args =
-        Args::try_parse_from(["IDEOCODE", "--provider", "kimi-for-coding", "run", "smoke"]).unwrap();
+    let args = Args::try_parse_from(["IDEOCODE", "--provider", "kimi-for-coding", "run", "smoke"])
+        .unwrap();
     assert_eq!(args.provider, ProviderChoice::Kimi);
 
     let args =
@@ -45,7 +45,8 @@ fn test_provider_choice_aliases_parse() {
     let args = Args::try_parse_from(["IDEOCODE", "--provider", "bailian", "run", "smoke"]).unwrap();
     assert_eq!(args.provider, ProviderChoice::AlibabaCodingPlan);
 
-    let args = Args::try_parse_from(["IDEOCODE", "--provider", "together", "run", "smoke"]).unwrap();
+    let args =
+        Args::try_parse_from(["IDEOCODE", "--provider", "together", "run", "smoke"]).unwrap();
     assert_eq!(args.provider, ProviderChoice::TogetherAi);
 
     let args = Args::try_parse_from(["IDEOCODE", "--provider", "grok", "run", "smoke"]).unwrap();
@@ -54,11 +55,18 @@ fn test_provider_choice_aliases_parse() {
     let args = Args::try_parse_from(["IDEOCODE", "--provider", "cgc", "run", "smoke"]).unwrap();
     assert_eq!(args.provider, ProviderChoice::Comtegra);
 
-    let args = Args::try_parse_from(["IDEOCODE", "--provider", "omniroute", "run", "smoke"]).unwrap();
+    let args =
+        Args::try_parse_from(["IDEOCODE", "--provider", "omniroute", "run", "smoke"]).unwrap();
     assert_eq!(args.provider, ProviderChoice::OmniRoute);
 
-    let args =
-        Args::try_parse_from(["IDEOCODE", "--provider", "omniroute-gateway", "run", "smoke"]).unwrap();
+    let args = Args::try_parse_from([
+        "IDEOCODE",
+        "--provider",
+        "omniroute-gateway",
+        "run",
+        "smoke",
+    ])
+    .unwrap();
     assert_eq!(args.provider, ProviderChoice::OmniRoute);
 
     let args = Args::try_parse_from(["IDEOCODE", "--provider", "omni", "run", "smoke"]).unwrap();
@@ -522,8 +530,8 @@ fn login_scriptable_flags_parse() {
 
 #[test]
 fn account_subcommands_parse() {
-    let login =
-        Args::try_parse_from(["IDEOCODE", "account", "login", "--no-browser"]).expect("account login");
+    let login = Args::try_parse_from(["IDEOCODE", "account", "login", "--no-browser"])
+        .expect("account login");
     assert!(matches!(
         login.command,
         Some(Command::Account {
@@ -635,8 +643,15 @@ fn auth_status_subcommand_parses() {
 
 #[test]
 fn auth_doctor_subcommand_parses() {
-    let args = Args::try_parse_from(["IDEOCODE", "auth", "doctor", "openai", "--validate", "--json"])
-        .unwrap();
+    let args = Args::try_parse_from([
+        "IDEOCODE",
+        "auth",
+        "doctor",
+        "openai",
+        "--validate",
+        "--json",
+    ])
+    .unwrap();
     match args.command {
         Some(Command::Auth(AuthCommand::Doctor {
             provider,
@@ -756,8 +771,15 @@ fn onboarding_repair_brief_commands_are_valid_cli() {
     // Fix: OAuth and API-key logins.
     Args::try_parse_from(["IDEOCODE", "login", "--provider", "openai"])
         .expect("login --provider must parse");
-    Args::try_parse_from(["IDEOCODE", "login", "--provider", "openai", "--api-key", "k"])
-        .expect("login --provider --api-key must parse");
+    Args::try_parse_from([
+        "IDEOCODE",
+        "login",
+        "--provider",
+        "openai",
+        "--api-key",
+        "k",
+    ])
+    .expect("login --provider --api-key must parse");
 
     // Fix: custom OpenAI-compatible endpoint via provider add + key on stdin.
     Args::try_parse_from([

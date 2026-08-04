@@ -506,7 +506,8 @@ pub fn render_markdown_lazy(
                     match latex_mode {
                         LatexRenderingMode::None => current_cell.push_str(&format!("${math}$")),
                         LatexRenderingMode::Unicode | LatexRenderingMode::Image => {
-                            current_cell.push_str(&ideocode_render_core::render_inline_latex(&math));
+                            current_cell
+                                .push_str(&ideocode_render_core::render_inline_latex(&math));
                         }
                     }
                 } else {
@@ -557,7 +558,8 @@ pub fn render_markdown_lazy(
                     match latex_mode {
                         LatexRenderingMode::None => current_cell.push_str(&format!("$${math}$$")),
                         LatexRenderingMode::Unicode | LatexRenderingMode::Image => {
-                            current_cell.push_str(&ideocode_render_core::render_inline_latex(&math));
+                            current_cell
+                                .push_str(&ideocode_render_core::render_inline_latex(&math));
                         }
                     }
                 } else {

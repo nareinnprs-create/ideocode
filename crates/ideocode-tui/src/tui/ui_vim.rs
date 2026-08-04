@@ -10,14 +10,12 @@
 
 use crossterm::event::{KeyCode, KeyModifiers};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum VimMode {
     #[default]
     Insert,
     Normal,
 }
-
 
 impl VimMode {
     pub fn label(self) -> &'static str {

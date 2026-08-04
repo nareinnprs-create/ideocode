@@ -443,7 +443,11 @@ fn loading_workspace_renders_before_session_cards_arrive() {
 
     assert_eq!(workspace.surfaces.len(), 1);
     assert_eq!(workspace.surfaces[0].kind, SurfaceKind::Loading);
-    assert!(workspace.status_title().contains("loading IDEOCODE sessions"));
+    assert!(
+        workspace
+            .status_title()
+            .contains("loading IDEOCODE sessions")
+    );
 }
 
 #[test]

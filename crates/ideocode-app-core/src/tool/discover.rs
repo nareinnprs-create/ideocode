@@ -1574,7 +1574,9 @@ mod tests {
         let rendered = render_selection("email-messaging", "agentmail", &listing).unwrap();
         assert!(rendered.contains("Selected 'agentmail'"));
         assert!(rendered.contains("\"source\":\"IDEOCODE\""));
-        assert!(rendered.contains("\"referrer\":\"https://github.com/nareinnprs-create/ideocode/discovery-tools\""));
+        assert!(rendered.contains(
+            "\"referrer\":\"https://github.com/nareinnprs-create/ideocode/discovery-tools\""
+        ));
         assert!(rendered.contains("agentmail-mcp@1.0.0"));
         assert!(rendered.contains("must note the partnership"));
 

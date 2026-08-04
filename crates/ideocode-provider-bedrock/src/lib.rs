@@ -247,7 +247,8 @@ impl BedrockProvider {
     }
 
     fn configured_profile() -> Option<String> {
-        Self::env_or_config("IDEOCODE_BEDROCK_PROFILE").or_else(|| Self::env_or_config("AWS_PROFILE"))
+        Self::env_or_config("IDEOCODE_BEDROCK_PROFILE")
+            .or_else(|| Self::env_or_config("AWS_PROFILE"))
     }
 
     pub fn configured_bearer_token() -> Option<String> {

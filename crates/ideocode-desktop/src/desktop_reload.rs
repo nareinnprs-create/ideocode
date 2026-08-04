@@ -925,7 +925,10 @@ pub(crate) fn find_desktop_repo_in_ancestors(start: &Path) -> Option<PathBuf> {
 }
 
 pub(crate) fn is_ideocode_desktop_repo(candidate: &Path) -> bool {
-    if !candidate.join("crates/IDEOCODE-desktop/Cargo.toml").is_file() {
+    if !candidate
+        .join("crates/IDEOCODE-desktop/Cargo.toml")
+        .is_file()
+    {
         return false;
     }
     std::fs::read_to_string(candidate.join("Cargo.toml"))

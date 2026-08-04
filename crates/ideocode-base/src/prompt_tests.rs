@@ -269,7 +269,11 @@ fn test_swarm_prompt_prefers_project_then_global_then_default() {
     assert_eq!(prompt, "project swarm routing");
 
     // A blank project file falls through to global instead of going empty.
-    std::fs::write(project_dir.path().join(".IDEOCODE/swarm-prompt.md"), "   \n").unwrap();
+    std::fs::write(
+        project_dir.path().join(".IDEOCODE/swarm-prompt.md"),
+        "   \n",
+    )
+    .unwrap();
     let prompt = load_swarm_prompt(Some(project_dir.path()));
     assert_eq!(prompt, "global swarm routing");
 
@@ -334,7 +338,9 @@ fn test_selfdev_prompt_prefers_publish_flow_for_active_builds() {
     assert!(prompt.contains("cancel-build"));
     assert!(prompt.contains("selfdev reload"));
     assert!(prompt.contains("fallback when `selfdev build` is not appropriate"));
-    assert!(prompt.contains("scripts/dev_cargo.sh build --profile selfdev -p IDEOCODE --bin IDEOCODE"));
+    assert!(
+        prompt.contains("scripts/dev_cargo.sh build --profile selfdev -p IDEOCODE --bin IDEOCODE")
+    );
     assert!(prompt.contains("remote build host is configured"));
     assert!(prompt.contains("Do not wait for user input"));
 }

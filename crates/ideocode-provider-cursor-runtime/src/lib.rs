@@ -402,8 +402,8 @@ async fn run_native_text_command(
     prompt: &str,
     model: &str,
 ) -> Result<()> {
-    use ideocode_provider_core::is_transient_transport_error;
     use ideocode_provider_core::attempt_tracker::retry_backoff_delay;
+    use ideocode_provider_core::is_transient_transport_error;
 
     const MAX_RETRIES: u32 = 3;
     const RETRY_BASE_MS: u64 = 1000;
@@ -434,22 +434,23 @@ async fn run_native_text_command(
             Ok(()) => return Ok(()),
             Err(err) => {
                 if cursor_auth::error_indicates_not_logged_in(&err) {
-                    let refreshed = match cursor_auth::refresh_resolved_tokens(&client, &tokens)
-                        .await
-                    {
-                        Ok(r) => r,
-                        Err(e) => {
-                            return Err(e).context("Cursor token was rejected and refresh also failed");
-                        }
-                    };
+                    let refreshed =
+                        match cursor_auth::refresh_resolved_tokens(&client, &tokens).await {
+                            Ok(r) => r,
+                            Err(e) => {
+                                return Err(e)
+                                    .context("Cursor token was rejected and refresh also failed");
+                            }
+                        };
                     return crate::agent_transport::run_agent_turn(
-                        &refreshed.access_token, prompt, model, tx,
+                        &refreshed.access_token,
+                        prompt,
+                        model,
+                        tx,
                     )
                     .await;
                 }
-                if attempt + 1 < MAX_RETRIES
-                    && is_transient_transport_error(&format!("{err:#}"))
-                {
+                if attempt + 1 < MAX_RETRIES && is_transient_transport_error(&format!("{err:#}")) {
                     last_err = Some(err);
                     continue;
                 }
@@ -457,7 +458,8 @@ async fn run_native_text_command(
             }
         }
     }
-    Err(last_err.unwrap_or_else(|| anyhow::anyhow!("Cursor request failed after {MAX_RETRIES} attempts")))
+    Err(last_err
+        .unwrap_or_else(|| anyhow::anyhow!("Cursor request failed after {MAX_RETRIES} attempts")))
 }
 
 #[cfg(test)]

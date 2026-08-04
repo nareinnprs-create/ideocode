@@ -12,21 +12,37 @@ use ratatui::prelude::*;
 // Background: deep dark #0a0a0f with subtle blue undertone.
 
 /// Neon Cyan — primary accent, AI color, links, active elements.
-pub fn neon_cyan() -> Color { rgb(0, 240, 255) }
+pub fn neon_cyan() -> Color {
+    rgb(0, 240, 255)
+}
 /// Neon Magenta — secondary accent, user messages, highlights.
-pub fn neon_magenta() -> Color { rgb(255, 0, 255) }
+pub fn neon_magenta() -> Color {
+    rgb(255, 0, 255)
+}
 /// Neon Purple — tertiary accent, tool calls, decorative.
-pub fn neon_purple() -> Color { rgb(139, 92, 246) }
+pub fn neon_purple() -> Color {
+    rgb(139, 92, 246)
+}
 /// Neon Pink — system messages, warnings, personality.
-pub fn neon_pink() -> Color { rgb(255, 107, 157) }
+pub fn neon_pink() -> Color {
+    rgb(255, 107, 157)
+}
 /// Neon Green — success, completed, git clean.
-pub fn neon_green() -> Color { rgb(0, 255, 136) }
+pub fn neon_green() -> Color {
+    rgb(0, 255, 136)
+}
 /// Neon Yellow — queued, pending, attention.
-pub fn neon_yellow() -> Color { rgb(255, 234, 0) }
+pub fn neon_yellow() -> Color {
+    rgb(255, 234, 0)
+}
 /// Neon Orange — warnings, in-progress, streaks.
-pub fn neon_orange() -> Color { rgb(255, 159, 67) }
+pub fn neon_orange() -> Color {
+    rgb(255, 159, 67)
+}
 /// Neon Blue — info, connection status, secondary actions.
-pub fn neon_blue() -> Color { rgb(59, 130, 246) }
+pub fn neon_blue() -> Color {
+    rgb(59, 130, 246)
+}
 
 // ── SEMANTIC COLORS (Neon Cyberpunk) ────────────────────────────────
 
@@ -254,9 +270,9 @@ pub fn gradient_color(index: usize, total: usize) -> Color {
     }
     // Cycle through neon triad: cyan → magenta → purple → cyan
     const GRADIENT: [(u8, u8, u8); 3] = [
-        (0, 240, 255),   // Cyan
-        (255, 0, 255),   // Magenta
-        (139, 92, 246),  // Purple
+        (0, 240, 255),  // Cyan
+        (255, 0, 255),  // Magenta
+        (139, 92, 246), // Purple
     ];
     let t = index as f32 / (total - 1) as f32;
     let segment = t * (GRADIENT.len() - 1) as f32;

@@ -158,7 +158,8 @@ fn save_test_openai_compatible_login_config(default_model: &str) {
 }
 
 fn save_test_openrouter_model_cache(namespace: &str, source_api_base: &str, model_ids: &[&str]) {
-    let ideocode_home = std::env::var_os("IDEOCODE_HOME").expect("test IDEOCODE_HOME should be set");
+    let ideocode_home =
+        std::env::var_os("IDEOCODE_HOME").expect("test IDEOCODE_HOME should be set");
     let cache_dir = std::path::PathBuf::from(ideocode_home).join("cache");
     std::fs::create_dir_all(&cache_dir).expect("create model cache dir");
     let cache = ideocode_provider_openrouter::DiskCache {
@@ -928,7 +929,10 @@ impl Provider for StubExternalRuntime {
             .read()
             .unwrap_or_else(|poisoned| poisoned.into_inner())
     }
-    fn set_credential_mode(&self, mode: ideocode_provider_core::CredentialMode) -> anyhow::Result<()> {
+    fn set_credential_mode(
+        &self,
+        mode: ideocode_provider_core::CredentialMode,
+    ) -> anyhow::Result<()> {
         *self
             .credential_mode
             .write()

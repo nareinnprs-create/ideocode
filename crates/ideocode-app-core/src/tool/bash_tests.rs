@@ -446,7 +446,10 @@ fn test_parse_heuristic_progress_handles_phase_output() {
 
     assert_eq!(progress.kind, BackgroundTaskProgressKind::Indeterminate);
     assert_eq!(progress.percent, None);
-    assert_eq!(progress.message.as_deref(), Some("Compiling IDEOCODE v0.10.2"));
+    assert_eq!(
+        progress.message.as_deref(),
+        Some("Compiling IDEOCODE v0.10.2")
+    );
     assert_eq!(progress.source, BackgroundTaskProgressSource::ParsedOutput);
 }
 

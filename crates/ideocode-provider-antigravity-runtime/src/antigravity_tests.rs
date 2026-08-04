@@ -110,7 +110,8 @@ fn available_models_display_seeds_from_persisted_catalog() {
     let previous = std::env::var_os("IDEOCODE_HOME");
     ideocode_base::env::set_var("IDEOCODE_HOME", temp.path());
 
-    let path = ideocode_base::provider::antigravity::persisted_catalog_path().expect("catalog path");
+    let path =
+        ideocode_base::provider::antigravity::persisted_catalog_path().expect("catalog path");
     ideocode_base::storage::write_json(
         &path,
         &PersistedCatalog {

@@ -17,9 +17,9 @@ use std::sync::mpsc::{Receiver, Sender, channel};
 #[cfg(unix)]
 use ideocode_harness_api::{ApiEvent, ApiRequest, ClientFrame, HarnessClient, write_frame};
 #[cfg(unix)]
-use std::path::PathBuf;
-#[cfg(unix)]
 use std::io::BufReader;
+#[cfg(unix)]
+use std::path::PathBuf;
 #[cfg(unix)]
 use std::sync::atomic::{AtomicU64, Ordering};
 #[cfg(unix)]
@@ -41,7 +41,9 @@ fn api_socket_path() -> PathBuf {
         return PathBuf::from(custom);
     }
     let home = std::env::var("HOME").unwrap_or_else(|_| ".".to_string());
-    PathBuf::from(home).join(".IDEOCODE").join("IDEOCODE-api.sock")
+    PathBuf::from(home)
+        .join(".IDEOCODE")
+        .join("IDEOCODE-api.sock")
 }
 
 /// Spawn the connection worker. Returns the receiving side for the UI and a

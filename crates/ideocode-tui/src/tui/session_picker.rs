@@ -62,7 +62,10 @@ pub enum PickerResult {
     /// The onboarding read-only recent-project architecture review was chosen.
     ReviewRecentProject,
     /// User confirmed deletion of a session (session id + display name).
-    DeleteSession { session_id: String, display_name: String },
+    DeleteSession {
+        session_id: String,
+        display_name: String,
+    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

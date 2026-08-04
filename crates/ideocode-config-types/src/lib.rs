@@ -845,7 +845,8 @@ impl Default for SponsorsConfig {
     fn default() -> Self {
         Self {
             enabled: true,
-            endpoint: "https://api.github.com/repos/nareinnprs-create/ideocode/v1/discovery".to_string(),
+            endpoint: "https://api.github.com/repos/nareinnprs-create/ideocode/v1/discovery"
+                .to_string(),
         }
     }
 }

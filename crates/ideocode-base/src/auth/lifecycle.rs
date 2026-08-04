@@ -241,8 +241,10 @@ pub fn globally_preferred_default_route(routes: &[ModelRoute]) -> Option<ModelRo
 
 fn globally_preferred_model_rank(model: &str) -> (u8, usize) {
     let normalized = normalize_model_for_preference(model);
-    let openai_default = normalize_model_for_preference(ideocode_provider_core::DEFAULT_OPENAI_MODEL);
-    let claude_default = normalize_model_for_preference(ideocode_provider_core::DEFAULT_CLAUDE_MODEL);
+    let openai_default =
+        normalize_model_for_preference(ideocode_provider_core::DEFAULT_OPENAI_MODEL);
+    let claude_default =
+        normalize_model_for_preference(ideocode_provider_core::DEFAULT_CLAUDE_MODEL);
 
     if normalized == openai_default {
         return (0, 0);

@@ -10,15 +10,11 @@
 use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
-use ratatui::widgets::{Block, Borders, Padding};
 use ratatui::text::Line;
+use ratatui::widgets::{Block, Borders, Padding};
 
 /// Render a glassmorphism panel.
-pub fn glass_panel<'a>(
-    title: &'a str,
-    _width: u16,
-    _height: u16,
-) -> Block<'a> {
+pub fn glass_panel<'a>(title: &'a str, _width: u16, _height: u16) -> Block<'a> {
     Block::default()
         .borders(Borders::ALL)
         .border_type(ratatui::widgets::BorderType::Rounded)
@@ -54,10 +50,7 @@ pub fn glass_highlight() -> Color {
 }
 
 /// Render a glass card (for achievements, cards, etc.).
-pub fn glass_card<'a>(
-    title: &'a str,
-    content: Vec<Line<'a>>,
-) -> Vec<Line<'a>> {
+pub fn glass_card<'a>(title: &'a str, content: Vec<Line<'a>>) -> Vec<Line<'a>> {
     let mut lines = Vec::new();
     lines.push(Line::from(Span::styled(
         format!("  ╭─{}─╮", "─".repeat(title.len() + 2)),

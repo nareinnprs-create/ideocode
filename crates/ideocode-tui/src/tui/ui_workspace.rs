@@ -40,7 +40,9 @@ fn load_profiles_from_config() -> Option<Vec<WorkspaceProfile>> {
     let home = std::env::var("HOME")
         .or_else(|_| std::env::var("USERPROFILE"))
         .ok()?;
-    let config_path = std::path::PathBuf::from(home).join(".ideocode").join("workspaces.json");
+    let config_path = std::path::PathBuf::from(home)
+        .join(".ideocode")
+        .join("workspaces.json");
     let content = std::fs::read_to_string(&config_path).ok()?;
     let parsed: Vec<ConfigProfile> = serde_json::from_str(&content).ok()?;
     Some(parsed.into_iter().map(|p| p.into()).collect())
@@ -60,13 +62,26 @@ struct ConfigProfile {
     auto_switch: bool,
 }
 
-fn default_theme() -> String { "neon_city".to_string() }
-fn default_personality() -> String { "professional".to_string() }
-fn default_true() -> bool { true }
+fn default_theme() -> String {
+    "neon_city".to_string()
+}
+fn default_personality() -> String {
+    "professional".to_string()
+}
+fn default_true() -> bool {
+    true
+}
 
 impl From<ConfigProfile> for WorkspaceProfile {
     fn from(p: ConfigProfile) -> Self {
-        WorkspaceProfile { name: p.name, directory: p.directory, theme: p.theme, personality: p.personality, tools: p.tools, auto_switch: p.auto_switch }
+        WorkspaceProfile {
+            name: p.name,
+            directory: p.directory,
+            theme: p.theme,
+            personality: p.personality,
+            tools: p.tools,
+            auto_switch: p.auto_switch,
+        }
     }
 }
 
@@ -80,7 +95,11 @@ fn detect_project_profiles(cwd: &str) -> Vec<WorkspaceProfile> {
             directory: cwd.to_string(),
             theme: "neon_city".to_string(),
             personality: "professional".to_string(),
-            tools: vec!["cargo".to_string(), "clippy".to_string(), "rustfmt".to_string()],
+            tools: vec![
+                "cargo".to_string(),
+                "clippy".to_string(),
+                "rustfmt".to_string(),
+            ],
             auto_switch: true,
         });
     }
@@ -91,12 +110,19 @@ fn detect_project_profiles(cwd: &str) -> Vec<WorkspaceProfile> {
             directory: cwd.to_string(),
             theme: "dracula".to_string(),
             personality: "casual".to_string(),
-            tools: vec!["npm".to_string(), "eslint".to_string(), "prettier".to_string()],
+            tools: vec![
+                "npm".to_string(),
+                "eslint".to_string(),
+                "prettier".to_string(),
+            ],
             auto_switch: true,
         });
     }
     // Detect Python project
-    if path.join("pyproject.toml").exists() || path.join("setup.py").exists() || path.join("requirements.txt").exists() {
+    if path.join("pyproject.toml").exists()
+        || path.join("setup.py").exists()
+        || path.join("requirements.txt").exists()
+    {
         profiles.push(WorkspaceProfile {
             name: "Python Project".to_string(),
             directory: cwd.to_string(),
@@ -165,13 +191,21 @@ pub fn render_workspace_profiles(
         lines.push(Line::from(vec![
             Span::styled(
                 if is_selected { "▸ " } else { "  " },
-                Style::default().fg(if is_selected { neon_green() } else { dim_color() }),
+                Style::default().fg(if is_selected {
+                    neon_green()
+                } else {
+                    dim_color()
+                }),
             ),
             Span::styled(
                 profile.name.clone(),
                 Style::default()
                     .fg(if is_active { neon_green() } else { dim_color() })
-                    .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                    .add_modifier(if is_selected {
+                        Modifier::BOLD
+                    } else {
+                        Modifier::empty()
+                    }),
             ),
             Span::styled(
                 if is_active { " (active)" } else { "" },
@@ -184,14 +218,14 @@ pub fn render_workspace_profiles(
                 Span::styled("    Theme: ", Style::default().fg(dim_color())),
                 Span::styled(profile.theme.clone(), Style::default().fg(neon_cyan())),
                 Span::styled("  Personality: ", Style::default().fg(dim_color())),
-                Span::styled(profile.personality.clone(), Style::default().fg(neon_magenta())),
+                Span::styled(
+                    profile.personality.clone(),
+                    Style::default().fg(neon_magenta()),
+                ),
             ]));
             lines.push(Line::from(vec![
                 Span::styled("    Tools: ", Style::default().fg(dim_color())),
-                Span::styled(
-                    profile.tools.join(", "),
-                    Style::default().fg(neon_yellow()),
-                ),
+                Span::styled(profile.tools.join(", "), Style::default().fg(neon_yellow())),
             ]));
         }
     }

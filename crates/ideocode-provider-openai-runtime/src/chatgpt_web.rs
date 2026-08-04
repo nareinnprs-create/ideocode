@@ -135,7 +135,11 @@ impl ChatGptWebState {
             .await
             .context("Failed to submit the prompt in ChatGPT")?;
 
-            send_phase(tx, ideocode_message_types::ConnectionPhase::WaitingForResponse).await?;
+            send_phase(
+                tx,
+                ideocode_message_types::ConnectionPhase::WaitingForResponse,
+            )
+            .await?;
 
             poll_for_response(tab_id, tx).await
         }

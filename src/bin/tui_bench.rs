@@ -1125,7 +1125,10 @@ impl TuiState for BenchState {
     }
 
     fn side_panel_native_scrollbar(&self) -> bool {
-        ideocode::config::config().display.native_scrollbars.side_panel
+        ideocode::config::config()
+            .display
+            .native_scrollbars
+            .side_panel
     }
 
     fn diff_line_wrap(&self) -> bool {

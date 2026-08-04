@@ -4,13 +4,11 @@
 // SPDX-License-Identifier: MIT
 use super::box_utils::render_rounded_box;
 use super::changelog::get_unseen_changelog_entries;
-use super::{
-    TuiState, dim_color, is_running_stable_release, semver, shorten_model_name,
-};
+use super::{TuiState, dim_color, is_running_stable_release, semver, shorten_model_name};
 use crate::auth::{AuthState, AuthStatus};
 use crate::tui::color_support::rgb;
 use crate::tui::connection_type_icon;
-use ideocode_tui_style::theme::{gradient_line, neon_magenta, emoji};
+use ideocode_tui_style::theme::{emoji, gradient_line, neon_magenta};
 use ratatui::prelude::*;
 #[cfg(test)]
 use std::sync::OnceLock;
@@ -282,7 +280,10 @@ fn auth_dot_color(state: AuthState) -> Color {
     }
 }
 
-#[allow(dead_code, reason = "kept for auth status dot rendering; not yet wired to header layout")]
+#[allow(
+    dead_code,
+    reason = "kept for auth status dot rendering; not yet wired to header layout"
+)]
 fn auth_dot_char(state: AuthState) -> &'static str {
     match state {
         AuthState::Available => "●",
@@ -372,10 +373,7 @@ pub(super) fn build_auth_status_lines(auth: &AuthStatus) -> Vec<Line<'static>> {
                 AuthState::NotConfigured => "○",
             };
             Line::from(vec![
-                Span::styled(
-                    indicator,
-                    Style::default().fg(auth_dot_color(state)),
-                ),
+                Span::styled(indicator, Style::default().fg(auth_dot_color(state))),
                 Span::styled(format!(" {}", label), Style::default().fg(dim_color())),
             ])
         })
@@ -997,7 +995,8 @@ mod tests {
         }
 
         let path = TEST_HOME.get_or_init(|| {
-            let path = std::env::temp_dir().join(format!("IDEOCODE-test-home-{}", std::process::id()));
+            let path =
+                std::env::temp_dir().join(format!("IDEOCODE-test-home-{}", std::process::id()));
             let _ = std::fs::create_dir_all(&path);
             path
         });

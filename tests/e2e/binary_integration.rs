@@ -564,7 +564,9 @@ async fn binary_integration_selfdev_full_reload_resumes_session_quickly() -> Res
 
     let socket_path = runtime_dir.join("IDEOCODE.sock");
     let debug_socket_path = runtime_dir.join("IDEOCODE-debug.sock");
-    let starter_binary = temp_root.path().join("IDEOCODE-selfdev-full-reload-starter");
+    let starter_binary = temp_root
+        .path()
+        .join("IDEOCODE-selfdev-full-reload-starter");
     std::fs::copy(env!("CARGO_BIN_EXE_IDEOCODE"), &starter_binary)?;
     let starter_mtime = std::fs::metadata(&release_binary)?
         .modified()?

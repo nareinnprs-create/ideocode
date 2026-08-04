@@ -68,10 +68,7 @@ pub fn get_export_formats() -> Vec<ExportFormat> {
 }
 
 /// Render export format selector.
-pub fn render_export_selector(
-    formats: &[ExportFormat],
-    selected: usize,
-) -> Vec<Line<'static>> {
+pub fn render_export_selector(formats: &[ExportFormat], selected: usize) -> Vec<Line<'static>> {
     let mut lines = Vec::new();
 
     lines.push(Line::from(Span::styled(
@@ -87,7 +84,11 @@ pub fn render_export_selector(
         lines.push(Line::from(vec![
             Span::styled(
                 if is_selected { "▸ " } else { "  " },
-                Style::default().fg(if is_selected { neon_green() } else { dim_color() }),
+                Style::default().fg(if is_selected {
+                    neon_green()
+                } else {
+                    dim_color()
+                }),
             ),
             Span::styled(
                 format!("{} ", format.icon()),
@@ -96,8 +97,16 @@ pub fn render_export_selector(
             Span::styled(
                 format.label().to_string(),
                 Style::default()
-                    .fg(if is_selected { neon_cyan() } else { dim_color() })
-                    .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                    .fg(if is_selected {
+                        neon_cyan()
+                    } else {
+                        dim_color()
+                    })
+                    .add_modifier(if is_selected {
+                        Modifier::BOLD
+                    } else {
+                        Modifier::empty()
+                    }),
             ),
             Span::styled(
                 format!("  ({})", format.extension()),
@@ -133,7 +142,10 @@ pub fn export_session(
 
 fn export_as_markdown(messages: &[(String, String)]) -> String {
     let mut md = String::from("# IDEOCODE Session Export\n\n");
-    md.push_str(&format!("Exported at: {}\n\n", chrono::Local::now().format("%Y-%m-%d %H:%M:%S")));
+    md.push_str(&format!(
+        "Exported at: {}\n\n",
+        chrono::Local::now().format("%Y-%m-%d %H:%M:%S")
+    ));
     for (role, content) in messages {
         let header = match role.as_str() {
             "user" => "## User",
@@ -146,7 +158,8 @@ fn export_as_markdown(messages: &[(String, String)]) -> String {
 }
 
 fn export_as_html(messages: &[(String, String)]) -> String {
-    let mut html = String::from(r#"<!DOCTYPE html>
+    let mut html = String::from(
+        r#"<!DOCTYPE html>
 <html><head><title>IDEOCODE Session</title>
 <style>
 body{font-family:monospace;background:#0a0a14;color:#e0e0e0;padding:2rem;max-width:800px;margin:auto}
@@ -155,7 +168,8 @@ body{font-family:monospace;background:#0a0a14;color:#e0e0e0;padding:2rem;max-wid
 h2{margin-top:2rem}
 </style></head><body>
 <h1>IDEOCODE Session</h1>
-"#);
+"#,
+    );
     for (role, content) in messages {
         let class = if role == "user" { "user" } else { "assistant" };
         html.push_str(&format!(
@@ -180,12 +194,19 @@ fn export_as_json(messages: &[(String, String)]) -> String {
 }
 
 fn export_as_asciinema(messages: &[(String, String)]) -> String {
-    let mut cast = String::from(r#"{"version":2,"width":120,"height":40,"timestamp":0,"env":{"SHELL":"/bin/bash"}}"#);
+    let mut cast = String::from(
+        r#"{"version":2,"width":120,"height":40,"timestamp":0,"env":{"SHELL":"/bin/bash"}}"#,
+    );
     cast.push('\n');
     let mut ts = 0.0;
     for (role, content) in messages {
         let prompt = if role == "user" { "$ " } else { "" };
-        cast.push_str(&format!("[{:.1},\"o\",\"{}{}\\n\"]\n", ts, prompt, content.replace('\n', "\\n")));
+        cast.push_str(&format!(
+            "[{:.1},\"o\",\"{}{}\\n\"]\n",
+            ts,
+            prompt,
+            content.replace('\n', "\\n")
+        ));
         ts += 0.5;
     }
     cast
@@ -213,10 +234,7 @@ pub fn render_export_progress(
                 .fg(neon_cyan())
                 .add_modifier(Modifier::BOLD),
         )),
-        Line::from(Span::styled(
-            bar,
-            Style::default().fg(neon_green()),
-        )),
+        Line::from(Span::styled(bar, Style::default().fg(neon_green()))),
         Line::from(Span::styled(
             format!("  {}", filename),
             Style::default().fg(dim_color()),

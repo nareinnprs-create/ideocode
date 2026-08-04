@@ -9,9 +9,10 @@ use super::ToolOutput;
 pub fn get_clipboard() -> Result<ToolOutput> {
     let output = std::process::Command::new("powershell")
         .args([
-            "-NoProfile", "-Command",
+            "-NoProfile",
+            "-Command",
             "Add-Type -AssemblyName System.Windows.Forms; \
-             [System.Windows.Forms.Clipboard]::GetText()"
+             [System.Windows.Forms.Clipboard]::GetText()",
         ])
         .output()
         .context("Failed to read clipboard")?;
@@ -26,19 +27,23 @@ pub fn get_clipboard() -> Result<ToolOutput> {
 pub fn set_clipboard(text: &str) -> Result<ToolOutput> {
     let status = std::process::Command::new("powershell")
         .args([
-            "-NoProfile", "-Command",
+            "-NoProfile",
+            "-Command",
             &format!(
                 "Add-Type -AssemblyName System.Windows.Forms; \
                  [System.Windows.Forms.Clipboard]::SetText('{}')",
                 text.replace('\'', "''")
-            )
+            ),
         ])
         .status()
         .context("Failed to set clipboard")?;
     if !status.success() {
         anyhow::bail!("PowerShell clipboard write failed");
     }
-    Ok(ToolOutput::new(format!("Set clipboard ({} chars)", text.chars().count())))
+    Ok(ToolOutput::new(format!(
+        "Set clipboard ({} chars)",
+        text.chars().count()
+    )))
 }
 
 pub fn run_powershell(script: &str) -> Result<ToolOutput> {
@@ -60,7 +65,10 @@ pub fn run_powershell(script: &str) -> Result<ToolOutput> {
         result.push_str(&stderr);
     }
     if result.is_empty() {
-        result = format!("Command completed with exit code {}", output.status.code().unwrap_or(-1));
+        result = format!(
+            "Command completed with exit code {}",
+            output.status.code().unwrap_or(-1)
+        );
     }
     Ok(ToolOutput::new(result))
 }

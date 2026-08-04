@@ -65,13 +65,9 @@ pub fn render_preview(preview: &PreviewType) -> Vec<Line<'static>> {
     }
 }
 
-fn render_file_preview(
-    path: &str,
-    content: &str,
-    language: Option<&str>,
-) -> Vec<Line<'static>> {
+fn render_file_preview(path: &str, content: &str, language: Option<&str>) -> Vec<Line<'static>> {
     let mut lines = Vec::new();
-    
+
     // Header
     lines.push(Line::from(Span::styled(
         format!("📄 {}", path),
@@ -79,41 +75,35 @@ fn render_file_preview(
             .fg(neon_cyan())
             .add_modifier(Modifier::BOLD),
     )));
-    
+
     if let Some(lang) = language {
         lines.push(Line::from(Span::styled(
             format!("   Language: {}", lang),
             Style::default().fg(dim_color()),
         )));
     }
-    
+
     // Separator
     lines.push(Line::from(Span::styled(
         "─".repeat(40),
         Style::default().fg(glass_border_color()),
     )));
-    
+
     // Content (first 20 lines)
     for (i, line) in content.lines().take(20).enumerate() {
         lines.push(Line::from(vec![
-            Span::styled(
-                format!("{:>3} ", i + 1),
-                Style::default().fg(dim_color()),
-            ),
-            Span::styled(
-                line.to_string(),
-                Style::default().fg(neon_green()),
-            ),
+            Span::styled(format!("{:>3} ", i + 1), Style::default().fg(dim_color())),
+            Span::styled(line.to_string(), Style::default().fg(neon_green())),
         ]));
     }
-    
+
     if content.lines().count() > 20 {
         lines.push(Line::from(Span::styled(
             "... (preview truncated)",
             Style::default().fg(dim_color()),
         )));
     }
-    
+
     lines
 }
 
@@ -123,7 +113,7 @@ fn render_tool_preview(
     parameters: &[(String, String)],
 ) -> Vec<Line<'static>> {
     let mut lines = Vec::new();
-    
+
     // Header
     lines.push(Line::from(Span::styled(
         format!("🔧 {}", name),
@@ -131,19 +121,19 @@ fn render_tool_preview(
             .fg(neon_magenta())
             .add_modifier(Modifier::BOLD),
     )));
-    
+
     // Description
     lines.push(Line::from(Span::styled(
         format!("   {}", description),
         Style::default().fg(dim_color()),
     )));
-    
+
     // Separator
     lines.push(Line::from(Span::styled(
         "─".repeat(40),
         Style::default().fg(glass_border_color()),
     )));
-    
+
     // Parameters
     if !parameters.is_empty() {
         lines.push(Line::from(Span::styled(
@@ -152,21 +142,15 @@ fn render_tool_preview(
                 .fg(neon_yellow())
                 .add_modifier(Modifier::BOLD),
         )));
-        
+
         for (param, desc) in parameters {
             lines.push(Line::from(vec![
-                Span::styled(
-                    format!("  {} ", param),
-                    Style::default().fg(neon_cyan()),
-                ),
-                Span::styled(
-                    desc.clone(),
-                    Style::default().fg(dim_color()),
-                ),
+                Span::styled(format!("  {} ", param), Style::default().fg(neon_cyan())),
+                Span::styled(desc.clone(), Style::default().fg(dim_color())),
             ]));
         }
     }
-    
+
     lines
 }
 
@@ -176,7 +160,7 @@ fn render_command_preview(
     examples: &[String],
 ) -> Vec<Line<'static>> {
     let mut lines = Vec::new();
-    
+
     // Header
     lines.push(Line::from(Span::styled(
         format!("⚡ {}", name),
@@ -184,19 +168,19 @@ fn render_command_preview(
             .fg(neon_green())
             .add_modifier(Modifier::BOLD),
     )));
-    
+
     // Description
     lines.push(Line::from(Span::styled(
         format!("   {}", description),
         Style::default().fg(dim_color()),
     )));
-    
+
     // Separator
     lines.push(Line::from(Span::styled(
         "─".repeat(40),
         Style::default().fg(glass_border_color()),
     )));
-    
+
     // Examples
     if !examples.is_empty() {
         lines.push(Line::from(Span::styled(
@@ -205,7 +189,7 @@ fn render_command_preview(
                 .fg(neon_yellow())
                 .add_modifier(Modifier::BOLD),
         )));
-        
+
         for example in examples {
             lines.push(Line::from(Span::styled(
                 format!("  > {}", example),
@@ -213,7 +197,7 @@ fn render_command_preview(
             )));
         }
     }
-    
+
     lines
 }
 

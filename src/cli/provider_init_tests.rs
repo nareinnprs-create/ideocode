@@ -274,7 +274,10 @@ fn test_openai_compatible_profile_overrides() {
     );
     crate::env::set_var("IDEOCODE_OPENAI_COMPAT_API_KEY_NAME", "GROQ_API_KEY");
     crate::env::set_var("IDEOCODE_OPENAI_COMPAT_ENV_FILE", "groq.env");
-    crate::env::set_var("IDEOCODE_OPENAI_COMPAT_DEFAULT_MODEL", "openai/gpt-oss-120b");
+    crate::env::set_var(
+        "IDEOCODE_OPENAI_COMPAT_DEFAULT_MODEL",
+        "openai/gpt-oss-120b",
+    );
 
     let resolved = resolve_openai_compatible_profile(provider_catalog::OPENAI_COMPAT_PROFILE);
     assert_eq!(resolved.api_base, "https://api.groq.com/openai/v1");
@@ -538,7 +541,10 @@ fn resolved_profile_default_model_uses_openai_compatible_override() {
     .map(|k| (k.to_string(), std::env::var(k).ok()))
     .collect();
 
-    crate::env::set_var("IDEOCODE_OPENAI_COMPAT_API_BASE", "http://localhost:11434/v1");
+    crate::env::set_var(
+        "IDEOCODE_OPENAI_COMPAT_API_BASE",
+        "http://localhost:11434/v1",
+    );
     crate::env::set_var("IDEOCODE_OPENAI_COMPAT_DEFAULT_MODEL", "llama3.2");
 
     assert_eq!(
@@ -583,7 +589,9 @@ fn apply_login_provider_profile_env_preserves_compatible_profile_for_auto_spawn(
     apply_login_provider_profile_env(provider_catalog::OPENCODE_GO_LOGIN_PROVIDER);
 
     assert_eq!(
-        std::env::var("IDEOCODE_OPENROUTER_API_BASE").ok().as_deref(),
+        std::env::var("IDEOCODE_OPENROUTER_API_BASE")
+            .ok()
+            .as_deref(),
         Some("https://opencode.ai/zen/go/v1")
     );
     assert_eq!(
@@ -593,7 +601,9 @@ fn apply_login_provider_profile_env_preserves_compatible_profile_for_auto_spawn(
         Some("OPENCODE_GO_API_KEY")
     );
     assert_eq!(
-        std::env::var("IDEOCODE_OPENROUTER_ENV_FILE").ok().as_deref(),
+        std::env::var("IDEOCODE_OPENROUTER_ENV_FILE")
+            .ok()
+            .as_deref(),
         Some("opencode-go.env")
     );
     assert_eq!(
@@ -673,7 +683,9 @@ async fn init_provider_for_ollama_reapplies_local_compat_runtime_env_after_disab
         .expect("init ollama provider");
 
     assert_eq!(
-        std::env::var("IDEOCODE_OPENROUTER_API_BASE").ok().as_deref(),
+        std::env::var("IDEOCODE_OPENROUTER_API_BASE")
+            .ok()
+            .as_deref(),
         Some("http://localhost:11434/v1")
     );
     assert_eq!(
@@ -683,7 +695,9 @@ async fn init_provider_for_ollama_reapplies_local_compat_runtime_env_after_disab
         Some("OLLAMA_API_KEY")
     );
     assert_eq!(
-        std::env::var("IDEOCODE_OPENROUTER_ENV_FILE").ok().as_deref(),
+        std::env::var("IDEOCODE_OPENROUTER_ENV_FILE")
+            .ok()
+            .as_deref(),
         Some("ollama.env")
     );
     assert_eq!(

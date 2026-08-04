@@ -144,7 +144,12 @@ impl Tool for GitTool {
             result.push_str(&stderr);
         }
         if !output.status.success() {
-            result = format!("Git {} failed (exit code: {:?})\n{}", action_str, output.status.code(), result);
+            result = format!(
+                "Git {} failed (exit code: {:?})\n{}",
+                action_str,
+                output.status.code(),
+                result
+            );
         }
 
         Ok(ToolOutput::new(result))

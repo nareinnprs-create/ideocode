@@ -27,7 +27,9 @@ struct SummarizeInput {
 
 #[async_trait]
 impl Tool for SummarizeTool {
-    fn name(&self) -> &str { "summarize" }
+    fn name(&self) -> &str {
+        "summarize"
+    }
 
     fn description(&self) -> &str {
         "Summarize text, code, or content into a concise overview."
@@ -47,7 +49,11 @@ impl Tool for SummarizeTool {
 
     async fn execute(&self, input: Value, _ctx: ToolContext) -> Result<ToolOutput> {
         let input: SummarizeInput = serde_json::from_value(input)?;
-        let provider = self.registry.provider.as_ref().ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
+        let provider = self
+            .registry
+            .provider
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
 
         let length_guide = match input.length.as_deref() {
             Some("short") => "in 2-3 sentences",

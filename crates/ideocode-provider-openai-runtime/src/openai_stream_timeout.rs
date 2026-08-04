@@ -42,9 +42,9 @@ pub(crate) fn effective_https_idle_timeout(request: &Value) -> std::time::Durati
 /// request's reasoning effort.
 pub(crate) fn effective_ws_completion_timeout_secs(request: &Value) -> u64 {
     let multiplier = u64::from(
-        ideocode_base::provider::stream_idle_timeout_multiplier_for_effort(request_reasoning_effort(
-            request,
-        )),
+        ideocode_base::provider::stream_idle_timeout_multiplier_for_effort(
+            request_reasoning_effort(request),
+        ),
     );
     ideocode_provider_openai::websocket_health::WEBSOCKET_COMPLETION_TIMEOUT_SECS
         .max(ideocode_base::provider::stream_idle_timeout().as_secs())

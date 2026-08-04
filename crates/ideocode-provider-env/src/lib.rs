@@ -290,8 +290,11 @@ mod tests {
         ideocode_core::env::set_var("IDEOCODE_PROVIDER_ENV_TEST_KEY", "env-key");
 
         assert_eq!(
-            load_api_key_from_env_or_config("IDEOCODE_PROVIDER_ENV_TEST_KEY", "provider-env-test.env")
-                .as_deref(),
+            load_api_key_from_env_or_config(
+                "IDEOCODE_PROVIDER_ENV_TEST_KEY",
+                "provider-env-test.env"
+            )
+            .as_deref(),
             Some("env-key")
         );
     }
@@ -401,7 +404,10 @@ mod tests {
         let _guard = EnvGuard::new(&["IDEOCODE_HOME", "IDEOCODE_PROVIDER_BAR_API_KEY"]);
         ideocode_core::env::set_var("IDEOCODE_HOME", temp.path());
         // NBSP + BOM padding around the env-provided key.
-        ideocode_core::env::set_var("IDEOCODE_PROVIDER_BAR_API_KEY", "\u{00A0}sk-env-key\u{FEFF}");
+        ideocode_core::env::set_var(
+            "IDEOCODE_PROVIDER_BAR_API_KEY",
+            "\u{00A0}sk-env-key\u{FEFF}",
+        );
 
         assert_eq!(
             load_api_key_from_env_or_config("IDEOCODE_PROVIDER_BAR_API_KEY", "provider-bar.env")

@@ -84,7 +84,9 @@ impl Tool for EnvTool {
                 let value = params.value.context("value is required for set action")?;
                 // SAFETY: setting env vars is safe in this single-threaded
                 // tool context; we don't rely on env var values elsewhere.
-                unsafe { std::env::set_var(&name, &value); }
+                unsafe {
+                    std::env::set_var(&name, &value);
+                }
                 Ok(ToolOutput::new(format!("{}={}", name, value)))
             }
             EnvAction::List => {
@@ -101,7 +103,9 @@ impl Tool for EnvTool {
             EnvAction::Unset => {
                 let name = params.name.context("name is required for unset action")?;
                 // SAFETY: single-threaded tool context, no concurrent env reads.
-                unsafe { std::env::remove_var(&name); }
+                unsafe {
+                    std::env::remove_var(&name);
+                }
                 Ok(ToolOutput::new(format!("Unset {}", name)))
             }
         }

@@ -587,7 +587,8 @@ fn cleanup_old_logs_in(log_dir: &std::path::Path, now: chrono::DateTime<Local>) 
         // Only consider our own date-stamped log files.
         let name = entry.file_name();
         let Some(name) = name.to_str() else { continue };
-        let is_ideocode_log = (name.starts_with("IDEOCODE-") || name.starts_with("IDEOCODE-desktop-"))
+        let is_ideocode_log = (name.starts_with("IDEOCODE-")
+            || name.starts_with("IDEOCODE-desktop-"))
             && name.ends_with(".log");
         if !is_ideocode_log {
             continue;

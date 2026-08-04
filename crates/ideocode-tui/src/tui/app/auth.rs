@@ -134,7 +134,10 @@ impl App {
         }
 
         message.push_str("\nTiers\n\n");
-        for tier in crate::subscription_catalog::IDEOCODETier::ALL.iter().copied() {
+        for tier in crate::subscription_catalog::IDEOCODETier::ALL
+            .iter()
+            .copied()
+        {
             message.push_str(&format!(
                 "  - {} - ${}/mo retail, about ${:.2} usable inference budget\n",
                 tier.display_name(),
@@ -2329,7 +2332,8 @@ impl App {
                         let model_hint = effective_default_model
                             .map(|m| format!("\nSuggested default model: {}", m))
                             .unwrap_or_default();
-                        let guidance = if key_name == crate::subscription_catalog::IDEOCODE_API_KEY_ENV
+                        let guidance = if key_name
+                            == crate::subscription_catalog::IDEOCODE_API_KEY_ENV
                         {
                             format!(
                                 "Use /login IDEOCODE to access curated models via your router. If the model list looks stale, run /refresh-model-list.\nDocs: {}",

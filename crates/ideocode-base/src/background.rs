@@ -997,13 +997,16 @@ impl BackgroundTaskManager {
     /// the wait surfaced via the status-file poll or the bus channel.
     fn progress_wait_result(task: TaskStatusFile) -> BackgroundTaskWaitResult {
         let event_record = task.event_history.last().cloned();
-        let progress_event = task.progress.as_ref().map(|progress| BackgroundTaskProgressEvent {
-            task_id: task.task_id.clone(),
-            tool_name: task.tool_name.clone(),
-            display_name: task.display_name.clone(),
-            session_id: task.session_id.clone(),
-            progress: progress.clone(),
-        });
+        let progress_event = task
+            .progress
+            .as_ref()
+            .map(|progress| BackgroundTaskProgressEvent {
+                task_id: task.task_id.clone(),
+                tool_name: task.tool_name.clone(),
+                display_name: task.display_name.clone(),
+                session_id: task.session_id.clone(),
+                progress: progress.clone(),
+            });
         BackgroundTaskWaitResult {
             reason: progress_wait_reason(event_record.as_ref()),
             task,

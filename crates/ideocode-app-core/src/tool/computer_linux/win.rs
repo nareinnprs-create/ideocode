@@ -37,8 +37,14 @@ pub fn activate_app(name: &str) -> Result<ToolOutput> {
     if !pid_output.status.success() {
         bail!("App '{name}' not found running");
     }
-    let pid = String::from_utf8_lossy(&pid_output.stdout).trim().to_string();
-    let output = run_cmd(&["xdotool", "windowactivate", &format!("$(xdotool search --pid {pid} | tail -1)")]);
+    let pid = String::from_utf8_lossy(&pid_output.stdout)
+        .trim()
+        .to_string();
+    let output = run_cmd(&[
+        "xdotool",
+        "windowactivate",
+        &format!("$(xdotool search --pid {pid} | tail -1)"),
+    ]);
     match output {
         Ok(_) => Ok(ToolOutput::new(format!("Activated {name}"))),
         Err(_) => {

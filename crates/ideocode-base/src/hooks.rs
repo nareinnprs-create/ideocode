@@ -494,7 +494,10 @@ mod tests {
         );
 
         let prev = std::env::var_os("IDEOCODE_HOOK_TURN_END");
-        crate::env::set_var("IDEOCODE_HOOK_TURN_END", script.to_string_lossy().to_string());
+        crate::env::set_var(
+            "IDEOCODE_HOOK_TURN_END",
+            script.to_string_lossy().to_string(),
+        );
 
         dispatch_observer(
             HookEvent::new("turn_end")

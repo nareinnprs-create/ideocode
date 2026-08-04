@@ -76,7 +76,10 @@ impl GitPanelState {
         self.log_lines = run_command("git", &["log", "--oneline", "-20"]);
         self.branch_lines = run_command(
             "git",
-            &["branch", "--format=%(refname:short)%(if)%(HEAD)%(then) * (HEAD)%(end)"],
+            &[
+                "branch",
+                "--format=%(refname:short)%(if)%(HEAD)%(then) * (HEAD)%(end)",
+            ],
         );
     }
 
@@ -111,7 +114,9 @@ impl GitPanelState {
 
 /// Render the full git panel.
 pub fn render_git_panel(frame: &mut Frame, area: Rect, state: &GitPanelState) {
-    if !state.visible { return; }
+    if !state.visible {
+        return;
+    }
 
     let panel_height = (area.height * 2 / 3).max(8);
     let panel_area = Rect {
@@ -134,11 +139,15 @@ pub fn render_git_panel(frame: &mut Frame, area: Rect, state: &GitPanelState) {
     lines.push(Line::from(vec![
         Span::styled(
             "🔀 Git ",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         ),
         Span::styled(
             format!("[{}] ", state.branch),
-            Style::default().fg(neon_green()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_green())
+                .add_modifier(Modifier::BOLD),
         ),
     ]));
 
@@ -150,7 +159,11 @@ pub fn render_git_panel(frame: &mut Frame, area: Rect, state: &GitPanelState) {
             Style::default()
                 .fg(if is_active { Color::Black } else { dim_color() })
                 .bg(if is_active { neon_cyan() } else { Color::Black })
-                .add_modifier(if is_active { Modifier::BOLD } else { Modifier::empty() }),
+                .add_modifier(if is_active {
+                    Modifier::BOLD
+                } else {
+                    Modifier::empty()
+                }),
         ));
     }
     lines.push(Line::from(tab_line_spans));
@@ -200,15 +213,20 @@ fn render_status_lines(state: &GitPanelState) -> Vec<Line<'static>> {
 
         let is_selected = i == state.selected_file;
         lines.push(Line::from(vec![
-            Span::styled(
-                format!("  {} ", icon),
-                Style::default().fg(color),
-            ),
+            Span::styled(format!("  {} ", icon), Style::default().fg(color)),
             Span::styled(
                 filename.trim().to_string(),
                 Style::default()
-                    .fg(if is_selected { neon_cyan() } else { dim_color() })
-                    .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                    .fg(if is_selected {
+                        neon_cyan()
+                    } else {
+                        dim_color()
+                    })
+                    .add_modifier(if is_selected {
+                        Modifier::BOLD
+                    } else {
+                        Modifier::empty()
+                    }),
             ),
         ]));
     }
@@ -225,10 +243,15 @@ fn render_diff_lines(state: &GitPanelState) -> Vec<Line<'static>> {
         return lines;
     }
     for line in &state.diff_lines {
-        let color = if line.contains("insertion") { neon_green() }
-            else if line.contains("deletion") { rgb(255, 80, 80) }
-            else if line.contains("file") { neon_cyan() }
-            else { dim_color() };
+        let color = if line.contains("insertion") {
+            neon_green()
+        } else if line.contains("deletion") {
+            rgb(255, 80, 80)
+        } else if line.contains("file") {
+            neon_cyan()
+        } else {
+            dim_color()
+        };
         lines.push(Line::from(Span::styled(
             format!("  {}", line),
             Style::default().fg(color),
@@ -247,10 +270,7 @@ fn render_log_lines(state: &GitPanelState) -> Vec<Line<'static>> {
                     format!("  {} ", parts[0]),
                     Style::default().fg(neon_yellow()),
                 ),
-                Span::styled(
-                    parts[1].to_string(),
-                    Style::default().fg(dim_color()),
-                ),
+                Span::styled(parts[1].to_string(), Style::default().fg(dim_color())),
             ]));
         } else {
             lines.push(Line::from(Span::styled(
@@ -270,13 +290,21 @@ fn render_branch_lines(state: &GitPanelState) -> Vec<Line<'static>> {
         lines.push(Line::from(vec![
             Span::styled(
                 if is_current { "  ▸ " } else { "    " },
-                Style::default().fg(if is_current { neon_green() } else { dim_color() }),
+                Style::default().fg(if is_current {
+                    neon_green()
+                } else {
+                    dim_color()
+                }),
             ),
             Span::styled(
                 name.to_string(),
                 Style::default()
                     .fg(if is_current { neon_cyan() } else { dim_color() })
-                    .add_modifier(if is_current { Modifier::BOLD } else { Modifier::empty() }),
+                    .add_modifier(if is_current {
+                        Modifier::BOLD
+                    } else {
+                        Modifier::empty()
+                    }),
             ),
         ]));
     }
@@ -287,7 +315,12 @@ fn run_command(program: &str, args: &[&str]) -> Vec<String> {
     std::process::Command::new(program)
         .args(args)
         .output()
-        .map(|o| String::from_utf8_lossy(&o.stdout).lines().map(String::from).collect())
+        .map(|o| {
+            String::from_utf8_lossy(&o.stdout)
+                .lines()
+                .map(String::from)
+                .collect()
+        })
         .unwrap_or_default()
 }
 

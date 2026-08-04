@@ -73,7 +73,10 @@ fn desktop_reduced_motion_env_parses_common_flag_values() {
     assert!(desktop_reduced_motion_enabled_for_env_value(Some(
         OsString::from("reduce")
     )));
-    assert_eq!(DESKTOP_REDUCED_MOTION_ENV, "IDEOCODE_DESKTOP_REDUCED_MOTION");
+    assert_eq!(
+        DESKTOP_REDUCED_MOTION_ENV,
+        "IDEOCODE_DESKTOP_REDUCED_MOTION"
+    );
 }
 
 #[test]
@@ -627,7 +630,10 @@ fn desktop_reload_handoff_watcher_releases_ready_child() -> Result<()> {
         spawned_at: Instant::now(),
     };
 
-    assert_eq!(watcher.poll_with_placement(None)?, DesktopReloadHandoffPoll::Waiting);
+    assert_eq!(
+        watcher.poll_with_placement(None)?,
+        DesktopReloadHandoffPoll::Waiting
+    );
     std::fs::write(&ready_file, b"ready")?;
     let final_placement = DesktopReloadWindowPlacement {
         position: Some(PhysicalPosition::new(640, 360)),
@@ -3078,7 +3084,10 @@ fn single_session_issues_slash_toggles_local_issue_browser() {
     assert_eq!(app.side_panel().focus, DesktopSidePanelFocus::IssueList);
     assert!(app.draft.is_empty());
     assert!(app.messages.is_empty());
-    assert_eq!(app.side_panel().github_issues.repo, "nareinnprs-create/ideocode");
+    assert_eq!(
+        app.side_panel().github_issues.repo,
+        "nareinnprs-create/ideocode"
+    );
     assert_eq!(
         app.side_panel()
             .github_issues
@@ -7996,7 +8005,10 @@ fn desktop_resume_args_are_parsed() {
         desktop_resume_session_id_from_args(["IDEOCODE-desktop", "--resume=session_gamma"]),
         Some("session_gamma".to_string())
     );
-    assert_eq!(desktop_resume_session_id_from_args(["IDEOCODE-desktop"]), None);
+    assert_eq!(
+        desktop_resume_session_id_from_args(["IDEOCODE-desktop"]),
+        None
+    );
 }
 
 #[test]
@@ -9940,7 +9952,10 @@ fn long_transcript_keeps_welcome_visual_only() {
 fn single_session_without_session_is_native_fresh_draft() {
     let mut app = SingleSessionApp::new(None);
 
-    assert_eq!(app.status_title(), "IDEOCODE Desktop (Beta) · fresh session");
+    assert_eq!(
+        app.status_title(),
+        "IDEOCODE Desktop (Beta) · fresh session"
+    );
     assert!(!app.status_title().contains("Enter send"));
     assert!(!app.status_title().contains("Ctrl+"));
     assert_eq!(

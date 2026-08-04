@@ -93,15 +93,10 @@ pub enum MoodContext {
 pub fn render_mood_indicator(mood: &AIMood) -> Line<'static> {
     let color = mood.color();
     Line::from(vec![
-        Span::styled(
-            format!("{} ", mood.icon()),
-            Style::default().fg(color),
-        ),
+        Span::styled(format!("{} ", mood.icon()), Style::default().fg(color)),
         Span::styled(
             mood.label().to_string(),
-            Style::default()
-                .fg(color)
-                .add_modifier(Modifier::ITALIC),
+            Style::default().fg(color).add_modifier(Modifier::ITALIC),
         ),
     ])
 }

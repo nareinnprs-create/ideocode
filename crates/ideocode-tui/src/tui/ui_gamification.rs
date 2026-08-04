@@ -26,9 +26,13 @@ fn current_day() -> u64 {
 
 /// Calculate the streak from stored data.
 /// Returns (current_streak, longest_streak).
-pub fn calculate_streak(last_session_day: Option<u64>, current_streak: u64, longest_streak: u64) -> (u64, u64) {
+pub fn calculate_streak(
+    last_session_day: Option<u64>,
+    current_streak: u64,
+    longest_streak: u64,
+) -> (u64, u64) {
     let today = current_day();
-    
+
     match last_session_day {
         Some(last) if last == today => {
             // Same day - streak continues
@@ -67,10 +71,7 @@ pub fn render_streak(current_streak: u64, longest_streak: u64) -> Line<'static> 
     };
 
     Line::from(vec![
-        Span::styled(
-            format!("{} ", fire),
-            Style::default().fg(streak_color),
-        ),
+        Span::styled(format!("{} ", fire), Style::default().fg(streak_color)),
         Span::styled(
             format!("Day {} streak", current_streak),
             Style::default()

@@ -161,9 +161,7 @@ pub fn render_reaction_picker(active_message: usize) -> Line<'static> {
     for r in Reaction::all() {
         spans.push(Span::styled(
             format!("[{}]", r.key()),
-            Style::default()
-                .fg(r.color())
-                .add_modifier(Modifier::BOLD),
+            Style::default().fg(r.color()).add_modifier(Modifier::BOLD),
         ));
         spans.push(Span::styled(
             format!("{} ", r.icon()),
@@ -190,9 +188,7 @@ pub fn render_reactions_summary(reactions: &[Reaction]) -> Line<'static> {
         .map(|r| {
             Span::styled(
                 format!(" {} ", r.icon()),
-                Style::default()
-                    .fg(r.color())
-                    .add_modifier(Modifier::BOLD),
+                Style::default().fg(r.color()).add_modifier(Modifier::BOLD),
             )
         })
         .collect();

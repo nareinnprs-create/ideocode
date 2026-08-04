@@ -70,8 +70,11 @@ fn swarm_prompt_edit_path_prefers_nonblank_project_override() {
     std::fs::create_dir_all(project_prompt.parent().expect("prompt parent"))
         .expect("create project config dir");
     std::fs::write(&project_prompt, "project routing").expect("write project prompt");
-    std::fs::write(ideocode_home.path().join("swarm-prompt.md"), "global routing")
-        .expect("write global prompt");
+    std::fs::write(
+        ideocode_home.path().join("swarm-prompt.md"),
+        "global routing",
+    )
+    .expect("write global prompt");
 
     let path = ensure_swarm_prompt_edit_path(project.path().to_str(), ideocode_home.path())
         .expect("resolve prompt path");

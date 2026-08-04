@@ -226,7 +226,8 @@ impl App {
         if message.role != "swarm" {
             return false;
         }
-        let Some(toggled) = ideocode_tui_messages::toggle_collapsible_swarm_content(&message.content)
+        let Some(toggled) =
+            ideocode_tui_messages::toggle_collapsible_swarm_content(&message.content)
         else {
             return false;
         };

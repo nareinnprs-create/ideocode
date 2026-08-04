@@ -111,8 +111,10 @@ fn latest_external_cli_suggestion_uses_newest_candidate_context() {
 
 #[test]
 fn latest_external_cli_suggestion_missing_roots_returns_none() {
-    let home =
-        std::env::temp_dir().join(format!("IDEOCODE-missing-external-cli-{}", std::process::id()));
+    let home = std::env::temp_dir().join(format!(
+        "IDEOCODE-missing-external-cli-{}",
+        std::process::id()
+    ));
     let _ = std::fs::remove_dir_all(&home);
 
     assert_eq!(

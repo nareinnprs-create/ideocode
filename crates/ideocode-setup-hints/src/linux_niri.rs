@@ -516,7 +516,13 @@ mod tests {
 
     #[test]
     fn shell_command_cds_and_self_devs() {
-        let s = launch_shell_command("/bin/IDEOCODE", "kitty", "/home/u/proj", "cmd+shift+'", true);
+        let s = launch_shell_command(
+            "/bin/IDEOCODE",
+            "kitty",
+            "/home/u/proj",
+            "cmd+shift+'",
+            true,
+        );
         assert!(s.contains("cd '/home/u/proj'"));
         assert!(s.contains("exec 'kitty' '/bin/IDEOCODE' --spawn-hotkey"));
         assert!(s.contains("'cmd+shift+'\\''' self-dev"));

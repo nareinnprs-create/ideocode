@@ -875,7 +875,8 @@ mod tests {
     #[test]
     fn parses_common_github_remote_urls() {
         assert_eq!(
-            parse_github_repo_from_remote("git@github.com:nareinnprs-create/ideocode.git").as_deref(),
+            parse_github_repo_from_remote("git@github.com:nareinnprs-create/ideocode.git")
+                .as_deref(),
             Some("nareinnprs-create/ideocode")
         );
         assert_eq!(

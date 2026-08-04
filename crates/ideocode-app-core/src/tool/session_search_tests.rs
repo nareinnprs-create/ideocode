@@ -194,7 +194,9 @@ fn bench_real_session_search_corpus() {
         .as_deref()
         != Some("1")
     {
-        eprintln!("set IDEOCODE_SESSION_SEARCH_BENCH_REAL=1 to run against the real session corpus");
+        eprintln!(
+            "set IDEOCODE_SESSION_SEARCH_BENCH_REAL=1 to run against the real session corpus"
+        );
         return;
     }
 

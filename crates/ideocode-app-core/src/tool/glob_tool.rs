@@ -77,19 +77,14 @@ impl Tool for GlobTool {
             if Path::new(&params.pattern).is_absolute() {
                 params.pattern.clone()
             } else {
-                base.join(&params.pattern)
-                    .to_string_lossy()
-                    .to_string()
+                base.join(&params.pattern).to_string_lossy().to_string()
             }
         } else {
-            base.join(&params.pattern)
-                .to_string_lossy()
-                .to_string()
+            base.join(&params.pattern).to_string_lossy().to_string()
         };
 
         let matches = tokio::task::spawn_blocking(move || -> Result<Vec<String>> {
-            let glob_pattern = glob::Pattern::new(&pattern)
-                .context("Invalid glob pattern")?;
+            let glob_pattern = glob::Pattern::new(&pattern).context("Invalid glob pattern")?;
 
             let mut results = Vec::new();
 
@@ -99,8 +94,7 @@ impl Tool for GlobTool {
 
             if glob_pattern.matches("") {
                 // For simple patterns, use the glob crate's glob function
-                let entries = glob::glob(&pattern)
-                    .context("Failed to execute glob pattern")?;
+                let entries = glob::glob(&pattern).context("Failed to execute glob pattern")?;
                 for entry in entries.flatten() {
                     if results.len() >= max {
                         break;
@@ -109,8 +103,7 @@ impl Tool for GlobTool {
                 }
             } else {
                 // Use glob normally
-                let entries = glob::glob(&pattern)
-                    .context("Failed to execute glob pattern")?;
+                let entries = glob::glob(&pattern).context("Failed to execute glob pattern")?;
                 for entry in entries.flatten() {
                     if results.len() >= max {
                         break;

@@ -337,12 +337,20 @@ pub fn render_quiz_question(
         lines.push(Line::from(vec![
             Span::styled(
                 if is_selected { "▸ " } else { "  " },
-                Style::default().fg(if is_selected { neon_green() } else { dim_color() }),
+                Style::default().fg(if is_selected {
+                    neon_green()
+                } else {
+                    dim_color()
+                }),
             ),
             Span::styled(
                 option.text.clone(),
                 Style::default()
-                    .fg(if is_selected { neon_cyan() } else { dim_color() })
+                    .fg(if is_selected {
+                        neon_cyan()
+                    } else {
+                        dim_color()
+                    })
                     .add_modifier(if is_selected {
                         Modifier::BOLD
                     } else {

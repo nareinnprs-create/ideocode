@@ -179,7 +179,9 @@ impl SplitLayout {
 /// Render a single split pane.
 pub fn render_pane(pane: &SplitPane, frame: &mut Frame, area: Rect, is_active: bool) {
     let border_style = if is_active {
-        Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)
+        Style::default()
+            .fg(neon_cyan())
+            .add_modifier(Modifier::BOLD)
     } else {
         Style::default().fg(dim_color())
     };

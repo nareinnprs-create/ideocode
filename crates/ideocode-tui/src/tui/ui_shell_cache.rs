@@ -46,9 +46,10 @@ pub fn get_cached_command(cmd: &str, ttl: Duration) -> Vec<String> {
 
     // Check cache freshness
     if let Some(entry) = inner.cache.get(&key)
-        && entry.cached_at.elapsed() < ttl {
-            return entry.lines.clone();
-        }
+        && entry.cached_at.elapsed() < ttl
+    {
+        return entry.lines.clone();
+    }
 
     // Already have a background fetch in progress?
     if inner.pending.contains_key(&key) {
@@ -67,7 +68,10 @@ pub fn get_cached_command(cmd: &str, ttl: Duration) -> Vec<String> {
     // Spawn background thread (non-blocking)
     let cmd_owned = cmd.to_string();
     std::thread::Builder::new()
-        .name(format!("shell-cache-{}", &cmd_owned[..cmd_owned.len().min(20)]))
+        .name(format!(
+            "shell-cache-{}",
+            &cmd_owned[..cmd_owned.len().min(20)]
+        ))
         .spawn(move || {
             let result = run_shell_command(&cmd_owned);
             if let Ok(mut guard) = shared.lock() {
@@ -100,9 +104,10 @@ pub fn poll_pending() {
     for key in &keys {
         if let Some(shared) = inner.pending.get(key)
             && let Ok(guard) = shared.lock()
-                && let Some(lines) = guard.as_ref() {
-                    completed.push((key.clone(), lines.clone()));
-                }
+            && let Some(lines) = guard.as_ref()
+        {
+            completed.push((key.clone(), lines.clone()));
+        }
     }
 
     for (key, lines) in completed {

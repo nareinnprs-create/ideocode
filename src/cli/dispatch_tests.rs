@@ -13,7 +13,10 @@ fn only_file_controlled_debug_clients_need_parent_lifetime_binding() {
     crate::env::remove_var("IDEOCODE_DEBUG_CMD_PATH");
     assert!(!is_file_controlled_debug_client());
 
-    crate::env::set_var("IDEOCODE_DEBUG_CMD_PATH", "/tmp/IDEOCODE-test-debug-command");
+    crate::env::set_var(
+        "IDEOCODE_DEBUG_CMD_PATH",
+        "/tmp/IDEOCODE-test-debug-command",
+    );
     assert!(is_file_controlled_debug_client());
 
     if let Some(previous) = previous {

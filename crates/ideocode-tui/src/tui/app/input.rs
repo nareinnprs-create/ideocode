@@ -2002,7 +2002,11 @@ pub(super) fn handle_alt_key(app: &mut App, code: KeyCode) -> bool {
             // Find the last assistant message index
             let msg_count = app.display_messages().len();
             if msg_count > 0 {
-                let last_assistant = app.display_messages().iter().rposition(|m| m.role == "assistant").unwrap_or(msg_count - 1);
+                let last_assistant = app
+                    .display_messages()
+                    .iter()
+                    .rposition(|m| m.role == "assistant")
+                    .unwrap_or(msg_count - 1);
                 crate::tui::ui_integration::enter_reaction_mode(last_assistant);
             }
             true
@@ -2034,7 +2038,9 @@ pub(super) fn handle_alt_key(app: &mut App, code: KeyCode) -> bool {
 /// Handle keys while the gesture pad overlay is visible.
 /// Up/Down or j/k navigate, Enter or number keys 1-8 activate, Escape closes.
 fn handle_gesture_pad_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
-    if !crate::tui::ui_integration::gesture_pad_visible() { return false; }
+    if !crate::tui::ui_integration::gesture_pad_visible() {
+        return false;
+    }
 
     match code {
         KeyCode::Esc => {
@@ -2053,28 +2059,68 @@ fn handle_gesture_pad_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
             crate::tui::ui_integration::gesture_activate();
             true
         }
-        KeyCode::Char('1') => { gesture_activate_item(0); true }
-        KeyCode::Char('2') => { gesture_activate_item(1); true }
-        KeyCode::Char('3') => { gesture_activate_item(2); true }
-        KeyCode::Char('4') => { gesture_activate_item(3); true }
-        KeyCode::Char('5') => { gesture_activate_item(4); true }
-        KeyCode::Char('6') => { gesture_activate_item(5); true }
-        KeyCode::Char('7') => { gesture_activate_item(6); true }
-        KeyCode::Char('8') => { gesture_activate_item(7); true }
-        KeyCode::Char('9') => { gesture_activate_item(8); true }
-        KeyCode::Char('0') => { gesture_activate_item(9); true }
-        KeyCode::Char('=') | KeyCode::Char('+') => { gesture_activate_item(10); true }
-        KeyCode::Char('-') => { gesture_activate_item(11); true }
-        KeyCode::Char('_') => { gesture_activate_item(12); true }
+        KeyCode::Char('1') => {
+            gesture_activate_item(0);
+            true
+        }
+        KeyCode::Char('2') => {
+            gesture_activate_item(1);
+            true
+        }
+        KeyCode::Char('3') => {
+            gesture_activate_item(2);
+            true
+        }
+        KeyCode::Char('4') => {
+            gesture_activate_item(3);
+            true
+        }
+        KeyCode::Char('5') => {
+            gesture_activate_item(4);
+            true
+        }
+        KeyCode::Char('6') => {
+            gesture_activate_item(5);
+            true
+        }
+        KeyCode::Char('7') => {
+            gesture_activate_item(6);
+            true
+        }
+        KeyCode::Char('8') => {
+            gesture_activate_item(7);
+            true
+        }
+        KeyCode::Char('9') => {
+            gesture_activate_item(8);
+            true
+        }
+        KeyCode::Char('0') => {
+            gesture_activate_item(9);
+            true
+        }
+        KeyCode::Char('=') | KeyCode::Char('+') => {
+            gesture_activate_item(10);
+            true
+        }
+        KeyCode::Char('-') => {
+            gesture_activate_item(11);
+            true
+        }
+        KeyCode::Char('_') => {
+            gesture_activate_item(12);
+            true
+        }
         _ => false,
     }
 }
 
 fn gesture_activate_item(index: usize) {
-    use crate::tui::ui_integration::{toggle_file_explorer, toggle_git_panel,
-        toggle_search_panel, toggle_build_panel, toggle_log_viewer, toggle_docker,
-        toggle_cicd, toggle_profiler, toggle_meme_generator, toggle_theme_picker,
-        toggle_templates, toggle_import, toggle_plugins};
+    use crate::tui::ui_integration::{
+        toggle_build_panel, toggle_cicd, toggle_docker, toggle_file_explorer, toggle_git_panel,
+        toggle_import, toggle_log_viewer, toggle_meme_generator, toggle_plugins, toggle_profiler,
+        toggle_search_panel, toggle_templates, toggle_theme_picker,
+    };
     // Close gesture pad
     crate::tui::ui_integration::toggle_gesture_pad();
     // Activate the selected action
@@ -2098,7 +2144,9 @@ fn gesture_activate_item(index: usize) {
 
 /// Handle keys while the command palette overlay is visible.
 fn handle_command_palette_keys(app: &mut App, code: KeyCode, _modifiers: KeyModifiers) -> bool {
-    if !crate::tui::ui_integration::command_palette_visible() { return false; }
+    if !crate::tui::ui_integration::command_palette_visible() {
+        return false;
+    }
 
     match code {
         KeyCode::Esc => {
@@ -2155,23 +2203,33 @@ fn execute_palette_tool_command(cmd: &str) {
         "Toggle Sidebar" => crate::tui::ui_integration::toggle_sidebar(),
         "Toggle Git Panel" => {
             crate::tui::ui_integration::toggle_sidebar();
-            crate::tui::ui_integration::sidebar_set_panel(crate::tui::ui_sidebar::SidebarPanel::Git);
+            crate::tui::ui_integration::sidebar_set_panel(
+                crate::tui::ui_sidebar::SidebarPanel::Git,
+            );
         }
         "Toggle Build Panel" => {
             crate::tui::ui_integration::toggle_sidebar();
-            crate::tui::ui_integration::sidebar_set_panel(crate::tui::ui_sidebar::SidebarPanel::Build);
+            crate::tui::ui_integration::sidebar_set_panel(
+                crate::tui::ui_sidebar::SidebarPanel::Build,
+            );
         }
         "Toggle Search Panel" => {
             crate::tui::ui_integration::toggle_sidebar();
-            crate::tui::ui_integration::sidebar_set_panel(crate::tui::ui_sidebar::SidebarPanel::Search);
+            crate::tui::ui_integration::sidebar_set_panel(
+                crate::tui::ui_sidebar::SidebarPanel::Search,
+            );
         }
         "Toggle Docker Panel" => {
             crate::tui::ui_integration::toggle_sidebar();
-            crate::tui::ui_integration::sidebar_set_panel(crate::tui::ui_sidebar::SidebarPanel::Docker);
+            crate::tui::ui_integration::sidebar_set_panel(
+                crate::tui::ui_sidebar::SidebarPanel::Docker,
+            );
         }
         "Toggle CI/CD Panel" => {
             crate::tui::ui_integration::toggle_sidebar();
-            crate::tui::ui_integration::sidebar_set_panel(crate::tui::ui_sidebar::SidebarPanel::Cicd);
+            crate::tui::ui_integration::sidebar_set_panel(
+                crate::tui::ui_sidebar::SidebarPanel::Cicd,
+            );
         }
         "Provider Manager" => crate::tui::ui_integration::toggle_provider_panel(),
         "Split Terminal" => crate::tui::ui_integration::toggle_split_terminal(),
@@ -2184,7 +2242,9 @@ fn execute_palette_tool_command(cmd: &str) {
 
 /// Handle keys while the workspace profiles overlay is visible.
 fn handle_workspace_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
-    if !crate::tui::ui_integration::workspace_visible() { return false; }
+    if !crate::tui::ui_integration::workspace_visible() {
+        return false;
+    }
 
     match code {
         KeyCode::Esc => {
@@ -2209,7 +2269,9 @@ fn handle_workspace_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
 
 /// Handle keys while the export overlay is visible.
 fn handle_export_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
-    if !crate::tui::ui_integration::export_visible() { return false; }
+    if !crate::tui::ui_integration::export_visible() {
+        return false;
+    }
 
     match code {
         KeyCode::Esc => {
@@ -2234,7 +2296,9 @@ fn handle_export_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
 
 /// Handle keys while the theme picker overlay is visible.
 fn handle_theme_picker_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
-    if !crate::tui::ui_integration::theme_picker_visible() { return false; }
+    if !crate::tui::ui_integration::theme_picker_visible() {
+        return false;
+    }
 
     match code {
         KeyCode::Esc => {
@@ -2262,7 +2326,9 @@ fn handle_theme_picker_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
 
 /// Handle keys while the import overlay is visible.
 fn handle_import_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
-    if !crate::tui::ui_integration::import_visible() { return false; }
+    if !crate::tui::ui_integration::import_visible() {
+        return false;
+    }
 
     match code {
         KeyCode::Esc => {
@@ -2287,7 +2353,9 @@ fn handle_import_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
 
 /// Handle keys while the plugin overlay is visible.
 fn handle_plugin_keys(code: KeyCode, _modifiers: KeyModifiers) -> bool {
-    if !crate::tui::ui_integration::plugin_visible() { return false; }
+    if !crate::tui::ui_integration::plugin_visible() {
+        return false;
+    }
 
     match code {
         KeyCode::Esc => {
@@ -3246,9 +3314,10 @@ impl App {
             return Ok(());
         }
         if self.vim_mode() == crate::tui::ui_vim::VimMode::Normal
-            && crate::tui::ui_vim::handle_vim_normal(self, code, modifiers) {
-                return Ok(());
-            }
+            && crate::tui::ui_vim::handle_vim_normal(self, code, modifiers)
+        {
+            return Ok(());
+        }
 
         self.normalize_diagram_state();
         let diagram_available = self.diagram_available();

@@ -29,9 +29,9 @@ impl MentorLevel {
 
     pub fn explanation_depth(&self) -> usize {
         match self {
-            MentorLevel::Beginner => 3, // Very detailed
+            MentorLevel::Beginner => 3,     // Very detailed
             MentorLevel::Intermediate => 2, // Moderate
-            MentorLevel::Advanced => 1, // Brief
+            MentorLevel::Advanced => 1,     // Brief
         }
     }
 }
@@ -45,15 +45,10 @@ pub fn render_mentor_indicator(level: &MentorLevel) -> Line<'static> {
     };
 
     Line::from(vec![
-        Span::styled(
-            "📚 ",
-            Style::default().fg(neon_purple()),
-        ),
+        Span::styled("📚 ", Style::default().fg(neon_purple())),
         Span::styled(
             "Mentor Mode",
-            Style::default()
-                .fg(color)
-                .add_modifier(Modifier::BOLD),
+            Style::default().fg(color).add_modifier(Modifier::BOLD),
         ),
         Span::styled(
             format!(" ({})", level.label()),
@@ -69,18 +64,12 @@ pub fn render_explanation(
     level: &MentorLevel,
 ) -> Vec<Line<'static>> {
     let mut lines = vec![
-        Line::from(Span::styled(
-            "```",
-            Style::default().fg(dim_color()),
-        )),
+        Line::from(Span::styled("```", Style::default().fg(dim_color()))),
         Line::from(Span::styled(
             code.to_string(),
             Style::default().fg(neon_green()),
         )),
-        Line::from(Span::styled(
-            "```",
-            Style::default().fg(dim_color()),
-        )),
+        Line::from(Span::styled("```", Style::default().fg(dim_color()))),
     ];
 
     // Explanation
@@ -122,10 +111,7 @@ pub fn render_concept(concept: &str, example: &str) -> Vec<Line<'static>> {
                 .add_modifier(Modifier::BOLD),
         )),
         Line::from(""),
-        Line::from(Span::styled(
-            "Example:",
-            Style::default().fg(neon_yellow()),
-        )),
+        Line::from(Span::styled("Example:", Style::default().fg(neon_yellow()))),
         Line::from(Span::styled(
             format!("  {}", example),
             Style::default().fg(neon_green()),

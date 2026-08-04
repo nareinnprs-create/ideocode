@@ -639,7 +639,11 @@ impl AuthStatus {
             crate::provider_catalog::LoginProviderTarget::OpenAiApiKey => {
                 let (source, detail) = summarize_sources(vec![
                     env_source("OPENAI_API_KEY"),
-                    config_source("OPENAI_API_KEY", "openai.env", "~/.config/IDEOCODE/openai.env"),
+                    config_source(
+                        "OPENAI_API_KEY",
+                        "openai.env",
+                        "~/.config/IDEOCODE/openai.env",
+                    ),
                     external_api_key_source("OPENAI_API_KEY"),
                 ]);
                 (
@@ -724,7 +728,11 @@ impl AuthStatus {
                 {
                     summarize_sources(vec![
                         env_source(&key_env),
-                        config_source(&key_env, &env_file, format!("~/.config/IDEOCODE/{}", env_file)),
+                        config_source(
+                            &key_env,
+                            &env_file,
+                            format!("~/.config/IDEOCODE/{}", env_file),
+                        ),
                         external_api_key_source(&key_env),
                     ])
                 } else {
@@ -821,7 +829,9 @@ fn build_auth_status_uncached(mode: AuthProbeMode) -> (AuthStatus, Vec<(&'static
     let mut status = AuthStatus::default();
     let mut timings = Vec::new();
 
-    record_auth_probe_step(&mut timings, "IDEOCODE", || probe_ideocode_status(&mut status));
+    record_auth_probe_step(&mut timings, "IDEOCODE", || {
+        probe_ideocode_status(&mut status)
+    });
     record_auth_probe_step(&mut timings, "anthropic", || {
         probe_anthropic_status(&mut status)
     });
@@ -1383,8 +1393,18 @@ fn cursor_source() -> Option<(AuthCredentialSource, String)> {
             format!("trusted Cursor app state ({})", path.display()),
         ));
     }
-    if config_source("CURSOR_API_KEY", "cursor.env", "~/.config/IDEOCODE/cursor.env").is_some() {
-        return config_source("CURSOR_API_KEY", "cursor.env", "~/.config/IDEOCODE/cursor.env");
+    if config_source(
+        "CURSOR_API_KEY",
+        "cursor.env",
+        "~/.config/IDEOCODE/cursor.env",
+    )
+    .is_some()
+    {
+        return config_source(
+            "CURSOR_API_KEY",
+            "cursor.env",
+            "~/.config/IDEOCODE/cursor.env",
+        );
     }
     None
 }

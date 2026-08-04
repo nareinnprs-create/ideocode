@@ -69,7 +69,8 @@ fn apply_confidence_updates_batches_boost_and_decay() {
     crate::env::set_var("IDEOCODE_HOME", &dir);
 
     let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        let manager = crate::memory::MemoryManager::new().with_project_dir("/tmp/IDEOCODE-conf-batch");
+        let manager =
+            crate::memory::MemoryManager::new().with_project_dir("/tmp/IDEOCODE-conf-batch");
 
         let mut keep_entry = MemoryEntry::new(MemoryCategory::Fact, "verified memory")
             .with_embedding(vec![1.0, 0.0]);

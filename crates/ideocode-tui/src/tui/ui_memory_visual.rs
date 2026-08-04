@@ -14,7 +14,11 @@ use ratatui::text::Line;
 
 /// Render memory usage bar.
 pub fn render_memory_usage(used_mb: f32, total_mb: f32) -> Line<'static> {
-    let percentage = if total_mb > 0.0 { used_mb / total_mb } else { 0.0 };
+    let percentage = if total_mb > 0.0 {
+        used_mb / total_mb
+    } else {
+        0.0
+    };
     let bar_width = 15;
     let filled = (percentage * bar_width as f32) as usize;
     let empty = bar_width - filled;
@@ -30,14 +34,8 @@ pub fn render_memory_usage(used_mb: f32, total_mb: f32) -> Line<'static> {
     };
 
     Line::from(vec![
-        Span::styled(
-            "🧠 ",
-            Style::default().fg(neon_purple()),
-        ),
-        Span::styled(
-            bar,
-            Style::default().fg(color),
-        ),
+        Span::styled("🧠 ", Style::default().fg(neon_purple())),
+        Span::styled(bar, Style::default().fg(color)),
         Span::styled(
             format!(" {:.0}MB ({:.0}%)", used_mb, percentage * 100.0),
             Style::default().fg(dim_color()),
@@ -46,11 +44,7 @@ pub fn render_memory_usage(used_mb: f32, total_mb: f32) -> Line<'static> {
 }
 
 /// Render memory usage with breakdown.
-pub fn render_memory_detailed(
-    heap_mb: f32,
-    stack_mb: f32,
-    other_mb: f32,
-) -> Vec<Line<'static>> {
+pub fn render_memory_detailed(heap_mb: f32, stack_mb: f32, other_mb: f32) -> Vec<Line<'static>> {
     let total = heap_mb + stack_mb + other_mb;
 
     vec![
@@ -107,14 +101,8 @@ pub fn render_memory_mini(used_mb: f32) -> Line<'static> {
     };
 
     Line::from(vec![
-        Span::styled(
-            "🧠",
-            Style::default().fg(neon_purple()),
-        ),
-        Span::styled(
-            format!(" {:.0}MB", used_mb),
-            Style::default().fg(color),
-        ),
+        Span::styled("🧠", Style::default().fg(neon_purple())),
+        Span::styled(format!(" {:.0}MB", used_mb), Style::default().fg(color)),
     ])
 }
 

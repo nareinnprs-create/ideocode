@@ -1172,7 +1172,9 @@ mod tests {
             // The region must point at blank placeholder lines, never the label.
             let first = &section.wrapped_lines[region.abs_line_idx];
             assert!(
-                ideocode_tui_render::line_plain_text(first).trim().is_empty(),
+                ideocode_tui_render::line_plain_text(first)
+                    .trim()
+                    .is_empty(),
                 "region should start on a blank placeholder line"
             );
             // Region height must match its line span.

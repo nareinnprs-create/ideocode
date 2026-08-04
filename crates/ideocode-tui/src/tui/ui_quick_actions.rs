@@ -80,12 +80,20 @@ pub fn render_quick_actions_bar(actions: &[QuickAction], selected: usize) -> Lin
         .enumerate()
         .flat_map(|(i, action)| {
             let is_selected = i == selected;
-            let color = if action.enabled { neon_cyan() } else { dim_color() };
+            let color = if action.enabled {
+                neon_cyan()
+            } else {
+                dim_color()
+            };
 
             let mut spans = vec![
                 Span::styled(
                     format!("[{}]", if is_selected { "▸" } else { " " }),
-                    Style::default().fg(if is_selected { neon_green() } else { dim_color() }),
+                    Style::default().fg(if is_selected {
+                        neon_green()
+                    } else {
+                        dim_color()
+                    }),
                 ),
                 Span::styled(
                     format!(" {} {} ", action.icon, action.label),

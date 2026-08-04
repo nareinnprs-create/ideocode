@@ -17,10 +17,7 @@ pub fn render_input_word_count(input: &str) -> Line<'static> {
     let lines = input.lines().count();
 
     Line::from(vec![
-        Span::styled(
-            "📝 ",
-            Style::default().fg(neon_cyan()),
-        ),
+        Span::styled("📝 ", Style::default().fg(neon_cyan())),
         Span::styled(
             format!("{}w {}c {}L", words, chars, lines),
             Style::default().fg(dim_color()),
@@ -35,10 +32,7 @@ pub fn render_session_word_count(
     total_lines: usize,
 ) -> Line<'static> {
     Line::from(vec![
-        Span::styled(
-            "📊 ",
-            Style::default().fg(neon_purple()),
-        ),
+        Span::styled("📊 ", Style::default().fg(neon_purple())),
         Span::styled(
             format!("{}w {}c {}L", total_words, total_chars, total_lines),
             Style::default().fg(dim_color()),
@@ -63,10 +57,7 @@ pub fn render_word_count_detailed(
                 .add_modifier(Modifier::BOLD),
         )),
         Line::from(""),
-        Line::from(Span::styled(
-            "  Input:",
-            Style::default().fg(neon_yellow()),
-        )),
+        Line::from(Span::styled("  Input:", Style::default().fg(neon_yellow()))),
         Line::from(vec![
             Span::styled("    Words: ", Style::default().fg(dim_color())),
             Span::styled(
@@ -74,10 +65,7 @@ pub fn render_word_count_detailed(
                 Style::default().fg(neon_green()),
             ),
             Span::styled("  Chars: ", Style::default().fg(dim_color())),
-            Span::styled(
-                format!("{}", input_chars),
-                Style::default().fg(neon_cyan()),
-            ),
+            Span::styled(format!("{}", input_chars), Style::default().fg(neon_cyan())),
             Span::styled("  Lines: ", Style::default().fg(dim_color())),
             Span::styled(
                 format!("{}", input_lines),

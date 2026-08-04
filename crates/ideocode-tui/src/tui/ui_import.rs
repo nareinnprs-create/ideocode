@@ -102,10 +102,7 @@ pub fn detect_competitor_tools() -> Vec<CompetitorTool> {
 }
 
 /// Render the import from competitors selector.
-pub fn render_import_selector(
-    tools: &[CompetitorTool],
-    selected: usize,
-) -> Vec<Line<'static>> {
+pub fn render_import_selector(tools: &[CompetitorTool], selected: usize) -> Vec<Line<'static>> {
     let mut lines = Vec::new();
 
     lines.push(Line::from(Span::styled(
@@ -127,35 +124,42 @@ pub fn render_import_selector(
         } else {
             "not installed".to_string()
         };
-        let status_color = if tool.detected { neon_green() } else { rgb(255, 80, 80) };
+        let status_color = if tool.detected {
+            neon_green()
+        } else {
+            rgb(255, 80, 80)
+        };
 
         lines.push(Line::from(vec![
             Span::styled(
                 if is_selected { "▸ " } else { "  " },
-                Style::default().fg(if is_selected { neon_green() } else { dim_color() }),
+                Style::default().fg(if is_selected {
+                    neon_green()
+                } else {
+                    dim_color()
+                }),
             ),
-            Span::styled(
-                format!("{} ", tool.icon),
-                Style::default(),
-            ),
+            Span::styled(format!("{} ", tool.icon), Style::default()),
             Span::styled(
                 tool.name.to_string(),
                 Style::default()
-                    .fg(if tool.detected { neon_cyan() } else { dim_color() })
-                    .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                    .fg(if tool.detected {
+                        neon_cyan()
+                    } else {
+                        dim_color()
+                    })
+                    .add_modifier(if is_selected {
+                        Modifier::BOLD
+                    } else {
+                        Modifier::empty()
+                    }),
             ),
-            Span::styled(
-                format!("  [{}]", status),
-                Style::default().fg(status_color),
-            ),
+            Span::styled(format!("  [{}]", status), Style::default().fg(status_color)),
         ]));
 
         if is_selected && tool.detected {
             lines.push(Line::from(vec![
-                Span::styled(
-                    "    Sessions dir: ",
-                    Style::default().fg(dim_color()),
-                ),
+                Span::styled("    Sessions dir: ", Style::default().fg(dim_color())),
                 Span::styled(
                     tool.sessions_dir.to_string(),
                     Style::default().fg(neon_yellow()),

@@ -66,7 +66,9 @@ impl FileExplorerState {
 
             for entry in entries {
                 let name = entry.file_name().to_string_lossy().to_string();
-                if name.starts_with('.') && depth == 0 { continue; }
+                if name.starts_with('.') && depth == 0 {
+                    continue;
+                }
                 let is_dir = entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false);
                 let path = entry.path();
 
@@ -87,43 +89,50 @@ impl FileExplorerState {
 
     pub fn toggle_expand(&mut self) {
         if let Some(entry) = self.entries.get_mut(self.selected)
-            && entry.is_dir {
-                entry.is_expanded = !entry.is_expanded;
-                if entry.is_expanded {
-                    // Load children
-                    let path = entry.path.clone();
-                    let depth = entry.depth + 1;
-                    let idx = self.selected + 1;
-                    let mut new_entries = Vec::new();
-                    if let Ok(rd) = std::fs::read_dir(&path) {
-                        let mut entries: Vec<_> = rd.flatten().collect();
-                        entries.sort_by(|a, b| {
-                            let a_dir = a.file_type().map(|ft| ft.is_dir()).unwrap_or(false);
-                            let b_dir = b.file_type().map(|ft| ft.is_dir()).unwrap_or(false);
-                            b_dir.cmp(&a_dir).then(a.file_name().cmp(&b.file_name()))
-                        });
-                        for entry in entries {
-                            let name = entry.file_name().to_string_lossy().to_string();
-                            if name.starts_with('.') { continue; }
-                            let is_dir = entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false);
-                            new_entries.push(FileEntry {
-                                name, path: entry.path(), is_dir, is_expanded: false, depth,
-                            });
+            && entry.is_dir
+        {
+            entry.is_expanded = !entry.is_expanded;
+            if entry.is_expanded {
+                // Load children
+                let path = entry.path.clone();
+                let depth = entry.depth + 1;
+                let idx = self.selected + 1;
+                let mut new_entries = Vec::new();
+                if let Ok(rd) = std::fs::read_dir(&path) {
+                    let mut entries: Vec<_> = rd.flatten().collect();
+                    entries.sort_by(|a, b| {
+                        let a_dir = a.file_type().map(|ft| ft.is_dir()).unwrap_or(false);
+                        let b_dir = b.file_type().map(|ft| ft.is_dir()).unwrap_or(false);
+                        b_dir.cmp(&a_dir).then(a.file_name().cmp(&b.file_name()))
+                    });
+                    for entry in entries {
+                        let name = entry.file_name().to_string_lossy().to_string();
+                        if name.starts_with('.') {
+                            continue;
                         }
-                    }
-                    for (i, e) in new_entries.into_iter().enumerate() {
-                        self.entries.insert(idx + i, e);
-                    }
-                } else {
-                    // Remove children
-                    let child_depth = self.entries[self.selected].depth + 1;
-                    while self.entries.len() > self.selected + 1
-                        && self.entries[self.selected + 1].depth >= child_depth
-                    {
-                        self.entries.remove(self.selected + 1);
+                        let is_dir = entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false);
+                        new_entries.push(FileEntry {
+                            name,
+                            path: entry.path(),
+                            is_dir,
+                            is_expanded: false,
+                            depth,
+                        });
                     }
                 }
+                for (i, e) in new_entries.into_iter().enumerate() {
+                    self.entries.insert(idx + i, e);
+                }
+            } else {
+                // Remove children
+                let child_depth = self.entries[self.selected].depth + 1;
+                while self.entries.len() > self.selected + 1
+                    && self.entries[self.selected + 1].depth >= child_depth
+                {
+                    self.entries.remove(self.selected + 1);
+                }
             }
+        }
     }
 
     pub fn move_up(&mut self) {
@@ -147,7 +156,9 @@ impl FileExplorerState {
 
 /// Render the file explorer panel.
 pub fn render_file_explorer(frame: &mut Frame, area: Rect, state: &FileExplorerState) {
-    if !state.visible { return; }
+    if !state.visible {
+        return;
+    }
 
     let panel_width = 30.min(area.width as usize / 3);
     let panel_area = Rect {
@@ -160,23 +171,44 @@ pub fn render_file_explorer(frame: &mut Frame, area: Rect, state: &FileExplorerS
     let mut lines = Vec::new();
     lines.push(Line::from(Span::styled(
         "📂 Files",
-        Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+        Style::default()
+            .fg(neon_cyan())
+            .add_modifier(Modifier::BOLD),
     )));
     lines.push(Line::from(Span::styled(
-        format!("  {}", state.cwd.to_string_lossy().chars().take(26).collect::<String>()),
+        format!(
+            "  {}",
+            state
+                .cwd
+                .to_string_lossy()
+                .chars()
+                .take(26)
+                .collect::<String>()
+        ),
         Style::default().fg(dim_color()),
     )));
     lines.push(Line::from("─".repeat(panel_width)));
 
     let max_visible = area.height as usize - 4;
-    for (i, entry) in state.entries.iter().skip(state.scroll).take(max_visible).enumerate() {
+    for (i, entry) in state
+        .entries
+        .iter()
+        .skip(state.scroll)
+        .take(max_visible)
+        .enumerate()
+    {
         let is_selected = i + state.scroll == state.selected;
         let indent = "  ".repeat(entry.depth);
 
         let (icon, color) = if entry.is_dir {
-            if entry.is_expanded { ("📂", neon_yellow()) } else { ("📁", neon_blue()) }
+            if entry.is_expanded {
+                ("📂", neon_yellow())
+            } else {
+                ("📁", neon_blue())
+            }
         } else {
-            let ext = Path::new(&entry.name).extension()
+            let ext = Path::new(&entry.name)
+                .extension()
                 .and_then(|e| e.to_str())
                 .unwrap_or("");
             match ext {
@@ -197,8 +229,16 @@ pub fn render_file_explorer(frame: &mut Frame, area: Rect, state: &FileExplorerS
             Span::styled(
                 entry.name.chars().take(22).collect::<String>(),
                 Style::default()
-                    .fg(if is_selected { neon_cyan() } else { dim_color() })
-                    .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                    .fg(if is_selected {
+                        neon_cyan()
+                    } else {
+                        dim_color()
+                    })
+                    .add_modifier(if is_selected {
+                        Modifier::BOLD
+                    } else {
+                        Modifier::empty()
+                    }),
             ),
         ]));
     }

@@ -155,7 +155,10 @@ async fn run_sqlite(params: &SqlInput, ctx: &ToolContext) -> Result<ToolOutput> 
 
 async fn run_postgres(params: &SqlInput) -> Result<ToolOutput> {
     let host = params.host.as_deref().unwrap_or("localhost");
-    let port = params.port.map(|p| p.to_string()).unwrap_or_else(|| "5432".to_string());
+    let port = params
+        .port
+        .map(|p| p.to_string())
+        .unwrap_or_else(|| "5432".to_string());
 
     let mut cmd = tokio::process::Command::new("psql");
     cmd.arg("-h").arg(host);
@@ -201,7 +204,10 @@ async fn run_postgres(params: &SqlInput) -> Result<ToolOutput> {
 
 async fn run_mysql(params: &SqlInput) -> Result<ToolOutput> {
     let host = params.host.as_deref().unwrap_or("localhost");
-    let port = params.port.map(|p| p.to_string()).unwrap_or_else(|| "3306".to_string());
+    let port = params
+        .port
+        .map(|p| p.to_string())
+        .unwrap_or_else(|| "3306".to_string());
 
     let mut cmd = tokio::process::Command::new("mysql");
     cmd.arg("-h").arg(host);

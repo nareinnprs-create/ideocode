@@ -14,47 +14,31 @@ use ratatui::text::Line;
 /// Render compact mode toggle.
 pub fn render_compact_mode_toggle(enabled: bool) -> Line<'static> {
     Line::from(vec![
-        Span::styled(
-            "📦 Compact Mode: ",
-            Style::default().fg(dim_color()),
-        ),
+        Span::styled("📦 Compact Mode: ", Style::default().fg(dim_color())),
         Span::styled(
             if enabled { "ON" } else { "OFF" },
             Style::default()
-                .fg(if enabled { neon_green() } else { rgb(255, 80, 80) })
+                .fg(if enabled {
+                    neon_green()
+                } else {
+                    rgb(255, 80, 80)
+                })
                 .add_modifier(Modifier::BOLD),
         ),
     ])
 }
 
 /// Render compact status bar.
-pub fn render_compact_status(
-    model: &str,
-    tokens: u64,
-    cost: f32,
-) -> Line<'static> {
+pub fn render_compact_status(model: &str, tokens: u64, cost: f32) -> Line<'static> {
     Line::from(vec![
-        Span::styled(
-            format!("{} ", model),
-            Style::default().fg(neon_cyan()),
-        ),
-        Span::styled(
-            format!("{}tok ", tokens),
-            Style::default().fg(neon_green()),
-        ),
-        Span::styled(
-            format!("${:.4}", cost),
-            Style::default().fg(neon_yellow()),
-        ),
+        Span::styled(format!("{} ", model), Style::default().fg(neon_cyan())),
+        Span::styled(format!("{}tok ", tokens), Style::default().fg(neon_green())),
+        Span::styled(format!("${:.4}", cost), Style::default().fg(neon_yellow())),
     ])
 }
 
 /// Render compact message.
-pub fn render_compact_message(
-    role: &str,
-    content: &str,
-    max_width: usize,
-) -> Line<'static> {
+pub fn render_compact_message(role: &str, content: &str, max_width: usize) -> Line<'static> {
     let truncated = if content.len() > max_width {
         format!("{}...", &content[..max_width.saturating_sub(3)])
     } else {
@@ -69,14 +53,8 @@ pub fn render_compact_message(
     };
 
     Line::from(vec![
-        Span::styled(
-            format!("{}: ", role),
-            Style::default().fg(role_color),
-        ),
-        Span::styled(
-            truncated,
-            Style::default().fg(dim_color()),
-        ),
+        Span::styled(format!("{}: ", role), Style::default().fg(role_color)),
+        Span::styled(truncated, Style::default().fg(dim_color())),
     ])
 }
 
@@ -91,14 +69,8 @@ pub fn render_compact_input(input: &str, cursor_pos: usize) -> Line<'static> {
     };
 
     Line::from(vec![
-        Span::styled(
-            "> ",
-            Style::default().fg(neon_green()),
-        ),
-        Span::styled(
-            truncated,
-            Style::default().fg(neon_cyan()),
-        ),
+        Span::styled("> ", Style::default().fg(neon_green())),
+        Span::styled(truncated, Style::default().fg(neon_cyan())),
     ])
 }
 

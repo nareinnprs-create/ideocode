@@ -524,7 +524,10 @@ fn goal_file(goal: &Goal, working_dir: Option<&Path>) -> Result<PathBuf> {
 }
 
 fn goal_file_in_dir(dir: &Path, id: &str) -> PathBuf {
-    dir.join(format!("{}.json", ideocode_task_types::sanitize_goal_id(id)))
+    dir.join(format!(
+        "{}.json",
+        ideocode_task_types::sanitize_goal_id(id)
+    ))
 }
 
 fn global_goals_dir() -> Result<PathBuf> {

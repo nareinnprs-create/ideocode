@@ -141,7 +141,8 @@ impl GeneratedImagePanelInfo {
         markdown.push_str("## Details\n\n");
         markdown.push_str(&format!("- File: {}\n", markdown_code(&self.path)));
         if let Some((width, height)) = self.dimensions {
-            let mut dimensions = ideocode_terminal_image::metadata::format_dimensions(width, height);
+            let mut dimensions =
+                ideocode_terminal_image::metadata::format_dimensions(width, height);
             if let Some(ratio) = ideocode_terminal_image::metadata::aspect_ratio(width, height) {
                 dimensions.push_str(&format!(" ({ratio})"));
             }

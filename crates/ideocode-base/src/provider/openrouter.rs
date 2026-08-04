@@ -290,7 +290,9 @@ impl OpenRouterTransportState {
             "openrouter" | "openrouter-api-key" | "openrouter_byok" | "openrouter-byok" => {
                 Some(Self::OpenRouterApiKey)
             }
-            "IDEOCODE" | "IDEOCODE-subscription" | "subscription" => Some(Self::IDEOCODESubscription),
+            "IDEOCODE" | "IDEOCODE-subscription" | "subscription" => {
+                Some(Self::IDEOCODESubscription)
+            }
             "direct" | "direct-api-key" | "openai-compatible" | "compatible-api-key" => {
                 Some(Self::DirectApiKey)
             }

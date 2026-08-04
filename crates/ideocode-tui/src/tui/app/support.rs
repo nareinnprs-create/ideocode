@@ -109,7 +109,10 @@ fn gather_diagnostics(app: &App) -> SupportDiagnostics {
     let (account_id, account_email, tier) = if has_subscription {
         (
             load_env_value_from_env_or_config(cat::IDEOCODE_ACCOUNT_ID_ENV, cat::IDEOCODE_ENV_FILE),
-            load_env_value_from_env_or_config(cat::IDEOCODE_ACCOUNT_EMAIL_ENV, cat::IDEOCODE_ENV_FILE),
+            load_env_value_from_env_or_config(
+                cat::IDEOCODE_ACCOUNT_EMAIL_ENV,
+                cat::IDEOCODE_ENV_FILE,
+            ),
             cat::cached_tier().map(|t| t.display_name().to_string()),
         )
     } else {

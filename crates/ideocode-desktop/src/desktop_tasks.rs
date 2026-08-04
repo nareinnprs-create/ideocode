@@ -32,21 +32,23 @@ pub(crate) fn spawn_recovery_session_count_scan(
     event_loop_proxy: EventLoopProxy<DesktopUserEvent>,
     startup_trace: DesktopStartupTrace,
 ) {
-    if let Err(error) = spawn_bounded_desktop_async_job("IDEOCODE-desktop-recovery-scan", move || {
-        startup_trace.mark("recovery scan started");
-        let recovery_count = load_crashed_session_cards_for_desktop().len();
-        startup_trace.mark(&format!(
-            "recovery scan completed ({recovery_count} crashed)"
-        ));
-        if event_loop_proxy
-            .send_event(DesktopUserEvent::RecoveryCount(recovery_count))
-            .is_err()
-        {
-            desktop_log::warn(format_args!(
-                "IDEOCODE-desktop: failed to deliver recovery count, event loop is closed"
+    if let Err(error) =
+        spawn_bounded_desktop_async_job("IDEOCODE-desktop-recovery-scan", move || {
+            startup_trace.mark("recovery scan started");
+            let recovery_count = load_crashed_session_cards_for_desktop().len();
+            startup_trace.mark(&format!(
+                "recovery scan completed ({recovery_count} crashed)"
             ));
-        }
-    }) {
+            if event_loop_proxy
+                .send_event(DesktopUserEvent::RecoveryCount(recovery_count))
+                .is_err()
+            {
+                desktop_log::warn(format_args!(
+                    "IDEOCODE-desktop: failed to deliver recovery count, event loop is closed"
+                ));
+            }
+        })
+    {
         desktop_log::error(format_args!(
             "IDEOCODE-desktop: failed to start recovery scan: {error:#}"
         ));

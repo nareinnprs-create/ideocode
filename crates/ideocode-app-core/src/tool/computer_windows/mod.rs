@@ -9,15 +9,15 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 
 #[cfg(windows)]
+mod discover;
+#[cfg(windows)]
 mod input;
 #[cfg(windows)]
 mod screen;
 #[cfg(windows)]
-mod win;
-#[cfg(windows)]
 mod sys;
 #[cfg(windows)]
-mod discover;
+mod win;
 
 pub struct WindowsComputerTool;
 
@@ -28,7 +28,10 @@ impl WindowsComputerTool {
 }
 
 #[derive(Debug, Deserialize)]
-#[allow(dead_code, reason = "fields used for future dispatch actions; kept for schema completeness")]
+#[allow(
+    dead_code,
+    reason = "fields used for future dispatch actions; kept for schema completeness"
+)]
 struct ComputerInput {
     action: String,
     #[serde(default)]
@@ -214,18 +217,24 @@ fn dispatch(action: &str, input: &ComputerInput) -> Result<ToolOutput> {
         }
         "double_click" => {
             let (x, y) = input::click(input.x, input.y, 2)?;
-            Ok(ToolOutput::new(format!("double-clicked at ({x:.0}, {y:.0})")))
+            Ok(ToolOutput::new(format!(
+                "double-clicked at ({x:.0}, {y:.0})"
+            )))
         }
         "right_click" => {
             let (x, y) = input::right_click(input.x, input.y)?;
-            Ok(ToolOutput::new(format!("right-clicked at ({x:.0}, {y:.0})")))
+            Ok(ToolOutput::new(format!(
+                "right-clicked at ({x:.0}, {y:.0})"
+            )))
         }
         "drag" => {
             let (x, y) = require_xy(input)?;
             match (input.to_x, input.to_y) {
                 (Some(tx), Some(ty)) => {
                     input::drag(x, y, tx, ty)?;
-                    Ok(ToolOutput::new(format!("dragged from ({x:.0},{y:.0}) to ({tx:.0},{ty:.0})")))
+                    Ok(ToolOutput::new(format!(
+                        "dragged from ({x:.0},{y:.0}) to ({tx:.0},{ty:.0})"
+                    )))
                 }
                 _ => bail!("action='drag' requires `to_x` and `to_y`"),
             }
@@ -240,14 +249,21 @@ fn dispatch(action: &str, input: &ComputerInput) -> Result<ToolOutput> {
             Ok(ToolOutput::new(format!("scrolled dx={dx} dy={dy}")))
         }
         "type" => {
-            let text = input.text.as_deref()
+            let text = input
+                .text
+                .as_deref()
                 .filter(|s| !s.is_empty())
                 .context("action='type' requires non-empty `text`")?;
             input::type_text(text)?;
-            Ok(ToolOutput::new(format!("typed {} characters", text.chars().count())))
+            Ok(ToolOutput::new(format!(
+                "typed {} characters",
+                text.chars().count()
+            )))
         }
         "key" => {
-            let keys = input.keys.as_deref()
+            let keys = input
+                .keys
+                .as_deref()
                 .filter(|s| !s.is_empty())
                 .context("action='key' requires a `keys` chord, e.g. 'ctrl+c'")?;
             input::key_chord(keys)?;
@@ -271,16 +287,22 @@ fn dispatch(action: &str, input: &ComputerInput) -> Result<ToolOutput> {
         "close_window" => win::close_window(req_app(input)?),
         "get_clipboard" => sys::get_clipboard(),
         "set_clipboard" => {
-            let t = input.text.as_deref()
+            let t = input
+                .text
+                .as_deref()
                 .context("set_clipboard requires `text`")?;
             sys::set_clipboard(t)
         }
         "run_powershell" => {
-            let s = input.script.as_deref()
+            let s = input
+                .script
+                .as_deref()
                 .context("run_powershell requires `script`")?;
             sys::run_powershell(s)
         }
-        other => bail!("Unknown windows_computer_use action: {other}. Call action='discover' (category='all') to list every action."),
+        other => bail!(
+            "Unknown windows_computer_use action: {other}. Call action='discover' (category='all') to list every action."
+        ),
     }
 }
 
@@ -292,6 +314,8 @@ fn require_xy(input: &ComputerInput) -> Result<(f64, f64)> {
 }
 
 fn req_app(input: &ComputerInput) -> Result<&str> {
-    input.app.as_deref()
+    input
+        .app
+        .as_deref()
         .with_context(|| format!("action='{}' requires `app`", input.action))
 }

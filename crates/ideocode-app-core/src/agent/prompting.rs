@@ -134,14 +134,24 @@ impl Agent {
         split.dynamic_part.push_str(personality_directive);
 
         // Inject emotion mirroring directive if detectable from the last user message
-        if let Some(last_user_msg) = self.session.messages.iter().rev().find(|m| matches!(m.role, crate::message::Role::User)) {
-            let text: String = last_user_msg.content.iter().filter_map(|block| {
-                if let crate::message::ContentBlock::Text { text, .. } = block {
-                    Some(text.clone())
-                } else {
-                    None
-                }
-            }).collect();
+        if let Some(last_user_msg) = self
+            .session
+            .messages
+            .iter()
+            .rev()
+            .find(|m| matches!(m.role, crate::message::Role::User))
+        {
+            let text: String = last_user_msg
+                .content
+                .iter()
+                .filter_map(|block| {
+                    if let crate::message::ContentBlock::Text { text, .. } = block {
+                        Some(text.clone())
+                    } else {
+                        None
+                    }
+                })
+                .collect();
             let tone = crate::prompt::EmotionTone::detect(&text);
             if let Some(directive) = tone.mirror_directive() {
                 split.dynamic_part.push_str("\n\n");

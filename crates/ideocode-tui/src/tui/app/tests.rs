@@ -923,7 +923,11 @@ fn skills_command_refreshes_registry_from_disk_before_listing() {
     // Point the session at a fresh project dir and add a project-local skill
     // after the app (and its skill snapshot) was created.
     let temp = tempfile::tempdir().expect("tempdir");
-    let skill_dir = temp.path().join(".IDEOCODE").join("skills").join("late-skill");
+    let skill_dir = temp
+        .path()
+        .join(".IDEOCODE")
+        .join("skills")
+        .join("late-skill");
     std::fs::create_dir_all(&skill_dir).expect("create skill dir");
     std::fs::write(
         skill_dir.join("SKILL.md"),
@@ -1225,7 +1229,10 @@ fn deferred_stale_server_history_captures_session_id_for_reload_handoff() {
     // server session instead.
     let _env_guard = crate::storage::lock_test_env();
     crate::env::remove_var("IDEOCODE_ALLOW_SERVER_VERSION_MISMATCH");
-    crate::env::set_var("IDEOCODE_TEST_CLIENT_VERSION_OVERRIDE", "v0.21.0 (deadbeef)");
+    crate::env::set_var(
+        "IDEOCODE_TEST_CLIENT_VERSION_OVERRIDE",
+        "v0.21.0 (deadbeef)",
+    );
 
     let mut app = create_test_app();
     let rt = tokio::runtime::Runtime::new().unwrap();
@@ -1308,7 +1315,10 @@ fn ancient_server_history_is_deferred_via_client_side_release_check() {
     // The test binary's own version is dev/dirty (unorderable), so use the
     // test-only override to give the client a clean release version newer than
     // the simulated ancient server.
-    crate::env::set_var("IDEOCODE_TEST_CLIENT_VERSION_OVERRIDE", "v0.17.0 (d741696f)");
+    crate::env::set_var(
+        "IDEOCODE_TEST_CLIENT_VERSION_OVERRIDE",
+        "v0.17.0 (d741696f)",
+    );
 
     let mut app = create_test_app();
     let rt = tokio::runtime::Runtime::new().unwrap();
@@ -1396,7 +1406,10 @@ fn older_server_reporting_no_update_is_still_deferred_via_client_check() {
     // shared-server channel client-side).
     let _env_guard = crate::storage::lock_test_env();
     crate::env::remove_var("IDEOCODE_ALLOW_SERVER_VERSION_MISMATCH");
-    crate::env::set_var("IDEOCODE_TEST_CLIENT_VERSION_OVERRIDE", "v0.22.0 (abcd1234)");
+    crate::env::set_var(
+        "IDEOCODE_TEST_CLIENT_VERSION_OVERRIDE",
+        "v0.22.0 (abcd1234)",
+    );
 
     let mut app = create_test_app();
     let rt = tokio::runtime::Runtime::new().unwrap();
@@ -1476,7 +1489,10 @@ fn older_server_history_repairs_stale_shared_server_channel_end_to_end() {
     use std::time::{Duration, SystemTime};
     let _env_guard = crate::storage::lock_test_env();
     crate::env::remove_var("IDEOCODE_ALLOW_SERVER_VERSION_MISMATCH");
-    crate::env::set_var("IDEOCODE_TEST_CLIENT_VERSION_OVERRIDE", "v0.22.0 (abcd1234)");
+    crate::env::set_var(
+        "IDEOCODE_TEST_CLIENT_VERSION_OVERRIDE",
+        "v0.22.0 (abcd1234)",
+    );
     let temp = tempfile::TempDir::new().expect("temp home");
     let prev_home = std::env::var_os("IDEOCODE_HOME");
     crate::env::set_var("IDEOCODE_HOME", temp.path());
@@ -1576,7 +1592,10 @@ fn current_release_server_history_is_not_deferred_by_client_check() {
     // guards against the client-side check over-firing and looping reloads.
     let _env_guard = crate::storage::lock_test_env();
     crate::env::remove_var("IDEOCODE_ALLOW_SERVER_VERSION_MISMATCH");
-    crate::env::set_var("IDEOCODE_TEST_CLIENT_VERSION_OVERRIDE", "v0.17.0 (d741696f)");
+    crate::env::set_var(
+        "IDEOCODE_TEST_CLIENT_VERSION_OVERRIDE",
+        "v0.17.0 (d741696f)",
+    );
 
     let mut app = create_test_app();
     let rt = tokio::runtime::Runtime::new().unwrap();

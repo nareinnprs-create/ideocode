@@ -152,8 +152,10 @@ mod tests {
         let Ok(_guard) = env_lock().lock() else {
             anyhow::bail!("desktop prefs test env lock poisoned");
         };
-        let dir =
-            std::env::temp_dir().join(format!("IDEOCODE-desktop-prefs-test-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!(
+            "IDEOCODE-desktop-prefs-test-{}",
+            std::process::id()
+        ));
         let _ = fs::remove_dir_all(&dir);
         let path = dir.join("state.json");
         unsafe {

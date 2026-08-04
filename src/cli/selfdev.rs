@@ -19,7 +19,9 @@ pub use ideocode_selfdev_types::client_selfdev_requested;
 const IDEOCODE_REPO_URL: &str = "https://github.com/nareinnprs-create/ideocode.git";
 
 fn selfdev_clone_dir() -> Result<PathBuf> {
-    Ok(crate::storage::ideocode_dir()?.join("source").join("IDEOCODE"))
+    Ok(crate::storage::ideocode_dir()?
+        .join("source")
+        .join("IDEOCODE"))
 }
 
 fn resolve_or_clone_repo_dir() -> Result<PathBuf> {

@@ -836,7 +836,9 @@ fn load_sessions_surfaces_external_cursor_transcript() {
 fn benchmark_real_resume_loading_phases() {
     invalidate_session_list_cache();
 
-    let sessions_dir = storage::ideocode_dir().expect("IDEOCODE dir").join("sessions");
+    let sessions_dir = storage::ideocode_dir()
+        .expect("IDEOCODE dir")
+        .join("sessions");
     let scan_limit = session_scan_limit();
     let candidate_limit = session_candidate_window(scan_limit);
 

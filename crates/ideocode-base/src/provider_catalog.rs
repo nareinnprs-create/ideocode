@@ -643,7 +643,8 @@ fn apply_openai_compatible_profile_env_impl(
     profile: Option<OpenAiCompatibleProfile>,
     respect_named_profile_lock: bool,
 ) {
-    if respect_named_profile_lock && std::env::var_os("IDEOCODE_PROVIDER_PROFILE_ACTIVE").is_some() {
+    if respect_named_profile_lock && std::env::var_os("IDEOCODE_PROVIDER_PROFILE_ACTIVE").is_some()
+    {
         return;
     }
 
@@ -683,7 +684,10 @@ fn apply_openai_compatible_profile_env_impl(
         if static_models.is_empty() {
             crate::env::remove_var("IDEOCODE_OPENROUTER_STATIC_MODELS");
         } else {
-            crate::env::set_var("IDEOCODE_OPENROUTER_STATIC_MODELS", static_models.join("\n"));
+            crate::env::set_var(
+                "IDEOCODE_OPENROUTER_STATIC_MODELS",
+                static_models.join("\n"),
+            );
         }
         if resolved.requires_api_key {
             crate::env::remove_var("IDEOCODE_OPENROUTER_ALLOW_NO_AUTH");
@@ -782,7 +786,10 @@ pub fn apply_named_provider_profile_env_from_config(
         .filter(|id| !id.is_empty())
         .collect::<Vec<_>>();
     if !static_models.is_empty() {
-        crate::env::set_var("IDEOCODE_OPENROUTER_STATIC_MODELS", static_models.join("\n"));
+        crate::env::set_var(
+            "IDEOCODE_OPENROUTER_STATIC_MODELS",
+            static_models.join("\n"),
+        );
     }
 
     match profile.auth {

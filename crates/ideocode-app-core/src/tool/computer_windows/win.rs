@@ -2,16 +2,17 @@
 // R&D by Opraiz Cognitive
 // Developer: Narein Rao
 // SPDX-License-Identifier: MIT
-use anyhow::{Context, Result, bail};
 use super::ToolOutput;
+use anyhow::{Context, Result, bail};
 
 pub fn list_apps() -> Result<ToolOutput> {
     let output = std::process::Command::new("powershell")
         .args([
-            "-NoProfile", "-Command",
+            "-NoProfile",
+            "-Command",
             "Get-Process | Where-Object {$_.MainWindowHandle -ne 0} | \
              Select-Object Name, Id, @{N='Title';E={$_.MainWindowTitle}} | \
-             ConvertTo-Json -Compress"
+             ConvertTo-Json -Compress",
         ])
         .output()
         .context("Failed to list apps")?;
@@ -208,7 +209,8 @@ pub fn minimize_window(name: &str) -> Result<ToolOutput> {
 pub fn close_window(name: &str) -> Result<ToolOutput> {
     let output = std::process::Command::new("powershell")
         .args([
-            "-NoProfile", "-Command",
+            "-NoProfile",
+            "-Command",
             &format!(
                 "$proc = Get-Process -Name '{name}' -ErrorAction SilentlyContinue | \
                  Select-Object -First 1; \
@@ -216,7 +218,7 @@ pub fn close_window(name: &str) -> Result<ToolOutput> {
                      $proc.CloseMainWindow() | Out-Null; \
                      Write-Output 'closed' \
                  }}"
-            )
+            ),
         ])
         .output()?;
     let text = String::from_utf8_lossy(&output.stdout).trim().to_string();

@@ -364,7 +364,7 @@ mod windows {
     use super::*;
     use windows_sys::Win32::Foundation::{CloseHandle, HANDLE};
     use windows_sys::Win32::System::Threading::{
-        OpenProcess, WaitForSingleObject, PROCESS_QUERY_LIMITED_INFORMATION, PROCESS_VM_READ,
+        OpenProcess, PROCESS_QUERY_LIMITED_INFORMATION, PROCESS_VM_READ, WaitForSingleObject,
     };
 
     const WAIT_OBJECT_0: u32 = 0;

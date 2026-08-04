@@ -15,9 +15,9 @@ pub(crate) use futures::stream;
 pub(crate) use futures::{SinkExt, StreamExt};
 pub(crate) use ideocode::agent::Agent;
 pub(crate) use ideocode::message::{ContentBlock, Message, Role, StreamEvent, ToolDefinition};
-pub(crate) use ideocode::protocol::ServerEvent;
 #[cfg(unix)]
 pub(crate) use ideocode::protocol::Request;
+pub(crate) use ideocode::protocol::ServerEvent;
 pub(crate) use ideocode::provider::{EventStream, Provider};
 pub(crate) use ideocode::server;
 pub(crate) use ideocode::session::{Session, StoredCompactionState};
@@ -91,7 +91,8 @@ impl TestEnvGuard {
         let prev_debug_control = std::env::var_os("IDEOCODE_DEBUG_CONTROL");
         let prev_runtime_provider = std::env::var_os("IDEOCODE_RUNTIME_PROVIDER");
         let prev_active_provider = std::env::var_os("IDEOCODE_ACTIVE_PROVIDER");
-        let prev_openrouter_cache_namespace = std::env::var_os("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
+        let prev_openrouter_cache_namespace =
+            std::env::var_os("IDEOCODE_OPENROUTER_CACHE_NAMESPACE");
         let runtime_dir = temp_home.path().join("runtime");
         std::fs::create_dir_all(&runtime_dir)?;
 

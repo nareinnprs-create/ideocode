@@ -99,7 +99,9 @@ impl BuildPanelState {
 
 /// Render the build output panel.
 pub fn render_build_panel(frame: &mut Frame, area: Rect, state: &BuildPanelState) {
-    if !state.visible { return; }
+    if !state.visible {
+        return;
+    }
 
     let panel_height = (area.height / 2).max(6);
     let panel_area = Rect {
@@ -111,10 +113,15 @@ pub fn render_build_panel(frame: &mut Frame, area: Rect, state: &BuildPanelState
 
     let mut lines = Vec::new();
 
-    let status = if state.is_running { " ⏳" }
-        else if state.exit_code == Some(0) { " ✅" }
-        else if state.exit_code.is_some() { " ❌" }
-        else { "" };
+    let status = if state.is_running {
+        " ⏳"
+    } else if state.exit_code == Some(0) {
+        " ✅"
+    } else if state.exit_code.is_some() {
+        " ❌"
+    } else {
+        ""
+    };
 
     let system_label = match state.build_system {
         BuildSystem::Cargo => "Cargo",
@@ -124,7 +131,12 @@ pub fn render_build_panel(frame: &mut Frame, area: Rect, state: &BuildPanelState
     };
 
     lines.push(Line::from(vec![
-        Span::styled(format!("🔨 {} Build", system_label), Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            format!("🔨 {} Build", system_label),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
+        ),
         Span::styled(status, Style::default()),
     ]));
 
@@ -132,9 +144,24 @@ pub fn render_build_panel(frame: &mut Frame, area: Rect, state: &BuildPanelState
         let errors = state.error_count();
         let warnings = state.warning_count();
         let mut stats = vec![];
-        if errors > 0 { stats.push(Span::styled(format!("{} errors ", errors), Style::default().fg(rgb(255, 80, 80)))); }
-        if warnings > 0 { stats.push(Span::styled(format!("{} warnings ", warnings), Style::default().fg(neon_yellow()))); }
-        if stats.is_empty() { stats.push(Span::styled("clean build ✨", Style::default().fg(neon_green()))); }
+        if errors > 0 {
+            stats.push(Span::styled(
+                format!("{} errors ", errors),
+                Style::default().fg(rgb(255, 80, 80)),
+            ));
+        }
+        if warnings > 0 {
+            stats.push(Span::styled(
+                format!("{} warnings ", warnings),
+                Style::default().fg(neon_yellow()),
+            ));
+        }
+        if stats.is_empty() {
+            stats.push(Span::styled(
+                "clean build ✨",
+                Style::default().fg(neon_green()),
+            ));
+        }
         lines.push(Line::from(stats));
     }
 
@@ -142,11 +169,17 @@ pub fn render_build_panel(frame: &mut Frame, area: Rect, state: &BuildPanelState
 
     let max_visible = panel_height as usize - 4;
     for line in state.output.iter().skip(state.scroll).take(max_visible) {
-        let color = if line.contains("error[E") || line.contains("error:") { rgb(255, 80, 80) }
-            else if line.contains("warning") { neon_yellow() }
-            else if line.contains("Compiling") || line.contains("Building") { neon_cyan() }
-            else if line.contains("Finished") || line.contains("Done") { neon_green() }
-            else { dim_color() };
+        let color = if line.contains("error[E") || line.contains("error:") {
+            rgb(255, 80, 80)
+        } else if line.contains("warning") {
+            neon_yellow()
+        } else if line.contains("Compiling") || line.contains("Building") {
+            neon_cyan()
+        } else if line.contains("Finished") || line.contains("Done") {
+            neon_green()
+        } else {
+            dim_color()
+        };
         lines.push(Line::from(Span::styled(
             format!("  {}", line.chars().take(120).collect::<String>()),
             Style::default().fg(color),
@@ -158,14 +191,19 @@ pub fn render_build_panel(frame: &mut Frame, area: Rect, state: &BuildPanelState
 
 fn run_cmd(cmd: &str) -> Vec<String> {
     #[cfg(windows)]
-    let output = std::process::Command::new("cmd").arg("/C").arg(cmd).output();
+    let output = std::process::Command::new("cmd")
+        .arg("/C")
+        .arg(cmd)
+        .output();
     #[cfg(not(windows))]
     let output = std::process::Command::new("sh").arg("-c").arg(cmd).output();
 
     output
         .map(|o| {
             let mut lines: Vec<String> = String::from_utf8_lossy(&o.stdout)
-                .lines().map(String::from).collect();
+                .lines()
+                .map(String::from)
+                .collect();
             lines.extend(String::from_utf8_lossy(&o.stderr).lines().map(String::from));
             lines
         })

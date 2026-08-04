@@ -9,13 +9,13 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 
 #[cfg(target_os = "linux")]
-mod screen;
+mod discover;
 #[cfg(target_os = "linux")]
-mod win;
+mod screen;
 #[cfg(target_os = "linux")]
 mod sys;
 #[cfg(target_os = "linux")]
-mod discover;
+mod win;
 
 pub struct LinuxComputerTool;
 
@@ -26,7 +26,10 @@ impl LinuxComputerTool {
 }
 
 #[derive(Debug, Deserialize)]
-#[allow(dead_code, reason = "fields used for future dispatch actions; kept for schema completeness")]
+#[allow(
+    dead_code,
+    reason = "fields used for future dispatch actions; kept for schema completeness"
+)]
 struct ComputerInput {
     action: String,
     #[serde(default)]
@@ -85,10 +88,23 @@ fn cap_output(mut out: ToolOutput, max_chars: usize) -> ToolOutput {
 fn is_mutating(action: &str) -> bool {
     matches!(
         action,
-        "move" | "click" | "double_click" | "right_click" | "drag" | "scroll"
-            | "type" | "key" | "activate_app" | "quit_app" | "focus_window"
-            | "move_window" | "resize_window" | "minimize_window" | "close_window"
-            | "set_clipboard" | "notify"
+        "move"
+            | "click"
+            | "double_click"
+            | "right_click"
+            | "drag"
+            | "scroll"
+            | "type"
+            | "key"
+            | "activate_app"
+            | "quit_app"
+            | "focus_window"
+            | "move_window"
+            | "resize_window"
+            | "minimize_window"
+            | "close_window"
+            | "set_clipboard"
+            | "notify"
     )
 }
 
@@ -179,23 +195,55 @@ fn dispatch(action: &str, input: &ComputerInput) -> Result<ToolOutput> {
         }
         "move" => {
             let (x, y) = require_xy(input)?;
-            win::run_cmd(&["xdotool", "mousemove", &format!("{x:.0}"), &format!("{y:.0}")])?;
+            win::run_cmd(&[
+                "xdotool",
+                "mousemove",
+                &format!("{x:.0}"),
+                &format!("{y:.0}"),
+            ])?;
             Ok(ToolOutput::new(format!("moved cursor to ({x:.0}, {y:.0})")))
         }
         "click" => {
             let (x, y) = require_xy(input)?;
-            win::run_cmd(&["xdotool", "mousemove", &format!("{x:.0}"), &format!("{y:.0}"), "click", "1"])?;
+            win::run_cmd(&[
+                "xdotool",
+                "mousemove",
+                &format!("{x:.0}"),
+                &format!("{y:.0}"),
+                "click",
+                "1",
+            ])?;
             Ok(ToolOutput::new(format!("clicked at ({x:.0}, {y:.0})")))
         }
         "double_click" => {
             let (x, y) = require_xy(input)?;
-            win::run_cmd(&["xdotool", "mousemove", &format!("{x:.0}"), &format!("{y:.0}"), "click", "--repeat", "2", "1"])?;
-            Ok(ToolOutput::new(format!("double-clicked at ({x:.0}, {y:.0})")))
+            win::run_cmd(&[
+                "xdotool",
+                "mousemove",
+                &format!("{x:.0}"),
+                &format!("{y:.0}"),
+                "click",
+                "--repeat",
+                "2",
+                "1",
+            ])?;
+            Ok(ToolOutput::new(format!(
+                "double-clicked at ({x:.0}, {y:.0})"
+            )))
         }
         "right_click" => {
             let (x, y) = require_xy(input)?;
-            win::run_cmd(&["xdotool", "mousemove", &format!("{x:.0}"), &format!("{y:.0}"), "click", "3"])?;
-            Ok(ToolOutput::new(format!("right-clicked at ({x:.0}, {y:.0})")))
+            win::run_cmd(&[
+                "xdotool",
+                "mousemove",
+                &format!("{x:.0}"),
+                &format!("{y:.0}"),
+                "click",
+                "3",
+            ])?;
+            Ok(ToolOutput::new(format!(
+                "right-clicked at ({x:.0}, {y:.0})"
+            )))
         }
         "type" => {
             let text = input.text.as_deref().context("type requires `text`")?;
@@ -213,9 +261,17 @@ fn dispatch(action: &str, input: &ComputerInput) -> Result<ToolOutput> {
         "quit_app" => win::quit_app(req_app(input)?),
         "focus_window" => win::focus_window(req_app(input)?),
         "get_clipboard" => sys::get_clipboard(),
-        "set_clipboard" => sys::set_clipboard(input.text.as_deref().context("set_clipboard requires `text`")?),
+        "set_clipboard" => sys::set_clipboard(
+            input
+                .text
+                .as_deref()
+                .context("set_clipboard requires `text`")?,
+        ),
         "run_shell" => {
-            let s = input.script.as_deref().context("run_shell requires `script`")?;
+            let s = input
+                .script
+                .as_deref()
+                .context("run_shell requires `script`")?;
             sys::run_shell(s)
         }
         other => bail!("Unknown linux_computer_use action: {other}. Call discover category='all'."),
@@ -230,8 +286,8 @@ fn require_xy(input: &ComputerInput) -> Result<(f64, f64)> {
 }
 
 fn req_app<'a>(input: &'a ComputerInput) -> Result<&'a str> {
-    input.app.as_deref()
+    input
+        .app
+        .as_deref()
         .with_context(|| format!("action='{}' requires `app`", input.action))
 }
-
-

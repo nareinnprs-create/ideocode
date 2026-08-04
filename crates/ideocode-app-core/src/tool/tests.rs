@@ -350,7 +350,10 @@ async fn registry_execute_pre_tool_hook_blocks_and_allows() {
         .expect("chmod policy");
 
     let prev = std::env::var_os("IDEOCODE_HOOK_PRE_TOOL");
-    crate::env::set_var("IDEOCODE_HOOK_PRE_TOOL", policy.to_string_lossy().to_string());
+    crate::env::set_var(
+        "IDEOCODE_HOOK_PRE_TOOL",
+        policy.to_string_lossy().to_string(),
+    );
     // IDEOCODE-base is compiled without cfg(test) here, so the config cache only
     // re-checks env every 500ms; force a reload so the hook is visible now.
     crate::config::invalidate_config_cache();

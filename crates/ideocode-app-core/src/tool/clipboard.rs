@@ -92,15 +92,15 @@ async fn clipboard_get() -> Result<ToolOutput> {
         tokio::process::Command::new("pbpaste").output().await?
     } else {
         // Linux - try wl-paste (Wayland) then xclip (X11)
-        let result = tokio::process::Command::new("wl-paste")
-            .output()
-            .await;
+        let result = tokio::process::Command::new("wl-paste").output().await;
         match result {
             Ok(o) if o.status.success() => o,
-            _ => tokio::process::Command::new("xclip")
-                .args(["-selection", "clipboard", "-o"])
-                .output()
-                .await?,
+            _ => {
+                tokio::process::Command::new("xclip")
+                    .args(["-selection", "clipboard", "-o"])
+                    .output()
+                    .await?
+            }
         }
     };
     let content = String::from_utf8_lossy(&output.stdout).trim().to_string();
@@ -110,11 +110,17 @@ async fn clipboard_get() -> Result<ToolOutput> {
 #[cfg(windows)]
 async fn clipboard_set(content: &str) -> Result<ToolOutput> {
     let output = tokio::process::Command::new("powershell")
-        .args(["-Command", &format!("Set-Clipboard -Value \"{}\"", content.replace('"', "`\""))])
+        .args([
+            "-Command",
+            &format!("Set-Clipboard -Value \"{}\"", content.replace('"', "`\"")),
+        ])
         .output()
         .await?;
     if output.status.success() {
-        Ok(ToolOutput::new(format!("Clipboard set ({} chars)", content.len())))
+        Ok(ToolOutput::new(format!(
+            "Clipboard set ({} chars)",
+            content.len()
+        )))
     } else {
         let stderr = String::from_utf8_lossy(&output.stderr).to_string();
         Err(anyhow::anyhow!("Failed to set clipboard: {}", stderr))
@@ -140,9 +146,15 @@ async fn clipboard_set(content: &str) -> Result<ToolOutput> {
     }
     let status = child.wait().await?;
     if status.success() {
-        Ok(ToolOutput::new(format!("Clipboard set ({} chars)", content.len())))
+        Ok(ToolOutput::new(format!(
+            "Clipboard set ({} chars)",
+            content.len()
+        )))
     } else {
-        Err(anyhow::anyhow!("Failed to set clipboard (exit code: {:?})", status.code()))
+        Err(anyhow::anyhow!(
+            "Failed to set clipboard (exit code: {:?})",
+            status.code()
+        ))
     }
 }
 

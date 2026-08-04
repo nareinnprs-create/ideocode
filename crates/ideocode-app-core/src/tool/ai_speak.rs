@@ -26,7 +26,9 @@ struct SpeakInput {
 
 #[async_trait]
 impl Tool for SpeakTool {
-    fn name(&self) -> &str { "speak" }
+    fn name(&self) -> &str {
+        "speak"
+    }
 
     fn description(&self) -> &str {
         "Convert text to speech. Uses the AI provider or OS text-to-speech capabilities."
@@ -45,7 +47,11 @@ impl Tool for SpeakTool {
 
     async fn execute(&self, input: Value, _ctx: ToolContext) -> Result<ToolOutput> {
         let input: SpeakInput = serde_json::from_value(input)?;
-        let provider = self.registry.provider.as_ref().ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
+        let provider = self
+            .registry
+            .provider
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
 
         let system = "You are a text-to-speech assistant. The text you receive will be spoken aloud. \
                       Format the text for natural speech: expand abbreviations, handle numbers, and add appropriate pauses. \

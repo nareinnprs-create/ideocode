@@ -163,9 +163,10 @@ impl ProviderActivation {
     pub fn apply_env(&self) -> Result<()> {
         crate::env::set_var("IDEOCODE_RUNTIME_PROVIDER", self.runtime_id.key());
         match self.runtime_id {
-            RuntimeProviderId::IDEOCODE => {
-                crate::env::set_var("IDEOCODE_OPENROUTER_TRANSPORT_STATE", "IDEOCODE-subscription")
-            }
+            RuntimeProviderId::IDEOCODE => crate::env::set_var(
+                "IDEOCODE_OPENROUTER_TRANSPORT_STATE",
+                "IDEOCODE-subscription",
+            ),
             RuntimeProviderId::OpenRouter => {
                 crate::env::set_var("IDEOCODE_OPENROUTER_TRANSPORT_STATE", "openrouter-api-key")
             }

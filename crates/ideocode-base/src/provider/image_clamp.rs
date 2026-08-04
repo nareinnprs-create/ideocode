@@ -355,8 +355,8 @@ fn probe_dimensions(data: &[u8]) -> Option<(u32, u32)> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use image::{ImageFormat, RgbImage};
     use ideocode_message_types::Role;
+    use image::{ImageFormat, RgbImage};
 
     fn encode_png(w: u32, h: u32) -> String {
         let img = RgbImage::from_pixel(w, h, image::Rgb([10, 20, 30]));

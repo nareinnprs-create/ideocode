@@ -26,7 +26,9 @@ struct DiagramInput {
 
 #[async_trait]
 impl Tool for DiagramTool {
-    fn name(&self) -> &str { "diagram" }
+    fn name(&self) -> &str {
+        "diagram"
+    }
 
     fn description(&self) -> &str {
         "Generate a Mermaid diagram from a textual description."
@@ -45,7 +47,11 @@ impl Tool for DiagramTool {
 
     async fn execute(&self, input: Value, _ctx: ToolContext) -> Result<ToolOutput> {
         let input: DiagramInput = serde_json::from_value(input)?;
-        let provider = self.registry.provider.as_ref().ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
+        let provider = self
+            .registry
+            .provider
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
 
         let dtype = input.diagram_type.as_deref().unwrap_or("flowchart");
         let system = format!(

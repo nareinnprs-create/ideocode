@@ -124,22 +124,69 @@ impl EmotionTone {
     pub fn mirror_directive(&self) -> Option<&'static str> {
         match self {
             EmotionTone::Neutral => None,
-            EmotionTone::Frustrated => Some("Note: The user seems frustrated. Respond with patience and empathy. Acknowledge their frustration before addressing the technical issue."),
-            EmotionTone::Excited => Some("Note: The user seems excited. Match their positive energy and enthusiasm while staying helpful."),
-            EmotionTone::Curious => Some("Note: The user seems curious and exploratory. Encourage their curiosity and provide thorough explanations."),
-            EmotionTone::Urgent => Some("Note: The user seems urgent. Be direct, concise, and prioritize speed over thoroughness."),
-            EmotionTone::Confused => Some("Note: The user seems confused. Be extra clear, provide step-by-step explanations, and check for understanding."),
-            EmotionTone::Happy => Some("Note: The user is in a good mood. Match their positive tone while staying professional."),
-            EmotionTone::Sad => Some("Note: The user seems down. Be gentle, supportive, and encouraging."),
-            EmotionTone::Angry => Some("Note: The user seems angry. Stay calm, professional, and de-escalatory. Do not match their anger."),
+            EmotionTone::Frustrated => Some(
+                "Note: The user seems frustrated. Respond with patience and empathy. Acknowledge their frustration before addressing the technical issue.",
+            ),
+            EmotionTone::Excited => Some(
+                "Note: The user seems excited. Match their positive energy and enthusiasm while staying helpful.",
+            ),
+            EmotionTone::Curious => Some(
+                "Note: The user seems curious and exploratory. Encourage their curiosity and provide thorough explanations.",
+            ),
+            EmotionTone::Urgent => Some(
+                "Note: The user seems urgent. Be direct, concise, and prioritize speed over thoroughness.",
+            ),
+            EmotionTone::Confused => Some(
+                "Note: The user seems confused. Be extra clear, provide step-by-step explanations, and check for understanding.",
+            ),
+            EmotionTone::Happy => Some(
+                "Note: The user is in a good mood. Match their positive tone while staying professional.",
+            ),
+            EmotionTone::Sad => {
+                Some("Note: The user seems down. Be gentle, supportive, and encouraging.")
+            }
+            EmotionTone::Angry => Some(
+                "Note: The user seems angry. Stay calm, professional, and de-escalatory. Do not match their anger.",
+            ),
         }
     }
 
     /// Simple keyword-based emotion detection from user text.
     pub fn detect(text: &str) -> EmotionTone {
         let lower = text.to_lowercase();
-        let angry_words = ["angry", "furious", "pissed", "annoyed", "infuriated", "livid", "damn it", "wtf", "what the hell", "stupid", "terrible", "awful", "useless", "unacceptable", "frustrating", "infuriating"];
-        let frustrated_words = ["frustrated", "ugh", "annoying", "not working", "broken", "doesn't work", "why doesn't", "still broken", "still not", "give up", "exhausting", "tired of", "sick of"];
+        let angry_words = [
+            "angry",
+            "furious",
+            "pissed",
+            "annoyed",
+            "infuriated",
+            "livid",
+            "damn it",
+            "wtf",
+            "what the hell",
+            "stupid",
+            "terrible",
+            "awful",
+            "useless",
+            "unacceptable",
+            "frustrating",
+            "infuriating",
+        ];
+        let frustrated_words = [
+            "frustrated",
+            "ugh",
+            "annoying",
+            "not working",
+            "broken",
+            "doesn't work",
+            "why doesn't",
+            "still broken",
+            "still not",
+            "give up",
+            "exhausting",
+            "tired of",
+            "sick of",
+        ];
 
         if angry_words.iter().any(|w| lower.contains(w)) {
             return EmotionTone::Angry;
@@ -147,28 +194,96 @@ impl EmotionTone {
         if frustrated_words.iter().any(|w| lower.contains(w)) {
             return EmotionTone::Frustrated;
         }
-        let excited_words = ["exciting", "awesome", "amazing", "fantastic", "great!", "love it", "wow", "cool!", "yay", "yes!", "let's go", "hell yeah", "finally!"];
+        let excited_words = [
+            "exciting",
+            "awesome",
+            "amazing",
+            "fantastic",
+            "great!",
+            "love it",
+            "wow",
+            "cool!",
+            "yay",
+            "yes!",
+            "let's go",
+            "hell yeah",
+            "finally!",
+        ];
         if excited_words.iter().any(|w| lower.contains(w)) {
             return EmotionTone::Excited;
         }
-        let happy_words = ["happy", "glad", "pleased", "nice", "good", "satisfied", "wonderful", "delighted"];
+        let happy_words = [
+            "happy",
+            "glad",
+            "pleased",
+            "nice",
+            "good",
+            "satisfied",
+            "wonderful",
+            "delighted",
+        ];
         if happy_words.iter().any(|w| lower.contains(w)) {
             return EmotionTone::Happy;
         }
-        let sad_words = ["sad", "unfortunate", "disappointed", "sorry", "regret", "unhappy", "depressing", "upset"];
+        let sad_words = [
+            "sad",
+            "unfortunate",
+            "disappointed",
+            "sorry",
+            "regret",
+            "unhappy",
+            "depressing",
+            "upset",
+        ];
         if sad_words.iter().any(|w| lower.contains(w)) {
             return EmotionTone::Sad;
         }
-        let curious_words = ["wonder", "curious", "how does", "why does", "explain", "tell me about", "what is", "how is", "what are", "why is"];
+        let curious_words = [
+            "wonder",
+            "curious",
+            "how does",
+            "why does",
+            "explain",
+            "tell me about",
+            "what is",
+            "how is",
+            "what are",
+            "why is",
+        ];
         let questions = lower.matches('?').count();
         if curious_words.iter().any(|w| lower.contains(w)) || questions > 1 {
             return EmotionTone::Curious;
         }
-        let confused_words = ["confused", "don't understand", "not sure", "what do you mean", "unclear", "doesn't make sense", "huh", "wait", "i don't get", "i'm lost"];
+        let confused_words = [
+            "confused",
+            "don't understand",
+            "not sure",
+            "what do you mean",
+            "unclear",
+            "doesn't make sense",
+            "huh",
+            "wait",
+            "i don't get",
+            "i'm lost",
+        ];
         if confused_words.iter().any(|w| lower.contains(w)) {
             return EmotionTone::Confused;
         }
-        let urgent_words = ["urgent", "asap", "hurry", "quick", "now!", "immediately", "emergency", "critical", "deadline", "right now", "fast", "important", "priority"];
+        let urgent_words = [
+            "urgent",
+            "asap",
+            "hurry",
+            "quick",
+            "now!",
+            "immediately",
+            "emergency",
+            "critical",
+            "deadline",
+            "right now",
+            "fast",
+            "important",
+            "priority",
+        ];
         if urgent_words.iter().any(|w| lower.contains(w)) {
             return EmotionTone::Urgent;
         }
@@ -1054,7 +1169,8 @@ fn load_prompt_overlay_files_from_dir(working_dir: Option<&Path>) -> (Option<Str
         contents.push(content);
     }
 
-    if let Ok(global_overlay) = crate::storage::ideocode_dir().map(|dir| dir.join("prompt-overlay.md"))
+    if let Ok(global_overlay) =
+        crate::storage::ideocode_dir().map(|dir| dir.join("prompt-overlay.md"))
         && let Some((content, size)) = load_file(
             &global_overlay,
             "Global Prompt Overlay (~/.IDEOCODE/prompt-overlay.md)",

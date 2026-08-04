@@ -394,7 +394,10 @@ fn model_picker_cache_miss_schedules_single_background_refresh_and_updates_route
         None,
         true,
     );
-    ideocode::env::set_var("IDEOCODE_OPENROUTER_MODEL", "background-race-selected-model");
+    ideocode::env::set_var(
+        "IDEOCODE_OPENROUTER_MODEL",
+        "background-race-selected-model",
+    );
 
     let provider = OpenRouterProvider::new()?;
     run_current_thread(async {

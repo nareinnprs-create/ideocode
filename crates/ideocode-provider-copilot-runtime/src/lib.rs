@@ -593,8 +593,7 @@ impl CopilotApiProvider {
 
             if !status.is_success() {
                 // Extract Retry-After hint before consuming the response body.
-                let server_hint =
-                    ideocode_provider_core::retry_after::retry_after(resp.headers());
+                let server_hint = ideocode_provider_core::retry_after::retry_after(resp.headers());
                 let body_text = ideocode_base::util::http_error_body(resp, "HTTP error").await;
                 let error_str =
                     format!("Copilot API error (HTTP {}): {}", status, body_text).to_lowercase();
@@ -1067,8 +1066,11 @@ impl Provider for CopilotApiProvider {
     }
 
     fn context_window(&self) -> usize {
-        ideocode_provider_core::context_limit_for_model_with_provider(&self.model(), Some(self.name()))
-            .unwrap_or(128_000)
+        ideocode_provider_core::context_limit_for_model_with_provider(
+            &self.model(),
+            Some(self.name()),
+        )
+        .unwrap_or(128_000)
     }
 
     fn fork(&self) -> Arc<dyn Provider> {

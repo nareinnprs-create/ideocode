@@ -325,9 +325,9 @@ impl StatusSpinnerRenderer {
 fn render_status_spinner_into_buffer(buffer: &Buffer, area: Rect, symbol: &str) -> bool {
     area.width > 0
         && area.height > 0
-        && buffer
-            .cell((area.x, area.y))
-            .is_some_and(|cell| ideocode_tui_style::theme::is_activity_indicator_frame(cell.symbol()))
+        && buffer.cell((area.x, area.y)).is_some_and(|cell| {
+            ideocode_tui_style::theme::is_activity_indicator_frame(cell.symbol())
+        })
         && !symbol.is_empty()
 }
 
@@ -772,7 +772,10 @@ impl App {
             sim_time_ms += frame_duration_ms;
         }
 
-        crate::logging::info(&format!("Rendering... 100%  ({} frames captured)", frames.len()));
+        crate::logging::info(&format!(
+            "Rendering... 100%  ({} frames captured)",
+            frames.len()
+        ));
 
         Ok(frames)
     }

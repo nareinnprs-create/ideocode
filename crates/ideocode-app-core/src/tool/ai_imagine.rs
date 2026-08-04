@@ -27,7 +27,9 @@ struct ImagineInput {
 
 #[async_trait]
 impl Tool for ImagineTool {
-    fn name(&self) -> &str { "imagine" }
+    fn name(&self) -> &str {
+        "imagine"
+    }
 
     fn description(&self) -> &str {
         "Generate an image based on a text description. Uses the AI provider's image generation capability or describes what would be generated."
@@ -47,7 +49,11 @@ impl Tool for ImagineTool {
 
     async fn execute(&self, input: Value, _ctx: ToolContext) -> Result<ToolOutput> {
         let input: ImagineInput = serde_json::from_value(input)?;
-        let provider = self.registry.provider.as_ref().ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
+        let provider = self
+            .registry
+            .provider
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
 
         let style_hint = input.style.as_deref().unwrap_or("realistic");
         let _size = input.size.as_deref().unwrap_or("medium");

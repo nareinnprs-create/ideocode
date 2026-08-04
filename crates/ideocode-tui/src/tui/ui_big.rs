@@ -14,14 +14,15 @@ use ratatui::text::Line;
 /// Render big mode toggle.
 pub fn render_big_mode_toggle(enabled: bool) -> Line<'static> {
     Line::from(vec![
-        Span::styled(
-            "📺 Big Mode: ",
-            Style::default().fg(dim_color()),
-        ),
+        Span::styled("📺 Big Mode: ", Style::default().fg(dim_color())),
         Span::styled(
             if enabled { "ON" } else { "OFF" },
             Style::default()
-                .fg(if enabled { neon_green() } else { rgb(255, 80, 80) })
+                .fg(if enabled {
+                    neon_green()
+                } else {
+                    rgb(255, 80, 80)
+                })
                 .add_modifier(Modifier::BOLD),
         ),
     ])
@@ -77,10 +78,7 @@ pub fn render_big_header(text: &str) -> Vec<Line<'static>> {
 }
 
 /// Render big message.
-pub fn render_big_message(
-    role: &str,
-    content: &str,
-) -> Vec<Line<'static>> {
+pub fn render_big_message(role: &str, content: &str) -> Vec<Line<'static>> {
     let role_color = match role {
         "user" => neon_cyan(),
         "assistant" => neon_green(),
@@ -91,9 +89,7 @@ pub fn render_big_message(
     let mut lines = Vec::new();
     lines.push(Line::from(Span::styled(
         format!("{}:", role.to_uppercase()),
-        Style::default()
-            .fg(role_color)
-            .add_modifier(Modifier::BOLD),
+        Style::default().fg(role_color).add_modifier(Modifier::BOLD),
     )));
     lines.push(Line::from(""));
 

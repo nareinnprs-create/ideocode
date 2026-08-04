@@ -36,8 +36,12 @@ fn load_user_templates() -> Option<Vec<ProjectTemplate>> {
     let home = std::env::var("HOME")
         .or_else(|_| std::env::var("USERPROFILE"))
         .ok()?;
-    let templates_dir = std::path::PathBuf::from(home).join(".ideocode").join("templates");
-    if !templates_dir.exists() { return None; }
+    let templates_dir = std::path::PathBuf::from(home)
+        .join(".ideocode")
+        .join("templates");
+    if !templates_dir.exists() {
+        return None;
+    }
 
     let mut templates = Vec::new();
     for entry in std::fs::read_dir(&templates_dir).ok()? {
@@ -45,9 +49,10 @@ fn load_user_templates() -> Option<Vec<ProjectTemplate>> {
         let path = entry.path();
         if path.extension().and_then(|e| e.to_str()) == Some("json")
             && let Ok(content) = std::fs::read_to_string(&path)
-                && let Ok(t) = serde_json::from_str::<ProjectTemplate>(&content) {
-                    templates.push(t);
-                }
+            && let Ok(t) = serde_json::from_str::<ProjectTemplate>(&content)
+        {
+            templates.push(t);
+        }
     }
     Some(templates)
 }
@@ -162,7 +167,11 @@ pub fn render_template_selector(
         lines.push(Line::from(vec![
             Span::styled(
                 if is_selected { "▸ " } else { "  " },
-                Style::default().fg(if is_selected { neon_green() } else { dim_color() }),
+                Style::default().fg(if is_selected {
+                    neon_green()
+                } else {
+                    dim_color()
+                }),
             ),
             Span::styled(
                 format!("{} ", template.icon),
@@ -171,8 +180,16 @@ pub fn render_template_selector(
             Span::styled(
                 template.name.clone(),
                 Style::default()
-                    .fg(if is_selected { neon_cyan() } else { dim_color() })
-                    .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                    .fg(if is_selected {
+                        neon_cyan()
+                    } else {
+                        dim_color()
+                    })
+                    .add_modifier(if is_selected {
+                        Modifier::BOLD
+                    } else {
+                        Modifier::empty()
+                    }),
             ),
             Span::styled(
                 format!("  ({})", template.language),

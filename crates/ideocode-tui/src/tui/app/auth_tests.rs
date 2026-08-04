@@ -90,7 +90,11 @@ fn tui_openai_compatible_api_base_keeps_ideocode_docs_and_remote_endpoint() -> a
         let resolved = save_tui_openai_compatible_api_base("https://api.deepseek.com/")?;
         assert_eq!(resolved.api_base, "https://api.deepseek.com");
         assert!(resolved.requires_api_key);
-        assert!(resolved.setup_url.contains("github.com/nareinnprs-create/ideocode"));
+        assert!(
+            resolved
+                .setup_url
+                .contains("github.com/nareinnprs-create/ideocode")
+        );
         assert!(!resolved.setup_url.contains("opencode.ai"));
         Ok(())
     })
@@ -153,7 +157,8 @@ fn tui_api_key_logout_clears_saved_key_and_process_env() -> anyhow::Result<()> {
 }
 
 #[test]
-fn tui_ideocode_subscription_logout_clears_credentials_and_preserves_api_base() -> anyhow::Result<()> {
+fn tui_ideocode_subscription_logout_clears_credentials_and_preserves_api_base() -> anyhow::Result<()>
+{
     with_temp_ideocode_home(|| {
         crate::provider_catalog::save_env_value_to_env_file(
             crate::subscription_catalog::IDEOCODE_API_KEY_ENV,
@@ -184,7 +189,9 @@ fn tui_ideocode_subscription_logout_clears_credentials_and_preserves_api_base() 
             Ok("https://subscription.example/v1")
         );
         assert!(std::env::var_os(crate::subscription_catalog::IDEOCODE_ACCOUNT_ID_ENV).is_none());
-        assert!(std::env::var_os(crate::subscription_catalog::IDEOCODE_ACCOUNT_EMAIL_ENV).is_none());
+        assert!(
+            std::env::var_os(crate::subscription_catalog::IDEOCODE_ACCOUNT_EMAIL_ENV).is_none()
+        );
         assert!(crate::subscription_catalog::configured_api_key().is_none());
         for env_key in [
             crate::subscription_catalog::IDEOCODE_ACCOUNT_ID_ENV,

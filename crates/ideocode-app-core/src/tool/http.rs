@@ -99,7 +99,9 @@ impl Tool for HttpTool {
         let params: HttpInput = serde_json::from_value(input)?;
 
         let client = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_secs(params.timeout_secs.unwrap_or(30)))
+            .timeout(std::time::Duration::from_secs(
+                params.timeout_secs.unwrap_or(30),
+            ))
             .build()?;
 
         let method = match params.method {
@@ -132,7 +134,11 @@ impl Tool for HttpTool {
         let body = response.text().await?;
 
         let mut output = String::new();
-        output.push_str(&format!("HTTP {} {}\n", status.as_u16(), status.canonical_reason().unwrap_or("")));
+        output.push_str(&format!(
+            "HTTP {} {}\n",
+            status.as_u16(),
+            status.canonical_reason().unwrap_or("")
+        ));
 
         let mut header_lines: Vec<String> = Vec::new();
         for (name, value) in headers.iter() {

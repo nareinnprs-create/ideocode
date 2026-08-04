@@ -109,18 +109,14 @@ pub fn render_search_bar(state: &ChatSearchState, frame: &mut Frame, area: Rect)
     };
 
     let line = Line::from(vec![
-        Span::styled(
-            " 🔍 ",
-            Style::default().fg(neon_cyan()),
-        ),
+        Span::styled(" 🔍 ", Style::default().fg(neon_cyan())),
         Span::styled(
             format!("{}_", state.query),
-            Style::default().fg(neon_green()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_green())
+                .add_modifier(Modifier::BOLD),
         ),
-        Span::styled(
-            match_info,
-            Style::default().fg(dim_color()),
-        ),
+        Span::styled(match_info, Style::default().fg(dim_color())),
         Span::styled(
             "  [F3]next [Esc]close",
             Style::default().fg(rgb(60, 60, 80)),
@@ -137,7 +133,12 @@ pub fn match_style(query: &str, text: &str, is_current: bool) -> Option<Style> {
     }
     if text.to_lowercase().contains(&query.to_lowercase()) {
         if is_current {
-            Some(Style::default().bg(rgb(80, 80, 0)).fg(rgb(255, 255, 100)).add_modifier(Modifier::BOLD))
+            Some(
+                Style::default()
+                    .bg(rgb(80, 80, 0))
+                    .fg(rgb(255, 255, 100))
+                    .add_modifier(Modifier::BOLD),
+            )
         } else {
             Some(Style::default().bg(rgb(40, 40, 20)).fg(neon_yellow()))
         }

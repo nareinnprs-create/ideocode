@@ -56,7 +56,8 @@ use macos_terminal::load_preferred_macos_terminal;
 #[cfg(any(test, target_os = "macos"))]
 use macos_terminal::{
     MacTerminalKind, effective_macos_terminal, escape_applescript_text, escape_shell_single_quotes,
-    launch_command_for_macos_terminal, paused_ideocode_shell_command, save_preferred_macos_terminal,
+    launch_command_for_macos_terminal, paused_ideocode_shell_command,
+    save_preferred_macos_terminal,
 };
 #[cfg(windows)]
 use windows_setup::{
@@ -451,7 +452,8 @@ pub fn launch_ideocode_in_macos_terminal(extra_args: &[String]) -> Result<()> {
     let terminal = effective_macos_terminal();
     let exe = std::env::current_exe()?;
     let exe_path = exe.to_string_lossy().into_owned();
-    let shell_command = macos_terminal::paused_ideocode_shell_command_with_args(&exe_path, extra_args);
+    let shell_command =
+        macos_terminal::paused_ideocode_shell_command_with_args(&exe_path, extra_args);
 
     let command = match macos_terminal::no_automation_launch(terminal, &shell_command) {
         macos_terminal::NoAutomationLaunch::Shell(command) => command,
@@ -700,7 +702,9 @@ pub fn run_setup_hotkey(
                 eprintln!();
                 eprintln!("  Press these anywhere, system-wide:");
                 eprintln!("    \x1b[1mCmd+;\x1b[0m       new IDEOCODE in your home directory");
-                eprintln!("    \x1b[1mCmd+'\x1b[0m       new IDEOCODE in your last project directory");
+                eprintln!(
+                    "    \x1b[1mCmd+'\x1b[0m       new IDEOCODE in your last project directory"
+                );
                 eprintln!(
                     "    \x1b[1mCmd+Shift+'\x1b[0m new IDEOCODE self-dev session (last IDEOCODE repo)"
                 );
@@ -2557,7 +2561,9 @@ pub fn reinstall_launch_hotkeys_after_config_change() {
                 "Reinstalled launch hotkeys after config change for {}",
                 terminal.label()
             )),
-            Err(err) => ideocode_logging::warn(&format!("failed to reinstall launch hotkeys: {err}")),
+            Err(err) => {
+                ideocode_logging::warn(&format!("failed to reinstall launch hotkeys: {err}"))
+            }
         }
     }
 

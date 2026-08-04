@@ -36,7 +36,12 @@ impl Default for DockerPanelState {
 
 impl DockerPanelState {
     pub fn new() -> Self {
-        let mut state = Self { visible: false, containers: Vec::new(), selected: 0, scroll: 0 };
+        let mut state = Self {
+            visible: false,
+            containers: Vec::new(),
+            selected: 0,
+            scroll: 0,
+        };
         state.refresh();
         state
     }
@@ -45,7 +50,12 @@ impl DockerPanelState {
         self.containers.clear();
         let mut output = run_command(
             "docker",
-            &["ps", "-a", "--format", "{{.Names}}\\t{{.Image}}\\t{{.Status}}\\t{{.Ports}}"],
+            &[
+                "ps",
+                "-a",
+                "--format",
+                "{{.Names}}\\t{{.Image}}\\t{{.Status}}\\t{{.Ports}}",
+            ],
         );
         if output.is_empty() {
             output.push("Docker not available".to_string());
@@ -64,8 +74,14 @@ impl DockerPanelState {
         }
     }
 
-    pub fn move_up(&mut self) { self.selected = self.selected.saturating_sub(1); }
-    pub fn move_down(&mut self) { if self.selected + 1 < self.containers.len() { self.selected += 1; } }
+    pub fn move_up(&mut self) {
+        self.selected = self.selected.saturating_sub(1);
+    }
+    pub fn move_down(&mut self) {
+        if self.selected + 1 < self.containers.len() {
+            self.selected += 1;
+        }
+    }
 
     pub fn get_container_logs(&self, name: &str) -> Vec<String> {
         run_command_with_stderr("docker", &["logs", "--tail", "50", name])
@@ -73,25 +89,59 @@ impl DockerPanelState {
 }
 
 pub fn render_docker_panel(frame: &mut Frame, area: Rect, state: &DockerPanelState) {
-    if !state.visible { return; }
+    if !state.visible {
+        return;
+    }
     let panel_height = (area.height / 3).max(4);
-    let panel_area = Rect { x: area.x, y: area.y, width: area.width, height: panel_height };
+    let panel_area = Rect {
+        x: area.x,
+        y: area.y,
+        width: area.width,
+        height: panel_height,
+    };
 
     let mut lines = Vec::new();
     lines.push(Line::from(Span::styled(
         "🐳 Docker Containers",
-        Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+        Style::default()
+            .fg(neon_cyan())
+            .add_modifier(Modifier::BOLD),
     )));
 
-    for (i, c) in state.containers.iter().take(panel_height as usize - 2).enumerate() {
+    for (i, c) in state
+        .containers
+        .iter()
+        .take(panel_height as usize - 2)
+        .enumerate()
+    {
         let is_selected = i == state.selected;
-        let color = if c.is_running { neon_green() } else { rgb(255, 80, 80) };
+        let color = if c.is_running {
+            neon_green()
+        } else {
+            rgb(255, 80, 80)
+        };
         let icon = if c.is_running { "🟢" } else { "🔴" };
         lines.push(Line::from(vec![
-            Span::styled(if is_selected { "▸ " } else { "  " }, Style::default().fg(if is_selected { neon_green() } else { dim_color() })),
-            Span::styled(format!("{} {} ", icon, c.name), Style::default().fg(neon_blue())),
-            Span::styled(c.status.chars().take(30).collect::<String>(), Style::default().fg(color)),
-            Span::styled(format!(" ({})", c.image.chars().take(20).collect::<String>()), Style::default().fg(dim_color())),
+            Span::styled(
+                if is_selected { "▸ " } else { "  " },
+                Style::default().fg(if is_selected {
+                    neon_green()
+                } else {
+                    dim_color()
+                }),
+            ),
+            Span::styled(
+                format!("{} {} ", icon, c.name),
+                Style::default().fg(neon_blue()),
+            ),
+            Span::styled(
+                c.status.chars().take(30).collect::<String>(),
+                Style::default().fg(color),
+            ),
+            Span::styled(
+                format!(" ({})", c.image.chars().take(20).collect::<String>()),
+                Style::default().fg(dim_color()),
+            ),
         ]));
     }
 
@@ -102,7 +152,12 @@ fn run_command(program: &str, args: &[&str]) -> Vec<String> {
     std::process::Command::new(program)
         .args(args)
         .output()
-        .map(|o| String::from_utf8_lossy(&o.stdout).lines().map(String::from).collect())
+        .map(|o| {
+            String::from_utf8_lossy(&o.stdout)
+                .lines()
+                .map(String::from)
+                .collect()
+        })
         .unwrap_or_default()
 }
 
@@ -111,7 +166,10 @@ fn run_command_with_stderr(program: &str, args: &[&str]) -> Vec<String> {
         .args(args)
         .output()
         .map(|o| {
-            let mut lines: Vec<String> = String::from_utf8_lossy(&o.stdout).lines().map(String::from).collect();
+            let mut lines: Vec<String> = String::from_utf8_lossy(&o.stdout)
+                .lines()
+                .map(String::from)
+                .collect();
             lines.extend(String::from_utf8_lossy(&o.stderr).lines().map(String::from));
             lines
         })

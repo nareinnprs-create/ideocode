@@ -7,10 +7,10 @@
 //! Voice dictation UI: status indicator, configuration panel, and wave visualization.
 //! Actual audio processing is handled by the dictation backend configured in config.toml.
 
+use crate::tui::color_support::rgb;
 use ideocode_tui_style::theme::*;
 use ratatui::prelude::*;
 use ratatui::text::Line;
-use crate::tui::color_support::rgb;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum VoiceState {
@@ -53,15 +53,10 @@ impl VoiceState {
 pub fn render_voice_indicator(state: &VoiceState) -> Line<'static> {
     let color = state.color();
     Line::from(vec![
-        Span::styled(
-            format!("{} ", state.icon()),
-            Style::default().fg(color),
-        ),
+        Span::styled(format!("{} ", state.icon()), Style::default().fg(color)),
         Span::styled(
             state.label().to_string(),
-            Style::default()
-                .fg(color)
-                .add_modifier(Modifier::ITALIC),
+            Style::default().fg(color).add_modifier(Modifier::ITALIC),
         ),
     ])
 }
@@ -140,11 +135,7 @@ pub fn render_voice_wave(active: bool) -> Line<'static> {
 
     Line::from(Span::styled(
         wave.to_string(),
-        Style::default().fg(if active {
-            neon_cyan()
-        } else {
-            dim_color()
-        }),
+        Style::default().fg(if active { neon_cyan() } else { dim_color() }),
     ))
 }
 

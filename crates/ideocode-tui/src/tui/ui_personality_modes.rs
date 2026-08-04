@@ -137,10 +137,7 @@ pub fn render_mode_selector(current: &PersonalityMode) -> Vec<Line<'static>> {
 
         lines.push(Line::from(vec![
             Span::styled(indicator, Style::default().fg(neon_green())),
-            Span::styled(
-                format!("{} ", mode.icon()),
-                Style::default().fg(color),
-            ),
+            Span::styled(format!("{} ", mode.icon()), Style::default().fg(color)),
             Span::styled(
                 mode.display_name().to_string(),
                 Style::default()
@@ -165,15 +162,10 @@ pub fn render_mode_selector(current: &PersonalityMode) -> Vec<Line<'static>> {
 pub fn render_mode_indicator(mode: &PersonalityMode) -> Line<'static> {
     let color = mode.color();
     Line::from(vec![
-        Span::styled(
-            format!("{} ", mode.icon()),
-            Style::default().fg(color),
-        ),
+        Span::styled(format!("{} ", mode.icon()), Style::default().fg(color)),
         Span::styled(
             mode.display_name().to_string(),
-            Style::default()
-                .fg(color)
-                .add_modifier(Modifier::BOLD),
+            Style::default().fg(color).add_modifier(Modifier::BOLD),
         ),
     ])
 }
@@ -232,7 +224,10 @@ mod tests {
 
     #[test]
     fn parse_personality() {
-        assert_eq!(parse_personality_mode("professional"), Some(PersonalityMode::Professional));
+        assert_eq!(
+            parse_personality_mode("professional"),
+            Some(PersonalityMode::Professional)
+        );
         assert_eq!(parse_personality_mode("genz"), Some(PersonalityMode::GenZ));
         assert_eq!(parse_personality_mode("zen"), Some(PersonalityMode::Zen));
         assert_eq!(parse_personality_mode("invalid"), None);

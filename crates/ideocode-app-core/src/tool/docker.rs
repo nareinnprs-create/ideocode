@@ -132,7 +132,9 @@ impl Tool for DockerTool {
         }
 
         // For build action without target, add current dir context
-        if matches!(params.action, DockerAction::Build) && !params.args.iter().any(|a| !a.starts_with('-')) {
+        if matches!(params.action, DockerAction::Build)
+            && !params.args.iter().any(|a| !a.starts_with('-'))
+        {
             cmd.arg(".");
         }
 
@@ -151,7 +153,11 @@ impl Tool for DockerTool {
             result.push_str(&stderr);
         }
         if !output.status.success() && result.is_empty() {
-            result = format!("Docker {} failed (exit code: {:?})", action_str, output.status.code());
+            result = format!(
+                "Docker {} failed (exit code: {:?})",
+                action_str,
+                output.status.code()
+            );
         }
 
         Ok(ToolOutput::new(result))

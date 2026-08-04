@@ -967,7 +967,10 @@ impl OpenAIProvider {
     async fn clear_persistent_ws(&self, reason: &str) {
         let mut persistent_ws = self.persistent_ws.lock().await;
         if persistent_ws.is_some() {
-            ideocode_base::logging::info(&format!("Clearing persistent OpenAI WS state: {}", reason));
+            ideocode_base::logging::info(&format!(
+                "Clearing persistent OpenAI WS state: {}",
+                reason
+            ));
         }
         *persistent_ws = None;
     }

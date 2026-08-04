@@ -279,7 +279,11 @@ mod tests {
             SessionSource::IDEOCODE,
             Some("openai/codex-mini")
         ));
-        assert!(session_is_pi(SessionSource::IDEOCODE, Some("pi-main"), None));
+        assert!(session_is_pi(
+            SessionSource::IDEOCODE,
+            Some("pi-main"),
+            None
+        ));
         assert!(session_is_pi(
             SessionSource::IDEOCODE,
             None,

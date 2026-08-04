@@ -50,7 +50,11 @@ pub fn render_performance_dashboard(
             Span::styled("  🕐 Latency:    ", Style::default().fg(dim_color())),
             Span::styled(
                 format!("{:.0}ms", metrics.latency_ms),
-                Style::default().fg(if metrics.latency_ms < 100.0 { neon_green() } else { neon_yellow() }),
+                Style::default().fg(if metrics.latency_ms < 100.0 {
+                    neon_green()
+                } else {
+                    neon_yellow()
+                }),
             ),
         ]),
         Line::from(vec![
@@ -71,13 +75,20 @@ pub fn render_performance_dashboard(
             Span::styled("  🖥️  CPU:        ", Style::default().fg(dim_color())),
             Span::styled(
                 format!("{:.1}%", metrics.cpu_percent),
-                Style::default().fg(if metrics.cpu_percent < 50.0 { neon_green() } else { neon_yellow() }),
+                Style::default().fg(if metrics.cpu_percent < 50.0 {
+                    neon_green()
+                } else {
+                    neon_yellow()
+                }),
             ),
         ]),
         Line::from(vec![
             Span::styled("  📥 Network:    ", Style::default().fg(dim_color())),
             Span::styled(
-                format!("↓{:.1}KB ↑{:.1}KB", metrics.network_in_kb, metrics.network_out_kb),
+                format!(
+                    "↓{:.1}KB ↑{:.1}KB",
+                    metrics.network_in_kb, metrics.network_out_kb
+                ),
                 Style::default().fg(neon_blue()),
             ),
         ]),
@@ -127,10 +138,7 @@ pub fn render_latency_graph(latencies: &[f32]) -> Vec<Line<'static>> {
 /// Render token throughput graph.
 pub fn render_throughput_graph(throughputs: &[f32]) -> Vec<Line<'static>> {
     vec![
-        Line::from(Span::styled(
-            "Tokens/sec",
-            Style::default().fg(neon_cyan()),
-        )),
+        Line::from(Span::styled("Tokens/sec", Style::default().fg(neon_cyan()))),
         render_sparkline(throughputs, 40, neon_magenta()),
     ]
 }

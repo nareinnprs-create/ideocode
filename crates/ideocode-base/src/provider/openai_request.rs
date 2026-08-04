@@ -13,9 +13,10 @@ use ideocode_provider_openai::OpenAiRequestLogLevel;
 use serde_json::Value;
 
 pub fn build_responses_input(messages: &[ChatMessage]) -> Vec<Value> {
-    ideocode_provider_openai::build_responses_input_with_logger(messages, |level, message| match level
-    {
-        OpenAiRequestLogLevel::Info => crate::logging::info(message),
-        OpenAiRequestLogLevel::Warn => crate::logging::warn(message),
+    ideocode_provider_openai::build_responses_input_with_logger(messages, |level, message| {
+        match level {
+            OpenAiRequestLogLevel::Info => crate::logging::info(message),
+            OpenAiRequestLogLevel::Warn => crate::logging::warn(message),
+        }
     })
 }

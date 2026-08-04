@@ -18,8 +18,12 @@ fn to_markdown_diagram_mode(
 ) -> ideocode_tui_markdown::DiagramDisplayMode {
     match mode {
         crate::config::DiagramDisplayMode::None => ideocode_tui_markdown::DiagramDisplayMode::None,
-        crate::config::DiagramDisplayMode::Margin => ideocode_tui_markdown::DiagramDisplayMode::Margin,
-        crate::config::DiagramDisplayMode::Pinned => ideocode_tui_markdown::DiagramDisplayMode::Pinned,
+        crate::config::DiagramDisplayMode::Margin => {
+            ideocode_tui_markdown::DiagramDisplayMode::Margin
+        }
+        crate::config::DiagramDisplayMode::Pinned => {
+            ideocode_tui_markdown::DiagramDisplayMode::Pinned
+        }
     }
 }
 
@@ -28,8 +32,12 @@ fn from_markdown_diagram_mode(
 ) -> crate::config::DiagramDisplayMode {
     match mode {
         ideocode_tui_markdown::DiagramDisplayMode::None => crate::config::DiagramDisplayMode::None,
-        ideocode_tui_markdown::DiagramDisplayMode::Margin => crate::config::DiagramDisplayMode::Margin,
-        ideocode_tui_markdown::DiagramDisplayMode::Pinned => crate::config::DiagramDisplayMode::Pinned,
+        ideocode_tui_markdown::DiagramDisplayMode::Margin => {
+            crate::config::DiagramDisplayMode::Margin
+        }
+        ideocode_tui_markdown::DiagramDisplayMode::Pinned => {
+            crate::config::DiagramDisplayMode::Pinned
+        }
     }
 }
 
@@ -54,7 +62,9 @@ fn to_markdown_latex_mode(
         crate::config::LatexRenderingMode::Unicode => {
             ideocode_tui_markdown::LatexRenderingMode::Unicode
         }
-        crate::config::LatexRenderingMode::Image => ideocode_tui_markdown::LatexRenderingMode::Image,
+        crate::config::LatexRenderingMode::Image => {
+            ideocode_tui_markdown::LatexRenderingMode::Image
+        }
     }
 }
 

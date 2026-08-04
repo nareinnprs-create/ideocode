@@ -190,7 +190,9 @@ pub fn register_external_provider_runtimes() {
         crate::provider::external::OPENAI_RUNTIME,
         || {
             let provider = match crate::auth::codex::load_credentials() {
-                Ok(credentials) => ideocode_provider_openai_runtime::OpenAIProvider::new(credentials),
+                Ok(credentials) => {
+                    ideocode_provider_openai_runtime::OpenAIProvider::new(credentials)
+                }
                 Err(_) => ideocode_provider_openai_runtime::OpenAIProvider::new_browser_only(),
             };
             Some(std::sync::Arc::new(provider) as std::sync::Arc<dyn crate::provider::Provider>)
@@ -332,7 +334,9 @@ fn spawn_background_update_check(args: &Args) {
                         ));
                     }
                 } else {
-                    logging::info("Update available! Run `IDEOCODE update` or `/reload` to update.");
+                    logging::info(
+                        "Update available! Run `IDEOCODE update` or `/reload` to update.",
+                    );
                 }
             } else {
                 Bus::global().publish(BusEvent::UpdateStatus(UpdateStatus::UpToDate));

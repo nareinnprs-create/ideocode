@@ -28,7 +28,9 @@ struct TranslateInput {
 
 #[async_trait]
 impl Tool for TranslateTool {
-    fn name(&self) -> &str { "translate" }
+    fn name(&self) -> &str {
+        "translate"
+    }
 
     fn description(&self) -> &str {
         "Translate text between languages while preserving technical accuracy."
@@ -49,7 +51,11 @@ impl Tool for TranslateTool {
 
     async fn execute(&self, input: Value, _ctx: ToolContext) -> Result<ToolOutput> {
         let input: TranslateInput = serde_json::from_value(input)?;
-        let provider = self.registry.provider.as_ref().ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
+        let provider = self
+            .registry
+            .provider
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
 
         let source = input.source_language.as_deref().unwrap_or("auto-detected");
         let preserve = if input.preserve_code.unwrap_or(true) {
@@ -63,7 +69,10 @@ impl Tool for TranslateTool {
             source, input.target_language, preserve
         );
 
-        let user_prompt = format!("Translate this to {}:\n\n---\n{}\n---", input.target_language, input.text);
+        let user_prompt = format!(
+            "Translate this to {}:\n\n---\n{}\n---",
+            input.target_language, input.text
+        );
         let response = provider.complete_simple(&user_prompt, &system).await?;
         Ok(ToolOutput::new(response))
     }

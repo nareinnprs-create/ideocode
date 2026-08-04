@@ -77,7 +77,9 @@ impl Tool for ProcessTool {
 
         match params.action {
             ProcessAction::List => process_list(params.name.as_deref()).await,
-            ProcessAction::Kill => process_kill(params.pid, params.name.as_deref(), params.signal.as_deref()).await,
+            ProcessAction::Kill => {
+                process_kill(params.pid, params.name.as_deref(), params.signal.as_deref()).await
+            }
             ProcessAction::Info => process_info(params.pid).await,
         }
     }
@@ -149,7 +151,11 @@ async fn process_list(filter: Option<&str>) -> Result<ToolOutput> {
 }
 
 #[cfg(windows)]
-async fn process_kill(pid: Option<u32>, name: Option<&str>, _signal: Option<&str>) -> Result<ToolOutput> {
+async fn process_kill(
+    pid: Option<u32>,
+    name: Option<&str>,
+    _signal: Option<&str>,
+) -> Result<ToolOutput> {
     if let Some(pid) = pid {
         let output = tokio::process::Command::new("taskkill")
             .args(["/PID", &pid.to_string(), "/F"])
@@ -159,7 +165,11 @@ async fn process_kill(pid: Option<u32>, name: Option<&str>, _signal: Option<&str
             Ok(ToolOutput::new(format!("Process {} terminated", pid)))
         } else {
             let stderr = String::from_utf8_lossy(&output.stderr).to_string();
-            Err(anyhow::anyhow!("Failed to kill process {}: {}", pid, stderr))
+            Err(anyhow::anyhow!(
+                "Failed to kill process {}: {}",
+                pid,
+                stderr
+            ))
         }
     } else if let Some(name) = name {
         let output = tokio::process::Command::new("taskkill")
@@ -173,12 +183,18 @@ async fn process_kill(pid: Option<u32>, name: Option<&str>, _signal: Option<&str
             Err(anyhow::anyhow!("Failed to kill '{}': {}", name, stderr))
         }
     } else {
-        Err(anyhow::anyhow!("Either pid or name is required for kill action"))
+        Err(anyhow::anyhow!(
+            "Either pid or name is required for kill action"
+        ))
     }
 }
 
 #[cfg(not(windows))]
-async fn process_kill(pid: Option<u32>, name: Option<&str>, signal: Option<&str>) -> Result<ToolOutput> {
+async fn process_kill(
+    pid: Option<u32>,
+    name: Option<&str>,
+    signal: Option<&str>,
+) -> Result<ToolOutput> {
     let sig = signal.unwrap_or("SIGTERM");
 
     if let Some(pid) = pid {
@@ -187,10 +203,17 @@ async fn process_kill(pid: Option<u32>, name: Option<&str>, signal: Option<&str>
             .output()
             .await?;
         if output.status.success() {
-            Ok(ToolOutput::new(format!("Process {} killed with {}", pid, sig)))
+            Ok(ToolOutput::new(format!(
+                "Process {} killed with {}",
+                pid, sig
+            )))
         } else {
             let stderr = String::from_utf8_lossy(&output.stderr).to_string();
-            Err(anyhow::anyhow!("Failed to kill process {}: {}", pid, stderr))
+            Err(anyhow::anyhow!(
+                "Failed to kill process {}: {}",
+                pid,
+                stderr
+            ))
         }
     } else if let Some(name) = name {
         let output = tokio::process::Command::new("pkill")
@@ -198,13 +221,18 @@ async fn process_kill(pid: Option<u32>, name: Option<&str>, signal: Option<&str>
             .output()
             .await?;
         if output.status.success() {
-            Ok(ToolOutput::new(format!("Process '{}' killed with {}", name, sig)))
+            Ok(ToolOutput::new(format!(
+                "Process '{}' killed with {}",
+                name, sig
+            )))
         } else {
             let stderr = String::from_utf8_lossy(&output.stderr).to_string();
             Err(anyhow::anyhow!("Failed to kill '{}': {}", name, stderr))
         }
     } else {
-        Err(anyhow::anyhow!("Either pid or name is required for kill action"))
+        Err(anyhow::anyhow!(
+            "Either pid or name is required for kill action"
+        ))
     }
 }
 
@@ -227,7 +255,12 @@ async fn process_info(pid: Option<u32>) -> Result<ToolOutput> {
 async fn process_info(pid: Option<u32>) -> Result<ToolOutput> {
     let pid = pid.context("pid is required for info action")?;
     let output = tokio::process::Command::new("ps")
-        .args(["-p", &pid.to_string(), "-o", "pid,ppid,user,%cpu,%mem,rss,stat,start,time,args"])
+        .args([
+            "-p",
+            &pid.to_string(),
+            "-o",
+            "pid,ppid,user,%cpu,%mem,rss,stat,start,time,args",
+        ])
         .output()
         .await?;
     let stdout = String::from_utf8_lossy(&output.stdout).to_string();

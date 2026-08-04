@@ -44,9 +44,9 @@ pub struct Theme {
     pub tier: ThemeTier,
     pub bg: Color,
     pub fg: Color,
-    pub accent1: Color,   // primary accent
-    pub accent2: Color,   // secondary accent
-    pub accent3: Color,   // tertiary accent
+    pub accent1: Color, // primary accent
+    pub accent2: Color, // secondary accent
+    pub accent3: Color, // tertiary accent
     pub success: Color,
     pub warning: Color,
     pub error: Color,
@@ -307,10 +307,9 @@ impl Theme {
 
 /// Parse theme name to Theme.
 pub fn parse_theme(name: &str) -> Option<Theme> {
-    Theme::all().into_iter().find(|t| {
-        t.id == name.to_lowercase()
-            || t.name.to_lowercase() == name.to_lowercase()
-    })
+    Theme::all()
+        .into_iter()
+        .find(|t| t.id == name.to_lowercase() || t.name.to_lowercase() == name.to_lowercase())
 }
 
 /// List all themes by tier.
@@ -362,9 +361,6 @@ mod tests {
 
     #[test]
     fn theme_tiers() {
-        assert_eq!(
-            list_themes().len(),
-            3
-        );
+        assert_eq!(list_themes().len(), 3);
     }
 }

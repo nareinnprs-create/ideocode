@@ -64,7 +64,8 @@ const API_URL: &str = "https://api.anthropic.com/v1/messages";
 const API_URL_OAUTH: &str = "https://api.anthropic.com/v1/messages?beta=true";
 
 #[cfg(test)]
-pub(crate) const OAUTH_BETA_HEADERS_1M: &str = ideocode_provider_core::ANTHROPIC_OAUTH_BETA_HEADERS_1M;
+pub(crate) const OAUTH_BETA_HEADERS_1M: &str =
+    ideocode_provider_core::ANTHROPIC_OAUTH_BETA_HEADERS_1M;
 
 #[derive(Debug, Clone, Default)]
 struct OAuthClientMetadata {
@@ -665,8 +666,9 @@ impl AnthropicProvider {
     /// otherwise the model's published maximum. A flat default would clamp
     /// 128K-output models to 32K and truncate long agentic turns mid-tool-call.
     fn max_tokens_for(&self, model: &str) -> u32 {
-        self.max_tokens_override
-            .unwrap_or_else(|| ideocode_provider_core::anthropic::anthropic_max_output_tokens(model))
+        self.max_tokens_override.unwrap_or_else(|| {
+            ideocode_provider_core::anthropic::anthropic_max_output_tokens(model)
+        })
     }
 
     fn manual_thinking_budget(effort: &str, max_tokens: u32) -> Option<u32> {
@@ -1650,9 +1652,13 @@ async fn run_stream_with_retries(
                             }))
                             .await;
                     } else {
-                        ideocode_base::logging::info(&format!("Transient error, will retry: {}", e));
+                        ideocode_base::logging::info(&format!(
+                            "Transient error, will retry: {}",
+                            e
+                        ));
                     }
-                    next_retry_delay = ideocode_provider_core::retry_after::retry_after_from_error(&e);
+                    next_retry_delay =
+                        ideocode_provider_core::retry_after::retry_after_from_error(&e);
                     last_error = Some(e);
                     continue;
                 }
@@ -2046,7 +2052,10 @@ fn anthropic_recommended_model_from_error(error_str: &str) -> Option<String> {
 
     let mut candidates = ideocode_base::provider::known_anthropic_model_ids();
     for canonical in ideocode_base::provider::ALL_CLAUDE_MODELS {
-        if !candidates.iter().any(|candidate| candidate.as_str() == *canonical) {
+        if !candidates
+            .iter()
+            .any(|candidate| candidate.as_str() == *canonical)
+        {
             candidates.push((*canonical).to_string());
         }
     }
@@ -2067,7 +2076,8 @@ fn anthropic_recommended_model_from_error(error_str: &str) -> Option<String> {
         // do not pick an arbitrary model from a single shared token.
         .filter(|(_, score, _)| *score >= 2)
         .max_by_key(|(_, score, canonical)| (*score, *canonical))
-        .map(|(candidate, _, _)| candidate)}
+        .map(|(candidate, _, _)| candidate)
+}
 
 /// Pick the next Anthropic model to try after a "model not found" failure.
 ///
@@ -2377,7 +2387,11 @@ fn build_system_param_split(
 }
 
 fn format_messages_with_identity(messages: Vec<ApiMessage>, is_oauth: bool) -> Vec<ApiMessage> {
-    ideocode_provider_anthropic::format_messages_with_identity(messages, is_oauth, is_cache_ttl_1h())
+    ideocode_provider_anthropic::format_messages_with_identity(
+        messages,
+        is_oauth,
+        is_cache_ttl_1h(),
+    )
 }
 
 #[cfg(test)]

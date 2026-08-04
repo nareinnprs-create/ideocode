@@ -743,7 +743,11 @@ mod pick_newest_candidate_tests {
         // A deliberately-pinned self-dev build that is at least as fresh as the
         // other flavor must be preserved (self-dev pin protection).
         let chosen = pick_newest_candidate([
-            entry("/x/versions/selfdev/IDEOCODE", "shared-server", Some(t(200))),
+            entry(
+                "/x/versions/selfdev/IDEOCODE",
+                "shared-server",
+                Some(t(200)),
+            ),
             entry("/x/versions/release/IDEOCODE", "stable", Some(t(200))),
         ])
         .expect("a candidate");
@@ -761,7 +765,10 @@ mod pick_newest_candidate_tests {
             entry("/x/versions/release/IDEOCODE", "stable", Some(t(200))),
         ])
         .expect("a candidate");
-        assert_eq!(chosen.0, PathBuf::from("/x/versions/fresh-selfdev/IDEOCODE"));
+        assert_eq!(
+            chosen.0,
+            PathBuf::from("/x/versions/fresh-selfdev/IDEOCODE")
+        );
     }
 
     #[test]
@@ -769,7 +776,11 @@ mod pick_newest_candidate_tests {
         // An unreadable mtime on the other flavor must not let it win, so we
         // never swap to an unverifiable binary.
         let chosen = pick_newest_candidate([
-            entry("/x/versions/selfdev/IDEOCODE", "shared-server", Some(t(100))),
+            entry(
+                "/x/versions/selfdev/IDEOCODE",
+                "shared-server",
+                Some(t(100)),
+            ),
             entry("/x/versions/release/IDEOCODE", "stable", None),
         ])
         .expect("a candidate");

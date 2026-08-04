@@ -234,26 +234,68 @@ pub fn quote_of_the_day() -> (&'static str, &'static str) {
         / 86400; // days since epoch
 
     let quotes: Vec<(&str, &str)> = vec![
-        ("Any sufficiently advanced technology is indistinguishable from magic.", "Arthur C. Clarke"),
-        ("First, solve the problem. Then, write the code.", "John Johnson"),
-        ("The best error message is the one that never shows up.", "Thomas Fuchs"),
-        ("Code is like humor. When you have to explain it, it's bad.", "Cory House"),
+        (
+            "Any sufficiently advanced technology is indistinguishable from magic.",
+            "Arthur C. Clarke",
+        ),
+        (
+            "First, solve the problem. Then, write the code.",
+            "John Johnson",
+        ),
+        (
+            "The best error message is the one that never shows up.",
+            "Thomas Fuchs",
+        ),
+        (
+            "Code is like humor. When you have to explain it, it's bad.",
+            "Cory House",
+        ),
         ("Fix the cause, not the symptom.", "Steve Maguire"),
-        ("Optimism is an occupational hazard of programming: feedback is the treatment.", "Kent Beck"),
+        (
+            "Optimism is an occupational hazard of programming: feedback is the treatment.",
+            "Kent Beck",
+        ),
         ("Simplicity is the soul of efficiency.", "Austin Freeman"),
         ("Talk is cheap. Show me the code.", "Linus Torvalds"),
-        ("Programs must be written for people to read.", "Harold Abelson"),
-        ("The only way to learn a new programming language is by writing programs in it.", "Dennis Ritchie"),
+        (
+            "Programs must be written for people to read.",
+            "Harold Abelson",
+        ),
+        (
+            "The only way to learn a new programming language is by writing programs in it.",
+            "Dennis Ritchie",
+        ),
         ("It works on my machine.", "Every Developer Ever"),
-        ("There are only two hard things in Computer Science: cache invalidation and naming things.", "Phil Karlton"),
+        (
+            "There are only two hard things in Computer Science: cache invalidation and naming things.",
+            "Phil Karlton",
+        ),
         ("Programming is thinking, not typing.", "Casey Muratori"),
-        ("First, solve the problem. Then, write the code.", "John Johnson"),
+        (
+            "First, solve the problem. Then, write the code.",
+            "John Johnson",
+        ),
         ("The best code is no code at all.", "Jeff Atwood"),
-        ("Every line of code is written without error until proven otherwise.", "Anonymous"),
-        ("Measuring programming progress by lines of code is like measuring aircraft building progress by weight.", "Bill Gates"),
-        ("The most dangerous phrase in the language is 'We've always done it this way.'", "Grace Hopper"),
-        ("In theory, there is no difference between theory and practice. In practice, there is.", "Yogi Berra"),
-        ("Simplicity is prerequisite for reliability.", "Edsger W. Dijkstra"),
+        (
+            "Every line of code is written without error until proven otherwise.",
+            "Anonymous",
+        ),
+        (
+            "Measuring programming progress by lines of code is like measuring aircraft building progress by weight.",
+            "Bill Gates",
+        ),
+        (
+            "The most dangerous phrase in the language is 'We've always done it this way.'",
+            "Grace Hopper",
+        ),
+        (
+            "In theory, there is no difference between theory and practice. In practice, there is.",
+            "Yogi Berra",
+        ),
+        (
+            "Simplicity is prerequisite for reliability.",
+            "Edsger W. Dijkstra",
+        ),
     ];
 
     let idx = (day as usize) % quotes.len();
@@ -318,10 +360,7 @@ pub fn error_personality(error: &str) -> String {
             error
         )
     } else if lower.contains("timeout") {
-        format!(
-            "⏰ Timed out! Even AI needs a moment sometimes. {}",
-            error
-        )
+        format!("⏰ Timed out! Even AI needs a moment sometimes. {}", error)
     } else if lower.contains("auth") || lower.contains("token") {
         format!(
             "🔑 Authentication hiccup. Your keys might need a refresh. {}",
@@ -333,17 +372,17 @@ pub fn error_personality(error: &str) -> String {
             error
         )
     } else if lower.contains("file") || lower.contains("path") {
-        format!(
-            "📁 File not found. Did it wander off? {}",
-            error
-        )
+        format!("📁 File not found. Did it wander off? {}", error)
     } else if lower.contains("permission") || lower.contains("access") {
         format!(
             "🔒 Permission denied. The file says 'access forbidden'. {}",
             error
         )
     } else {
-        format!("😅 Something went sideways. Here's what happened: {}", error)
+        format!(
+            "😅 Something went sideways. Here's what happened: {}",
+            error
+        )
     }
 }
 
@@ -391,10 +430,7 @@ pub fn render_progress_with_poetry(progress: f32, width: usize) -> Line<'static>
     let dim = ideocode_tui_style::theme::dim_color();
 
     Line::from(vec![
-        Span::styled(
-            format!("{} ", bar),
-            Style::default().fg(cyan),
-        ),
+        Span::styled(format!("{} ", bar), Style::default().fg(cyan)),
         Span::styled(
             format!("{}%", (progress * 100.0) as u32),
             Style::default().fg(cyan).add_modifier(Modifier::BOLD),
@@ -416,11 +452,7 @@ mod tests {
     #[test]
     fn compact_logo_contains_ideocode() {
         let logo = ideocode_compact_logo();
-        let text: String = logo
-            .spans
-            .iter()
-            .map(|s| s.content.as_ref())
-            .collect();
+        let text: String = logo.spans.iter().map(|s| s.content.as_ref()).collect();
         assert!(text.contains("IDEOCODE"));
     }
 

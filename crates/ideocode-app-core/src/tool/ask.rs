@@ -68,9 +68,7 @@ impl Tool for AskTool {
         })
         .context("Failed to send stdin request — user input channel closed")?;
 
-        let user_input = response_rx
-            .await
-            .context("User did not provide input")?;
+        let user_input = response_rx.await.context("User did not provide input")?;
 
         Ok(ToolOutput::new(user_input))
     }

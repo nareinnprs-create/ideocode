@@ -910,7 +910,10 @@ mod tests {
 
     #[test]
     fn powershell_single_quote_escapes_embedded_quotes() {
-        assert_eq!(ps_single_quote(r"C:\O'Hara\IDEOCODE"), r"'C:\O''Hara\IDEOCODE'");
+        assert_eq!(
+            ps_single_quote(r"C:\O'Hara\IDEOCODE"),
+            r"'C:\O''Hara\IDEOCODE'"
+        );
     }
 
     #[test]

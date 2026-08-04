@@ -134,9 +134,7 @@ pub fn render_image_preview_block(
 }
 
 /// Render a compact inline image indicator for chat messages.
-pub fn render_inline_image_indicator(
-    preview: &ImagePreview,
-) -> Line<'static> {
+pub fn render_inline_image_indicator(preview: &ImagePreview) -> Line<'static> {
     let size_kb = preview.size_bytes() / 1024;
     let dim = preview.dimensions_str();
 
@@ -156,10 +154,7 @@ pub fn render_inline_image_indicator(
             format!("{} KB", size_kb),
             Style::default().fg(Color::Rgb(100, 100, 140)),
         ),
-        Span::styled(
-            " [save]",
-            Style::default().fg(Color::Rgb(0, 150, 255)),
-        ),
+        Span::styled(" [save]", Style::default().fg(Color::Rgb(0, 150, 255))),
     ])
 }
 
@@ -261,10 +256,7 @@ fn generate_type_pattern(media_type: &str) -> Vec<String> {
 }
 
 /// Save an image to a user-friendly location and return the path.
-pub fn save_image_to_desktop(
-    preview: &ImagePreview,
-    filename: &str,
-) -> Result<String, String> {
+pub fn save_image_to_desktop(preview: &ImagePreview, filename: &str) -> Result<String, String> {
     let desktop = dirs::desktop_dir()
         .or_else(|| dirs::data_local_dir().map(|p| p.join("Desktop")))
         .ok_or("Cannot find Desktop directory")?;

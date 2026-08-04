@@ -191,14 +191,8 @@ impl ToastManager {
             };
 
             let line = Line::from(vec![
-                Span::styled(
-                    format!(" {} ", icon),
-                    Style::default().fg(faded_color),
-                ),
-                Span::styled(
-                    toast.message.clone(),
-                    Style::default().fg(faded_color),
-                ),
+                Span::styled(format!(" {} ", icon), Style::default().fg(faded_color)),
+                Span::styled(toast.message.clone(), Style::default().fg(faded_color)),
             ]);
 
             let rect = Rect::new(x, y, toast_width as u16, 1);
@@ -220,11 +214,7 @@ mod tests {
 
     #[test]
     fn toast_expiry() {
-        let toast = Toast::with_duration(
-            "test",
-            ToastKind::Info,
-            Duration::from_millis(10),
-        );
+        let toast = Toast::with_duration("test", ToastKind::Info, Duration::from_millis(10));
         std::thread::sleep(Duration::from_millis(20));
         assert!(toast.is_expired());
     }

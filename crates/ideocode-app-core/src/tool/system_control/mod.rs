@@ -18,7 +18,10 @@ impl SystemControlTool {
 }
 
 #[derive(Debug, Deserialize)]
-#[allow(dead_code, reason = "fields used for future dispatch actions; kept for schema completeness")]
+#[allow(
+    dead_code,
+    reason = "fields used for future dispatch actions; kept for schema completeness"
+)]
 struct SystemInput {
     action: String,
     #[serde(default)]
@@ -106,23 +109,36 @@ fn dispatch(action: &str, input: &SystemInput) -> Result<ToolOutput> {
         "display_list" => platform_display_list(),
         "display_resolution" => platform_display_resolution(
             input.width.context("display_resolution requires `width`")?,
-            input.height.context("display_resolution requires `height`")?,
+            input
+                .height
+                .context("display_resolution requires `height`")?,
             input.refresh_rate,
         ),
         "bluetooth_scan" => platform_bluetooth_scan(),
         "bluetooth_pair" => platform_bluetooth_pair(
-            input.address.as_deref().context("bluetooth_pair requires `address`")?,
+            input
+                .address
+                .as_deref()
+                .context("bluetooth_pair requires `address`")?,
         ),
         "bluetooth_connect" => platform_bluetooth_connect(
-            input.address.as_deref().context("bluetooth_connect requires `address`")?,
+            input
+                .address
+                .as_deref()
+                .context("bluetooth_connect requires `address`")?,
         ),
         "bluetooth_disconnect" => platform_bluetooth_disconnect(
-            input.address.as_deref().context("bluetooth_disconnect requires `address`")?,
+            input
+                .address
+                .as_deref()
+                .context("bluetooth_disconnect requires `address`")?,
         ),
         "camera_photo" => platform_camera_photo(),
         "mic_audio" => platform_mic_audio(input.timeout_secs.unwrap_or(3)),
         "brightness_get" => platform_brightness_get(),
-        "brightness_set" => platform_brightness_set(input.level.context("brightness_set requires `level`")?),
+        "brightness_set" => {
+            platform_brightness_set(input.level.context("brightness_set requires `level`")?)
+        }
         _ => bail!("Unknown system_control action: {action}"),
     }
 }
@@ -130,9 +146,7 @@ fn dispatch(action: &str, input: &SystemInput) -> Result<ToolOutput> {
 // --- Platform implementations ---
 
 fn run_cmd(program: &str, args: &[&str]) -> Result<String> {
-    let output = std::process::Command::new(program)
-        .args(args)
-        .output()?;
+    let output = std::process::Command::new(program).args(args).output()?;
     Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
 }
 
@@ -140,18 +154,25 @@ fn run_cmd(program: &str, args: &[&str]) -> Result<String> {
 
 #[cfg(windows)]
 fn platform_volume_get() -> Result<ToolOutput> {
-    let out = run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        "Add-Type -AssemblyName System.Windows.Forms; \
+    let out = run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            "Add-Type -AssemblyName System.Windows.Forms; \
          $vol = [System.Windows.Forms.Audio]::Volume; \
-         Write-Output $vol"
-    ])?;
+         Write-Output $vol",
+        ],
+    )?;
     Ok(ToolOutput::new(format!("Volume: {out}")))
 }
 
 #[cfg(target_os = "macos")]
 fn platform_volume_get() -> Result<ToolOutput> {
-    let out = run_cmd("osascript", &["-e", "output volume of (get volume settings)"])?;
+    let out = run_cmd(
+        "osascript",
+        &["-e", "output volume of (get volume settings)"],
+    )?;
     Ok(ToolOutput::new(format!("Volume: {out}%")))
 }
 
@@ -164,55 +185,79 @@ fn platform_volume_get() -> Result<ToolOutput> {
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_volume_get() -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Volume control not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Volume control not supported on this platform".to_string(),
+    ))
 }
 
 #[cfg(windows)]
 fn platform_volume_set(level: f64) -> Result<ToolOutput> {
     let pct = (level * 100.0) as u32;
-    run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        &format!(
-            "Add-Type -AssemblyName System.Windows.Forms; \
+    run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            &format!(
+                "Add-Type -AssemblyName System.Windows.Forms; \
              [System.Windows.Forms.Audio]::Volume = {pct}"
-        )
-    ])?;
+            ),
+        ],
+    )?;
     Ok(ToolOutput::new(format!("Volume set to {pct}%")))
 }
 
 #[cfg(target_os = "macos")]
 fn platform_volume_set(level: f64) -> Result<ToolOutput> {
     let pct = (level * 100.0) as u32;
-    run_cmd("osascript", &["-e", &format!("set volume output volume {pct}")])?;
+    run_cmd(
+        "osascript",
+        &["-e", &format!("set volume output volume {pct}")],
+    )?;
     Ok(ToolOutput::new(format!("Volume set to {pct}%")))
 }
 
 #[cfg(target_os = "linux")]
 fn platform_volume_set(level: f64) -> Result<ToolOutput> {
     let pct = (level * 100.0) as u32;
-    run_cmd("pactl", &["set-sink-volume", "@DEFAULT_SINK@", &format!("{pct}%")])
-        .or_else(|_| run_cmd("amixer", &["sset", "Master", &format!("{pct}%")]))?;
+    run_cmd(
+        "pactl",
+        &["set-sink-volume", "@DEFAULT_SINK@", &format!("{pct}%")],
+    )
+    .or_else(|_| run_cmd("amixer", &["sset", "Master", &format!("{pct}%")]))?;
     Ok(ToolOutput::new(format!("Volume set to {pct}%")))
 }
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_volume_set(_level: f64) -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Volume control not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Volume control not supported on this platform".to_string(),
+    ))
 }
 
 #[cfg(windows)]
 fn platform_volume_mute() -> Result<ToolOutput> {
-    run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        "$obj = New-Object -ComObject wscript.shell; \
-         $obj.SendKeys([char]173)"
-    ])?;
+    run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            "$obj = New-Object -ComObject wscript.shell; \
+         $obj.SendKeys([char]173)",
+        ],
+    )?;
     Ok(ToolOutput::new("Volume toggled mute"))
 }
 
 #[cfg(target_os = "macos")]
 fn platform_volume_mute() -> Result<ToolOutput> {
-    run_cmd("osascript", &["-e", "set volume output muted not (output muted of (get volume settings))"])?;
+    run_cmd(
+        "osascript",
+        &[
+            "-e",
+            "set volume output muted not (output muted of (get volume settings))",
+        ],
+    )?;
     Ok(ToolOutput::new("Volume toggled mute"))
 }
 
@@ -225,18 +270,28 @@ fn platform_volume_mute() -> Result<ToolOutput> {
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_volume_mute() -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Volume control not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Volume control not supported on this platform".to_string(),
+    ))
 }
 
 // -- Power --
 
 #[cfg(windows)]
 fn platform_power_battery() -> Result<ToolOutput> {
-    let out = run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        "Get-WmiObject Win32_Battery | Select-Object EstimatedChargeRemaining, BatteryStatus, EstimatedRunTime | ConvertTo-Json"
-    ])?;
-    Ok(ToolOutput::new(if out.is_empty() { "No battery found".to_string() } else { out }))
+    let out = run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            "Get-WmiObject Win32_Battery | Select-Object EstimatedChargeRemaining, BatteryStatus, EstimatedRunTime | ConvertTo-Json",
+        ],
+    )?;
+    Ok(ToolOutput::new(if out.is_empty() {
+        "No battery found".to_string()
+    } else {
+        out
+    }))
 }
 
 #[cfg(target_os = "macos")]
@@ -247,23 +302,29 @@ fn platform_power_battery() -> Result<ToolOutput> {
 
 #[cfg(target_os = "linux")]
 fn platform_power_battery() -> Result<ToolOutput> {
-    let out = run_cmd("upower", &["-i", "$(upower -e | grep BAT)"])
-        .or_else(|_| run_cmd("acpi", &[]))?;
+    let out =
+        run_cmd("upower", &["-i", "$(upower -e | grep BAT)"]).or_else(|_| run_cmd("acpi", &[]))?;
     Ok(ToolOutput::new(out))
 }
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_power_battery() -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Battery status not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Battery status not supported on this platform".to_string(),
+    ))
 }
 
 #[cfg(windows)]
 fn platform_power_sleep() -> Result<ToolOutput> {
-    run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        "Add-Type -AssemblyName System.Windows.Forms; \
-         [System.Windows.Forms.Application]::SetSuspendState('Sleep', $false, $false)"
-    ])?;
+    run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            "Add-Type -AssemblyName System.Windows.Forms; \
+         [System.Windows.Forms.Application]::SetSuspendState('Sleep', $false, $false)",
+        ],
+    )?;
     Ok(ToolOutput::new("System going to sleep"))
 }
 
@@ -281,7 +342,9 @@ fn platform_power_sleep() -> Result<ToolOutput> {
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_power_sleep() -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Sleep not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Sleep not supported on this platform".to_string(),
+    ))
 }
 
 #[cfg(windows)]
@@ -292,7 +355,13 @@ fn platform_power_lock() -> Result<ToolOutput> {
 
 #[cfg(target_os = "macos")]
 fn platform_power_lock() -> Result<ToolOutput> {
-    run_cmd("osascript", &["-e", "tell app \"System Events\" to keystroke \"q\" using {command down, control down}"])?;
+    run_cmd(
+        "osascript",
+        &[
+            "-e",
+            "tell app \"System Events\" to keystroke \"q\" using {command down, control down}",
+        ],
+    )?;
     Ok(ToolOutput::new("Screen locked"))
 }
 
@@ -306,23 +375,31 @@ fn platform_power_lock() -> Result<ToolOutput> {
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_power_lock() -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Lock not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Lock not supported on this platform".to_string(),
+    ))
 }
 
 #[cfg(windows)]
 fn platform_power_hibernate() -> Result<ToolOutput> {
-    run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        "Add-Type -AssemblyName System.Windows.Forms; \
-         [System.Windows.Forms.Application]::SetSuspendState('Hibernate', $false, $false)"
-    ])?;
+    run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            "Add-Type -AssemblyName System.Windows.Forms; \
+         [System.Windows.Forms.Application]::SetSuspendState('Hibernate', $false, $false)",
+        ],
+    )?;
     Ok(ToolOutput::new("System hibernating"))
 }
 
 #[cfg(target_os = "macos")]
 fn platform_power_hibernate() -> Result<ToolOutput> {
     run_cmd("osascript", &["-e", "tell app \"System Events\" to sleep"])?;
-    Ok(ToolOutput::new("System sleeping (macOS has no separate hibernate)"))
+    Ok(ToolOutput::new(
+        "System sleeping (macOS has no separate hibernate)",
+    ))
 }
 
 #[cfg(target_os = "linux")]
@@ -333,19 +410,25 @@ fn platform_power_hibernate() -> Result<ToolOutput> {
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_power_hibernate() -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Hibernate not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Hibernate not supported on this platform".to_string(),
+    ))
 }
 
 // -- Display --
 
 #[cfg(windows)]
 fn platform_display_list() -> Result<ToolOutput> {
-    let out = run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        "Add-Type -AssemblyName System.Windows.Forms; \
+    let out = run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            "Add-Type -AssemblyName System.Windows.Forms; \
          $screens = [System.Windows.Forms.Screen]::AllScreens; \
-         $screens | Select-Object DeviceName, Bounds, Primary, WorkingArea | ConvertTo-Json"
-    ])?;
+         $screens | Select-Object DeviceName, Bounds, Primary, WorkingArea | ConvertTo-Json",
+        ],
+    )?;
     Ok(ToolOutput::new(out))
 }
 
@@ -357,62 +440,99 @@ fn platform_display_list() -> Result<ToolOutput> {
 
 #[cfg(target_os = "linux")]
 fn platform_display_list() -> Result<ToolOutput> {
-    let out = run_cmd("xrandr", &["--query"])
-        .or_else(|_| run_cmd("wlr-randr", &[]))?;
+    let out = run_cmd("xrandr", &["--query"]).or_else(|_| run_cmd("wlr-randr", &[]))?;
     Ok(ToolOutput::new(out))
 }
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_display_list() -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Display info not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Display info not supported on this platform".to_string(),
+    ))
 }
 
 #[cfg(windows)]
-fn platform_display_resolution(width: u32, height: u32, _refresh: Option<u32>) -> Result<ToolOutput> {
-    run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        &format!(
-            "Add-Type -AssemblyName System.Windows.Forms; \
+fn platform_display_resolution(
+    width: u32,
+    height: u32,
+    _refresh: Option<u32>,
+) -> Result<ToolOutput> {
+    run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            &format!(
+                "Add-Type -AssemblyName System.Windows.Forms; \
              [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Width = {width}; \
              [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Height = {height}"
-        )
-    ])?;
-    Ok(ToolOutput::new(format!("Resolution set to {width}x{height}")))
+            ),
+        ],
+    )?;
+    Ok(ToolOutput::new(format!(
+        "Resolution set to {width}x{height}"
+    )))
 }
 
 #[cfg(target_os = "macos")]
-fn platform_display_resolution(width: u32, height: u32, refresh: Option<u32>) -> Result<ToolOutput> {
+fn platform_display_resolution(
+    width: u32,
+    height: u32,
+    refresh: Option<u32>,
+) -> Result<ToolOutput> {
     let mode = if let Some(r) = refresh {
         format!("{}x{}@{}", width, height, r)
     } else {
         format!("{}x{}", width, height)
     };
-    run_cmd("osascript", &["-e", &format!(
-        "tell app \"System Events\" to tell appearance preferences to set resolution to {{{width}, {height}}}"
-    )])?;
+    run_cmd(
+        "osascript",
+        &[
+            "-e",
+            &format!(
+                "tell app \"System Events\" to tell appearance preferences to set resolution to {{{width}, {height}}}"
+            ),
+        ],
+    )?;
     Ok(ToolOutput::new(format!("Resolution set to {mode}")))
 }
 
 #[cfg(target_os = "linux")]
-fn platform_display_resolution(width: u32, height: u32, _refresh: Option<u32>) -> Result<ToolOutput> {
+fn platform_display_resolution(
+    width: u32,
+    height: u32,
+    _refresh: Option<u32>,
+) -> Result<ToolOutput> {
     run_cmd("xrandr", &["-s", &format!("{width}x{height}")])?;
-    Ok(ToolOutput::new(format!("Resolution set to {width}x{height}")))
+    Ok(ToolOutput::new(format!(
+        "Resolution set to {width}x{height}"
+    )))
 }
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_display_resolution(_w: u32, _h: u32, _r: Option<u32>) -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Display control not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Display control not supported on this platform".to_string(),
+    ))
 }
 
 // -- Bluetooth --
 
 #[cfg(windows)]
 fn platform_bluetooth_scan() -> Result<ToolOutput> {
-    let out = run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        "Get-WmiObject -Class BluetoothDevice | Select-Object Name, Address, Connected | ConvertTo-Json"
-    ])?;
-    Ok(ToolOutput::new(if out.is_empty() { "No Bluetooth devices found".to_string() } else { out }))
+    let out = run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            "Get-WmiObject -Class BluetoothDevice | Select-Object Name, Address, Connected | ConvertTo-Json",
+        ],
+    )?;
+    Ok(ToolOutput::new(if out.is_empty() {
+        "No Bluetooth devices found".to_string()
+    } else {
+        out
+    }))
 }
 
 #[cfg(target_os = "macos")]
@@ -429,25 +549,39 @@ fn platform_bluetooth_scan() -> Result<ToolOutput> {
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_bluetooth_scan() -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Bluetooth not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Bluetooth not supported on this platform".to_string(),
+    ))
 }
 
 #[cfg(windows)]
 fn platform_bluetooth_pair(address: &str) -> Result<ToolOutput> {
-    run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        &format!("Add-Type -AssemblyName System.Windows.Forms; \
+    run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            &format!(
+                "Add-Type -AssemblyName System.Windows.Forms; \
                   $bt = New-Object -ComObject BluetoothDevice; \
-                  $bt.Pair('{address}')")
-    ])?;
+                  $bt.Pair('{address}')"
+            ),
+        ],
+    )?;
     Ok(ToolOutput::new(format!("Paired with {address}")))
 }
 
 #[cfg(target_os = "macos")]
 fn platform_bluetooth_pair(address: &str) -> Result<ToolOutput> {
-    run_cmd("osascript", &["-e", &format!(
-        "tell application \"System Events\" to tell process \"bluetoothd\" to pair \"{address}\""
-    )])?;
+    run_cmd(
+        "osascript",
+        &[
+            "-e",
+            &format!(
+                "tell application \"System Events\" to tell process \"bluetoothd\" to pair \"{address}\""
+            ),
+        ],
+    )?;
     Ok(ToolOutput::new(format!("Paired with {address}")))
 }
 
@@ -459,25 +593,39 @@ fn platform_bluetooth_pair(address: &str) -> Result<ToolOutput> {
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_bluetooth_pair(_addr: &str) -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Bluetooth not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Bluetooth not supported on this platform".to_string(),
+    ))
 }
 
 #[cfg(windows)]
 fn platform_bluetooth_connect(address: &str) -> Result<ToolOutput> {
-    run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        &format!("Add-Type -AssemblyName System.Windows.Forms; \
+    run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            &format!(
+                "Add-Type -AssemblyName System.Windows.Forms; \
                   $bt = New-Object -ComObject BluetoothDevice; \
-                  $bt.Connect('{address}')")
-    ])?;
+                  $bt.Connect('{address}')"
+            ),
+        ],
+    )?;
     Ok(ToolOutput::new(format!("Connected to {address}")))
 }
 
 #[cfg(target_os = "macos")]
 fn platform_bluetooth_connect(address: &str) -> Result<ToolOutput> {
-    run_cmd("osascript", &["-e", &format!(
-        "tell application \"System Events\" to tell process \"bluetoothd\" to connect \"{address}\""
-    )])?;
+    run_cmd(
+        "osascript",
+        &[
+            "-e",
+            &format!(
+                "tell application \"System Events\" to tell process \"bluetoothd\" to connect \"{address}\""
+            ),
+        ],
+    )?;
     Ok(ToolOutput::new(format!("Connected to {address}")))
 }
 
@@ -489,25 +637,39 @@ fn platform_bluetooth_connect(address: &str) -> Result<ToolOutput> {
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_bluetooth_connect(_addr: &str) -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Bluetooth not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Bluetooth not supported on this platform".to_string(),
+    ))
 }
 
 #[cfg(windows)]
 fn platform_bluetooth_disconnect(address: &str) -> Result<ToolOutput> {
-    run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        &format!("Add-Type -AssemblyName System.Windows.Forms; \
+    run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            &format!(
+                "Add-Type -AssemblyName System.Windows.Forms; \
                   $bt = New-Object -ComObject BluetoothDevice; \
-                  $bt.Disconnect('{address}')")
-    ])?;
+                  $bt.Disconnect('{address}')"
+            ),
+        ],
+    )?;
     Ok(ToolOutput::new(format!("Disconnected from {address}")))
 }
 
 #[cfg(target_os = "macos")]
 fn platform_bluetooth_disconnect(address: &str) -> Result<ToolOutput> {
-    run_cmd("osascript", &["-e", &format!(
-        "tell application \"System Events\" to tell process \"bluetoothd\" to disconnect \"{address}\""
-    )])?;
+    run_cmd(
+        "osascript",
+        &[
+            "-e",
+            &format!(
+                "tell application \"System Events\" to tell process \"bluetoothd\" to disconnect \"{address}\""
+            ),
+        ],
+    )?;
     Ok(ToolOutput::new(format!("Disconnected from {address}")))
 }
 
@@ -519,7 +681,9 @@ fn platform_bluetooth_disconnect(address: &str) -> Result<ToolOutput> {
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_bluetooth_disconnect(_addr: &str) -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Bluetooth not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Bluetooth not supported on this platform".to_string(),
+    ))
 }
 
 // -- Camera --
@@ -528,21 +692,30 @@ fn platform_bluetooth_disconnect(_addr: &str) -> Result<ToolOutput> {
 fn platform_camera_photo() -> Result<ToolOutput> {
     let tmp = tempfile::tempdir()?;
     let path = tmp.path().join("camera.jpg");
-    run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        &format!(
-            "Add-Type -AssemblyName System.Windows.Forms; \
+    run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            &format!(
+                "Add-Type -AssemblyName System.Windows.Forms; \
              Add-Type -AssemblyName System.Drawing; \
              $cap = New-Object -ComObject WIA.CommonDialog; \
              $img = $cap.ShowAcquireImage(); \
              $img.SaveFile('{}')",
-            path.to_string_lossy()
-        )
-    ])?;
+                path.to_string_lossy()
+            ),
+        ],
+    )?;
     let data = std::fs::read(&path)?;
     let b64 = base64::engine::general_purpose::STANDARD.encode(&data);
-    Ok(ToolOutput::new("Camera photo captured".to_string())
-        .with_labeled_image("image/jpeg", b64, "Camera"))
+    Ok(
+        ToolOutput::new("Camera photo captured".to_string()).with_labeled_image(
+            "image/jpeg",
+            b64,
+            "Camera",
+        ),
+    )
 }
 
 #[cfg(target_os = "macos")]
@@ -552,28 +725,47 @@ fn platform_camera_photo() -> Result<ToolOutput> {
     run_cmd("imagesnap", &[&path.to_string_lossy()])?;
     let data = std::fs::read(&path)?;
     let b64 = base64::engine::general_purpose::STANDARD.encode(&data);
-    Ok(ToolOutput::new("Camera photo captured".to_string())
-        .with_labeled_image("image/jpeg", b64, "Camera"))
+    Ok(
+        ToolOutput::new("Camera photo captured".to_string()).with_labeled_image(
+            "image/jpeg",
+            b64,
+            "Camera",
+        ),
+    )
 }
 
 #[cfg(target_os = "linux")]
 fn platform_camera_photo() -> Result<ToolOutput> {
     let tmp = tempfile::tempdir()?;
     let path = tmp.path().join("camera.jpg");
-    run_cmd("ffmpeg", &[
-        "-f", "v4l2", "-i", "/dev/video0",
-        "-vframes", "1",
-        &path.to_string_lossy()
-    ])?;
+    run_cmd(
+        "ffmpeg",
+        &[
+            "-f",
+            "v4l2",
+            "-i",
+            "/dev/video0",
+            "-vframes",
+            "1",
+            &path.to_string_lossy(),
+        ],
+    )?;
     let data = std::fs::read(&path)?;
     let b64 = base64::engine::general_purpose::STANDARD.encode(&data);
-    Ok(ToolOutput::new("Camera photo captured".to_string())
-        .with_labeled_image("image/jpeg", b64, "Camera"))
+    Ok(
+        ToolOutput::new("Camera photo captured".to_string()).with_labeled_image(
+            "image/jpeg",
+            b64,
+            "Camera",
+        ),
+    )
 }
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_camera_photo() -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Camera not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Camera not supported on this platform".to_string(),
+    ))
 }
 
 // -- Microphone --
@@ -582,74 +774,115 @@ fn platform_camera_photo() -> Result<ToolOutput> {
 fn platform_mic_audio(timeout: u64) -> Result<ToolOutput> {
     let tmp = tempfile::tempdir()?;
     let path = tmp.path().join("mic.wav");
-    run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        &format!(
-            "Add-Type -AssemblyName System.Windows.Forms; \
+    run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            &format!(
+                "Add-Type -AssemblyName System.Windows.Forms; \
              $capture = New-Object -ComObject SoundCapture; \
              $capture.Record('{}', {timeout})",
-            path.to_string_lossy()
-        )
-    ])?;
+                path.to_string_lossy()
+            ),
+        ],
+    )?;
     let data = std::fs::read(&path)?;
     let b64 = base64::engine::general_purpose::STANDARD.encode(&data);
-    Ok(ToolOutput::new("Microphone audio captured".to_string())
-        .with_labeled_image("audio/wav", b64, "Microphone"))
+    Ok(
+        ToolOutput::new("Microphone audio captured".to_string()).with_labeled_image(
+            "audio/wav",
+            b64,
+            "Microphone",
+        ),
+    )
 }
 
 #[cfg(target_os = "macos")]
 fn platform_mic_audio(timeout: u64) -> Result<ToolOutput> {
     let tmp = tempfile::tempdir()?;
     let path = tmp.path().join("mic.wav");
-    run_cmd("sox", &[
-        "-d", "-t", "wav",
-        &path.to_string_lossy(),
-        "trim", "0", &timeout.to_string()
-    ])?;
+    run_cmd(
+        "sox",
+        &[
+            "-d",
+            "-t",
+            "wav",
+            &path.to_string_lossy(),
+            "trim",
+            "0",
+            &timeout.to_string(),
+        ],
+    )?;
     let data = std::fs::read(&path)?;
     let b64 = base64::engine::general_purpose::STANDARD.encode(&data);
-    Ok(ToolOutput::new("Microphone audio captured".to_string())
-        .with_labeled_image("audio/wav", b64, "Microphone"))
+    Ok(
+        ToolOutput::new("Microphone audio captured".to_string()).with_labeled_image(
+            "audio/wav",
+            b64,
+            "Microphone",
+        ),
+    )
 }
 
 #[cfg(target_os = "linux")]
 fn platform_mic_audio(timeout: u64) -> Result<ToolOutput> {
     let tmp = tempfile::tempdir()?;
     let path = tmp.path().join("mic.wav");
-    run_cmd("parec", &[
-        "--device=@DEFAULT_SOURCE@",
-        "--format=s16le",
-        "--rate=44100",
-        "--channels=1",
-        &format!("--latency={}", timeout * 1000),
-        &path.to_string_lossy()
-    ])?;
+    run_cmd(
+        "parec",
+        &[
+            "--device=@DEFAULT_SOURCE@",
+            "--format=s16le",
+            "--rate=44100",
+            "--channels=1",
+            &format!("--latency={}", timeout * 1000),
+            &path.to_string_lossy(),
+        ],
+    )?;
     let data = std::fs::read(&path)?;
     let b64 = base64::engine::general_purpose::STANDARD.encode(&data);
-    Ok(ToolOutput::new("Microphone audio captured".to_string())
-        .with_labeled_image("audio/wav", b64, "Microphone"))
+    Ok(
+        ToolOutput::new("Microphone audio captured".to_string()).with_labeled_image(
+            "audio/wav",
+            b64,
+            "Microphone",
+        ),
+    )
 }
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_mic_audio(_timeout: u64) -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Microphone not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Microphone not supported on this platform".to_string(),
+    ))
 }
 
 // -- Brightness --
 
 #[cfg(windows)]
 fn platform_brightness_get() -> Result<ToolOutput> {
-    let out = run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        "Get-WmiObject -Namespace root/WMI -Class WmiMonitorBrightness | \
-         Select-Object CurrentBrightness | ConvertTo-Json"
-    ])?;
+    let out = run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            "Get-WmiObject -Namespace root/WMI -Class WmiMonitorBrightness | \
+         Select-Object CurrentBrightness | ConvertTo-Json",
+        ],
+    )?;
     Ok(ToolOutput::new(out))
 }
 
 #[cfg(target_os = "macos")]
 fn platform_brightness_get() -> Result<ToolOutput> {
-    let out = run_cmd("osascript", &["-e", "tell app \"System Events\" to tell appearance preferences to get brightness"])?;
+    let out = run_cmd(
+        "osascript",
+        &[
+            "-e",
+            "tell app \"System Events\" to tell appearance preferences to get brightness",
+        ],
+    )?;
     Ok(ToolOutput::new(format!("Brightness: {out}")))
 }
 
@@ -667,41 +900,59 @@ fn platform_brightness_get() -> Result<ToolOutput> {
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_brightness_get() -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Brightness not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Brightness not supported on this platform".to_string(),
+    ))
 }
 
 #[cfg(windows)]
 fn platform_brightness_set(level: f64) -> Result<ToolOutput> {
     let pct = (level * 100.0) as u32;
-    run_cmd("powershell", &[
-        "-NoProfile", "-Command",
-        &format!(
-            "$monitor = Get-WmiObject -Namespace root/WMI -Class WmiMonitorBrightnessMethods; \
+    run_cmd(
+        "powershell",
+        &[
+            "-NoProfile",
+            "-Command",
+            &format!(
+                "$monitor = Get-WmiObject -Namespace root/WMI -Class WmiMonitorBrightnessMethods; \
              $monitor.WmiSetBrightness({pct}, 0)"
-        )
-    ])?;
+            ),
+        ],
+    )?;
     Ok(ToolOutput::new(format!("Brightness set to {pct}%")))
 }
 
 #[cfg(target_os = "macos")]
 fn platform_brightness_set(level: f64) -> Result<ToolOutput> {
     let pct = (level * 100.0) as u32;
-    run_cmd("osascript", &["-e", &format!("tell app \"System Events\" to tell appearance preferences to set brightness to {pct}")])?;
+    run_cmd(
+        "osascript",
+        &[
+            "-e",
+            &format!(
+                "tell app \"System Events\" to tell appearance preferences to set brightness to {pct}"
+            ),
+        ],
+    )?;
     Ok(ToolOutput::new(format!("Brightness set to {pct}%")))
 }
 
 #[cfg(target_os = "linux")]
 fn platform_brightness_set(level: f64) -> Result<ToolOutput> {
     let pct = (level * 100000.0) as u32;
-    run_cmd("brightnessctl", &["s", &pct.to_string()])
-        .or_else(|_| {
-            let pct_f = level;
-            run_cmd("xbacklight", &["-set", &format!("{:.0}", pct_f * 100.0)])
-        })?;
-    Ok(ToolOutput::new(format!("Brightness set to {:.0}%", level * 100.0)))
+    run_cmd("brightnessctl", &["s", &pct.to_string()]).or_else(|_| {
+        let pct_f = level;
+        run_cmd("xbacklight", &["-set", &format!("{:.0}", pct_f * 100.0)])
+    })?;
+    Ok(ToolOutput::new(format!(
+        "Brightness set to {:.0}%",
+        level * 100.0
+    )))
 }
 
 #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
 fn platform_brightness_set(_level: f64) -> Result<ToolOutput> {
-    Ok(ToolOutput::new("Brightness not supported on this platform".to_string()))
+    Ok(ToolOutput::new(
+        "Brightness not supported on this platform".to_string(),
+    ))
 }

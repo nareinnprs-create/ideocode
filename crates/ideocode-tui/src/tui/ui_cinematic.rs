@@ -15,27 +15,39 @@ pub fn render_logo() -> Vec<Line<'static>> {
     vec![
         Line::from(Span::styled(
             r"  ██████╗ ███████╗████████╗██████╗  ██████╗  ██████╗ ██████╗ ██████╗ ███████╗",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )),
         Line::from(Span::styled(
             r"  ██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██╔═══██╗██╔════╝██╔═══██╗██╔══██╗██╔════╝",
-            Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
         )),
         Line::from(Span::styled(
             r"  ██║  ██║█████╗     ██║   ██████╔╝██║   ██║██║     ██║   ██║██████╔╝█████╗  ",
-            Style::default().fg(neon_magenta()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_magenta())
+                .add_modifier(Modifier::BOLD),
         )),
         Line::from(Span::styled(
             r"  ██║  ██║██╔══╝     ██║   ██╔══██╗██║   ██║██║     ██║   ██║██╔══██╗██╔══╝  ",
-            Style::default().fg(neon_magenta()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_magenta())
+                .add_modifier(Modifier::BOLD),
         )),
         Line::from(Span::styled(
             r"  ██████╔╝███████╗   ██║   ██║  ██║╚██████╔╝╚██████╗╚██████╔╝██║  ██║███████╗",
-            Style::default().fg(neon_green()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_green())
+                .add_modifier(Modifier::BOLD),
         )),
         Line::from(Span::styled(
             r"  ╚═════╝ ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝",
-            Style::default().fg(neon_green()).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(neon_green())
+                .add_modifier(Modifier::BOLD),
         )),
     ]
 }
@@ -75,33 +87,19 @@ pub fn render_tagline(progress: f32) -> Line<'static> {
     let visible = &tagline[..visible_chars.min(tagline.len())];
     let cursor = if progress < 1.0 { "▌" } else { "" };
 
-    Line::from(vec![
-        Span::styled(
-            format!("  {}{}", visible, cursor),
-            Style::default().fg(neon_cyan()),
-        ),
-    ])
+    Line::from(vec![Span::styled(
+        format!("  {}{}", visible, cursor),
+        Style::default().fg(neon_cyan()),
+    )])
 }
 
 /// Render version and build info line.
 pub fn render_build_info() -> Line<'static> {
     Line::from(vec![
-        Span::styled(
-            "  v",
-            Style::default().fg(dim_color()),
-        ),
-        Span::styled(
-            env!("CARGO_PKG_VERSION"),
-            Style::default().fg(neon_green()),
-        ),
-        Span::styled(
-            " • ",
-            Style::default().fg(dim_color()),
-        ),
-        Span::styled(
-            "AI-Powered Terminal IDE",
-            Style::default().fg(neon_cyan()),
-        ),
+        Span::styled("  v", Style::default().fg(dim_color())),
+        Span::styled(env!("CARGO_PKG_VERSION"), Style::default().fg(neon_green())),
+        Span::styled(" • ", Style::default().fg(dim_color())),
+        Span::styled("AI-Powered Terminal IDE", Style::default().fg(neon_cyan())),
     ])
 }
 

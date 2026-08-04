@@ -523,10 +523,11 @@ pub fn server_logging_config() -> RuntimeMemoryLogConfig {
         .or(legacy_interval_secs)
         .filter(|value| *value >= MIN_PROCESS_INTERVAL_SECS)
         .unwrap_or(DEFAULT_PROCESS_INTERVAL_SECS);
-    let attribution_interval_secs = env_u64("IDEOCODE_RUNTIME_MEMORY_LOG_ATTRIBUTION_INTERVAL_SECS")
-        .or_else(|| legacy_interval_secs.map(|value| value.saturating_mul(3)))
-        .filter(|value| *value >= MIN_ATTRIBUTION_INTERVAL_SECS)
-        .unwrap_or(DEFAULT_ATTRIBUTION_INTERVAL_SECS);
+    let attribution_interval_secs =
+        env_u64("IDEOCODE_RUNTIME_MEMORY_LOG_ATTRIBUTION_INTERVAL_SECS")
+            .or_else(|| legacy_interval_secs.map(|value| value.saturating_mul(3)))
+            .filter(|value| *value >= MIN_ATTRIBUTION_INTERVAL_SECS)
+            .unwrap_or(DEFAULT_ATTRIBUTION_INTERVAL_SECS);
     let attribution_min_spacing_secs =
         env_u64("IDEOCODE_RUNTIME_MEMORY_LOG_ATTRIBUTION_MIN_SPACING_SECS")
             .filter(|value| *value >= MIN_ATTRIBUTION_MIN_SPACING_SECS)

@@ -75,12 +75,16 @@ pub(crate) fn save_inline_images_visible(visible: bool) {
 
 /// Last active sidebar panel name, defaulting to "FileExplorer".
 pub(crate) fn sidebar_panel() -> String {
-    load().sidebar_panel.unwrap_or_else(|| "FileExplorer".to_string())
+    load()
+        .sidebar_panel
+        .unwrap_or_else(|| "FileExplorer".to_string())
 }
 
 /// Persist the sidebar panel preference.
 pub(crate) fn save_sidebar_panel(panel: &str) {
-    let Some(path) = prefs_path() else { return; };
+    let Some(path) = prefs_path() else {
+        return;
+    };
     let mut prefs = load();
     prefs.sidebar_panel = Some(panel.to_string());
     if let Some(parent) = path.parent() {
@@ -96,7 +100,9 @@ pub(crate) fn compact_mode() -> bool {
 
 /// Persist the compact mode toggle.
 pub(crate) fn save_compact_mode(enabled: bool) {
-    let Some(path) = prefs_path() else { return; };
+    let Some(path) = prefs_path() else {
+        return;
+    };
     let mut prefs = load();
     prefs.compact_mode = Some(enabled);
     if let Some(parent) = path.parent() {
@@ -112,7 +118,9 @@ pub(crate) fn big_mode() -> bool {
 
 /// Persist the big mode toggle.
 pub(crate) fn save_big_mode(enabled: bool) {
-    let Some(path) = prefs_path() else { return; };
+    let Some(path) = prefs_path() else {
+        return;
+    };
     let mut prefs = load();
     prefs.big_mode = Some(enabled);
     if let Some(parent) = path.parent() {
@@ -123,12 +131,16 @@ pub(crate) fn save_big_mode(enabled: bool) {
 
 /// Persisted selected theme name, defaulting to "CyberNeon".
 pub(crate) fn selected_theme() -> String {
-    load().selected_theme.unwrap_or_else(|| "CyberNeon".to_string())
+    load()
+        .selected_theme
+        .unwrap_or_else(|| "CyberNeon".to_string())
 }
 
 /// Persist the selected theme preference.
 pub(crate) fn save_selected_theme(theme: &str) {
-    let Some(path) = prefs_path() else { return; };
+    let Some(path) = prefs_path() else {
+        return;
+    };
     let mut prefs = load();
     prefs.selected_theme = Some(theme.to_string());
     if let Some(parent) = path.parent() {

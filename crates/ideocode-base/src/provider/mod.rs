@@ -17,8 +17,8 @@ pub mod external;
 mod failover;
 mod fingerprint;
 pub mod gemini;
-mod image_clamp;
 pub mod ideocode;
+mod image_clamp;
 pub mod models;
 mod multi_provider;
 pub mod openai;
@@ -255,7 +255,8 @@ fn standard_openrouter_profile_configured() -> bool {
 }
 
 fn configured_standard_openrouter_profile_routes() -> Vec<ModelRoute> {
-    let Some(cache) = ideocode_provider_openrouter::load_disk_cache_entry_for_namespace("openrouter")
+    let Some(cache) =
+        ideocode_provider_openrouter::load_disk_cache_entry_for_namespace("openrouter")
     else {
         return Vec::new();
     };
@@ -1427,7 +1428,9 @@ impl MultiProvider {
                     ideocode_provider_core::DualAuthProvider::OpenAI
                 )
                 .then(|| match route.mode {
-                    ideocode_provider_core::AuthMode::ApiKey => openai::OpenAICredentialMode::ApiKey,
+                    ideocode_provider_core::AuthMode::ApiKey => {
+                        openai::OpenAICredentialMode::ApiKey
+                    }
                     ideocode_provider_core::AuthMode::Oauth => openai::OpenAICredentialMode::OAuth,
                 })
             });
@@ -1782,14 +1785,17 @@ impl Provider for MultiProvider {
             // The single canonical parser decides whether this prefix pins a
             // dual-auth credential (and which provider/mode). Bare `claude:` /
             // `openai:` prefixes route without pinning a credential.
-            let pinned = ideocode_provider_core::AuthRoute::parse_explicit_credential_prefix(prefix);
+            let pinned =
+                ideocode_provider_core::AuthRoute::parse_explicit_credential_prefix(prefix);
             let openai_credential_mode = pinned.and_then(|route| {
                 matches!(
                     route.provider,
                     ideocode_provider_core::DualAuthProvider::OpenAI
                 )
                 .then(|| match route.mode {
-                    ideocode_provider_core::AuthMode::ApiKey => openai::OpenAICredentialMode::ApiKey,
+                    ideocode_provider_core::AuthMode::ApiKey => {
+                        openai::OpenAICredentialMode::ApiKey
+                    }
                     ideocode_provider_core::AuthMode::Oauth => openai::OpenAICredentialMode::OAuth,
                 })
             });

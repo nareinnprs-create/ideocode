@@ -13,8 +13,13 @@ pub fn screenshot() -> Result<ToolOutput> {
     capture_screen(&path)?;
     let data = std::fs::read(&path)?;
     let b64 = base64::engine::general_purpose::STANDARD.encode(&data);
-    Ok(ToolOutput::new("Screenshot captured".to_string())
-        .with_labeled_image("image/png", b64, "Screen"))
+    Ok(
+        ToolOutput::new("Screenshot captured".to_string()).with_labeled_image(
+            "image/png",
+            b64,
+            "Screen",
+        ),
+    )
 }
 
 pub fn ocr(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> Result<ToolOutput> {
@@ -27,7 +32,8 @@ pub fn ocr(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> Re
     }
     let output = std::process::Command::new("powershell")
         .args([
-            "-NoProfile", "-Command",
+            "-NoProfile",
+            "-Command",
             &format!(
                 "Add-Type -AssemblyName System.Drawing; \
                  Add-Type -AssemblyName System.Windows.Forms; \
@@ -36,13 +42,15 @@ pub fn ocr(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> Re
                  $result = $ocr.Recognize($img); \
                  Write-Output $result.Text",
                 path.to_string_lossy()
-            )
+            ),
         ])
         .output()
         .context("OCR via PowerShell failed")?;
     let text = String::from_utf8_lossy(&output.stdout).trim().to_string();
     if text.is_empty() {
-        return Ok(ToolOutput::new("No text found in screen region".to_string()));
+        return Ok(ToolOutput::new(
+            "No text found in screen region".to_string(),
+        ));
     }
     Ok(ToolOutput::new(text))
 }
@@ -50,7 +58,8 @@ pub fn ocr(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> Re
 fn capture_screen(path: &std::path::Path) -> Result<()> {
     let status = std::process::Command::new("powershell")
         .args([
-            "-NoProfile", "-Command",
+            "-NoProfile",
+            "-Command",
             &format!(
                 "Add-Type -AssemblyName System.Windows.Forms; \
                  Add-Type -AssemblyName System.Drawing; \
@@ -62,7 +71,7 @@ fn capture_screen(path: &std::path::Path) -> Result<()> {
                  $graphics.Dispose(); \
                  $bitmap.Dispose()",
                 path.to_string_lossy()
-            )
+            ),
         ])
         .status()
         .context("Failed to run PowerShell screenshot")?;
@@ -75,7 +84,8 @@ fn capture_screen(path: &std::path::Path) -> Result<()> {
 fn capture_region(path: &std::path::Path, x: f64, y: f64, w: f64, h: f64) -> Result<()> {
     let status = std::process::Command::new("powershell")
         .args([
-            "-NoProfile", "-Command",
+            "-NoProfile",
+            "-Command",
             &format!(
                 "Add-Type -AssemblyName System.Windows.Forms; \
                  Add-Type -AssemblyName System.Drawing; \
@@ -87,7 +97,7 @@ fn capture_region(path: &std::path::Path, x: f64, y: f64, w: f64, h: f64) -> Res
                  $graphics.Dispose(); \
                  $bitmap.Dispose()",
                 path.to_string_lossy()
-            )
+            ),
         ])
         .status()
         .context("Failed to capture screen region")?;

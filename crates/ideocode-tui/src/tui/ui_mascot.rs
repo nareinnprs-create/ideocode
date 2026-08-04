@@ -124,7 +124,7 @@ impl MascotMood {
 }
 
 /// Render the mascot.
-pub fn render_mascot(mood: & MascotMood) -> Vec<Line<'static>> {
+pub fn render_mascot(mood: &MascotMood) -> Vec<Line<'static>> {
     let art = mood.ascii_art();
     let color = match mood {
         MascotMood::Happy => neon_green(),
@@ -136,12 +136,7 @@ pub fn render_mascot(mood: & MascotMood) -> Vec<Line<'static>> {
     };
 
     art.lines()
-        .map(|line| {
-            Line::from(Span::styled(
-                line.to_string(),
-                Style::default().fg(color),
-            ))
-        })
+        .map(|line| Line::from(Span::styled(line.to_string(), Style::default().fg(color))))
         .collect()
 }
 
@@ -162,7 +157,8 @@ pub fn get_random_tip(mood: &MascotMood) -> &str {
     let index = (std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default()
-        .as_secs() as usize) % tips.len();
+        .as_secs() as usize)
+        % tips.len();
     tips[index]
 }
 

@@ -85,7 +85,9 @@ pub(crate) async fn run_logout() -> Result<()> {
 
     match (api_key.is_some(), remote) {
         (false, _) => {
-            println!("No local IDEOCODE account credential was present. Local account cache is clear.")
+            println!(
+                "No local IDEOCODE account credential was present. Local account cache is clear."
+            )
         }
         (true, Ok(())) => println!(
             "IDEOCODE account key revoked. Local credentials and account cache were securely cleared."
@@ -125,7 +127,9 @@ mod tests {
     #[test]
     fn manage_url_accepts_only_public_allowlisted_https_origins() {
         assert_eq!(
-            public_manage_url(Some("https://github.com/nareinnprs-create/ideocode/account")),
+            public_manage_url(Some(
+                "https://github.com/nareinnprs-create/ideocode/account"
+            )),
             "https://github.com/nareinnprs-create/ideocode/account"
         );
         assert_eq!(

@@ -246,7 +246,8 @@ impl AchievementTracker {
         // Check for newly unlocked achievements
         let mut newly_unlocked = Vec::new();
         // Snapshot which achievements should unlock before mutating
-        let to_unlock: Vec<usize> = self.achievements
+        let to_unlock: Vec<usize> = self
+            .achievements
             .iter()
             .enumerate()
             .filter(|(_, a)| !a.unlocked && self.check_achievement(a))
@@ -299,9 +300,9 @@ impl AchievementTracker {
 /// Render an achievement notification.
 pub fn render_achievement_notification(achievement: &Achievement) -> Vec<Line<'static>> {
     let color = achievement.category.color();
-    
+
     vec![
-        Line::from("🏆" .repeat(10)),
+        Line::from("🏆".repeat(10)),
         Line::from(Span::styled(
             format!("  {} Achievement Unlocked!", achievement.icon),
             Style::default()
@@ -310,15 +311,13 @@ pub fn render_achievement_notification(achievement: &Achievement) -> Vec<Line<'s
         )),
         Line::from(Span::styled(
             format!("  {}", achievement.name),
-            Style::default()
-                .fg(color)
-                .add_modifier(Modifier::BOLD),
+            Style::default().fg(color).add_modifier(Modifier::BOLD),
         )),
         Line::from(Span::styled(
             format!("  {}", achievement.description),
             Style::default().fg(dim_color()),
         )),
-        Line::from("🏆" .repeat(10)),
+        Line::from("🏆".repeat(10)),
     ]
 }
 
@@ -340,10 +339,7 @@ pub fn render_achievement_progress(unlocked: usize, total: usize) -> Line<'stati
             format!("{} ", emoji::TROPHY),
             Style::default().fg(neon_yellow()),
         ),
-        Span::styled(
-            bar,
-            Style::default().fg(neon_cyan()),
-        ),
+        Span::styled(bar, Style::default().fg(neon_cyan())),
         Span::styled(
             format!(" {}/{}", unlocked, total),
             Style::default()

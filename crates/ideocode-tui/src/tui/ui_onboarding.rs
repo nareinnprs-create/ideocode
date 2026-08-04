@@ -21,7 +21,7 @@ use super::animations;
 use super::dim_color;
 use crate::tui::TuiState;
 use crate::tui::color_support::rgb;
-use ideocode_tui_style::theme::{gradient_line, neon_cyan, emoji};
+use ideocode_tui_style::theme::{emoji, gradient_line, neon_cyan};
 use ratatui::{prelude::*, widgets::Paragraph};
 
 const DONUT_HEIGHT: u16 = 18;
@@ -393,12 +393,10 @@ fn telemetry_header_lines(width: u16) -> Vec<Line<'static>> {
 fn welcome_title_line() -> Line<'static> {
     // V2: Gradient text for "IDEOCODE" + emoji
     let gradient = gradient_line("IDEOCODE");
-    let mut spans: Vec<Span<'static>> = vec![
-        Span::styled(
-            format!("{} ", emoji::CRYSTAL),
-            Style::default().fg(neon_cyan()),
-        ),
-    ];
+    let mut spans: Vec<Span<'static>> = vec![Span::styled(
+        format!("{} ", emoji::CRYSTAL),
+        Style::default().fg(neon_cyan()),
+    )];
     spans.extend(gradient.spans);
     spans.push(Span::styled(
         " onboarding",

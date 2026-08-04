@@ -1340,7 +1340,10 @@ fn render_assistant_message_plan_card_keeps_nested_fences_inside() {
         .join("\n");
 
     assert!(plain.contains("⛭ Validation plan"), "plain: {plain}");
-    assert!(plain.contains("cargo test -p IDEOCODE-tui"), "plain: {plain}");
+    assert!(
+        plain.contains("cargo test -p IDEOCODE-tui"),
+        "plain: {plain}"
+    );
     assert!(plain.contains("After the block."), "plain: {plain}");
     assert!(plain.contains("Outside text."), "plain: {plain}");
     // The nested bash content stays inside the card borders.
@@ -2140,7 +2143,8 @@ fn render_tool_message_shows_discovery_browse_results_and_rationale() {
         "{plain}"
     );
     assert!(
-        without_whitespace(&plain).contains("Learnmore:https://github.com/nareinnprs-create/ideocode/discovery-tools"),
+        without_whitespace(&plain)
+            .contains("Learnmore:https://github.com/nareinnprs-create/ideocode/discovery-tools"),
         "{plain}"
     );
     assert!(!plain.contains("sponsored result"), "{plain}");

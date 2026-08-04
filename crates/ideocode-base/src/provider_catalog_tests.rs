@@ -282,7 +282,10 @@ fn auth_profile_env_application_flushes_stale_openrouter_catalog_state() {
         "IDEOCODE_PROVIDER_PROFILE_NAME",
     ]);
 
-    crate::env::set_var("IDEOCODE_OPENROUTER_API_BASE", "https://openrouter.ai/api/v1");
+    crate::env::set_var(
+        "IDEOCODE_OPENROUTER_API_BASE",
+        "https://openrouter.ai/api/v1",
+    );
     crate::env::set_var("IDEOCODE_OPENROUTER_API_KEY_NAME", "OPENROUTER_API_KEY");
     crate::env::set_var("IDEOCODE_OPENROUTER_ENV_FILE", "openrouter.env");
     crate::env::set_var("IDEOCODE_OPENROUTER_CACHE_NAMESPACE", "openrouter");
@@ -632,7 +635,9 @@ fn named_provider_profile_maps_to_openai_compatible_runtime_env() {
     apply_named_provider_profile_env_from_config("my-gateway", &cfg).expect("apply profile");
 
     assert_eq!(
-        std::env::var("IDEOCODE_OPENROUTER_API_BASE").ok().as_deref(),
+        std::env::var("IDEOCODE_OPENROUTER_API_BASE")
+            .ok()
+            .as_deref(),
         Some("https://llm.example.com/v1")
     );
     assert_eq!(
@@ -773,7 +778,10 @@ fn matrix_openai_compatible_profile_overrides_apply_when_valid() {
     );
     crate::env::set_var("IDEOCODE_OPENAI_COMPAT_API_KEY_NAME", "GROQ_API_KEY");
     crate::env::set_var("IDEOCODE_OPENAI_COMPAT_ENV_FILE", "groq.env");
-    crate::env::set_var("IDEOCODE_OPENAI_COMPAT_DEFAULT_MODEL", "openai/gpt-oss-120b");
+    crate::env::set_var(
+        "IDEOCODE_OPENAI_COMPAT_DEFAULT_MODEL",
+        "openai/gpt-oss-120b",
+    );
 
     let resolved = resolve_openai_compatible_profile(OPENAI_COMPAT_PROFILE);
     assert_eq!(resolved.api_base, "https://api.groq.com/openai/v1");
@@ -851,7 +859,10 @@ fn matrix_openai_compatible_localhost_override_allows_no_auth() {
         "IDEOCODE_OPENAI_COMPAT_LOCAL_ENABLED",
     ]);
 
-    crate::env::set_var("IDEOCODE_OPENAI_COMPAT_API_BASE", "http://localhost:11434/v1");
+    crate::env::set_var(
+        "IDEOCODE_OPENAI_COMPAT_API_BASE",
+        "http://localhost:11434/v1",
+    );
     crate::env::remove_var("IDEOCODE_OPENAI_COMPAT_API_KEY_NAME");
     crate::env::remove_var("IDEOCODE_OPENAI_COMPAT_ENV_FILE");
     crate::env::remove_var("IDEOCODE_OPENAI_COMPAT_LOCAL_ENABLED");
@@ -1157,7 +1168,9 @@ fn minimax_default_provider_applies_openai_api_key_env_not_openrouter() {
         "MiniMax profile must use OPENAI_API_KEY, not OPENROUTER_API_KEY"
     );
     assert_eq!(
-        std::env::var("IDEOCODE_OPENROUTER_ENV_FILE").ok().as_deref(),
+        std::env::var("IDEOCODE_OPENROUTER_ENV_FILE")
+            .ok()
+            .as_deref(),
         Some("minimax.env"),
         "MiniMax profile must use minimax.env, not openrouter.env"
     );

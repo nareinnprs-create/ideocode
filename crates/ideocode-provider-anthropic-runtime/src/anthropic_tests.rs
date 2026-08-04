@@ -1576,14 +1576,18 @@ fn credential_mode_runtime_provider_identity_round_trips() {
 
     ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "claude");
     assert_eq!(
-        AnthropicCredentialMode::from_runtime_env(ideocode_provider_core::DualAuthProvider::Anthropic),
+        AnthropicCredentialMode::from_runtime_env(
+            ideocode_provider_core::DualAuthProvider::Anthropic
+        ),
         AnthropicCredentialMode::OAuth,
         "OAuth selection must surface as the OAuth runtime identity"
     );
 
     ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "claude-api");
     assert_eq!(
-        AnthropicCredentialMode::from_runtime_env(ideocode_provider_core::DualAuthProvider::Anthropic),
+        AnthropicCredentialMode::from_runtime_env(
+            ideocode_provider_core::DualAuthProvider::Anthropic
+        ),
         AnthropicCredentialMode::ApiKey,
         "API-key selection must surface as the API-key runtime identity"
     );

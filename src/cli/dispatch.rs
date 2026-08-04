@@ -539,7 +539,8 @@ pub(crate) async fn run_main(mut args: Args) -> Result<()> {
         }
         Some(Command::Tool(subcmd)) => match subcmd {
             ToolCommand::List { json } => {
-                tool_commands::run_tool_command(tool_commands::ToolSubcommand::List { json }).await?;
+                tool_commands::run_tool_command(tool_commands::ToolSubcommand::List { json })
+                    .await?;
             }
             ToolCommand::Run { tool, input } => {
                 let input_value: serde_json::Value = serde_json::from_str(&input)
@@ -837,7 +838,9 @@ async fn run_default_command(args: Args) -> Result<()> {
     // --local mode: skip AI provider, use tools directly
     if args.local {
         startup_profile::mark("local_mode");
-        output::stderr_info("Local mode (no AI) — use `ideocode tool` or `ideocode shell` for interactive use.");
+        output::stderr_info(
+            "Local mode (no AI) — use `ideocode tool` or `ideocode shell` for interactive use.",
+        );
         return local_repl::run_shell().await;
     }
 

@@ -12,7 +12,8 @@ pub const IDEOCODE_TIER_ENV: &str = "IDEOCODE_TIER";
 pub const IDEOCODE_ENV_FILE: &str = "IDEOCODE-subscription.env";
 pub const IDEOCODE_CACHE_NAMESPACE: &str = "IDEOCODE-subscription";
 pub const IDEOCODE_SUBSCRIPTION_ACTIVE_ENV: &str = "IDEOCODE_SUBSCRIPTION_ACTIVE";
-pub const DEFAULT_IDEOCODE_API_BASE: &str = "https://api.github.com/repos/nareinnprs-create/ideocode/v1";
+pub const DEFAULT_IDEOCODE_API_BASE: &str =
+    "https://api.github.com/repos/nareinnprs-create/ideocode/v1";
 pub const IDEOCODE_PRICING_URL: &str = "https://github.com/nareinnprs-create/ideocode/pricing";
 pub const IDEOCODE_ACCOUNT_URL: &str = "https://github.com/nareinnprs-create/ideocode/account";
 pub const IDEOCODE_PROVIDER_DISPLAY_NAME: &str = "IDEOCODE Subscription";
@@ -488,9 +489,15 @@ pub fn apply_runtime_env() {
     );
     crate::env::set_var("IDEOCODE_OPENROUTER_API_KEY_NAME", IDEOCODE_API_KEY_ENV);
     crate::env::set_var("IDEOCODE_OPENROUTER_ENV_FILE", IDEOCODE_ENV_FILE);
-    crate::env::set_var("IDEOCODE_OPENROUTER_CACHE_NAMESPACE", IDEOCODE_CACHE_NAMESPACE);
+    crate::env::set_var(
+        "IDEOCODE_OPENROUTER_CACHE_NAMESPACE",
+        IDEOCODE_CACHE_NAMESPACE,
+    );
     crate::env::set_var("IDEOCODE_OPENROUTER_PROVIDER_FEATURES", "0");
-    crate::env::set_var("IDEOCODE_OPENROUTER_TRANSPORT_STATE", "IDEOCODE-subscription");
+    crate::env::set_var(
+        "IDEOCODE_OPENROUTER_TRANSPORT_STATE",
+        "IDEOCODE-subscription",
+    );
     crate::env::remove_var("IDEOCODE_OPENROUTER_ALLOW_NO_AUTH");
     crate::env::remove_var("IDEOCODE_OPENROUTER_PROVIDER");
     crate::env::remove_var("IDEOCODE_OPENROUTER_NO_FALLBACK");
@@ -653,7 +660,10 @@ mod tests {
         assert_eq!(IDEOCODETier::parse(" Pro "), Some(IDEOCODETier::Pro));
         assert_eq!(IDEOCODETier::parse("MAX"), Some(IDEOCODETier::Max));
         assert_eq!(IDEOCODETier::parse(" ultra "), Some(IDEOCODETier::Ultra));
-        assert_eq!(IDEOCODETier::parse(" Flagship "), Some(IDEOCODETier::Flagship));
+        assert_eq!(
+            IDEOCODETier::parse(" Flagship "),
+            Some(IDEOCODETier::Flagship)
+        );
         assert_eq!(IDEOCODETier::parse(" Solo "), Some(IDEOCODETier::Flagship));
         assert_eq!(IDEOCODETier::parse("starter"), None);
     }

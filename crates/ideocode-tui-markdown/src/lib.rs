@@ -145,7 +145,9 @@ pub use render_support::extract_copy_targets_from_rendered_lines;
 /// `IDEOCODE-tui-*` crate. Re-exported here so existing
 /// `ideocode_tui_markdown::{reasoning_line_markup, reasoning_partial_markup,
 /// REASONING_SENTINEL}` paths keep working.
-pub use ideocode_render_core::{REASONING_SENTINEL, reasoning_line_markup, reasoning_partial_markup};
+pub use ideocode_render_core::{
+    REASONING_SENTINEL, reasoning_line_markup, reasoning_partial_markup,
+};
 
 /// One-line collapsed reasoning summary markup (e.g. `▸ thought (3 lines)`).
 ///

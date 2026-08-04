@@ -253,7 +253,10 @@ pub async fn run_replay_command(
                         }
                     })
                     .collect::<String>();
-                std::path::PathBuf::from(format!("IDEOCODE_swarm_replay_{}_{}.mp4", safe_name, date))
+                std::path::PathBuf::from(format!(
+                    "IDEOCODE_swarm_replay_{}_{}.mp4",
+                    safe_name, date
+                ))
             } else {
                 std::path::PathBuf::from(output)
             };
@@ -644,13 +647,14 @@ pub fn list_sessions() -> Result<()> {
             let mut warned_no_terminal = false;
 
             for target in targets {
-                let resolved_target = match crate::import::resolve_resume_target_to_IDEOCODE(&target) {
-                    Ok(target) => target,
-                    Err(e) => {
-                        eprintln!("Failed to import selected session: {}", e);
-                        continue;
-                    }
-                };
+                let resolved_target =
+                    match crate::import::resolve_resume_target_to_IDEOCODE(&target) {
+                        Ok(target) => target,
+                        Err(e) => {
+                            eprintln!("Failed to import selected session: {}", e);
+                            continue;
+                        }
+                    };
                 let mut session_cwd = cwd.clone();
                 if let ideocode_tui_session_picker::ResumeTarget::IDEOCODESession { session_id } =
                     &resolved_target

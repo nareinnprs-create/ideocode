@@ -51,11 +51,7 @@ impl FeatureLevel {
 /// Features unlocked at each level.
 pub fn features_for_level(level: &FeatureLevel) -> Vec<&'static str> {
     match level {
-        FeatureLevel::Beginner => vec![
-            "Basic input",
-            "Help command",
-            "Clear history",
-        ],
+        FeatureLevel::Beginner => vec!["Basic input", "Help command", "Clear history"],
         FeatureLevel::Intermediate => vec![
             "Themes",
             "Keyboard shortcuts",
@@ -109,15 +105,10 @@ pub struct UsageStats {
 pub fn render_level_indicator(level: &FeatureLevel) -> Line<'static> {
     let color = level.color();
     Line::from(vec![
-        Span::styled(
-            format!("{} ", level.icon()),
-            Style::default().fg(color),
-        ),
+        Span::styled(format!("{} ", level.icon()), Style::default().fg(color)),
         Span::styled(
             level.label().to_string(),
-            Style::default()
-                .fg(color)
-                .add_modifier(Modifier::BOLD),
+            Style::default().fg(color).add_modifier(Modifier::BOLD),
         ),
     ])
 }
@@ -181,10 +172,7 @@ pub fn render_level_progress(stats: &UsageStats) -> Line<'static> {
                 format!("{} ", level.icon()),
                 Style::default().fg(level.color()),
             ),
-            Span::styled(
-                bar,
-                Style::default().fg(next.color()),
-            ),
+            Span::styled(bar, Style::default().fg(next.color())),
             Span::styled(
                 format!(" → {} ", next.icon()),
                 Style::default().fg(next.color()),
@@ -196,10 +184,7 @@ pub fn render_level_progress(stats: &UsageStats) -> Line<'static> {
                 format!("{} MAX ", level.icon()),
                 Style::default().fg(level.color()),
             ),
-            Span::styled(
-                "🌟",
-                Style::default().fg(neon_yellow()),
-            ),
+            Span::styled("🌟", Style::default().fg(neon_yellow())),
         ])
     }
 }

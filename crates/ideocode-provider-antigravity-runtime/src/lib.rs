@@ -289,10 +289,11 @@ impl AntigravityProvider {
                     messages,
                     signature_policy,
                 ),
-                system_instruction: ideocode_provider_gemini::build_system_instruction_with_tool_guard(
-                    system,
-                    !tools_is_empty,
-                ),
+                system_instruction:
+                    ideocode_provider_gemini::build_system_instruction_with_tool_guard(
+                        system,
+                        !tools_is_empty,
+                    ),
                 tools,
                 tool_config: if tools_is_empty {
                     None
@@ -408,10 +409,13 @@ where
             Err(err) => {
                 let err_str = format!("{err:#}");
                 let can_retry = is_transient_transport_error(&err_str)
-                    || err_str.contains("429") || err_str.contains("500")
-                    || err_str.contains("502") || err_str.contains("503")
+                    || err_str.contains("429")
+                    || err_str.contains("500")
+                    || err_str.contains("502")
+                    || err_str.contains("503")
                     || err_str.contains("504")
-                    || err_str.contains("rate limit") || err_str.contains("rate_limit")
+                    || err_str.contains("rate limit")
+                    || err_str.contains("rate_limit")
                     || err_str.contains("too many requests");
                 if attempt + 1 < MAX_ATTEMPTS && can_retry {
                     ideocode_base::logging::warn(&format!(
@@ -427,7 +431,8 @@ where
             }
         }
     }
-    Err(last_err.unwrap_or_else(|| anyhow::anyhow!("{} failed after {MAX_ATTEMPTS} attempts", label)))
+    Err(last_err
+        .unwrap_or_else(|| anyhow::anyhow!("{} failed after {MAX_ATTEMPTS} attempts", label)))
 }
 
 impl Default for AntigravityProvider {
@@ -483,7 +488,8 @@ impl Provider for AntigravityProvider {
             // fields: on that specific error, retry once with tool calls
             // downgraded to plain text. Content is preserved, the turn completes,
             // and the model re-signs its new calls.
-            let mut signature_policy = ideocode_provider_gemini::SignaturePolicy::ReplayCarriedForward;
+            let mut signature_policy =
+                ideocode_provider_gemini::SignaturePolicy::ReplayCarriedForward;
 
             let response = retry_transient("Antigravity generateContent", || async {
                 provider
@@ -503,7 +509,9 @@ impl Provider for AntigravityProvider {
             let response = match response {
                 Ok(response) => response,
                 Err(err) => {
-                    if !ideocode_provider_gemini::is_missing_thought_signature_error(&err.to_string()) {
+                    if !ideocode_provider_gemini::is_missing_thought_signature_error(
+                        &err.to_string(),
+                    ) {
                         let _ = tx.send(Err(err)).await;
                         return;
                     }
@@ -512,22 +520,19 @@ impl Provider for AntigravityProvider {
                     );
                     signature_policy =
                         ideocode_provider_gemini::SignaturePolicy::DowngradeToolCallsToText;
-                    match retry_transient(
-                        "Antigravity generateContent (downgraded)",
-                        || async {
-                            provider
-                                .generate_content(
-                                    &model,
-                                    &messages,
-                                    &tools,
-                                    &system,
-                                    resume_session_id.as_deref(),
-                                    false,
-                                    signature_policy,
-                                )
-                                .await
-                        },
-                    )
+                    match retry_transient("Antigravity generateContent (downgraded)", || async {
+                        provider
+                            .generate_content(
+                                &model,
+                                &messages,
+                                &tools,
+                                &system,
+                                resume_session_id.as_deref(),
+                                false,
+                                signature_policy,
+                            )
+                            .await
+                    })
                     .await
                     {
                         Ok(response) => response,
@@ -685,7 +690,9 @@ impl Provider for AntigravityProvider {
                         .finish_message
                         .as_deref()
                         .filter(|msg| !msg.trim().is_empty())
-                        .map(|msg| format!(": {}", ideocode_base::util::truncate_str(msg.trim(), 300)))
+                        .map(|msg| {
+                            format!(": {}", ideocode_base::util::truncate_str(msg.trim(), 300))
+                        })
                         .unwrap_or_default();
                     let _ = tx
                         .send(Err(anyhow::anyhow!(

@@ -27,7 +27,9 @@ struct PlanInput {
 
 #[async_trait]
 impl Tool for PlanTool {
-    fn name(&self) -> &str { "plan" }
+    fn name(&self) -> &str {
+        "plan"
+    }
 
     fn description(&self) -> &str {
         "Create a structured plan to accomplish a goal with actionable steps."
@@ -47,7 +49,11 @@ impl Tool for PlanTool {
 
     async fn execute(&self, input: Value, _ctx: ToolContext) -> Result<ToolOutput> {
         let input: PlanInput = serde_json::from_value(input)?;
-        let provider = self.registry.provider.as_ref().ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
+        let provider = self
+            .registry
+            .provider
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
 
         let context = input.context.unwrap_or_default();
         let constraints = input.constraints.unwrap_or_default();

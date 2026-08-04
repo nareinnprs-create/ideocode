@@ -762,7 +762,10 @@ fn openai_compatible_profiles_with_unverified_live_catalogs_have_static_fallback
             ideocode_provider_metadata::AI302_PROFILE,
             "qwen3-235b-a22b-instruct-2507",
         ),
-        (ideocode_provider_metadata::BASETEN_PROFILE, "zai-org/GLM-4.7"),
+        (
+            ideocode_provider_metadata::BASETEN_PROFILE,
+            "zai-org/GLM-4.7",
+        ),
         (ideocode_provider_metadata::CORTECS_PROFILE, "kimi-k2.5"),
         (ideocode_provider_metadata::KIMI_PROFILE, "kimi-for-coding"),
         (ideocode_provider_metadata::FIRMWARE_PROFILE, "kimi-k2.5"),
@@ -800,7 +803,8 @@ fn openai_compatible_profiles_with_unverified_live_catalogs_have_static_fallback
     ];
 
     for (profile, expected_model) in cases {
-        let models = ideocode_base::provider_catalog::openai_compatible_profile_static_models(profile);
+        let models =
+            ideocode_base::provider_catalog::openai_compatible_profile_static_models(profile);
         assert!(
             models.iter().any(|model| model == expected_model),
             "{} should expose static fallback model {expected_model}; got {models:?}",
@@ -958,7 +962,9 @@ fn openrouter_transport_state_distinguishes_runtime_identities() {
         OpenRouterTransportState::from_current_env(Some("IDEOCODE")),
         OpenRouterTransportState::IDEOCODESubscription
     );
-    assert!(!OpenRouterTransportState::from_current_env(Some("IDEOCODE")).accrues_user_api_key_cost());
+    assert!(
+        !OpenRouterTransportState::from_current_env(Some("IDEOCODE")).accrues_user_api_key_cost()
+    );
 
     ideocode_base::env::set_var("IDEOCODE_RUNTIME_PROVIDER", "openai-compatible");
     assert_eq!(
@@ -1624,7 +1630,9 @@ fn openai_compatible_model_catalog_refresh_calls_models_endpoint_and_updates_dis
         "catalog request should include saved API key auth header: {request}"
     );
     assert!(
-        request.to_ascii_lowercase().contains("user-agent: IDEOCODE/"),
+        request
+            .to_ascii_lowercase()
+            .contains("user-agent: IDEOCODE/"),
         "catalog requests must include a User-Agent because providers like Cerebras reject bare HTTP clients: {request}"
     );
 
@@ -2333,7 +2341,10 @@ fn ideocode_subscription_runtime_has_explicit_display_and_route_identity() {
         ideocode_base::subscription_catalog::IDEOCODE_ENV_FILE,
     );
     let _provider_features = EnvVarGuard::set("IDEOCODE_OPENROUTER_PROVIDER_FEATURES", "0");
-    let _transport = EnvVarGuard::set("IDEOCODE_OPENROUTER_TRANSPORT_STATE", "IDEOCODE-subscription");
+    let _transport = EnvVarGuard::set(
+        "IDEOCODE_OPENROUTER_TRANSPORT_STATE",
+        "IDEOCODE-subscription",
+    );
     let _key = EnvVarGuard::set(
         ideocode_base::subscription_catalog::IDEOCODE_API_KEY_ENV,
         "IDEOCODE_test_subscription_key",

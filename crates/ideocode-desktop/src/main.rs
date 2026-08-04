@@ -2570,7 +2570,9 @@ fn desktop_surface_snapshot(app: &DesktopApp) -> DesktopSurfaceSnapshot {
 }
 
 fn apply_single_session_error(app: &mut DesktopApp, error: anyhow::Error) {
-    desktop_log::error(format_args!("IDEOCODE-desktop: UI action failed: {error:#}"));
+    desktop_log::error(format_args!(
+        "IDEOCODE-desktop: UI action failed: {error:#}"
+    ));
     app.apply_session_event(session_launch::DesktopSessionEvent::Error(format!(
         "{error:#}"
     )));

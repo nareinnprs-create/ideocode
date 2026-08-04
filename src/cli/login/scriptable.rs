@@ -772,7 +772,10 @@ pub(super) fn scriptable_resume_command(provider: &str, input_kind: &str) -> Str
                 provider
             )
         }
-        "auth_code" => format!("IDEOCODE login --provider {} --auth-code '<code>'", provider),
+        "auth_code" => format!(
+            "IDEOCODE login --provider {} --auth-code '<code>'",
+            provider
+        ),
         "complete" => format!("IDEOCODE login --provider {} --complete", provider),
         _ => format!(
             "IDEOCODE login --provider {} --callback-url '<url>'  # or --auth-code '<code>'",

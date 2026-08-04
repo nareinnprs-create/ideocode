@@ -58,9 +58,10 @@ impl LogViewerState {
     pub fn refresh(&mut self) {
         self.lines.clear();
         if let Some(ref path) = self.log_path
-            && let Ok(content) = std::fs::read_to_string(path) {
-                self.lines = content.lines().map(String::from).collect();
-            }
+            && let Ok(content) = std::fs::read_to_string(path)
+        {
+            self.lines = content.lines().map(String::from).collect();
+        }
         if self.auto_scroll {
             self.scroll = self.lines.len().saturating_sub(50);
         }
@@ -90,20 +91,23 @@ impl LogViewerState {
     }
 
     fn filtered_lines(&self) -> Vec<&String> {
-        self.lines.iter().filter(|line| {
-            match self.filter {
+        self.lines
+            .iter()
+            .filter(|line| match self.filter {
                 LogLevel::All => true,
                 LogLevel::Info => line.contains("INFO"),
                 LogLevel::Warn => line.contains("WARN"),
                 LogLevel::Error => line.contains("ERROR"),
-            }
-        }).collect()
+            })
+            .collect()
     }
 }
 
 /// Render the log viewer panel.
 pub fn render_log_viewer(frame: &mut Frame, area: Rect, state: &LogViewerState) {
-    if !state.visible { return; }
+    if !state.visible {
+        return;
+    }
 
     let panel_height = (area.height / 2).max(6);
     let panel_area = Rect {
@@ -117,7 +121,12 @@ pub fn render_log_viewer(frame: &mut Frame, area: Rect, state: &LogViewerState) 
     let mut lines = Vec::new();
 
     lines.push(Line::from(vec![
-        Span::styled("📜 Logs ", Style::default().fg(neon_cyan()).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            "📜 Logs ",
+            Style::default()
+                .fg(neon_cyan())
+                .add_modifier(Modifier::BOLD),
+        ),
         Span::styled(
             format!("[{:?}]", state.filter),
             Style::default().fg(neon_yellow()),
@@ -135,10 +144,15 @@ pub fn render_log_viewer(frame: &mut Frame, area: Rect, state: &LogViewerState) 
 
     let max_visible = panel_height as usize - 3;
     for line in filtered.iter().skip(state.scroll).take(max_visible) {
-        let color = if line.contains("ERROR") { rgb(255, 80, 80) }
-            else if line.contains("WARN") { neon_yellow() }
-            else if line.contains("INFO") { neon_green() }
-            else { dim_color() };
+        let color = if line.contains("ERROR") {
+            rgb(255, 80, 80)
+        } else if line.contains("WARN") {
+            neon_yellow()
+        } else if line.contains("INFO") {
+            neon_green()
+        } else {
+            dim_color()
+        };
         lines.push(Line::from(Span::styled(
             format!("  {}", line.chars().take(120).collect::<String>()),
             Style::default().fg(color),
@@ -149,9 +163,15 @@ pub fn render_log_viewer(frame: &mut Frame, area: Rect, state: &LogViewerState) 
 }
 
 fn find_latest_log(dir: &std::path::Path) -> Option<PathBuf> {
-    let mut entries: Vec<_> = std::fs::read_dir(dir).ok()?
+    let mut entries: Vec<_> = std::fs::read_dir(dir)
+        .ok()?
         .filter_map(|e| e.ok())
-        .filter(|e| e.path().extension().map(|ext| ext == "log").unwrap_or(false))
+        .filter(|e| {
+            e.path()
+                .extension()
+                .map(|ext| ext == "log")
+                .unwrap_or(false)
+        })
         .collect();
     entries.sort_by(|a, b| b.file_name().cmp(&a.file_name()));
     entries.first().map(|e| e.path())

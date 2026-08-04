@@ -302,8 +302,7 @@ impl Agent {
         self.personality = mode;
         crate::logging::info(&format!(
             "Personality set to {:?} for session {}",
-            mode,
-            self.session.id
+            mode, self.session.id
         ));
     }
 

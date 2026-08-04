@@ -474,7 +474,8 @@ impl MultiProvider {
         // OAuth-vs-API routing decision it encodes is silently dropped.
         Self::parse_provider_hint(trimmed)
             .or_else(|| {
-                ideocode_provider_core::AuthRoute::parse(trimmed).map(|route| route.active_provider())
+                ideocode_provider_core::AuthRoute::parse(trimmed)
+                    .map(|route| route.active_provider())
             })
             .map(ConfigProviderSelection::BuiltIn)
     }

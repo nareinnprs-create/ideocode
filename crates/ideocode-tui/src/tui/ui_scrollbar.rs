@@ -33,8 +33,8 @@ pub fn render_scrollbar(
     };
 
     let thumb_pos = (scroll_ratio * (scrollbar_height as f32 - 1.0)) as usize;
-    let thumb_height = ((visible_lines as f32 / total_lines as f32) * scrollbar_height as f32)
-        .max(1.0) as usize;
+    let thumb_height =
+        ((visible_lines as f32 / total_lines as f32) * scrollbar_height as f32).max(1.0) as usize;
 
     for i in 0..scrollbar_height {
         let is_thumb = i >= thumb_pos && i < thumb_pos + thumb_height;
@@ -63,10 +63,7 @@ pub fn render_scroll_position(
     scroll_offset: usize,
 ) -> Line<'static> {
     if total_lines <= visible_lines {
-        return Line::from(Span::styled(
-            " Full ",
-            Style::default().fg(neon_green()),
-        ));
+        return Line::from(Span::styled(" Full ", Style::default().fg(neon_green())));
     }
 
     let start = scroll_offset + 1;
@@ -82,10 +79,7 @@ pub fn render_scroll_position(
             format!(" {}-{}/{} ", start, end, total_lines),
             Style::default().fg(dim_color()),
         ),
-        Span::styled(
-            format!("{}%", percentage),
-            Style::default().fg(neon_cyan()),
-        ),
+        Span::styled(format!("{}%", percentage), Style::default().fg(neon_cyan())),
     ])
 }
 
@@ -111,8 +105,8 @@ pub fn render_scrollbar_with_markers(
     };
 
     let thumb_pos = (scroll_ratio * (scrollbar_height as f32 - 1.0)) as usize;
-    let thumb_height = ((visible_lines as f32 / total_lines as f32) * scrollbar_height as f32)
-        .max(1.0) as usize;
+    let thumb_height =
+        ((visible_lines as f32 / total_lines as f32) * scrollbar_height as f32).max(1.0) as usize;
 
     for i in 0..scrollbar_height {
         let is_thumb = i >= thumb_pos && i < thumb_pos + thumb_height;
@@ -121,7 +115,8 @@ pub fn render_scrollbar_with_markers(
         let marker_color = markers
             .iter()
             .find(|(line, _)| {
-                let marker_pos = (*line as f32 / total_lines as f32 * scrollbar_height as f32) as usize;
+                let marker_pos =
+                    (*line as f32 / total_lines as f32 * scrollbar_height as f32) as usize;
                 marker_pos == i
             })
             .map(|(_, color)| *color);

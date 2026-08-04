@@ -25,10 +25,10 @@ mod clipboard;
 mod communicate;
 #[cfg(target_os = "macos")]
 mod computer;
-#[cfg(windows)]
-mod computer_windows;
 #[cfg(target_os = "linux")]
 mod computer_linux;
+#[cfg(windows)]
+mod computer_windows;
 mod conversation_search;
 mod debug_socket;
 mod diff;
@@ -37,8 +37,8 @@ mod docker;
 mod edit;
 mod env;
 mod git;
-mod gmail;
 mod glob_tool;
+mod gmail;
 mod goal;
 mod http;
 mod invalid;
@@ -279,12 +279,22 @@ impl Registry {
                 goal::InitiativeTool::new,
             );
             Self::insert_tool_timed(&mut m, &mut timings, "gmail", gmail::GmailTool::new);
-            Self::insert_tool_timed(&mut m, &mut timings, "system_control", system_control::SystemControlTool::new);
+            Self::insert_tool_timed(
+                &mut m,
+                &mut timings,
+                "system_control",
+                system_control::SystemControlTool::new,
+            );
             Self::insert_tool_timed(&mut m, &mut timings, "schedule", ambient::ScheduleTool::new);
             Self::insert_tool_timed(&mut m, &mut timings, "selfdev", selfdev::SelfDevTool::new);
             // New tools
             Self::insert_tool_timed(&mut m, &mut timings, "ask", ask::AskTool::new);
-            Self::insert_tool_timed(&mut m, &mut timings, "clipboard", clipboard::ClipboardTool::new);
+            Self::insert_tool_timed(
+                &mut m,
+                &mut timings,
+                "clipboard",
+                clipboard::ClipboardTool::new,
+            );
             Self::insert_tool_timed(&mut m, &mut timings, "diff", diff::DiffTool::new);
             Self::insert_tool_timed(&mut m, &mut timings, "docker", docker::DockerTool::new);
             Self::insert_tool_timed(&mut m, &mut timings, "env", env::EnvTool::new);
@@ -352,17 +362,61 @@ impl Registry {
             conversation_search::ConversationSearchTool::new(compaction),
         );
         // AI-integrated tools (need provider from registry)
-        Self::insert_tool(&mut tools_map, "diagram", ai_diagram::DiagramTool::new(registry.clone()));
-        Self::insert_tool(&mut tools_map, "embed", ai_embed::EmbedTool::new(registry.clone()));
-        Self::insert_tool(&mut tools_map, "explain", ai_explain::ExplainTool::new(registry.clone()));
-        Self::insert_tool(&mut tools_map, "imagine", ai_imagine::ImagineTool::new(registry.clone()));
-        Self::insert_tool(&mut tools_map, "plan", ai_plan::PlanTool::new(registry.clone()));
-        Self::insert_tool(&mut tools_map, "refactor", ai_refactor::RefactorTool::new(registry.clone()));
-        Self::insert_tool(&mut tools_map, "review", ai_review::ReviewTool::new(registry.clone()));
-        Self::insert_tool(&mut tools_map, "speak", ai_speak::SpeakTool::new(registry.clone()));
-        Self::insert_tool(&mut tools_map, "summarize", ai_summarize::SummarizeTool::new(registry.clone()));
-        Self::insert_tool(&mut tools_map, "transcribe", ai_transcribe::TranscribeTool::new(registry.clone()));
-        Self::insert_tool(&mut tools_map, "translate", ai_translate::TranslateTool::new(registry.clone()));
+        Self::insert_tool(
+            &mut tools_map,
+            "diagram",
+            ai_diagram::DiagramTool::new(registry.clone()),
+        );
+        Self::insert_tool(
+            &mut tools_map,
+            "embed",
+            ai_embed::EmbedTool::new(registry.clone()),
+        );
+        Self::insert_tool(
+            &mut tools_map,
+            "explain",
+            ai_explain::ExplainTool::new(registry.clone()),
+        );
+        Self::insert_tool(
+            &mut tools_map,
+            "imagine",
+            ai_imagine::ImagineTool::new(registry.clone()),
+        );
+        Self::insert_tool(
+            &mut tools_map,
+            "plan",
+            ai_plan::PlanTool::new(registry.clone()),
+        );
+        Self::insert_tool(
+            &mut tools_map,
+            "refactor",
+            ai_refactor::RefactorTool::new(registry.clone()),
+        );
+        Self::insert_tool(
+            &mut tools_map,
+            "review",
+            ai_review::ReviewTool::new(registry.clone()),
+        );
+        Self::insert_tool(
+            &mut tools_map,
+            "speak",
+            ai_speak::SpeakTool::new(registry.clone()),
+        );
+        Self::insert_tool(
+            &mut tools_map,
+            "summarize",
+            ai_summarize::SummarizeTool::new(registry.clone()),
+        );
+        Self::insert_tool(
+            &mut tools_map,
+            "transcribe",
+            ai_transcribe::TranscribeTool::new(registry.clone()),
+        );
+        Self::insert_tool(
+            &mut tools_map,
+            "translate",
+            ai_translate::TranslateTool::new(registry.clone()),
+        );
         // Sponsored discovery is on by default (opt-out); when disabled the
         // tool is never registered and no discovery endpoint is ever
         // contacted.

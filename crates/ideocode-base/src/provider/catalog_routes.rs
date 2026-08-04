@@ -1382,7 +1382,8 @@ mod tests {
         let cache_dir = std::path::PathBuf::from(ideocode_home).join("cache");
         std::fs::create_dir_all(&cache_dir).expect("create cache dir");
         let cache = ideocode_provider_openrouter::DiskCache {
-            cached_at: ideocode_provider_openrouter::current_unix_secs().expect("current unix time"),
+            cached_at: ideocode_provider_openrouter::current_unix_secs()
+                .expect("current unix time"),
             source_api_base: None,
             models: model_ids
                 .iter()

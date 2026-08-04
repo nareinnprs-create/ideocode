@@ -817,7 +817,10 @@ mod tests {
         assert_eq!(lookup("DISPLAY").as_deref(), Some(":1"));
         assert_eq!(lookup("IDEOCODE_CLIENT_DISPLAY").as_deref(), Some(":1"));
         // The first-class spawn metadata still flows through.
-        assert_eq!(lookup("IDEOCODE_SPAWN_KIND").as_deref(), Some("swarm-agent"));
+        assert_eq!(
+            lookup("IDEOCODE_SPAWN_KIND").as_deref(),
+            Some("swarm-agent")
+        );
     }
 
     #[test]
@@ -1193,7 +1196,10 @@ mod tests {
             env_value(&cmd, "IDEOCODE_SPAWN_SWARM_ID").as_deref(),
             Some("swarm-1")
         );
-        assert_eq!(env_value(&cmd, "IDEOCODE_FRESH_SPAWN").as_deref(), Some("1"));
+        assert_eq!(
+            env_value(&cmd, "IDEOCODE_FRESH_SPAWN").as_deref(),
+            Some("1")
+        );
     }
 
     #[test]

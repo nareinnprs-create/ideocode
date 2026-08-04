@@ -26,7 +26,9 @@ struct TranscribeInput {
 
 #[async_trait]
 impl Tool for TranscribeTool {
-    fn name(&self) -> &str { "transcribe" }
+    fn name(&self) -> &str {
+        "transcribe"
+    }
 
     fn description(&self) -> &str {
         "Transcribe audio to text. Provide a file path or base64-encoded audio data."
@@ -45,7 +47,11 @@ impl Tool for TranscribeTool {
 
     async fn execute(&self, input: Value, _ctx: ToolContext) -> Result<ToolOutput> {
         let input: TranscribeInput = serde_json::from_value(input)?;
-        let provider = self.registry.provider.as_ref().ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
+        let provider = self
+            .registry
+            .provider
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
 
         let lang_hint = input.language.as_deref().unwrap_or("auto-detect");
 
@@ -73,5 +79,9 @@ impl Tool for TranscribeTool {
 }
 
 fn truncate(s: &str, max: usize) -> String {
-    if s.len() <= max { s.to_string() } else { format!("{}...", &s[..max]) }
+    if s.len() <= max {
+        s.to_string()
+    } else {
+        format!("{}...", &s[..max])
+    }
 }

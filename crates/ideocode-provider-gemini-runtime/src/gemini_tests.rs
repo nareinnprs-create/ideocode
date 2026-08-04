@@ -783,23 +783,27 @@ fn downgrade_policy_removes_every_function_call_part() {
 #[test]
 fn missing_thought_signature_errors_are_recognized_from_backend_bodies() {
     // Exact bodies reported in #482 and #518.
-    assert!(ideocode_provider_gemini::is_missing_thought_signature_error(
-        "Antigravity generateContent failed (HTTP 400 Bad Request): {\"error\": {\"code\": 400, \
+    assert!(
+        ideocode_provider_gemini::is_missing_thought_signature_error(
+            "Antigravity generateContent failed (HTTP 400 Bad Request): {\"error\": {\"code\": 400, \
          \"message\": \"Function call is missing a thought_signature in functionCall parts. This \
          is required for tools to work correctly, and missing thought_signature may lead to \
          degraded model performance. Additional data, function call [default_api:bash], position \
          7.\", \"status\": \"INVALID_ARGUMENT\"}}"
-    ));
-    assert!(ideocode_provider_gemini::is_missing_thought_signature_error(
-        "missing a thoughtSignature"
-    ));
+        )
+    );
+    assert!(
+        ideocode_provider_gemini::is_missing_thought_signature_error("missing a thoughtSignature")
+    );
     // Unrelated failures must not trigger the lossy downgrade retry.
-    assert!(!ideocode_provider_gemini::is_missing_thought_signature_error(
-        "Antigravity generateContent failed (HTTP 429): rate limit exceeded"
-    ));
-    assert!(!ideocode_provider_gemini::is_missing_thought_signature_error(
-        "MALFORMED_FUNCTION_CALL"
-    ));
+    assert!(
+        !ideocode_provider_gemini::is_missing_thought_signature_error(
+            "Antigravity generateContent failed (HTTP 429): rate limit exceeded"
+        )
+    );
+    assert!(
+        !ideocode_provider_gemini::is_missing_thought_signature_error("MALFORMED_FUNCTION_CALL")
+    );
 }
 
 /// An assistant tool call plus its result, with no thought signature anywhere.

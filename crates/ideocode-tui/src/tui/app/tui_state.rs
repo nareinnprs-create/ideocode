@@ -2002,7 +2002,10 @@ impl App {
         next
     }
 
-    #[allow(dead_code, reason = "kept for swarm-panel focus API; callers not yet migrated")]
+    #[allow(
+        dead_code,
+        reason = "kept for swarm-panel focus API; callers not yet migrated"
+    )]
     pub(crate) fn set_swarm_panel_focus(&mut self, focused: bool) {
         self.swarm_panel_focused = focused && self.inline_swarm_gallery_active();
         self.swarm_panel_full_page = false;
@@ -2082,8 +2085,11 @@ impl App {
 
         let exe = std::env::current_exe().unwrap_or_else(|_| std::path::PathBuf::from("IDEOCODE"));
         let cwd = std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
-        match ideocode_app_core::session_launch::spawn_resume_in_new_terminal(&exe, &session_id, &cwd)
-        {
+        match ideocode_app_core::session_launch::spawn_resume_in_new_terminal(
+            &exe,
+            &session_id,
+            &cwd,
+        ) {
             Ok(true) => self.set_status_notice(format!("Opened {label} in a new window")),
             Ok(false) => self.set_status_notice(format!(
                 "Could not open a terminal for {label} (no emulator found)"

@@ -46,22 +46,10 @@ pub struct ThemeColors {
 impl ThemeColors {
     pub fn swatch_line(&self, name: &str) -> Line<'static> {
         Line::from(vec![
-            Span::styled(
-                "██ ",
-                Style::default().fg(self.primary),
-            ),
-            Span::styled(
-                "██ ",
-                Style::default().fg(self.secondary),
-            ),
-            Span::styled(
-                "██ ",
-                Style::default().fg(self.accent),
-            ),
-            Span::styled(
-                format!(" {}", name),
-                Style::default().fg(self.primary),
-            ),
+            Span::styled("██ ", Style::default().fg(self.primary)),
+            Span::styled("██ ", Style::default().fg(self.secondary)),
+            Span::styled("██ ", Style::default().fg(self.accent)),
+            Span::styled(format!(" {}", name), Style::default().fg(self.primary)),
         ])
     }
 }
@@ -152,10 +140,7 @@ pub fn get_builtin_themes() -> Vec<ThemeEntry> {
 }
 
 /// Render theme picker list.
-pub fn render_theme_list(
-    themes: &[ThemeEntry],
-    selected: usize,
-) -> Vec<Line<'static>> {
+pub fn render_theme_list(themes: &[ThemeEntry], selected: usize) -> Vec<Line<'static>> {
     let mut lines = Vec::new();
     lines.push(Line::from(Span::styled(
         "🎨 Theme Picker",
@@ -181,25 +166,28 @@ pub fn render_theme_list(
         lines.push(Line::from(vec![
             Span::styled(
                 if is_selected { "    ▸ " } else { "      " },
-                Style::default().fg(if is_selected { neon_green() } else { dim_color() }),
+                Style::default().fg(if is_selected {
+                    neon_green()
+                } else {
+                    dim_color()
+                }),
             ),
-            Span::styled(
-                "██ ",
-                Style::default().fg(theme.colors.primary),
-            ),
-            Span::styled(
-                "██ ",
-                Style::default().fg(theme.colors.secondary),
-            ),
-            Span::styled(
-                "██ ",
-                Style::default().fg(theme.colors.accent),
-            ),
+            Span::styled("██ ", Style::default().fg(theme.colors.primary)),
+            Span::styled("██ ", Style::default().fg(theme.colors.secondary)),
+            Span::styled("██ ", Style::default().fg(theme.colors.accent)),
             Span::styled(
                 format!(" {}", theme.name),
                 Style::default()
-                    .fg(if is_selected { neon_cyan() } else { dim_color() })
-                    .add_modifier(if is_selected { Modifier::BOLD } else { Modifier::empty() }),
+                    .fg(if is_selected {
+                        neon_cyan()
+                    } else {
+                        dim_color()
+                    })
+                    .add_modifier(if is_selected {
+                        Modifier::BOLD
+                    } else {
+                        Modifier::empty()
+                    }),
             ),
         ]));
     }

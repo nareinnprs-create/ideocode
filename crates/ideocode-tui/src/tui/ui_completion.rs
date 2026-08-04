@@ -246,20 +246,21 @@ impl AutocompleteEngine {
 /// Render completion popup.
 pub fn render_completions(completions: &[&CompletionItem], selected: usize) -> Vec<Line<'static>> {
     let mut lines = Vec::new();
-    
+
     for (i, item) in completions.iter().enumerate() {
         let is_selected = i == selected;
         let color = item.kind.color();
-        
+
         lines.push(Line::from(vec![
             Span::styled(
                 if is_selected { "▸ " } else { "  " },
-                Style::default().fg(if is_selected { neon_green() } else { dim_color() }),
+                Style::default().fg(if is_selected {
+                    neon_green()
+                } else {
+                    dim_color()
+                }),
             ),
-            Span::styled(
-                format!("{} ", item.kind.icon()),
-                Style::default().fg(color),
-            ),
+            Span::styled(format!("{} ", item.kind.icon()), Style::default().fg(color)),
             Span::styled(
                 item.label.clone(),
                 Style::default()
@@ -279,7 +280,7 @@ pub fn render_completions(completions: &[&CompletionItem], selected: usize) -> V
             ),
         ]));
     }
-    
+
     lines
 }
 

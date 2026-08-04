@@ -405,7 +405,10 @@ mod tests {
             term_binding("ctrl+shift+tab", "previous_tab"),
         ]);
         let conflicts = detect_conflicts(&cfg, &snapshot);
-        let fields: Vec<&str> = conflicts.iter().map(|c| c.IDEOCODE.field.as_str()).collect();
+        let fields: Vec<&str> = conflicts
+            .iter()
+            .map(|c| c.IDEOCODE.field.as_str())
+            .collect();
         assert!(fields.contains(&"keybindings.model_switch_next"));
         assert!(fields.contains(&"keybindings.model_switch_prev"));
         let summary = conflicts[0].summary();

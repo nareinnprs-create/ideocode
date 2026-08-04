@@ -236,7 +236,9 @@ fn running_in_menubar_sandbox() -> bool {
         env_truthy("IDEOCODE_TEST_SESSION"),
         env_truthy("IDEOCODE_TEMP_SERVER"),
         std::env::var_os("IDEOCODE_HOME").as_deref(),
-        dirs::home_dir().map(|home| home.join(".IDEOCODE")).as_deref(),
+        dirs::home_dir()
+            .map(|home| home.join(".IDEOCODE"))
+            .as_deref(),
     )
 }
 

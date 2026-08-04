@@ -30,7 +30,9 @@ use ideocode_base::provider_catalog::{
     openai_compatible_profile_static_context_limits, openai_compatible_profile_static_models,
     openai_compatible_profiles, resolve_openai_compatible_profile,
 };
-use ideocode_message_types::{CacheControl, ContentBlock, Message, Role, StreamEvent, ToolDefinition};
+use ideocode_message_types::{
+    CacheControl, ContentBlock, Message, Role, StreamEvent, ToolDefinition,
+};
 use ideocode_provider_core::{EventStream, Provider};
 pub use ideocode_provider_openrouter::{
     EndpointInfo, ModelInfo, ModelPricing, ModelTimestampIndex, ProviderRouting,
@@ -364,7 +366,9 @@ impl OpenRouterTransportState {
             "openrouter" | "openrouter-api-key" | "openrouter_byok" | "openrouter-byok" => {
                 Some(Self::OpenRouterApiKey)
             }
-            "IDEOCODE" | "IDEOCODE-subscription" | "subscription" => Some(Self::IDEOCODESubscription),
+            "IDEOCODE" | "IDEOCODE-subscription" | "subscription" => {
+                Some(Self::IDEOCODESubscription)
+            }
             "direct" | "direct-api-key" | "openai-compatible" | "compatible-api-key" => {
                 Some(Self::DirectApiKey)
             }
@@ -1220,7 +1224,8 @@ impl OpenRouterProvider {
             }
         }
 
-        if let Some(raw) = load_env_value_from_env_or_config("IDEOCODE_OPENAI_EXTRA_BODY", env_file) {
+        if let Some(raw) = load_env_value_from_env_or_config("IDEOCODE_OPENAI_EXTRA_BODY", env_file)
+        {
             match serde_json::from_str::<Value>(&raw) {
                 Ok(Value::Object(object)) => {
                     for (key, val) in object {
@@ -1331,7 +1336,8 @@ impl OpenRouterProvider {
     fn is_ideocode_subscription_runtime(&self) -> bool {
         !self.supports_provider_features
             && self.api_base.trim_end_matches('/')
-                == ideocode_base::subscription_catalog::DEFAULT_IDEOCODE_API_BASE.trim_end_matches('/')
+                == ideocode_base::subscription_catalog::DEFAULT_IDEOCODE_API_BASE
+                    .trim_end_matches('/')
             && self
                 .auth
                 .label()

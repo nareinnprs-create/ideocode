@@ -23,7 +23,9 @@ pub mod source;
 pub mod terminal;
 
 pub use chord::KeyChord;
-pub use conflicts::{Conflict, IDEOCODEBinding, conflict_signature, detect_conflicts, ideocode_bindings};
+pub use conflicts::{
+    Conflict, IDEOCODEBinding, conflict_signature, detect_conflicts, ideocode_bindings,
+};
 pub use report::{render_report, render_status_line};
 pub use source::{DiscoveredBinding, KeySource};
 

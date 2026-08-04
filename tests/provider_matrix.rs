@@ -322,7 +322,9 @@ fn apply_competing_compatible_state(
 fn assert_runtime_profile_env(profile: OpenAiCompatibleProfile, context: &str) {
     let resolved = resolve_openai_compatible_profile(profile);
     assert_eq!(
-        std::env::var("IDEOCODE_OPENROUTER_API_BASE").ok().as_deref(),
+        std::env::var("IDEOCODE_OPENROUTER_API_BASE")
+            .ok()
+            .as_deref(),
         Some(resolved.api_base.as_str()),
         "runtime api base mismatch for {context}"
     );
@@ -334,7 +336,9 @@ fn assert_runtime_profile_env(profile: OpenAiCompatibleProfile, context: &str) {
         "runtime api key env mismatch for {context}"
     );
     assert_eq!(
-        std::env::var("IDEOCODE_OPENROUTER_ENV_FILE").ok().as_deref(),
+        std::env::var("IDEOCODE_OPENROUTER_ENV_FILE")
+            .ok()
+            .as_deref(),
         Some(resolved.env_file.as_str()),
         "runtime env file mismatch for {context}"
     );
@@ -703,7 +707,9 @@ fn provider_matrix_openai_compatible_auth_state_space_material_states_preserve_l
                     apply_openai_compatible_profile_env(Some(OPENAI_COMPAT_PROFILE));
                     AuthStatus::invalidate_cache();
                     assert_eq!(
-                        std::env::var("IDEOCODE_OPENROUTER_API_BASE").ok().as_deref(),
+                        std::env::var("IDEOCODE_OPENROUTER_API_BASE")
+                            .ok()
+                            .as_deref(),
                         Some(resolved.api_base.as_str()),
                         "runtime api base mismatch for {state_label}"
                     );
@@ -715,7 +721,9 @@ fn provider_matrix_openai_compatible_auth_state_space_material_states_preserve_l
                         "runtime api key env mismatch for {state_label}"
                     );
                     assert_eq!(
-                        std::env::var("IDEOCODE_OPENROUTER_ENV_FILE").ok().as_deref(),
+                        std::env::var("IDEOCODE_OPENROUTER_ENV_FILE")
+                            .ok()
+                            .as_deref(),
                         Some(resolved.env_file.as_str()),
                         "runtime env file mismatch for {state_label}"
                     );
@@ -786,7 +794,9 @@ fn provider_matrix_env_credentials_activate_openrouter_runtime() -> Result<()> {
         AuthStatus::invalidate_cache();
 
         assert_eq!(
-            std::env::var("IDEOCODE_OPENROUTER_API_BASE").ok().as_deref(),
+            std::env::var("IDEOCODE_OPENROUTER_API_BASE")
+                .ok()
+                .as_deref(),
             Some(resolved.api_base.as_str())
         );
         assert_eq!(
@@ -796,7 +806,9 @@ fn provider_matrix_env_credentials_activate_openrouter_runtime() -> Result<()> {
             Some(resolved.api_key_env.as_str())
         );
         assert_eq!(
-            std::env::var("IDEOCODE_OPENROUTER_ENV_FILE").ok().as_deref(),
+            std::env::var("IDEOCODE_OPENROUTER_ENV_FILE")
+                .ok()
+                .as_deref(),
             Some(resolved.env_file.as_str())
         );
         assert_eq!(
@@ -865,7 +877,10 @@ fn provider_matrix_custom_compat_overrides_flow_into_runtime() -> Result<()> {
     );
     ideocode::env::set_var("IDEOCODE_OPENAI_COMPAT_API_KEY_NAME", "GROQ_API_KEY");
     ideocode::env::set_var("IDEOCODE_OPENAI_COMPAT_ENV_FILE", "groq.env");
-    ideocode::env::set_var("IDEOCODE_OPENAI_COMPAT_DEFAULT_MODEL", "openai/gpt-oss-120b");
+    ideocode::env::set_var(
+        "IDEOCODE_OPENAI_COMPAT_DEFAULT_MODEL",
+        "openai/gpt-oss-120b",
+    );
 
     apply_openai_compatible_profile_env(Some(OPENAI_COMPAT_PROFILE));
     let resolved = resolve_openai_compatible_profile(OPENAI_COMPAT_PROFILE);
@@ -880,7 +895,9 @@ fn provider_matrix_custom_compat_overrides_flow_into_runtime() -> Result<()> {
     assert_eq!(resolved.api_key_env, "GROQ_API_KEY");
     assert_eq!(resolved.env_file, "groq.env");
     assert_eq!(
-        std::env::var("IDEOCODE_OPENROUTER_API_BASE").ok().as_deref(),
+        std::env::var("IDEOCODE_OPENROUTER_API_BASE")
+            .ok()
+            .as_deref(),
         Some("https://api.groq.com/openai/v1")
     );
     assert_eq!(
@@ -890,7 +907,9 @@ fn provider_matrix_custom_compat_overrides_flow_into_runtime() -> Result<()> {
         Some("GROQ_API_KEY")
     );
     assert_eq!(
-        std::env::var("IDEOCODE_OPENROUTER_ENV_FILE").ok().as_deref(),
+        std::env::var("IDEOCODE_OPENROUTER_ENV_FILE")
+            .ok()
+            .as_deref(),
         Some("groq.env")
     );
     assert!(ideocode::provider::openrouter::has_credentials());
@@ -906,7 +925,10 @@ fn provider_matrix_custom_local_compat_without_api_key_activates_openrouter_runt
     let env = TestEnv::new()?;
     env.clear_profile_keys();
 
-    ideocode::env::set_var("IDEOCODE_OPENAI_COMPAT_API_BASE", "http://localhost:11434/v1");
+    ideocode::env::set_var(
+        "IDEOCODE_OPENAI_COMPAT_API_BASE",
+        "http://localhost:11434/v1",
+    );
 
     apply_openai_compatible_profile_env(Some(OPENAI_COMPAT_PROFILE));
     let resolved = resolve_openai_compatible_profile(OPENAI_COMPAT_PROFILE);

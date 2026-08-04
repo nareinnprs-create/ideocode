@@ -529,7 +529,8 @@ async fn handle_http(
                 !limiter.attempt(peer_addr.ip())
             };
             if throttled {
-                let body = serde_json::json!({"error": "Too many pairing attempts. Try again later."});
+                let body =
+                    serde_json::json!({"error": "Too many pairing attempts. Try again later."});
                 let response = http_response(
                     429,
                     "Too Many Requests",
@@ -542,8 +543,14 @@ async fn handle_http(
             }
             // Extract JSON body (after \r\n\r\n)
             let body_str = request.split("\r\n\r\n").nth(1).unwrap_or("");
-            handle_pair_request(body_str, &registry, &pair_limiter, peer_addr.ip(), cors_origin)
-                .await
+            handle_pair_request(
+                body_str,
+                &registry,
+                &pair_limiter,
+                peer_addr.ip(),
+                cors_origin,
+            )
+            .await
         }
 
         ("OPTIONS", _) => {
@@ -611,7 +618,12 @@ async fn handle_pair_request(
         Ok(r) => r,
         Err(e) => {
             let body = serde_json::json!({"error": format!("Invalid JSON: {}", e)});
-            return http_response(400, "Bad Request", &body.to_string(), cors_origin.as_deref());
+            return http_response(
+                400,
+                "Bad Request",
+                &body.to_string(),
+                cors_origin.as_deref(),
+            );
         }
     };
 
@@ -622,7 +634,12 @@ async fn handle_pair_request(
 
     if !reg.validate_code(req.code.trim()) {
         let body = serde_json::json!({"error": "Invalid or expired pairing code"});
-        return http_response(401, "Unauthorized", &body.to_string(), cors_origin.as_deref());
+        return http_response(
+            401,
+            "Unauthorized",
+            &body.to_string(),
+            cors_origin.as_deref(),
+        );
     }
 
     // Successful pairing resets the throttle for this peer.

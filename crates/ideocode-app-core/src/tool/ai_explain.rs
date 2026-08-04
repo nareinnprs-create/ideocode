@@ -27,7 +27,9 @@ struct ExplainInput {
 
 #[async_trait]
 impl Tool for ExplainTool {
-    fn name(&self) -> &str { "explain" }
+    fn name(&self) -> &str {
+        "explain"
+    }
 
     fn description(&self) -> &str {
         "Explain code or a technical concept in detail."
@@ -47,7 +49,11 @@ impl Tool for ExplainTool {
 
     async fn execute(&self, input: Value, _ctx: ToolContext) -> Result<ToolOutput> {
         let input: ExplainInput = serde_json::from_value(input)?;
-        let provider = self.registry.provider.as_ref().ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
+        let provider = self
+            .registry
+            .provider
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("No AI provider available"))?;
 
         let style_guide = match input.style.as_deref() {
             Some("simple") => "Explain in simple terms suitable for a beginner.",
@@ -60,8 +66,16 @@ impl Tool for ExplainTool {
             style_guide
         );
 
-        let lang_hint = input.language.as_ref().map(|l| format!(" (language: {})", l)).unwrap_or_default();
-        let user_prompt = format!("Explain the following code{lang_hint}:\n\n```{}\n{}```\n", input.language.as_deref().unwrap_or(""), input.code);
+        let lang_hint = input
+            .language
+            .as_ref()
+            .map(|l| format!(" (language: {})", l))
+            .unwrap_or_default();
+        let user_prompt = format!(
+            "Explain the following code{lang_hint}:\n\n```{}\n{}```\n",
+            input.language.as_deref().unwrap_or(""),
+            input.code
+        );
 
         let response = provider.complete_simple(&user_prompt, &system).await?;
         Ok(ToolOutput::new(response))

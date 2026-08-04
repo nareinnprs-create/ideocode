@@ -40,15 +40,10 @@ pub fn render_leaderboard(entries: &[LeaderboardEntry]) -> Vec<Line<'static>> {
         };
 
         lines.push(Line::from(vec![
-            Span::styled(
-                format!("{} ", entry.rank),
-                Style::default().fg(color),
-            ),
+            Span::styled(format!("{} ", entry.rank), Style::default().fg(color)),
             Span::styled(
                 entry.name.clone(),
-                Style::default()
-                    .fg(color)
-                    .add_modifier(Modifier::BOLD),
+                Style::default().fg(color).add_modifier(Modifier::BOLD),
             ),
             Span::styled(
                 format!("  {} pts", entry.score),
@@ -65,7 +60,10 @@ pub fn render_leaderboard(entries: &[LeaderboardEntry]) -> Vec<Line<'static>> {
 }
 
 /// Render team and sharing features panel.
-#[allow(dead_code, reason = "kept for social features panel; not yet wired into main UI")]
+#[allow(
+    dead_code,
+    reason = "kept for social features panel; not yet wired into main UI"
+)]
 pub fn render_team_placeholder() -> Vec<Line<'static>> {
     vec![
         Line::from(Span::styled(
@@ -121,7 +119,10 @@ pub fn render_team_placeholder() -> Vec<Line<'static>> {
 }
 
 /// Render social sharing preview.
-#[allow(dead_code, reason = "kept for share preview overlay; not yet wired into main UI")]
+#[allow(
+    dead_code,
+    reason = "kept for share preview overlay; not yet wired into main UI"
+)]
 pub fn render_share_preview(achievements: &[String]) -> Vec<Line<'static>> {
     let mut lines = vec![
         Line::from(Span::styled(
@@ -162,11 +163,11 @@ pub fn render_share_preview(achievements: &[String]) -> Vec<Line<'static>> {
 }
 
 /// Render achievement share card.
-#[allow(dead_code, reason = "kept for achievement card overlay; not yet wired into main UI")]
-pub fn render_achievement_card(
-    achievement: &str,
-    description: &str,
-) -> Vec<Line<'static>> {
+#[allow(
+    dead_code,
+    reason = "kept for achievement card overlay; not yet wired into main UI"
+)]
+pub fn render_achievement_card(achievement: &str, description: &str) -> Vec<Line<'static>> {
     vec![
         Line::from("╭──────────────────────────────╮"),
         Line::from(Span::styled(

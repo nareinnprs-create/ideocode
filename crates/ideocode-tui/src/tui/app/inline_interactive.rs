@@ -1401,7 +1401,10 @@ impl App {
         }
 
         fn route_matches_recent_auth(route_provider: &str, login_provider: &str) -> bool {
-            ideocode_provider_core::model_route_provider_labels_related(route_provider, login_provider)
+            ideocode_provider_core::model_route_provider_labels_related(
+                route_provider,
+                login_provider,
+            )
         }
 
         let timestamp_started = std::time::Instant::now();
@@ -2481,10 +2484,16 @@ impl App {
                     .unwrap_or("Pi session")
                     .to_string(),
                 ResumeTarget::OpenCodeSession { session_id, .. } => {
-                    format!("OpenCode {}", ideocode_core::util::truncate_str(session_id, 8))
+                    format!(
+                        "OpenCode {}",
+                        ideocode_core::util::truncate_str(session_id, 8)
+                    )
                 }
                 ResumeTarget::CursorSession { session_id, .. } => {
-                    format!("Cursor {}", ideocode_core::util::truncate_str(session_id, 8))
+                    format!(
+                        "Cursor {}",
+                        ideocode_core::util::truncate_str(session_id, 8)
+                    )
                 }
             };
             let resolved_target = match crate::import::resolve_resume_target_to_IDEOCODE(target) {
@@ -2586,10 +2595,16 @@ impl App {
                 .unwrap_or("Pi session")
                 .to_string(),
             ResumeTarget::OpenCodeSession { session_id, .. } => {
-                format!("OpenCode {}", ideocode_core::util::truncate_str(session_id, 8))
+                format!(
+                    "OpenCode {}",
+                    ideocode_core::util::truncate_str(session_id, 8)
+                )
             }
             ResumeTarget::CursorSession { session_id, .. } => {
-                format!("Cursor {}", ideocode_core::util::truncate_str(session_id, 8))
+                format!(
+                    "Cursor {}",
+                    ideocode_core::util::truncate_str(session_id, 8)
+                )
             }
         };
 
@@ -2759,9 +2774,11 @@ impl App {
         // Single recovered session that could not get a new terminal: resume it
         // in the current terminal instead of forcing a manual command (#203).
         if spawned == 0 && recovered.len() == 1 && failed.len() == 1 {
-            self.handle_session_picker_current_terminal_selection(&[ResumeTarget::IDEOCODESession {
-                session_id: recovered[0].clone(),
-            }]);
+            self.handle_session_picker_current_terminal_selection(&[
+                ResumeTarget::IDEOCODESession {
+                    session_id: recovered[0].clone(),
+                },
+            ]);
             return;
         }
         if spawned > 0 && failed.is_empty() {
@@ -2845,7 +2862,10 @@ impl App {
                         self.onboarding_start_recent_project_review();
                         return Ok(());
                     }
-                    PickerResult::DeleteSession { session_id, display_name } => {
+                    PickerResult::DeleteSession {
+                        session_id,
+                        display_name,
+                    } => {
                         self.session_picker_overlay = None;
                         self.session_picker_mode = SessionPickerMode::Resume;
                         self.handle_session_deletion(&session_id, &display_name);
@@ -2898,7 +2918,10 @@ impl App {
                 self.session_picker_overlay = None;
                 self.session_picker_mode = SessionPickerMode::Resume;
             }
-            OverlayAction::Selected(PickerResult::DeleteSession { session_id, display_name }) => {
+            OverlayAction::Selected(PickerResult::DeleteSession {
+                session_id,
+                display_name,
+            }) => {
                 self.handle_session_deletion(&session_id, &display_name);
             }
         }

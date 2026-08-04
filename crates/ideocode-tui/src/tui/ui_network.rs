@@ -12,10 +12,7 @@ use ratatui::prelude::*;
 use ratatui::text::Line;
 
 /// Render network activity indicator.
-pub fn render_network_indicator(
-    is_connected: bool,
-    latency_ms: Option<u64>,
-) -> Line<'static> {
+pub fn render_network_indicator(is_connected: bool, latency_ms: Option<u64>) -> Line<'static> {
     let (icon, color) = if is_connected {
         match latency_ms {
             Some(ms) if ms < 100 => ("🟢", neon_green()),
@@ -33,10 +30,7 @@ pub fn render_network_indicator(
     };
 
     Line::from(vec![
-        Span::styled(
-            icon,
-            Style::default(),
-        ),
+        Span::styled(icon, Style::default()),
         Span::styled(
             format!("Network{}", latency_str),
             Style::default().fg(color),
@@ -47,10 +41,7 @@ pub fn render_network_indicator(
 /// Render API call counter.
 pub fn render_api_calls(count: u64) -> Line<'static> {
     Line::from(vec![
-        Span::styled(
-            "🌐 ",
-            Style::default().fg(neon_cyan()),
-        ),
+        Span::styled("🌐 ", Style::default().fg(neon_cyan())),
         Span::styled(
             format!("{} API calls", count),
             Style::default().fg(dim_color()),
@@ -59,10 +50,7 @@ pub fn render_api_calls(count: u64) -> Line<'static> {
 }
 
 /// Render trust indicator.
-pub fn render_trust_indicator(
-    verified: bool,
-    provider: &str,
-) -> Line<'static> {
+pub fn render_trust_indicator(verified: bool, provider: &str) -> Line<'static> {
     let (icon, color, status) = if verified {
         ("🛡️", neon_green(), "Verified")
     } else {
@@ -97,8 +85,16 @@ pub fn render_network_details(
         Line::from(vec![
             Span::styled("  Status: ", Style::default().fg(dim_color())),
             Span::styled(
-                if is_connected { "Connected" } else { "Disconnected" },
-                Style::default().fg(if is_connected { neon_green() } else { rgb(255, 80, 80) }),
+                if is_connected {
+                    "Connected"
+                } else {
+                    "Disconnected"
+                },
+                Style::default().fg(if is_connected {
+                    neon_green()
+                } else {
+                    rgb(255, 80, 80)
+                }),
             ),
         ]),
         Line::from(vec![
@@ -110,10 +106,7 @@ pub fn render_network_details(
         ]),
         Line::from(vec![
             Span::styled("  API Calls: ", Style::default().fg(dim_color())),
-            Span::styled(
-                format!("{}", api_calls),
-                Style::default().fg(neon_green()),
-            ),
+            Span::styled(format!("{}", api_calls), Style::default().fg(neon_green())),
         ]),
         Line::from(vec![
             Span::styled("  Sent: ", Style::default().fg(dim_color())),

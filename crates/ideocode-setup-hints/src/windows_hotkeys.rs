@@ -440,7 +440,9 @@ mod tests {
         assert!(script.contains("Win+Shift+F23"));
         assert!(script.contains("Resolve-IDEOCODEFixedDir 'C:\\Users\\u\\IDEOCODE'"));
         assert!(script.contains("Resolve-IDEOCODEDir $null"));
-        assert!(script.contains("Resolve-IDEOCODEDir 'C:\\Users\\u\\.IDEOCODE\\hotkey\\last_repo'"));
+        assert!(
+            script.contains("Resolve-IDEOCODEDir 'C:\\Users\\u\\.IDEOCODE\\hotkey\\last_repo'")
+        );
 
         // Self-dev entry passes the subcommand; others do not.
         assert_eq!(script.matches("self-dev").count(), 2); // label + args

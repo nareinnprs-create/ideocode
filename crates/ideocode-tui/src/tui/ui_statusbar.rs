@@ -82,14 +82,8 @@ pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
     let version_text = "v0.60.0";
     let used_width: usize = line1_spans.iter().map(|s| s.content.chars().count()).sum();
     let padding = w.saturating_sub(used_width + version_text.len());
-    line1_spans.push(Span::styled(
-        " ".repeat(padding),
-        Style::default(),
-    ));
-    line1_spans.push(Span::styled(
-        version_text,
-        Style::default().fg(dim_color()),
-    ));
+    line1_spans.push(Span::styled(" ".repeat(padding), Style::default()));
+    line1_spans.push(Span::styled(version_text, Style::default().fg(dim_color())));
 
     let line1 = Line::from(line1_spans);
 
@@ -112,22 +106,23 @@ pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
 
     // Tokens per second
     if let Some(tps) = app.output_tps()
-        && tps > 0.0 {
-            if !line2_spans.is_empty() {
-                line2_spans.push(sep.clone());
-            }
-            let tps_color = if tps > 80.0 {
-                neon_green()
-            } else if tps > 40.0 {
-                neon_yellow()
-            } else {
-                dim_color()
-            };
-            line2_spans.push(Span::styled(
-                format!("⚡{:.0} tok/s", tps),
-                Style::default().fg(tps_color),
-            ));
+        && tps > 0.0
+    {
+        if !line2_spans.is_empty() {
+            line2_spans.push(sep.clone());
         }
+        let tps_color = if tps > 80.0 {
+            neon_green()
+        } else if tps > 40.0 {
+            neon_yellow()
+        } else {
+            dim_color()
+        };
+        line2_spans.push(Span::styled(
+            format!("⚡{:.0} tok/s", tps),
+            Style::default().fg(tps_color),
+        ));
+    }
 
     // Session duration
     if elapsed > 0 {
@@ -152,9 +147,7 @@ pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
         };
         line2_spans.push(Span::styled(
             format!("⌨ {}", mode_label),
-            Style::default()
-                .fg(mode_color)
-                .add_modifier(Modifier::BOLD),
+            Style::default().fg(mode_color).add_modifier(Modifier::BOLD),
         ));
     }
 
@@ -162,14 +155,8 @@ pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
     let hints = "Ctrl+/ help │ Alt+8 palette │ Alt+X sidebar";
     let used_width: usize = line2_spans.iter().map(|s| s.content.chars().count()).sum();
     let padding = w.saturating_sub(used_width + hints.len());
-    line2_spans.push(Span::styled(
-        " ".repeat(padding),
-        Style::default(),
-    ));
-    line2_spans.push(Span::styled(
-        hints,
-        Style::default().fg(dim_color()),
-    ));
+    line2_spans.push(Span::styled(" ".repeat(padding), Style::default()));
+    line2_spans.push(Span::styled(hints, Style::default().fg(dim_color())));
 
     let line2 = Line::from(line2_spans);
 

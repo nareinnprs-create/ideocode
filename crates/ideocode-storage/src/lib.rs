@@ -248,7 +248,8 @@ pub fn harden_user_config_permissions() {
         if let Some(config_dir) = dirs::config_dir() {
             let ideocode_config_dir = config_dir.join("IDEOCODE");
             if ideocode_config_dir.exists() {
-                let _ = ideocode_core::fs::set_directory_permissions_owner_only(&ideocode_config_dir);
+                let _ =
+                    ideocode_core::fs::set_directory_permissions_owner_only(&ideocode_config_dir);
             }
         }
 

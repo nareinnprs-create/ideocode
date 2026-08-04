@@ -151,8 +151,10 @@ pub(super) fn present_swarm_notification(
         let tldr = tldr.trim();
         if !tldr.is_empty() && !presentation.message.trim().is_empty() {
             presentation.status_notice = format!("{} · {}", presentation.status_notice, tldr);
-            presentation.message =
-                ideocode_tui_messages::encode_collapsible_swarm_content(tldr, &presentation.message);
+            presentation.message = ideocode_tui_messages::encode_collapsible_swarm_content(
+                tldr,
+                &presentation.message,
+            );
         }
     }
     presentation

@@ -205,10 +205,7 @@ impl TutorialStep {
                 ]),
                 Line::from(vec![
                     Span::styled("Minimal ", Style::default().fg(neon_cyan())),
-                    Span::styled(
-                        "Glassmorphism, Retro",
-                        Style::default().fg(dim_color()),
-                    ),
+                    Span::styled("Glassmorphism, Retro", Style::default().fg(dim_color())),
                 ]),
                 Line::from(""),
                 Line::from(Span::styled(
@@ -248,7 +245,10 @@ impl TutorialStep {
                 ]),
                 Line::from(vec![
                     Span::styled("🧘 Zen", Style::default().fg(neon_blue())),
-                    Span::styled(" - Calm and philosophical", Style::default().fg(dim_color())),
+                    Span::styled(
+                        " - Calm and philosophical",
+                        Style::default().fg(dim_color()),
+                    ),
                 ]),
                 Line::from(""),
                 Line::from(Span::styled(
@@ -280,7 +280,10 @@ impl TutorialStep {
                 ]),
                 Line::from(vec![
                     Span::styled("🏆 Tool Master", Style::default().fg(neon_yellow())),
-                    Span::styled(" - Use 10 different tools", Style::default().fg(dim_color())),
+                    Span::styled(
+                        " - Use 10 different tools",
+                        Style::default().fg(dim_color()),
+                    ),
                 ]),
                 Line::from(""),
                 Line::from(Span::styled(
@@ -300,11 +303,17 @@ impl TutorialStep {
                 Line::from(""),
                 Line::from(vec![
                     Span::styled("📄 File Operations", Style::default().fg(neon_green())),
-                    Span::styled(" - Read, write, edit files", Style::default().fg(dim_color())),
+                    Span::styled(
+                        " - Read, write, edit files",
+                        Style::default().fg(dim_color()),
+                    ),
                 ]),
                 Line::from(vec![
                     Span::styled("🔍 Search", Style::default().fg(neon_cyan())),
-                    Span::styled(" - Find files and content", Style::default().fg(dim_color())),
+                    Span::styled(
+                        " - Find files and content",
+                        Style::default().fg(dim_color()),
+                    ),
                 ]),
                 Line::from(vec![
                     Span::styled("💻 Terminal", Style::default().fg(neon_magenta())),
@@ -423,10 +432,7 @@ pub fn render_navigation_hints(step: &TutorialStep) -> Line<'static> {
     let mut hints = Vec::new();
 
     if step.prev().is_some() {
-        hints.push(Span::styled(
-            "← Back ",
-            Style::default().fg(dim_color()),
-        ));
+        hints.push(Span::styled("← Back ", Style::default().fg(dim_color())));
     }
 
     hints.push(Span::styled(
@@ -435,15 +441,9 @@ pub fn render_navigation_hints(step: &TutorialStep) -> Line<'static> {
     ));
 
     if step.next().is_some() {
-        hints.push(Span::styled(
-            "→ Next ",
-            Style::default().fg(neon_green()),
-        ));
+        hints.push(Span::styled("→ Next ", Style::default().fg(neon_green())));
     } else {
-        hints.push(Span::styled(
-            "→ Finish ",
-            Style::default().fg(neon_green()),
-        ));
+        hints.push(Span::styled("→ Finish ", Style::default().fg(neon_green())));
     }
 
     Line::from(hints)

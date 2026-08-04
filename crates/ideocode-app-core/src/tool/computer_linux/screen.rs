@@ -27,8 +27,13 @@ pub fn screenshot() -> Result<ToolOutput> {
     }
     let data = std::fs::read(&path)?;
     let b64 = base64::engine::general_purpose::STANDARD.encode(&data);
-    Ok(ToolOutput::new("Screenshot captured".to_string())
-        .with_labeled_image("image/png", b64, "Screen"))
+    Ok(
+        ToolOutput::new("Screenshot captured".to_string()).with_labeled_image(
+            "image/png",
+            b64,
+            "Screen",
+        ),
+    )
 }
 
 pub fn ocr(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> Result<ToolOutput> {
@@ -48,7 +53,9 @@ pub fn ocr(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> Re
             .status()
             .or_else(|_| {
                 std::process::Command::new("import")
-                    .arg("-window").arg("root").arg(&path)
+                    .arg("-window")
+                    .arg("root")
+                    .arg(&path)
                     .status()
             })
             .context("Failed to capture screenshot")?;

@@ -180,7 +180,9 @@ fn approved_key_persistence_is_owner_only_and_clear_is_deterministic() {
         None => crate::env::remove_var("IDEOCODE_HOME"),
     }
     match previous_key {
-        Some(value) => crate::env::set_var(crate::subscription_catalog::IDEOCODE_API_KEY_ENV, value),
+        Some(value) => {
+            crate::env::set_var(crate::subscription_catalog::IDEOCODE_API_KEY_ENV, value)
+        }
         None => crate::env::remove_var(crate::subscription_catalog::IDEOCODE_API_KEY_ENV),
     }
 }

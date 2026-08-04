@@ -54,11 +54,7 @@ impl StreamingBuffer {
         let should_flush = self.buffer.len() >= self.max_buffer_size
             || now.duration_since(self.last_flush) >= self.flush_interval;
 
-        if should_flush {
-            self.flush()
-        } else {
-            None
-        }
+        if should_flush { self.flush() } else { None }
     }
 
     /// Force-flush all buffered tokens.
@@ -112,13 +108,15 @@ impl ProviderHealthCache {
     /// Record a successful request to a provider.
     pub fn record_success(&self, provider: &str, latency_ms: f64) {
         let mut entries = self.entries.write().unwrap_or_else(|e| e.into_inner());
-        let entry = entries.entry(provider.to_string()).or_insert_with(|| ProviderHealthEntry {
-            healthy: true,
-            last_check: Instant::now(),
-            latency_ms: None,
-            error_count: 0,
-            success_count: 0,
-        });
+        let entry = entries
+            .entry(provider.to_string())
+            .or_insert_with(|| ProviderHealthEntry {
+                healthy: true,
+                last_check: Instant::now(),
+                latency_ms: None,
+                error_count: 0,
+                success_count: 0,
+            });
         entry.healthy = true;
         entry.last_check = Instant::now();
         entry.latency_ms = Some(latency_ms);
@@ -129,13 +127,15 @@ impl ProviderHealthCache {
     /// Record a failed request to a provider.
     pub fn record_failure(&self, provider: &str) {
         let mut entries = self.entries.write().unwrap_or_else(|e| e.into_inner());
-        let entry = entries.entry(provider.to_string()).or_insert_with(|| ProviderHealthEntry {
-            healthy: true,
-            last_check: Instant::now(),
-            latency_ms: None,
-            error_count: 0,
-            success_count: 0,
-        });
+        let entry = entries
+            .entry(provider.to_string())
+            .or_insert_with(|| ProviderHealthEntry {
+                healthy: true,
+                last_check: Instant::now(),
+                latency_ms: None,
+                error_count: 0,
+                success_count: 0,
+            });
         entry.error_count += 1;
         entry.last_check = Instant::now();
         // Mark unhealthy after 3 consecutive failures
@@ -183,11 +183,7 @@ impl ProviderHealthCache {
         candidates
             .iter()
             .filter(|p| self.is_healthy(p))
-            .min_by_key(|p| {
-                self.latency_ms(p)
-                    .map(|l| l as u64)
-                    .unwrap_or(u64::MAX)
-            })
+            .min_by_key(|p| self.latency_ms(p).map(|l| l as u64).unwrap_or(u64::MAX))
             .copied()
     }
 }
@@ -244,7 +240,7 @@ impl ImageDataManager {
     pub fn new() -> Self {
         Self {
             cache: RwLock::new(HashMap::new()),
-            max_cache_size: 50, // max 50 images cached
+            max_cache_size: 50,              // max 50 images cached
             max_entry_size: 5 * 1024 * 1024, // 5MB per image
         }
     }
@@ -268,9 +264,9 @@ impl ImageDataManager {
                 .iter()
                 .min_by_key(|(_, e)| e.accessed_at)
                 .map(|(k, _)| k.clone())
-            {
-                cache.remove(&oldest_key);
-            }
+        {
+            cache.remove(&oldest_key);
+        }
 
         cache.insert(
             key,
@@ -342,7 +338,10 @@ pub struct RequestTimingTracker {
 
 struct RequestTiming {
     provider: String,
-    #[allow(dead_code, reason = "kept for per-model latency tracking; aggregator not yet consuming it")]
+    #[allow(
+        dead_code,
+        reason = "kept for per-model latency tracking; aggregator not yet consuming it"
+    )]
     model: String,
     start: Instant,
     end: Option<Instant>,

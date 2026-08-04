@@ -277,7 +277,10 @@ const FULL_PIPELINE_LABELS: &[(&str, &str)] = &[
     (checkpoints::TOOL_CALL_PARSE, "Tool-call parse"),
     (checkpoints::TOOL_EXECUTION_LOOP, "Tool execution loop"),
     (checkpoints::TOOL_RESULT_FOLLOWUP, "Tool-result followup"),
-    (checkpoints::REAL_IDEOCODE_TOOL_SMOKE, "Real IDEOCODE tool smoke"),
+    (
+        checkpoints::REAL_IDEOCODE_TOOL_SMOKE,
+        "Real IDEOCODE tool smoke",
+    ),
     (checkpoints::REASONING_CAPABILITY, "Reasoning capability"),
 ];
 
@@ -1013,8 +1016,9 @@ pub async fn run_antigravity_native_e2e(
     // The antigravity login provider has a single fixed id; accept any alias the
     // caller passed (e.g. "antigravity") and normalize to the canonical id.
     let _ = ideocode_base::auth::lifecycle::normalized_auth_provider_id(Some(provider_id));
-    let provider_label = ideocode_base::auth::lifecycle::provider_display_label(Some("antigravity"))
-        .unwrap_or_else(|| "Antigravity".to_string());
+    let provider_label =
+        ideocode_base::auth::lifecycle::provider_display_label(Some("antigravity"))
+            .unwrap_or_else(|| "Antigravity".to_string());
     let provider_id = "antigravity".to_string();
     let mut checks: Vec<DoctorCheck> = Vec::new();
 
@@ -1402,8 +1406,9 @@ impl NativeProviderKind {
                 contract: WiringContract {
                     api_method: ideocode_base::subscription_catalog::IDEOCODE_ROUTE_API_METHOD
                         .to_string(),
-                    route_provider: ideocode_base::subscription_catalog::IDEOCODE_PROVIDER_DISPLAY_NAME
-                        .to_string(),
+                    route_provider:
+                        ideocode_base::subscription_catalog::IDEOCODE_PROVIDER_DISPLAY_NAME
+                            .to_string(),
                     expected_runtime: "IDEOCODE",
                     expected_namespace: None,
                     switch_prefix: String::new(),
@@ -1436,7 +1441,9 @@ impl NativeProviderKind {
     /// Build the production runtime for this provider, pinned to no model yet.
     /// Returns an error only when the runtime cannot be constructed at all (e.g.
     /// Copilot with no credential file); model selection happens later.
-    fn build_runtime(self) -> anyhow::Result<std::sync::Arc<dyn ideocode_base::provider::Provider>> {
+    fn build_runtime(
+        self,
+    ) -> anyhow::Result<std::sync::Arc<dyn ideocode_base::provider::Provider>> {
         use anyhow::Context as _;
         use ideocode_base::provider::Provider;
         let runtime: std::sync::Arc<dyn Provider> = match self {
@@ -1487,7 +1494,9 @@ impl NativeProviderKind {
             Self::Bedrock => {
                 std::sync::Arc::new(ideocode_base::provider::bedrock::BedrockProvider::new())
             }
-            Self::IDEOCODE => std::sync::Arc::new(ideocode_base::provider::ideocode::IDEOCODEProvider::new()),
+            Self::IDEOCODE => {
+                std::sync::Arc::new(ideocode_base::provider::ideocode::IDEOCODEProvider::new())
+            }
             Self::Azure => {
                 // Azure OpenAI is the OpenRouter transport configured via Azure
                 // env; apply that env (endpoint/key/header wiring) before building
@@ -1540,8 +1549,9 @@ impl NativeProviderKind {
                 Ok("Cursor credential resolved".to_string())
             }
             Self::Copilot => {
-                let token = ideocode_base::auth::copilot::load_github_token()
-                    .context("load GitHub Copilot token (run `IDEOCODE login --provider copilot`)")?;
+                let token = ideocode_base::auth::copilot::load_github_token().context(
+                    "load GitHub Copilot token (run `IDEOCODE login --provider copilot`)",
+                )?;
                 if token.trim().is_empty() {
                     anyhow::bail!("resolved an empty GitHub Copilot token");
                 }

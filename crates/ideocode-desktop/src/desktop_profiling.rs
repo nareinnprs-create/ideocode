@@ -232,8 +232,10 @@ impl DesktopFrameProfiler {
         let mode = desktop_frame_profile_mode();
         let enabled = desktop_frame_profile_enabled(mode.as_deref());
         let log_all = desktop_frame_profile_log_all(mode.as_deref());
-        let budget =
-            duration_millis_env("IDEOCODE_DESKTOP_FRAME_BUDGET_MS", DESKTOP_120FPS_FRAME_BUDGET);
+        let budget = duration_millis_env(
+            "IDEOCODE_DESKTOP_FRAME_BUDGET_MS",
+            DESKTOP_120FPS_FRAME_BUDGET,
+        );
         Self {
             enabled,
             log_all,
@@ -475,8 +477,10 @@ impl DesktopNoPaintWatchdog {
     pub(crate) fn new_with_start_and_mode(now: Instant, mode: Option<&str>) -> Self {
         let enabled = desktop_frame_profile_enabled(mode);
         let log_all = desktop_frame_profile_log_all(mode);
-        let budget =
-            duration_millis_env("IDEOCODE_DESKTOP_NO_PAINT_BUDGET_MS", DESKTOP_NO_PAINT_BUDGET);
+        let budget = duration_millis_env(
+            "IDEOCODE_DESKTOP_NO_PAINT_BUDGET_MS",
+            DESKTOP_NO_PAINT_BUDGET,
+        );
         Self {
             enabled,
             log_all,
@@ -626,7 +630,9 @@ pub(crate) struct DesktopProfileLogLine {
 }
 
 pub(crate) fn desktop_profile_log_path() -> Option<PathBuf> {
-    if std::env::var_os("IDEOCODE_DESKTOP_PROFILE_LOG").is_some_and(|value| !env_flag_enabled(value)) {
+    if std::env::var_os("IDEOCODE_DESKTOP_PROFILE_LOG")
+        .is_some_and(|value| !env_flag_enabled(value))
+    {
         return None;
     }
     if let Some(path) = std::env::var_os("IDEOCODE_DESKTOP_PROFILE_LOG_PATH") {

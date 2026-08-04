@@ -1574,7 +1574,8 @@ async fn handle_remote_key_internal(
                 // Personality mode commands
                 if trimmed == "/personality" || trimmed == "/personality status" {
                     app.push_display_message(DisplayMessage::system(
-                        "Available modes: professional, casual, genz, academic, witty, zen".to_string(),
+                        "Available modes: professional, casual, genz, academic, witty, zen"
+                            .to_string(),
                     ));
                     return Ok(());
                 }

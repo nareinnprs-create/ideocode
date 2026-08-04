@@ -1259,8 +1259,9 @@ mod tests {
             );
             return;
         }
-        let api_key = live_cerebras_api_key()
-            .expect("IDEOCODE_AUTH_LIFECYCLE_LIVE=1 requires IDEOCODE_AUTH_LIFECYCLE_CEREBRAS_API_KEY");
+        let api_key = live_cerebras_api_key().expect(
+            "IDEOCODE_AUTH_LIFECYCLE_LIVE=1 requires IDEOCODE_AUTH_LIFECYCLE_CEREBRAS_API_KEY",
+        );
 
         let spend_smoke = env_truthy("IDEOCODE_AUTH_LIFECYCLE_SMOKE");
         let stream_smoke = env_truthy("IDEOCODE_AUTH_LIFECYCLE_STREAM_SMOKE");
@@ -1704,8 +1705,9 @@ mod tests {
             );
             return;
         };
-        let profile = ideocode_base::provider_catalog::openai_compatible_profile_by_id(&provider_id)
-            .unwrap_or_else(|| panic!("unknown OpenAI-compatible profile id: {provider_id}"));
+        let profile =
+            ideocode_base::provider_catalog::openai_compatible_profile_by_id(&provider_id)
+                .unwrap_or_else(|| panic!("unknown OpenAI-compatible profile id: {provider_id}"));
         let resolved = ideocode_base::provider_catalog::resolve_openai_compatible_profile(profile);
         let api_key = live_openai_compatible_api_key(profile).unwrap_or_else(|| {
             panic!(
