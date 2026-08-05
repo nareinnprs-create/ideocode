@@ -1,16 +1,11 @@
 import { useState } from "react";
 import { ChevronRight, ChevronLeft, Check, Sparkles } from "lucide-react";
 import { updateSettings } from "../../lib/tauri-commands";
-import type { AppSettings, Theme } from "../../lib/tauri-commands";
+import type { AppSettings } from "../../lib/tauri-commands";
+import { THEMES, type Theme } from "../../lib/theme-registry";
 import { useAppStore } from "../../stores/appStore";
 
 type Step = "welcome" | "theme" | "provider" | "done";
-
-const THEMES = [
-  { id: "midnight", label: "Midnight Noir", desc: "Dark with indigo accents", class: "bg-[#0a0a0f] border-indigo-500" },
-  { id: "dark", label: "Dark", desc: "Classic dark theme", class: "bg-[#1e1e2e] border-blue-500" },
-  { id: "light", label: "Light", desc: "Clean light theme", class: "bg-[#ffffff] border-gray-300" },
-] as const;
 
 const PROVIDERS = [
   { id: "baanzon-verso", label: "Baanzon Verso", models: "Built-in AI (auto routing)" },
@@ -127,13 +122,18 @@ export function OnboardingWizard({ onComplete }: Props) {
                   onClick={() => chooseTheme(t.id)}
                   className={`p-3 rounded-xl border-2 transition-all text-left
                     ${theme === t.id
-                      ? `${t.class} border-2 shadow-glow-primary`
+                      ? "border-accent-primary shadow-glow-primary"
                       : "border-border-subtle hover:border-text-muted"
                     }`}
                 >
-                  <div className={`h-16 rounded-lg mb-2 ${t.class.split(" ")[0]} border border-border-subtle`} />
+                  <div
+                    className="h-16 rounded-lg mb-2 border border-border-subtle"
+                    style={{
+                      background: `linear-gradient(135deg, ${t.bg} 0%, ${t.bgSecondary} 60%, ${t.accent} 130%)`,
+                    }}
+                  />
                   <div className="text-xs font-medium text-text-primary">{t.label}</div>
-                  <div className="text-[10px] text-text-muted">{t.desc}</div>
+                  <div className="text-[10px] text-text-muted">{t.description}</div>
                 </button>
               ))}
             </div>

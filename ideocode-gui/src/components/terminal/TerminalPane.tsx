@@ -1,15 +1,56 @@
 import { useEffect, useRef } from "react";
 import { Terminal } from "@xterm/xterm";
+import type { ITheme } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { Command } from "@tauri-apps/plugin-shell";
 import "@xterm/xterm/css/xterm.css";
 import { useFileStore } from "../../stores/fileStore";
+import { useAppStore } from "../../stores/appStore";
+import type { Theme } from "../../lib/theme-registry";
+import { getThemeColors } from "../../lib/theme-palettes";
 
 interface Props {
   visible: boolean;
 }
 
 let isWindows: boolean | null = null;
+
+function hex8ToRgba(hex: string): string {
+  const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
+  if (!m) return hex;
+  const r = parseInt(m[1], 16);
+  const g = parseInt(m[2], 16);
+  const b = parseInt(m[3], 16);
+  const a = parseInt(m[4], 16) / 255;
+  return `rgba(${r}, ${g}, ${b}, ${a.toFixed(3)})`;
+}
+
+function xtermTheme(themeId: Theme): ITheme {
+  const c = getThemeColors(themeId);
+  return {
+    background: c.bg,
+    foreground: c.fg,
+    cursor: c.accent,
+    cursorAccent: c.bg,
+    selectionBackground: hex8ToRgba(c.selection),
+    black: "#000000",
+    red: c.error,
+    green: c.success,
+    yellow: c.warning,
+    blue: c.accent,
+    magenta: c.accentSecondary,
+    cyan: c.info,
+    white: c.fg,
+    brightBlack: c.textMuted,
+    brightRed: c.error,
+    brightGreen: c.success,
+    brightYellow: c.warning,
+    brightBlue: c.accentSecondary,
+    brightMagenta: c.accentTertiary,
+    brightCyan: c.info,
+    brightWhite: c.fg,
+  };
+}
 
 function getShell(): [string, string[]] {
   if (isWindows === true) {
@@ -25,6 +66,12 @@ export function TerminalPane({ visible }: Props) {
   const rootPath = useFileStore((s) => s.rootPath);
   const rootPathRef = useRef(rootPath);
   const disposedRef = useRef(false);
+  const theme = useAppStore((s) => s.theme);
+  const themeRef = useRef(theme);
+
+  useEffect(() => {
+    themeRef.current = theme;
+  }, [theme]);
 
   useEffect(() => {
     rootPathRef.current = rootPath;
@@ -38,28 +85,7 @@ export function TerminalPane({ visible }: Props) {
     if (!terminalRef.current || xtermRef.current) return;
 
     const term = new Terminal({
-      theme: {
-        background: "#0a0a0f",
-        foreground: "#e8e8f0",
-        cursor: "#6366f1",
-        selectionBackground: "#6366f140",
-        black: "#000000",
-        red: "#ef4444",
-        green: "#22c55e",
-        yellow: "#f59e0b",
-        blue: "#6366f1",
-        magenta: "#a78bfa",
-        cyan: "#22d3ee",
-        white: "#e8e8f0",
-        brightBlack: "#6a6a82",
-        brightRed: "#ef4444",
-        brightGreen: "#22c55e",
-        brightYellow: "#f59e0b",
-        brightBlue: "#818cf8",
-        brightMagenta: "#c4b5fd",
-        brightCyan: "#67e8f9",
-        brightWhite: "#f8f8ff",
-      },
+      theme: xtermTheme(themeRef.current),
       fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
       fontSize: 13,
       cursorBlink: true,
@@ -133,6 +159,12 @@ export function TerminalPane({ visible }: Props) {
   }, []);
 
   useEffect(() => {
+    if (xtermRef.current) {
+      xtermRef.current.options.theme = xtermTheme(theme);
+    }
+  }, [theme]);
+
+  useEffect(() => {
     if (visible && fitAddonRef.current) {
       setTimeout(() => {
         try { fitAddonRef.current?.fit(); } catch {}
@@ -160,7 +192,7 @@ export function TerminalPane({ visible }: Props) {
       <div
         ref={terminalRef}
         className="flex-1 min-h-0"
-        style={{ background: "#0a0a0f" }}
+        style={{ background: getThemeColors(theme).bg }}
       />
     </div>
   );

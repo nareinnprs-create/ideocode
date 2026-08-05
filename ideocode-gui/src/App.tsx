@@ -3,6 +3,7 @@ import { AppShell } from "./components/layout/AppShell";
 import { OnboardingWizard } from "./components/onboarding/OnboardingWizard";
 import { useAppStore } from "./stores/appStore";
 import { useFileStore } from "./stores/fileStore";
+import { isTheme } from "./lib/theme-registry";
 import { isFirstLaunch, getVersion, getSettings } from "./lib/tauri-commands";
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
     getSettings()
       .then((s) => {
         const t = s.theme;
-        if (t === "dark" || t === "light" || t === "midnight") {
+        if (isTheme(t)) {
           useAppStore.getState().setTheme(t);
         }
       })

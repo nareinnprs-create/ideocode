@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAppStore } from "../../stores/appStore";
-import { getSettings, updateSettings, type Theme } from "../../lib/tauri-commands";
+import { getSettings, updateSettings } from "../../lib/tauri-commands";
+import { THEME_IDS } from "../../lib/theme-registry";
 import {
   Search,
   Settings,
@@ -96,8 +97,7 @@ export function CommandPalette() {
       case "open-settings":
         s.setRightPanel("settings"); s.setRightPanelOpen(true); break;
       case "change-theme": {
-        const order: Theme[] = ["midnight", "dark", "light"];
-        const next = order[(order.indexOf(s.theme) + 1) % order.length];
+        const next = THEME_IDS[(THEME_IDS.indexOf(s.theme) + 1) % THEME_IDS.length];
         s.setTheme(next);
         void getSettings()
           .then((settings) => updateSettings({ ...settings, theme: next }))

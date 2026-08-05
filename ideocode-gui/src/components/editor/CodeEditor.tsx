@@ -5,6 +5,7 @@ import { useFileStore } from "../../stores/fileStore";
 import { useAppStore } from "../../stores/appStore";
 import { getSettings } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
+import { defineAllMonacoThemes, monacoThemeName } from "../../lib/monaco-themes";
 
 // Configure Monaco to use the bundled files (copied to public/monaco/vs by
 // scripts/copy-monaco.mjs so the editor works fully offline and matches the
@@ -75,6 +76,10 @@ export function CodeEditor() {
     editorRef.current = editor;
   }, []);
 
+  const handleBeforeMount = useCallback((monaco: typeof import("monaco-editor")) => {
+    defineAllMonacoThemes(monaco);
+  }, []);
+
   const handleChange = useCallback(
     (value: string | undefined) => {
       setContent(value ?? "");
@@ -132,7 +137,8 @@ export function CodeEditor() {
         <Editor
           value={fileContent ?? ""}
           language={language}
-          theme={theme === "light" ? "vs-light" : "vs-dark"}
+          theme={monacoThemeName(theme)}
+          beforeMount={handleBeforeMount}
           onMount={handleMount}
           onChange={handleChange}
           options={{

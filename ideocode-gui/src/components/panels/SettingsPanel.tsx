@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { Sun, Moon, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { getSettings, updateSettings } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
+import { THEMES } from "../../lib/theme-registry";
 import { useAppStore } from "../../stores/appStore";
 
 type Tab = "appearance" | "editor" | "about";
@@ -108,26 +109,32 @@ function AppearanceTab({
     <div className="p-4 space-y-5">
       {/* Theme */}
       <Section label="Theme">
-        <div className="flex gap-2">
-          {([
-            { id: "midnight", icon: Moon, label: "Midnight" },
-            { id: "dark", icon: Moon, label: "Dark" },
-            { id: "light", icon: Sun, label: "Light" },
-          ] as const).map(({ id, icon: Icon, label }) => (
-            <button
-              key={id}
-              onClick={() => onChange({ theme: id })}
-              className={`flex flex-col items-center gap-1.5 px-4 py-3 rounded-lg border transition-fast text-xs
-                ${settings.theme === id
-                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-                  : "border-border-subtle text-text-muted hover:border-text-muted"
-                }`}
-            >
-              <Icon size={20} />
-              {label}
-            </button>
-          ))}
-        </div>
+        {(["Default", "Classic", "Cyberpunk", "Minimal"] as const).map((tier) => (
+          <div key={tier} className="mb-4 last:mb-0">
+            <div className="text-[10px] uppercase tracking-widest text-text-muted mb-2">{tier}</div>
+            <div className="grid grid-cols-3 gap-2">
+              {THEMES.filter((t) => t.tier === tier).map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => onChange({ theme: t.id })}
+                  className={`group rounded-lg border-2 transition-fast p-2 text-left
+                    ${settings.theme === t.id
+                      ? "border-accent-primary shadow-glow-primary"
+                      : "border-border-subtle hover:border-text-muted"
+                    }`}
+                >
+                  <div
+                    className="h-10 rounded-md mb-1.5 border border-border-subtle"
+                    style={{
+                      background: `linear-gradient(135deg, ${t.bg} 0%, ${t.bgSecondary} 60%, ${t.accent} 130%)`,
+                    }}
+                  />
+                  <div className="text-[10px] font-medium text-text-primary truncate">{t.label}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
       </Section>
 
       {/* Font Family */}

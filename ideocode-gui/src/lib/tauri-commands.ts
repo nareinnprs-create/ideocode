@@ -1,4 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
+import type { Theme } from "./theme-registry";
+
+export type { Theme } from "./theme-registry";
 
 // ============================================
 // Types
@@ -204,8 +207,6 @@ export async function runCargoCheck(path: string): Promise<BuildOutput> {
 // ============================================
 // Settings Commands
 // ============================================
-
-export type Theme = "dark" | "light" | "midnight";
 
 export interface AppSettings {
   theme: Theme;

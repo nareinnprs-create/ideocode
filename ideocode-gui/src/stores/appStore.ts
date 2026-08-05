@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { Theme } from "../lib/theme-registry";
 
 export type PanelId =
   | "chat"
@@ -38,8 +39,8 @@ interface AppState {
   toggleCommandPalette: () => void;
   setCommandPaletteOpen: (open: boolean) => void;
 
-  theme: "dark" | "light" | "midnight";
-  setTheme: (t: "dark" | "light" | "midnight") => void;
+  theme: Theme;
+  setTheme: (t: Theme) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
