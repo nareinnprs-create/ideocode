@@ -8,6 +8,7 @@ import {
   type Message,
   type Session,
 } from "../lib/tauri-commands";
+import { notify } from "./toastStore";
 
 interface ChatState {
   messages: Message[];
@@ -46,6 +47,7 @@ export const useChatStore = create<ChatState>((set) => ({
       }));
     } catch (e) {
       set({ loading: false, error: `Failed to send: ${e}` });
+      notify("error", "Message failed to send", `${e}`);
       return;
     }
     // The message was delivered; failing to refresh the session list is a
@@ -55,6 +57,7 @@ export const useChatStore = create<ChatState>((set) => ({
       set({ sessions });
     } catch (e) {
       set({ error: `Message sent, but session list refresh failed: ${e}` });
+      notify("warning", "Session list refresh failed", `${e}`);
     }
   },
 
@@ -93,6 +96,7 @@ export const useChatStore = create<ChatState>((set) => ({
       set((s) => ({ sessions: s.sessions.filter((x) => x.id !== id) }));
     } catch (e) {
       set({ error: `Failed to delete session: ${e}` });
+      notify("error", "Failed to delete session", `${e}`);
     }
   },
 }));

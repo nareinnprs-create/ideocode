@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { Play, RotateCw, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { runBuild, runCargoCheck } from "../../lib/tauri-commands";
 import { useFileStore } from "../../stores/fileStore";
+import { notify } from "../../stores/toastStore";
 import type { BuildOutput } from "../../lib/tauri-commands";
 
 export function BuildPanel() {
@@ -17,8 +18,14 @@ export function BuildPanel() {
     try {
       const res = await runBuild(rootPath);
       setOutput(res);
+      notify(
+        res.success ? "success" : "error",
+        res.success ? "Build passed" : "Build failed",
+        res.exit_code === -1 ? res.stderr : `exit code ${res.exit_code}`,
+      );
     } catch (e) {
       setOutput({ success: false, stdout: "", stderr: String(e), exit_code: -1 });
+      notify("error", "Build failed", `${e}`);
     }
     setLoading(false);
     setActiveTask(null);
@@ -31,8 +38,14 @@ export function BuildPanel() {
     try {
       const res = await runCargoCheck(rootPath);
       setOutput(res);
+      notify(
+        res.success ? "success" : "error",
+        res.success ? "Cargo check passed" : "Cargo check failed",
+        res.exit_code === -1 ? res.stderr : `exit code ${res.exit_code}`,
+      );
     } catch (e) {
       setOutput({ success: false, stdout: "", stderr: String(e), exit_code: -1 });
+      notify("error", "Cargo check failed", `${e}`);
     }
     setLoading(false);
     setActiveTask(null);

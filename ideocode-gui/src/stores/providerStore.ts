@@ -7,6 +7,7 @@ import {
   type Provider,
   type ProviderStatus,
 } from "../lib/tauri-commands";
+import { notify } from "./toastStore";
 
 interface ProviderState {
   providers: Provider[];
@@ -50,8 +51,10 @@ export const useProviderStore = create<ProviderState>((set, get) => ({
       settings.active_model = modelId;
       await updateSettings(settings);
       await get().loadStatus();
+      notify("success", "Active provider updated", `${providerId} · ${modelId}`);
     } catch (e) {
       set({ error: `Failed to set active provider: ${e}` });
+      notify("error", "Failed to set active provider", `${e}`);
     }
   },
 }));

@@ -4,6 +4,7 @@ import { getSettings, updateSettings } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
 import { THEMES } from "../../lib/theme-registry";
 import { useAppStore } from "../../stores/appStore";
+import { notify } from "../../stores/toastStore";
 
 type Tab = "appearance" | "editor" | "about";
 
@@ -45,7 +46,10 @@ export function SettingsPanel() {
           setSaved(true);
           setTimeout(() => setSaved(false), 2000);
         })
-        .catch((e) => setError(`Failed to save settings: ${e}`));
+        .catch((e) => {
+          setError(`Failed to save settings: ${e}`);
+          notify("error", "Failed to save settings", `${e}`);
+        });
     }, 300);
   };
 

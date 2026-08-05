@@ -5,6 +5,7 @@ import {
   writeFile,
   type FileNode,
 } from "../lib/tauri-commands";
+import { notify } from "./toastStore";
 
 interface FileState {
   rootPath: string;
@@ -78,8 +79,10 @@ export const useFileStore = create<FileState>((set, get) => ({
     try {
       await writeFile(selectedFile, fileContent);
       set({ dirty: false });
+      notify("success", "File saved", selectedFile.split(/[/\\]/).pop());
     } catch (e) {
       set({ error: `Failed to save file: ${e}` });
+      notify("error", "Failed to save file", `${e}`);
     }
   },
 }));

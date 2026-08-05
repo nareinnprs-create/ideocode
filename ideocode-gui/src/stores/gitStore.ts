@@ -5,6 +5,7 @@ import {
   gitCommit as tauriGitCommit,
   type GitStatus,
 } from "../lib/tauri-commands";
+import { notify } from "./toastStore";
 
 interface GitState {
   status: GitStatus | null;
@@ -46,8 +47,10 @@ export const useGitStore = create<GitState>((set) => ({
       await tauriGitCommit(path, message);
     } catch (e) {
       set({ error: `Git commit failed: ${e}` });
+      notify("error", "Git commit failed", `${e}`);
       return;
     }
+    notify("success", "Changes committed", message);
     // The commit itself succeeded; a failure to refresh status afterwards is a
     // separate, non-fatal error and must not be reported as a failed commit.
     try {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useChatStore } from "../../stores/chatStore";
 import { MessageSquare, Trash2, Search, Clock, Tag, Download } from "lucide-react";
 import { exportSession } from "../../lib/tauri-commands";
+import { notify } from "../../stores/toastStore";
 import type { Session } from "../../lib/tauri-commands";
 
 export function SessionHistory() {
@@ -138,7 +139,7 @@ function SessionCard({ session }: { session: Session }) {
               URL.revokeObjectURL(url);
             } catch (err) {
               console.error("Export failed:", err);
-              alert(`Export failed: ${err}`);
+              notify("error", "Export failed", `${err}`);
             }
           }}
           className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-accent-primary transition-fast"

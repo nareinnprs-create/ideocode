@@ -6,6 +6,7 @@ import {
   deleteMemory as tauriDeleteMemory,
   type MemoryEntry,
 } from "../lib/tauri-commands";
+import { notify } from "./toastStore";
 
 interface MemoryState {
   entries: MemoryEntry[];
@@ -49,8 +50,10 @@ export const useMemoryStore = create<MemoryState>((set, get) => ({
     try {
       await tauriStoreMemory(content, tags, category);
       await get().loadMemories();
+      notify("success", "Memory saved");
     } catch (e) {
       set({ error: `Failed to store memory: ${e}` });
+      notify("error", "Failed to store memory", `${e}`);
     }
   },
 
@@ -60,6 +63,7 @@ export const useMemoryStore = create<MemoryState>((set, get) => ({
       set((s) => ({ entries: s.entries.filter((e) => e.id !== id) }));
     } catch (e) {
       set({ error: `Failed to delete memory: ${e}` });
+      notify("error", "Failed to delete memory", `${e}`);
     }
   },
 

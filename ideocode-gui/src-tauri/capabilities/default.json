@@ -15,7 +15,10 @@
         { "name": "bash", "cmd": "bash", "args": true },
         { "name": "zsh", "cmd": "zsh", "args": true },
         { "name": "pwsh", "cmd": "pwsh", "args": true },
-        { "name": "powershell", "cmd": "powershell", "args": true }
+        { "name": "powershell", "cmd": "powershell", "args": true },
+        { "name": "cargo", "cmd": "cargo", "args": true },
+        { "name": "npm", "cmd": "npm", "args": true },
+        { "name": "node", "cmd": "node", "args": true }
       ]
     },
     {
@@ -27,7 +30,10 @@
         { "name": "bash", "cmd": "bash", "args": true },
         { "name": "zsh", "cmd": "zsh", "args": true },
         { "name": "pwsh", "cmd": "pwsh", "args": true },
-        { "name": "powershell", "cmd": "powershell", "args": true }
+        { "name": "powershell", "cmd": "powershell", "args": true },
+        { "name": "cargo", "cmd": "cargo", "args": true },
+        { "name": "npm", "cmd": "npm", "args": true },
+        { "name": "node", "cmd": "node", "args": true }
       ]
     }
   ]

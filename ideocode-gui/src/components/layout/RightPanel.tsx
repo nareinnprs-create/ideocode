@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { useAppStore } from "../../stores/appStore";
+import { ErrorBoundary } from "../ErrorBoundary";
 import { X } from "lucide-react";
 import { FileExplorer } from "../panels/FileExplorer";
 import { GitPanel } from "../panels/GitPanel";
@@ -60,31 +61,37 @@ export function RightPanel() {
 }
 
 function PanelContent({ panel }: { panel: string }) {
+  const wrapped = (node: React.ReactNode) => (
+    <ErrorBoundary key={panel} variant="panel">
+      {node}
+    </ErrorBoundary>
+  );
+
   switch (panel) {
     case "files":
-      return <FileExplorer />;
+      return wrapped(<FileExplorer />);
     case "git":
-      return <GitPanel />;
+      return wrapped(<GitPanel />);
     case "search":
-      return <SearchPanel />;
+      return wrapped(<SearchPanel />);
     case "providers":
-      return <ProviderPanel />;
+      return wrapped(<ProviderPanel />);
     case "terminal":
-      return <TerminalPane visible={true} />;
+      return wrapped(<TerminalPane visible={true} />);
     case "sessions":
-      return <SessionHistory />;
+      return wrapped(<SessionHistory />);
     case "build":
-      return <BuildPanel />;
+      return wrapped(<BuildPanel />);
     case "debug":
-      return <DebugPanel />;
+      return wrapped(<DebugPanel />);
     case "settings":
-      return <SettingsPanel />;
+      return wrapped(<SettingsPanel />);
     case "memory":
-      return <MemoryPanel />;
+      return wrapped(<MemoryPanel />);
     case "issues":
-      return <IssuePanel />;
+      return wrapped(<IssuePanel />);
     case "browser":
-      return <BrowserPanel />;
+      return wrapped(<BrowserPanel />);
     default:
       return (
         <div className="p-4 text-text-muted text-xs text-center">

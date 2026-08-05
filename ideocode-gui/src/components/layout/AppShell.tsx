@@ -4,6 +4,8 @@ import { EditorPane } from "./EditorPane";
 import { RightPanel } from "./RightPanel";
 import { StatusBar } from "./StatusBar";
 import { CommandPalette } from "../chat/CommandPalette";
+import { ToastHost } from "./ToastHost";
+import { ErrorBoundary } from "../ErrorBoundary";
 import { useKeyboard } from "../../hooks/useKeyboard";
 
 export function AppShell() {
@@ -14,12 +16,21 @@ export function AppShell() {
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden">
       <div className="flex flex-1 min-h-0">
-        {sidebarOpen && <Sidebar />}
-        <EditorPane />
-        {rightPanelOpen && <RightPanel />}
+        <ErrorBoundary variant="panel">
+          {sidebarOpen && <Sidebar />}
+        </ErrorBoundary>
+        <ErrorBoundary variant="panel">
+          <EditorPane />
+        </ErrorBoundary>
+        <ErrorBoundary variant="panel">
+          {rightPanelOpen && <RightPanel />}
+        </ErrorBoundary>
       </div>
-      <StatusBar />
+      <ErrorBoundary variant="panel">
+        <StatusBar />
+      </ErrorBoundary>
       <CommandPalette />
+      <ToastHost />
     </div>
   );
 }
