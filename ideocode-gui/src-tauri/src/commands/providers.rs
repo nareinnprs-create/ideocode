@@ -184,3 +184,8 @@ pub fn get_provider_status() -> ProviderStatus {
         api_key_configured,
     }
 }
+
+#[tauri::command]
+pub async fn gateway_status() -> crate::gateway::GatewayStatus {
+    crate::gateway::gateway_status().await
+}

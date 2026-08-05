@@ -15,6 +15,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::time::{Duration, Instant};
 
+use serde::{Deserialize, Serialize};
+
 /// The engine listens on port 20128 of the local machine.
 pub const OMNIROUTE_PORT: u16 = 20128;
 /// Where the engine's OpenAI-compatible API is exposed.
@@ -420,4 +422,32 @@ pub fn spawn_supervisor() {
             }
         })
         .ok();
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GatewayStatus {
+    pub engine: String,
+    pub online: bool,
+    pub disabled: bool,
+    pub installing: bool,
+    pub port: u16,
+    pub base_url: String,
+}
+
+/// Reports the live state of the built-in Baanzon Verso engine so UI surfaces
+/// (provider panel, status bar) can show ONLINE / starting / offline instead of
+/// failing silently when the engine is cold-starting on first launch.
+pub async fn gateway_status() -> GatewayStatus {
+    let disabled = std::env::var_os("IDEOCODE_DISABLE_BAANZON_GATEWAY").is_some();
+    let online = tokio::task::spawn_blocking(gateway_healthy)
+        .await
+        .unwrap_or(false);
+    GatewayStatus {
+        engine: "Baanzon Verso".to_string(),
+        online,
+        disabled,
+        installing: !disabled && !online && !is_vendored_installed(),
+        port: OMNIROUTE_PORT,
+        base_url: OMNIROUTE_BASE_URL.to_string(),
+    }
 }

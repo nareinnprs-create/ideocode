@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { useProviderStore } from "../../stores/providerStore";
 import { useAppStore } from "../../stores/appStore";
-import { Cpu, Check, ArrowLeft, RefreshCw, Eye, EyeOff } from "lucide-react";
+import { getGatewayStatus, type GatewayStatus } from "../../lib/tauri-commands";
+import { Cpu, Check, ArrowLeft, RefreshCw, Eye, EyeOff, Zap } from "lucide-react";
 
 export function ProviderPanel() {
   const { providers, status, loading, error, loadProviders, loadStatus, setActiveProvider } =
@@ -10,6 +11,7 @@ export function ProviderPanel() {
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
+  const [gateway, setGateway] = useState<GatewayStatus | null>(null);
   const loadingTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
   useEffect(() => {
@@ -28,6 +30,24 @@ export function ProviderPanel() {
   useEffect(() => {
     if (!loading) setTimedOut(false);
   }, [loading]);
+
+  useEffect(() => {
+    let active = true;
+    const poll = async () => {
+      try {
+        const status = await getGatewayStatus();
+        if (active) setGateway(status);
+      } catch {
+        // transient IPC failure; keep last known state
+      }
+    };
+    void poll();
+    const id = setInterval(poll, 10000);
+    return () => {
+      active = false;
+      clearInterval(id);
+    };
+  }, []);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -108,6 +128,31 @@ export function ProviderPanel() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Built-in engine status */}
+      {gateway && (
+        <div
+          className="px-3 py-2 border-b border-border-subtle flex items-center gap-2"
+          title={gateway.disabled ? "Baanzon Verso is disabled via IDEOCODE_DISABLE_BAANZON_GATEWAY" : gateway.base_url}
+        >
+          <Zap
+            size={14}
+            className={
+              gateway.online ? "text-success" : gateway.installing ? "text-warning" : "text-error"
+            }
+          />
+          <span className="text-xs font-medium text-text-primary flex-1">{gateway.engine}</span>
+          <span className="text-[10px] text-text-muted font-mono">
+            {gateway.online
+              ? "ONLINE"
+              : gateway.installing
+                ? "starting"
+                : gateway.disabled
+                  ? "disabled"
+                  : "offline"}
+          </span>
         </div>
       )}
 

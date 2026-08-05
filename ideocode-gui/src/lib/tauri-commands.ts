@@ -196,6 +196,19 @@ export async function getProviderStatus(): Promise<ProviderStatus> {
   return invoke<ProviderStatus>("get_provider_status");
 }
 
+export interface GatewayStatus {
+  engine: string;
+  online: boolean;
+  disabled: boolean;
+  installing: boolean;
+  port: number;
+  base_url: string;
+}
+
+export async function getGatewayStatus(): Promise<GatewayStatus> {
+  return invoke<GatewayStatus>("gateway_status");
+}
+
 export async function runBuild(path: string): Promise<BuildOutput> {
   return invoke<BuildOutput>("run_build", { path });
 }

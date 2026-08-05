@@ -93,6 +93,7 @@ fn main() {
             commands::run_cargo_check,
             commands::list_providers,
             commands::get_provider_status,
+            commands::gateway_status,
             commands::get_settings,
             commands::update_settings,
             commands::is_first_launch,
