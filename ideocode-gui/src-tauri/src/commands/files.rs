@@ -43,7 +43,11 @@ pub fn get_file_tree(path: String, depth: usize) -> Result<Vec<FileNode>, String
     build_tree(&root, depth, 0)
 }
 
-fn build_tree(path: &PathBuf, max_depth: usize, current_depth: usize) -> Result<Vec<FileNode>, String> {
+fn build_tree(
+    path: &PathBuf,
+    max_depth: usize,
+    current_depth: usize,
+) -> Result<Vec<FileNode>, String> {
     let mut entries: Vec<FileNode> = Vec::new();
     let read_dir = std::fs::read_dir(path).map_err(|e| e.to_string())?;
 
@@ -81,9 +85,7 @@ fn build_tree(path: &PathBuf, max_depth: usize, current_depth: usize) -> Result<
 
     entries.sort_by(|a, b| {
         // Directories first, then alphabetically
-        b.is_dir
-            .cmp(&a.is_dir)
-            .then_with(|| a.name.cmp(&b.name))
+        b.is_dir.cmp(&a.is_dir).then_with(|| a.name.cmp(&b.name))
     });
 
     Ok(entries)

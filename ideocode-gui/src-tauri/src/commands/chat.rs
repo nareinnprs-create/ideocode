@@ -83,8 +83,16 @@ fn save_session(state: &ChatState) {
         return;
     }
     let _ = std::fs::create_dir_all(&dir);
-    let session_id = state.current_session_id.lock().unwrap_or_else(|e| e.into_inner()).clone();
-    let messages = state.messages.lock().unwrap_or_else(|e| e.into_inner()).clone();
+    let session_id = state
+        .current_session_id
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .clone();
+    let messages = state
+        .messages
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .clone();
     let now = now_ms() / 1000;
     let value = serde_json::json!({
         "id": session_id,
@@ -129,7 +137,10 @@ async fn extract_openai_completion(resp: reqwest::Response) -> Result<String, St
     let status = resp.status();
     let text = resp.text().await.map_err(|e| e.to_string())?;
     if !status.is_success() {
-        return Err(format!("Engine returned HTTP {status}: {}", truncate(&text)));
+        return Err(format!(
+            "Engine returned HTTP {status}: {}",
+            truncate(&text)
+        ));
     }
     let v: serde_json::Value =
         serde_json::from_str(&text).map_err(|e| format!("Invalid response from engine: {e}"))?;
@@ -151,7 +162,10 @@ async fn chat_completion(
     match provider {
         // Built-in local engine (OpenAI-compatible endpoint).
         "baanzon-verso" | "omniroute" => {
-            let url = format!("{}/chat/completions", crate::gateway::OMNIROUTE_BASE_URL);
+            let url = format!(
+                "{}/chat/completions",
+                ideocode_provider_baanzon::OMNIROUTE_BASE_URL
+            );
             let body = serde_json::json!({
                 "model": if model.is_empty() || model == "auto" { "auto" } else { model },
                 "messages": messages,
@@ -166,8 +180,9 @@ async fn chat_completion(
             extract_openai_completion(resp).await
         }
         "openai" => {
-            let key = std::env::var("OPENAI_API_KEY")
-                .map_err(|_| "OPENAI_API_KEY is not set. Set it in your environment to use OpenAI.".to_string())?;
+            let key = std::env::var("OPENAI_API_KEY").map_err(|_| {
+                "OPENAI_API_KEY is not set. Set it in your environment to use OpenAI.".to_string()
+            })?;
             let body = serde_json::json!({ "model": model, "messages": messages });
             let resp = client
                 .post("https://api.openai.com/v1/chat/completions")
@@ -179,8 +194,10 @@ async fn chat_completion(
             extract_openai_completion(resp).await
         }
         "anthropic" => {
-            let key = std::env::var("ANTHROPIC_API_KEY")
-                .map_err(|_| "ANTHROPIC_API_KEY is not set. Set it in your environment to use Anthropic.".to_string())?;
+            let key = std::env::var("ANTHROPIC_API_KEY").map_err(|_| {
+                "ANTHROPIC_API_KEY is not set. Set it in your environment to use Anthropic."
+                    .to_string()
+            })?;
             let anthropic_messages: Vec<serde_json::Value> = messages
                 .iter()
                 .filter_map(|m| {
@@ -210,10 +227,13 @@ async fn chat_completion(
             let status = resp.status();
             let text = resp.text().await.map_err(|e| e.to_string())?;
             if !status.is_success() {
-                return Err(format!("Anthropic returned HTTP {status}: {}", truncate(&text)));
+                return Err(format!(
+                    "Anthropic returned HTTP {status}: {}",
+                    truncate(&text)
+                ));
             }
-            let v: serde_json::Value =
-                serde_json::from_str(&text).map_err(|e| format!("Invalid Anthropic response: {e}"))?;
+            let v: serde_json::Value = serde_json::from_str(&text)
+                .map_err(|e| format!("Invalid Anthropic response: {e}"))?;
             let content = v
                 .pointer("/content/0/text")
                 .and_then(|c| c.as_str())
@@ -221,8 +241,9 @@ async fn chat_completion(
             Ok(content.to_string())
         }
         "gemini" => {
-            let key = std::env::var("GOOGLE_API_KEY")
-                .map_err(|_| "GOOGLE_API_KEY is not set. Set it in your environment to use Gemini.".to_string())?;
+            let key = std::env::var("GOOGLE_API_KEY").map_err(|_| {
+                "GOOGLE_API_KEY is not set. Set it in your environment to use Gemini.".to_string()
+            })?;
             let contents: Vec<serde_json::Value> = messages
                 .iter()
                 .filter_map(|m| {
@@ -249,7 +270,10 @@ async fn chat_completion(
             let status = resp.status();
             let text = resp.text().await.map_err(|e| e.to_string())?;
             if !status.is_success() {
-                return Err(format!("Gemini returned HTTP {status}: {}", truncate(&text)));
+                return Err(format!(
+                    "Gemini returned HTTP {status}: {}",
+                    truncate(&text)
+                ));
             }
             let v: serde_json::Value =
                 serde_json::from_str(&text).map_err(|e| format!("Invalid Gemini response: {e}"))?;
@@ -260,8 +284,10 @@ async fn chat_completion(
             Ok(content.to_string())
         }
         "openrouter" => {
-            let key = std::env::var("OPENROUTER_API_KEY")
-                .map_err(|_| "OPENROUTER_API_KEY is not set. Set it in your environment to use OpenRouter.".to_string())?;
+            let key = std::env::var("OPENROUTER_API_KEY").map_err(|_| {
+                "OPENROUTER_API_KEY is not set. Set it in your environment to use OpenRouter."
+                    .to_string()
+            })?;
             let body = serde_json::json!({ "model": model, "messages": messages });
             let resp = client
                 .post("https://openrouter.ai/api/v1/chat/completions")
@@ -286,7 +312,11 @@ pub async fn send_message(content: String, state: State<'_, ChatState>) -> Resul
         timestamp: Some(now_ms()),
     };
 
-    state.messages.lock().unwrap_or_else(|e| e.into_inner()).push(user_msg.clone());
+    state
+        .messages
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .push(user_msg.clone());
 
     let history: Vec<Message> = state
         .messages
@@ -332,14 +362,25 @@ pub async fn send_message(content: String, state: State<'_, ChatState>) -> Resul
 
 #[tauri::command]
 pub fn get_messages(state: State<'_, ChatState>) -> Vec<Message> {
-    state.messages.lock().unwrap_or_else(|e| e.into_inner()).clone()
+    state
+        .messages
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .clone()
 }
 
 #[tauri::command]
 pub fn clear_messages(state: State<'_, ChatState>) {
-    state.messages.lock().unwrap_or_else(|e| e.into_inner()).clear();
+    state
+        .messages
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .clear();
     // Reset session ID
-    *state.current_session_id.lock().unwrap_or_else(|e| e.into_inner()) = new_id();
+    *state
+        .current_session_id
+        .lock()
+        .unwrap_or_else(|e| e.into_inner()) = new_id();
 }
 
 #[tauri::command]
@@ -364,7 +405,12 @@ pub fn list_sessions() -> Vec<Session> {
         .map(|entries| {
             entries
                 .filter_map(|e| e.ok())
-                .filter(|e| e.path().extension().map(|ext| ext == "json").unwrap_or(false))
+                .filter(|e| {
+                    e.path()
+                        .extension()
+                        .map(|ext| ext == "json")
+                        .unwrap_or(false)
+                })
                 .filter_map(|e| {
                     let content = std::fs::read_to_string(e.path()).ok()?;
                     let parsed: serde_json::Value = serde_json::from_str(&content).ok()?;
@@ -404,15 +450,15 @@ pub fn list_sessions() -> Vec<Session> {
         })
         .unwrap_or_default();
 
-    sessions.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+    sessions.sort_by_key(|s| std::cmp::Reverse(s.updated_at));
     sessions
 }
 
 #[tauri::command]
 pub fn export_session(id: String, format: String) -> Result<String, String> {
     let path = sessions_dir().join(format!("{}.json", super::sanitize_id(&id)));
-    let content = std::fs::read_to_string(&path)
-        .map_err(|e| format!("Failed to read session: {}", e))?;
+    let content =
+        std::fs::read_to_string(&path).map_err(|e| format!("Failed to read session: {}", e))?;
     let parsed: serde_json::Value =
         serde_json::from_str(&content).map_err(|e| format!("Invalid session JSON: {}", e))?;
 
@@ -430,10 +476,7 @@ pub fn export_session(id: String, format: String) -> Result<String, String> {
                         .get("role")
                         .and_then(|v| v.as_str())
                         .unwrap_or("unknown");
-                    let text = msg
-                        .get("content")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("");
+                    let text = msg.get("content").and_then(|v| v.as_str()).unwrap_or("");
                     md += &format!("## {}\n\n{}\n\n", role, text);
                 }
             }

@@ -2,6 +2,7 @@
 // R&D by Opraiz Cognitive
 // Developer: Narein Rao
 // SPDX-License-Identifier: MIT
+use ideocode_provider_baanzon::GatewayStatus;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -39,21 +40,88 @@ pub fn list_providers() -> Vec<Provider> {
             name: "Baanzon Verso".into(),
             api_key_env: "OMNIROUTE_API_KEY".into(),
             is_configured: true,
-            models: vec![Model {
-                id: "auto".into(),
-                name: "Baanzon Verso (auto)".into(),
-                max_tokens: 128000,
-                supports_vision: true,
-                supports_tools: true,
-                cost_per_1k_input: None,
-                cost_per_1k_output: None,
-            }],
+            models: vec![
+                Model {
+                    id: "auto".into(),
+                    name: "Baanzon Verso (auto)".into(),
+                    max_tokens: 128000,
+                    supports_vision: true,
+                    supports_tools: true,
+                    cost_per_1k_input: None,
+                    cost_per_1k_output: None,
+                },
+                Model {
+                    id: "openrouter".into(),
+                    name: "OpenRouter (Free)".into(),
+                    max_tokens: 128000,
+                    supports_vision: true,
+                    supports_tools: true,
+                    cost_per_1k_input: None,
+                    cost_per_1k_output: None,
+                },
+                Model {
+                    id: "opencode_zen".into(),
+                    name: "OpenCode Zen (Free)".into(),
+                    max_tokens: 128000,
+                    supports_vision: true,
+                    supports_tools: true,
+                    cost_per_1k_input: None,
+                    cost_per_1k_output: None,
+                },
+                Model {
+                    id: "opencode_free".into(),
+                    name: "OpenCode Free".into(),
+                    max_tokens: 128000,
+                    supports_vision: true,
+                    supports_tools: true,
+                    cost_per_1k_input: None,
+                    cost_per_1k_output: None,
+                },
+                Model {
+                    id: "gemini".into(),
+                    name: "Gemini (Google AI Studio)".into(),
+                    max_tokens: 1000000,
+                    supports_vision: true,
+                    supports_tools: true,
+                    cost_per_1k_input: None,
+                    cost_per_1k_output: None,
+                },
+                Model {
+                    id: "felo".into(),
+                    name: "Felo (Free)".into(),
+                    max_tokens: 128000,
+                    supports_vision: true,
+                    supports_tools: true,
+                    cost_per_1k_input: None,
+                    cost_per_1k_output: None,
+                },
+                Model {
+                    id: "groq".into(),
+                    name: "Groq (Free)".into(),
+                    max_tokens: 128000,
+                    supports_vision: false,
+                    supports_tools: true,
+                    cost_per_1k_input: None,
+                    cost_per_1k_output: None,
+                },
+                Model {
+                    id: "anthropic".into(),
+                    name: "Anthropic (Free)".into(),
+                    max_tokens: 200000,
+                    supports_vision: true,
+                    supports_tools: true,
+                    cost_per_1k_input: None,
+                    cost_per_1k_output: None,
+                },
+            ],
         },
         Provider {
             id: "openai".into(),
             name: "OpenAI".into(),
             api_key_env: "OPENAI_API_KEY".into(),
-            is_configured: std::env::var("OPENAI_API_KEY").map(|k| !k.is_empty()).unwrap_or(false),
+            is_configured: std::env::var("OPENAI_API_KEY")
+                .map(|k| !k.is_empty())
+                .unwrap_or(false),
             models: vec![
                 Model {
                     id: "gpt-4o".into(),
@@ -85,10 +153,12 @@ pub fn list_providers() -> Vec<Provider> {
             ],
         },
         Provider {
-            id: "anthropic".into(),
+            id: "anthropic-api".into(),
             name: "Anthropic".into(),
             api_key_env: "ANTHROPIC_API_KEY".into(),
-            is_configured: std::env::var("ANTHROPIC_API_KEY").map(|k| !k.is_empty()).unwrap_or(false),
+            is_configured: std::env::var("ANTHROPIC_API_KEY")
+                .map(|k| !k.is_empty())
+                .unwrap_or(false),
             models: vec![
                 Model {
                     id: "claude-sonnet-4-20250514".into(),
@@ -111,10 +181,12 @@ pub fn list_providers() -> Vec<Provider> {
             ],
         },
         Provider {
-            id: "gemini".into(),
+            id: "gemini-api".into(),
             name: "Google Gemini".into(),
             api_key_env: "GOOGLE_API_KEY".into(),
-            is_configured: std::env::var("GOOGLE_API_KEY").map(|k| !k.is_empty()).unwrap_or(false),
+            is_configured: std::env::var("GOOGLE_API_KEY")
+                .map(|k| !k.is_empty())
+                .unwrap_or(false),
             models: vec![
                 Model {
                     id: "gemini-2.5-pro".into(),
@@ -137,10 +209,12 @@ pub fn list_providers() -> Vec<Provider> {
             ],
         },
         Provider {
-            id: "openrouter".into(),
+            id: "openrouter-api".into(),
             name: "OpenRouter".into(),
             api_key_env: "OPENROUTER_API_KEY".into(),
-            is_configured: std::env::var("OPENROUTER_API_KEY").map(|k| !k.is_empty()).unwrap_or(false),
+            is_configured: std::env::var("OPENROUTER_API_KEY")
+                .map(|k| !k.is_empty())
+                .unwrap_or(false),
             models: vec![
                 Model {
                     id: "anthropic/claude-sonnet-4".into(),
@@ -167,25 +241,28 @@ pub fn list_providers() -> Vec<Provider> {
 
 #[tauri::command]
 pub fn get_provider_status() -> ProviderStatus {
-    let active_provider = std::env::var("IDEOCODE_PROVIDER")
-        .unwrap_or_else(|_| "baanzon-verso".into());
+    let active_provider =
+        std::env::var("IDEOCODE_PROVIDER").unwrap_or_else(|_| "baanzon-verso".into());
     let active_provider = if active_provider == "omniroute" {
         "baanzon-verso".into()
     } else {
         active_provider
     };
     let api_key_configured = active_provider == "baanzon-verso"
-        || std::env::var("OPENAI_API_KEY").map(|k| !k.is_empty()).unwrap_or(false)
-        || std::env::var("ANTHROPIC_API_KEY").map(|k| !k.is_empty()).unwrap_or(false);
+        || std::env::var("OPENAI_API_KEY")
+            .map(|k| !k.is_empty())
+            .unwrap_or(false)
+        || std::env::var("ANTHROPIC_API_KEY")
+            .map(|k| !k.is_empty())
+            .unwrap_or(false);
     ProviderStatus {
         active_provider,
-        active_model: std::env::var("IDEOCODE_MODEL")
-            .unwrap_or_else(|_| "auto".into()),
+        active_model: std::env::var("IDEOCODE_MODEL").unwrap_or_else(|_| "auto".into()),
         api_key_configured,
     }
 }
 
 #[tauri::command]
-pub async fn gateway_status() -> crate::gateway::GatewayStatus {
-    crate::gateway::gateway_status().await
+pub async fn gateway_status() -> GatewayStatus {
+    ideocode_provider_baanzon::gateway_status().await
 }

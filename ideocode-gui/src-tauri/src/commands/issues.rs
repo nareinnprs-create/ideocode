@@ -48,7 +48,12 @@ fn load_issues() -> Vec<Issue> {
     let mut issues = Vec::new();
     if let Ok(read) = std::fs::read_dir(&dir) {
         for entry in read.flatten() {
-            if entry.path().extension().map(|e| e == "json").unwrap_or(false) {
+            if entry
+                .path()
+                .extension()
+                .map(|e| e == "json")
+                .unwrap_or(false)
+            {
                 if let Ok(content) = std::fs::read_to_string(entry.path()) {
                     if let Ok(parsed) = serde_json::from_str::<Issue>(&content) {
                         issues.push(parsed);
@@ -57,7 +62,7 @@ fn load_issues() -> Vec<Issue> {
             }
         }
     }
-    issues.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+    issues.sort_by_key(|i| std::cmp::Reverse(i.updated_at));
     issues
 }
 
@@ -102,7 +107,11 @@ pub fn search_issues(query: String) -> Vec<Issue> {
 }
 
 #[tauri::command]
-pub fn fetch_github_issues(owner: String, repo: String, token: String) -> Result<FetchResult, String> {
+pub fn fetch_github_issues(
+    owner: String,
+    repo: String,
+    token: String,
+) -> Result<FetchResult, String> {
     let url = format!(
         "https://api.github.com/repos/{}/{}/issues?state=all&per_page=100&sort=updated",
         owner, repo
@@ -160,7 +169,9 @@ pub fn fetch_github_issues(owner: String, repo: String, token: String) -> Result
             continue;
         }
 
-        let existing = issues.iter_mut().find(|i| i.id == id && i.source == "github" && i.repository == format!("{}/{}", owner, repo));
+        let existing = issues.iter_mut().find(|i| {
+            i.id == id && i.source == "github" && i.repository == format!("{}/{}", owner, repo)
+        });
         if let Some(existing) = existing {
             existing.title = title;
             existing.body = body;

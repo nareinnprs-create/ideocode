@@ -59,7 +59,8 @@ pub fn get_settings() -> AppSettings {
 pub fn update_settings(settings: AppSettings) -> Result<(), String> {
     let path = settings_path();
     if let Some(dir) = path.parent() {
-        std::fs::create_dir_all(dir).map_err(|e| format!("Failed to create settings dir: {}", e))?;
+        std::fs::create_dir_all(dir)
+            .map_err(|e| format!("Failed to create settings dir: {}", e))?;
     }
     let json = serde_json::to_string_pretty(&settings)
         .map_err(|e| format!("Failed to serialize settings: {}", e))?;
@@ -79,7 +80,12 @@ pub fn is_first_launch() -> bool {
     }
     if sessions_dir.exists() {
         if let Ok(entries) = std::fs::read_dir(&sessions_dir) {
-            if entries.filter_map(|e| e.ok()).any(|e| e.path().extension().map(|ext| ext == "json").unwrap_or(false)) {
+            if entries.filter_map(|e| e.ok()).any(|e| {
+                e.path()
+                    .extension()
+                    .map(|ext| ext == "json")
+                    .unwrap_or(false)
+            }) {
                 return false;
             }
         }

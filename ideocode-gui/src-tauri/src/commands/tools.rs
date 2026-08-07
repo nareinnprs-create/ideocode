@@ -33,12 +33,14 @@ fn run_cargo(subcommand: &str, cwd: &str) -> BuildOutput {
         .spawn()
     {
         Ok(c) => c,
-        Err(e) => return BuildOutput {
-            success: false,
-            stdout: String::new(),
-            stderr: format!("Failed to spawn cargo: {}", e),
-            exit_code: -1,
-        },
+        Err(e) => {
+            return BuildOutput {
+                success: false,
+                stdout: String::new(),
+                stderr: format!("Failed to spawn cargo: {}", e),
+                exit_code: -1,
+            }
+        }
     };
 
     let timeout = Duration::from_secs(300);
@@ -56,20 +58,28 @@ fn run_cargo(subcommand: &str, cwd: &str) -> BuildOutput {
         match child.try_wait() {
             Ok(Some(status)) => break status,
             Ok(None) => std::thread::sleep(Duration::from_millis(100)),
-            Err(e) => return BuildOutput {
-                success: false,
-                stdout: String::new(),
-                stderr: format!("Cargo process error: {}", e),
-                exit_code: -1,
-            },
+            Err(e) => {
+                return BuildOutput {
+                    success: false,
+                    stdout: String::new(),
+                    stderr: format!("Cargo process error: {}", e),
+                    exit_code: -1,
+                }
+            }
         }
     };
 
     let output = child.wait_with_output().ok();
     BuildOutput {
         success: status.success(),
-        stdout: output.as_ref().map(|o| String::from_utf8_lossy(&o.stdout).to_string()).unwrap_or_default(),
-        stderr: output.as_ref().map(|o| String::from_utf8_lossy(&o.stderr).to_string()).unwrap_or_default(),
+        stdout: output
+            .as_ref()
+            .map(|o| String::from_utf8_lossy(&o.stdout).to_string())
+            .unwrap_or_default(),
+        stderr: output
+            .as_ref()
+            .map(|o| String::from_utf8_lossy(&o.stderr).to_string())
+            .unwrap_or_default(),
         exit_code: status.code().unwrap_or(-1),
     }
 }

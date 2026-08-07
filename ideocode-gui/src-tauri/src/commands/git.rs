@@ -71,17 +71,20 @@ pub fn git_status(path: String) -> Result<GitStatus, String> {
         .unwrap_or_else(|_| "detached".into());
 
     // Get ahead/behind
-    let (ahead, behind) = run_git(&["rev-list", "--left-right", "--count", "HEAD...@{upstream}"], &cwd)
-        .ok()
-        .and_then(|s| {
-            let parts: Vec<&str> = s.trim().split_whitespace().collect();
-            if parts.len() == 2 {
-                Some((parts[0].parse().unwrap_or(0), parts[1].parse().unwrap_or(0)))
-            } else {
-                None
-            }
-        })
-        .unwrap_or((0, 0));
+    let (ahead, behind) = run_git(
+        &["rev-list", "--left-right", "--count", "HEAD...@{upstream}"],
+        &cwd,
+    )
+    .ok()
+    .and_then(|s| {
+        let parts: Vec<&str> = s.split_whitespace().collect();
+        if parts.len() == 2 {
+            Some((parts[0].parse().unwrap_or(0), parts[1].parse().unwrap_or(0)))
+        } else {
+            None
+        }
+    })
+    .unwrap_or((0, 0));
 
     // Get status --porcelain
     let status_output = run_git(&["status", "--porcelain"], &cwd).unwrap_or_default();
@@ -95,7 +98,7 @@ pub fn git_status(path: String) -> Result<GitStatus, String> {
         if line.len() < 3 {
             continue;
         }
-        let index_status = line.chars().nth(0).unwrap_or(' ');
+        let index_status = line.chars().next().unwrap_or(' ');
         let worktree_status = line.chars().nth(1).unwrap_or(' ');
         let file_path = line[3..].trim().to_string();
 
@@ -139,8 +142,7 @@ pub fn git_diff(path: String, file: Option<String>) -> Result<String, String> {
         args.push(f);
     }
 
-    let args_refs: Vec<&str> = args.iter().copied().collect();
-    run_git(&args_refs, &cwd)
+    run_git(args.as_slice(), &cwd)
 }
 
 #[tauri::command]

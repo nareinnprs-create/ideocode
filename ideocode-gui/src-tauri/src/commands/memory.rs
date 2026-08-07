@@ -45,7 +45,12 @@ fn load_entries() -> Vec<MemoryEntry> {
     let mut entries = Vec::new();
     if let Ok(read) = std::fs::read_dir(&dir) {
         for entry in read.flatten() {
-            if entry.path().extension().map(|e| e == "json").unwrap_or(false) {
+            if entry
+                .path()
+                .extension()
+                .map(|e| e == "json")
+                .unwrap_or(false)
+            {
                 if let Ok(content) = std::fs::read_to_string(entry.path()) {
                     if let Ok(parsed) = serde_json::from_str::<MemoryEntry>(&content) {
                         entries.push(parsed);
@@ -54,7 +59,7 @@ fn load_entries() -> Vec<MemoryEntry> {
             }
         }
     }
-    entries.sort_by(|a, b| b.created_at.cmp(&a.created_at));
+    entries.sort_by_key(|e| std::cmp::Reverse(e.created_at));
     entries
 }
 

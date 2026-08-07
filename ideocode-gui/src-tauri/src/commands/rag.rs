@@ -125,8 +125,8 @@ pub fn index_directory(path: String) -> Result<IndexProgress, String> {
                     .map(|h| h.join(".IDEOCODE").join("rag-index"))
                     .unwrap_or_else(|| PathBuf::from(".IDEOCODE/rag-index"));
                 let _ = std::fs::create_dir_all(&idx_dir);
-                let safe_name = rel.replace('/', "__").replace('\\', "__");
-                let idx_path = idx_dir.join(format!("{}.json", &safe_name));
+                let safe_name = rel.replace(['/', '\\'], "__");
+                let idx_path = idx_dir.join(format!("{safe_name}.json"));
                 if let Ok(json) = serde_json::to_string_pretty(&idx_entry) {
                     let _ = std::fs::write(&idx_path, json);
                 }
@@ -150,7 +150,8 @@ fn count_files(dir: &PathBuf, depth: usize, max: usize) -> Result<usize, String>
     if let Ok(read) = std::fs::read_dir(dir) {
         for entry in read.flatten() {
             let name = entry.file_name().to_string_lossy().to_string();
-            if name.starts_with('.') || name == "node_modules" || name == "target" || name == ".git" {
+            if name.starts_with('.') || name == "node_modules" || name == "target" || name == ".git"
+            {
                 continue;
             }
             let meta = entry.metadata().ok();
@@ -175,7 +176,8 @@ fn walk_dir(dir: &PathBuf, depth: usize, max: usize) -> Result<Vec<PathBuf>, Str
     if let Ok(read) = std::fs::read_dir(dir) {
         for entry in read.flatten() {
             let name = entry.file_name().to_string_lossy().to_string();
-            if name.starts_with('.') || name == "node_modules" || name == "target" || name == ".git" {
+            if name.starts_with('.') || name == "node_modules" || name == "target" || name == ".git"
+            {
                 continue;
             }
             let meta = entry.metadata().ok();

@@ -5,7 +5,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands;
-mod gateway;
 
 use commands::ChatState;
 use std::fs::{self, OpenOptions};
@@ -31,7 +30,6 @@ fn log_to_file(filename: &str, msg: &str) {
     let _ = OpenOptions::new()
         .create(true)
         .append(true)
-        .write(true)
         .open(&path)
         .and_then(|mut f| f.write_all(msg.as_bytes()));
 }
@@ -64,13 +62,19 @@ fn log_error(msg: String) {
 fn main() {
     init_panic_hook();
 
-    // Keep the built-in Baanzon Verso engine running in the background: the
-    // supervisor auto-installs, auto-logs-in, and self-heals it within a 600s
-    // budget whenever it becomes unreachable.
-    gateway::spawn_supervisor();
-
     if let Err(e) = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
+        .setup(|_app| {
+            tauri::async_runtime::spawn(async move {
+                let workspace = dirs::home_dir().unwrap_or_default().join(".IDEOCODE");
+                let config = ideocode_provider_baanzon::BaanzonConfig::new(workspace);
+                let _ = config.generate_env();
+                // Ensures the engine is installed/provisioned and hands ongoing
+                // recovery to the detached self-heal supervisor.
+                let _ = ideocode_provider_baanzon::BaanzonDaemon::start();
+            });
+            Ok(())
+        })
         .manage(ChatState::new())
         .invoke_handler(tauri::generate_handler![
             get_version,

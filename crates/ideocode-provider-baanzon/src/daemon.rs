@@ -1,14 +1,9 @@
-// Copyright (c) 2026 Opraiz Technology Pvt Ltd
-// R&D by Opraiz Cognitive
-// Developer: Narein Rao
-// SPDX-License-Identifier: MIT
-//! Baanzon Verso local AI engine (backend) for the IDEOCODE GUI.
+//! Baanzon Verso local AI engine (backend) lifecycle.
 //!
-//! Mirrors the vendored install, first-run setup, auto-login and self-heal
-//! supervision that the CLI provides, so the GUI is fully self-sufficient: the
-//! engine is auto-installed under `~/.IDEOCODE/baanzon-verso`, auto-set-up
-//! (dashboard login disabled = auto-logged-in), and restarted within a 600
-//! second budget whenever it becomes unreachable.
+//! The engine is the `omniroute` npm package, auto-installed (vendored) under
+//! `~/.IDEOCODE/baanzon-verso`, auto-set-up (dashboard login disabled =
+//! auto-logged-in), and restarted within a 600 second budget whenever it
+//! becomes unreachable. It is exposed at `http://localhost:20128/v1`.
 
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
@@ -31,7 +26,8 @@ const SUPERVISOR_RECOVERY_BUDGET: Duration = Duration::from_secs(600);
 /// How long a cold ensure blocks before handing control to the supervisor.
 const COLD_START_BUDGET: Duration = Duration::from_secs(30);
 
-fn app_data_dir() -> PathBuf {
+/// The app-data root shared with the rest of IDEOCODE (`~/.IDEOCODE`).
+pub fn app_data_dir() -> PathBuf {
     match dirs::home_dir() {
         Some(home) => home.join(".IDEOCODE"),
         None => std::env::current_dir().unwrap_or_default(),
@@ -63,13 +59,16 @@ fn log(message: &str) {
     if let Some(parent) = path.parent() {
         let _ = std::fs::create_dir_all(parent);
     }
-    use std::io::Write as _;
     if let Ok(mut file) = std::fs::OpenOptions::new()
         .create(true)
         .append(true)
         .open(&path)
     {
-        let _ = writeln!(file, "[{}] {message}", chrono::Local::now().format("%Y-%m-%d %H:%M:%S"));
+        let _ = writeln!(
+            file,
+            "[{}] {message}",
+            chrono::Local::now().format("%Y-%m-%d %H:%M:%S")
+        );
     }
 }
 
@@ -89,13 +88,33 @@ fn find_on_path(names: &[&str]) -> Option<PathBuf> {
         })
 }
 
+/// Well-known install locations checked when the toolchain is missing from
+/// PATH (common on Windows: Node bundled by an installer or nvm-windows, or a
+/// PATH that was set before Node was installed).
+#[cfg(windows)]
+fn known_toolchain_dirs() -> Vec<PathBuf> {
+    let mut dirs = Vec::new();
+    if let Some(program_files) = std::env::var_os("ProgramFiles") {
+        dirs.push(PathBuf::from(&program_files).join("nodejs"));
+    }
+    if let Some(appdata) = std::env::var_os("APPDATA") {
+        dirs.push(PathBuf::from(&appdata).join("nvm").join("current"));
+    }
+    dirs
+}
+
+#[cfg(not(windows))]
+fn known_toolchain_dirs() -> Vec<PathBuf> {
+    Vec::new()
+}
+
 fn find_node() -> Option<PathBuf> {
     let names: &[&str] = if cfg!(windows) {
         &["node.exe", "node"]
     } else {
         &["node"]
     };
-    find_on_path(names)
+    find_on_path(names).or_else(|| find_in_known_dirs(names))
 }
 
 fn find_npm() -> Option<PathBuf> {
@@ -104,12 +123,21 @@ fn find_npm() -> Option<PathBuf> {
     } else {
         &["npm"]
     };
-    find_on_path(names)
+    find_on_path(names).or_else(|| find_in_known_dirs(names))
+}
+
+fn find_in_known_dirs(names: &[&str]) -> Option<PathBuf> {
+    known_toolchain_dirs().into_iter().find_map(|dir| {
+        names
+            .iter()
+            .find(|name| dir.join(name).is_file())
+            .map(|name| dir.join(name))
+    })
 }
 
 /// Blocking HTTP probe against the engine's OpenAI-compatible API. Verifies it
 /// is actually the gateway (and not an unrelated process squatting on the port).
-fn gateway_healthy() -> bool {
+pub fn gateway_healthy() -> bool {
     let Ok(mut stream) = std::net::TcpStream::connect(("127.0.0.1", OMNIROUTE_PORT)) else {
         return false;
     };
@@ -126,8 +154,9 @@ fn gateway_healthy() -> bool {
 
 /// Spawns the vendored gateway detached from the terminal.
 fn spawn_gateway(bin: &Path, data_dir: &Path) -> std::io::Result<std::process::Child> {
-    let node = find_node()
-        .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::NotFound, "node not found on PATH"))?;
+    let node = find_node().ok_or_else(|| {
+        std::io::Error::new(std::io::ErrorKind::NotFound, "node not found on PATH")
+    })?;
     let mut cmd = Command::new(node);
     cmd.arg(bin)
         .env("DATA_DIR", data_dir)
@@ -151,27 +180,6 @@ fn spawn_gateway(bin: &Path, data_dir: &Path) -> std::io::Result<std::process::C
     cmd.spawn()
 }
 
-/// Spawns a globally installed gateway (legacy fallback path).
-#[cfg(windows)]
-fn spawn_omniroute_global() -> std::io::Result<std::process::Child> {
-    Command::new("cmd")
-        .args(["/C", "omniroute"])
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .spawn()
-}
-
-/// Spawns a globally installed gateway (legacy fallback path).
-#[cfg(not(windows))]
-fn spawn_omniroute_global() -> std::io::Result<std::process::Child> {
-    Command::new("omniroute")
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .spawn()
-}
-
 /// Silently installs the gateway under IDEOCODE's own app-data directory. This
 /// never prompts and never mutates the user's global npm setup.
 fn install_vendored_gateway() -> bool {
@@ -185,7 +193,9 @@ fn install_vendored_gateway() -> bool {
     }
     let dir = gateway_dir();
     if let Err(err) = std::fs::create_dir_all(&dir) {
-        log(&format!("Baanzon Verso install failed to create dir: {err}"));
+        log(&format!(
+            "Baanzon Verso install failed to create dir: {err}"
+        ));
         return false;
     }
 
@@ -219,7 +229,9 @@ fn install_vendored_gateway() -> bool {
             false
         }
         Err(err) => {
-            log(&format!("Could not run npm to install Baanzon Verso: {err}"));
+            log(&format!(
+                "Could not run npm to install Baanzon Verso: {err}"
+            ));
             false
         }
     }
@@ -229,8 +241,10 @@ fn install_vendored_gateway() -> bool {
 /// Only brand tokens are replaced; functional identifiers are left untouched.
 fn apply_brand_patch() -> std::io::Result<()> {
     let pkg = vendored_pkg_dir();
-    let replacements: [(&str, &str); 2] =
-        [("OmniRoute", "Baanzon Verso"), ("omniroute.online", "baanzonverso.local")];
+    let replacements: [(&str, &str); 2] = [
+        ("OmniRoute", "Baanzon Verso"),
+        ("omniroute.online", "baanzonverso.local"),
+    ];
     let mut patched = 0usize;
     for dir in ["dist", ".build", "public"] {
         let target = pkg.join(dir);
@@ -238,7 +252,9 @@ fn apply_brand_patch() -> std::io::Result<()> {
             patch_dir(&target, &replacements, &mut patched);
         }
     }
-    log(&format!("Baanzon Verso branding applied ({patched} files patched)"));
+    log(&format!(
+        "Baanzon Verso branding applied ({patched} files patched)"
+    ));
     Ok(())
 }
 
@@ -252,16 +268,12 @@ fn patch_dir(dir: &Path, replacements: &[(&str, &str)], patched: &mut usize) {
             patch_dir(&path, replacements, patched);
             continue;
         }
-        let Some(ext) = path
-            .extension()
-            .map(|e| e.to_string_lossy().to_lowercase())
-        else {
+        let Some(ext) = path.extension().map(|e| e.to_string_lossy().to_lowercase()) else {
             continue;
         };
         if !matches!(
             ext.as_str(),
-            "js" | "mjs" | "cjs" | "html" | "htm" | "json" | "css" | "txt" | "svg" | "map"
-                | "xml"
+            "js" | "mjs" | "cjs" | "html" | "htm" | "json" | "css" | "txt" | "svg" | "map" | "xml"
         ) {
             continue;
         }
@@ -306,7 +318,9 @@ fn provision_gateway() -> bool {
     }
     let data_dir = gateway_data_dir();
     if let Err(err) = std::fs::create_dir_all(&data_dir) {
-        log(&format!("Baanzon Verso setup failed to create data dir: {err}"));
+        log(&format!(
+            "Baanzon Verso setup failed to create data dir: {err}"
+        ));
         return false;
     }
 
@@ -327,25 +341,11 @@ fn provision_gateway() -> bool {
         let _ = std::fs::write(&sentinel, "1");
         log("Baanzon Verso setup complete (auto-logged-in)");
     } else {
-        log("Baanzon Verso first-run setup did not complete cleanly; the dashboard may require login.");
+        log(
+            "Baanzon Verso first-run setup did not complete cleanly; the dashboard may require login.",
+        );
     }
     ok
-}
-
-fn ensure_global_gateway() -> bool {
-    let deadline = Instant::now() + Duration::from_secs(15);
-    let Ok(_) = spawn_omniroute_global() else {
-        log("Could not start the Baanzon Verso engine from PATH");
-        return false;
-    };
-    while Instant::now() < deadline {
-        std::thread::sleep(Duration::from_millis(250));
-        if gateway_healthy() {
-            return true;
-        }
-    }
-    log("Started the Baanzon Verso engine, but it did not become reachable within 15s.");
-    false
 }
 
 /// Ensures the gateway is reachable, installing/setting up/spawning as needed.
@@ -353,10 +353,8 @@ fn ensure_with_budget(budget: Duration) -> bool {
     if gateway_healthy() {
         return true;
     }
-    if !is_vendored_installed() {
-        if !install_vendored_gateway() {
-            return ensure_global_gateway();
-        }
+    if !is_vendored_installed() && !install_vendored_gateway() {
+        return false;
     }
     let _ = provision_gateway();
 
@@ -382,6 +380,15 @@ fn ensure_with_budget(budget: Duration) -> bool {
     }
 }
 
+/// Ensures the engine is reachable on first use, blocking for up to the
+/// cold-start budget while it installs/provisions/spawns on first run.
+pub fn ensure_gateway() -> bool {
+    if std::env::var_os("IDEOCODE_DISABLE_BAANZON_GATEWAY").is_some() {
+        return false;
+    }
+    ensure_with_budget(COLD_START_BUDGET)
+}
+
 /// Spawns a background self-heal loop. On first launch it cold-starts the
 /// engine immediately (install/setup may take minutes), then it polls every 10
 /// seconds and restarts the engine whenever it is unreachable; a full recovery
@@ -392,7 +399,7 @@ pub fn spawn_supervisor() {
         return;
     }
     std::thread::Builder::new()
-        .name("IDEOCODE-gui-baanzon-verso".to_string())
+        .name("IDEOCODE-baanzon-verso".to_string())
         .spawn(|| {
             let _ = ensure_with_budget(COLD_START_BUDGET);
             let mut recovery_started: Option<Instant> = None;
@@ -449,5 +456,41 @@ pub async fn gateway_status() -> GatewayStatus {
         installing: !disabled && !online && !is_vendored_installed(),
         port: OMNIROUTE_PORT,
         base_url: OMNIROUTE_BASE_URL.to_string(),
+    }
+}
+
+/// Handle to the local engine. Starting it ensures the engine is installed,
+/// provisioned and supervised; stopping is a no-op because the supervisor is a
+/// detached process that self-heals independently of this handle.
+#[derive(Debug, Default)]
+pub struct BaanzonDaemon;
+
+impl BaanzonDaemon {
+    /// Ensures the engine is running and hands ongoing recovery to the
+    /// background supervisor. Returns immediately with `Ok(())`.
+    pub fn start() -> std::io::Result<Self> {
+        spawn_supervisor();
+        Ok(Self)
+    }
+
+    /// No-op: the supervisor keeps the engine alive until the process exits.
+    pub fn stop() -> std::io::Result<()> {
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn base_url_and_port_agree() {
+        assert!(OMNIROUTE_BASE_URL.contains("localhost:20128/v1"));
+        assert_eq!(OMNIROUTE_PORT, 20128);
+    }
+
+    #[test]
+    fn recovery_budget_is_600_seconds() {
+        assert_eq!(SUPERVISOR_RECOVERY_BUDGET, Duration::from_secs(600));
     }
 }

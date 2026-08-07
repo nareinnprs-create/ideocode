@@ -87,7 +87,7 @@ members = [
     "crates/ideocode-telemetry-core",
     "crates/ideocode-tui-workspace",
     "crates/ideocode-desktop",
-    "crates/ideocode-render-core",
+    "crates/ideocode-render-core", "crates/ideocode-provider-baanzon",
 ]
 
 exclude = ["ideocode-gui"]
