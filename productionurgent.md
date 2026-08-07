@@ -20,8 +20,18 @@ below as missing has been implemented and verified on this machine (Windows).
   headless first-run setup guarded by a `baanzon-setup-complete` sentinel, background
   supervisor with a 600-second recovery budget (`spawn_supervisor`), and
   `gateway_status()` for the GUI provider panel / status bar.
+- **Hardening (verified end-to-end against npm 12 on Windows):** the install flow now
+  runs `npm install-scripts approve --all` followed by a reinstall so the engine's
+  native binaries (esbuild, @swc/core, better-sqlite3, onnxruntime-node, ...) actually
+  materialize — without this npm >= 11.4 leaves them unbuilt and the engine serves
+  HTTP 500s. The serve command passes `--no-open` (no browser tab). The health probe
+  accepts any 2xx/4xx/5xx HTTP reply except 404, so a warming engine or one with no
+  configured providers is no longer stuck in a supervisor restart loop, while 404/3xx
+  still flags unrelated port squatters. Full install -> setup -> serve boot chain was
+  exercised on a live vendored install.
 - Verified: `cargo clippy --all-targets --all-features -- -D warnings` EXIT 0 (workspace),
-  2/2 crate unit tests pass.
+  4/4 crate unit tests + 5/5 TUI unit tests pass; all three release artifacts rebuilt at
+  v0.63.1 with these fixes.
 
 ## 2. The Native Desktop GUI (`ideocode-gui/`) — DONE
 - **Editor & Diff View:** Monaco Editor (self-hosted offline at `/monaco/vs`) is wired for
@@ -50,6 +60,6 @@ below as missing has been implemented and verified on this machine (Windows).
 ---
 
 ## Residual Items (non-blocking, tracked)
-- Stale `releases/IDEOCODE_0.61.0_x64_en-US.msi` should be regenerated at v0.63.1.
-- `BAANZO-VERSO/` and `BAANZON-VERSO/` are empty stray git repos (no `.gitmodules`, no
-  commits) and can be deleted.
+- (resolved) `releases/IDEOCODE_0.61.0_x64_en-US.msi` removed; `IDEOCODE_0.63.1_x64_en-US.msi`
+  regenerated (10.6 MB, 8/8) with the engine fixes.
+- (resolved) `BAANZO-VERSO/` and `BAANZON-VERSO/` stray git repos deleted.

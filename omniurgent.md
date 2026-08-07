@@ -10,12 +10,21 @@ self-healing. Port is **20128** (not the outdated 37000), base URL
 ### 1. Backend: Silent Localhost Orchestration — DONE
 - `crates/ideocode-provider-baanzon/src/daemon.rs` is the Rust lifecycle manager:
   - `install_vendored_gateway`: silently `npm install --prefix ~/.IDEOCODE/baanzon-verso`
-    (never touches global npm).
+    (never touches global npm). For npm >= 11.4 it additionally runs
+    `npm install-scripts approve --all` and reinstalls so the engine's native binaries
+    (esbuild, @swc/core, better-sqlite3, onnxruntime-node, ...) materialize; without this
+    the engine serves HTTP 500s. Same fix in `src/cli/omniroute.rs` (TUI path).
   - `provision_gateway`: headless first-run setup with `INITIAL_PASSWORD=""` (auto-logged-in
     dashboard), guarded by `baanzon-setup-complete` sentinel.
+  - `spawn_gateway`: passes `--no-open` so the engine never opens a browser tab.
   - `spawn_supervisor`: background thread polls every 10s and self-heals within a 600s
     recovery budget.
   - `gateway_status()`: exposes engine/online/disabled/installing/port/base_url to the GUI.
+  - `gateway_healthy()`: accepts any 2xx/4xx/5xx HTTP reply except 404, so a warming engine
+    or one with no configured providers stays "online" instead of triggering a restart loop;
+    404/3xx still marks an unrelated port squatter (unit-tested in both paths).
+- Verified end-to-end on Windows/npm 12: full install -> approve -> reinstall -> setup ->
+  serve boot chain exercised on a live vendored install.
 
 ### 2. Provider Integration: The "Baanzon Verso" Facade — DONE
 - `crates/ideocode-provider-baanzon` implements the client (`client.rs`) and config
