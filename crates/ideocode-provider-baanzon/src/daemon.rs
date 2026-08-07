@@ -167,8 +167,9 @@ fn is_engine_reply(reply: &str) -> bool {
     if !matches!(parts.next(), Some("HTTP/1.1") | Some("HTTP/1.0")) {
         return false;
     }
-    let Some(code) = parts.next().and_then(|c| c.parse::<u16>().ok()) else {
-        return false;
+    let code = match parts.next().map(|c| c.parse::<u16>()) {
+        Some(Ok(code)) => code,
+        _ => return false,
     };
     // Accept 2xx, 5xx, and 4xx except 404; reject 3xx and 404 (squatter
     // signatures). A running engine can legitimately answer 4xx/5xx while it
@@ -230,7 +231,7 @@ fn install_vendored_gateway() -> bool {
     if !npm_install(&dir, Some("omniroute")) {
         return false;
     }
-    let _ = approve_install_scripts(&dir);
+    approve_install_scripts(&dir);
     if !npm_install(&dir, None) {
         return false;
     }
@@ -290,11 +291,11 @@ fn npm_install(dir: &Path, package: Option<&str>) -> bool {
 /// allowlist into the vendored package.json so the follow-up `npm install`
 /// builds the engine's native binaries. Must run with the gateway dir as the
 /// current working directory, because the command operates on the local project.
-fn approve_install_scripts(dir: &Path) -> std::io::Result<()> {
+fn approve_install_scripts(dir: &Path) {
     let Some(npm) = find_npm() else {
-        return Ok(());
+        return;
     };
-    Command::new(npm)
+    let status = Command::new(npm)
         .args(["install-scripts", "approve", "--all"])
         .current_dir(dir)
         .env("npm_config_update_notifier", "false")
@@ -302,8 +303,12 @@ fn approve_install_scripts(dir: &Path) -> std::io::Result<()> {
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null())
-        .status()
-        .map(|_| ())
+        .status();
+    if !matches!(status, Ok(status) if status.success()) {
+        log(
+            "Could not approve Baanzon Verso install scripts; native binaries may be missing on npm >= 11.4",
+        );
+    }
 }
 
 /// Applies "Baanzon Verso" branding to the installed dashboard's static assets.
