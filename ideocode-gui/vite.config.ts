@@ -12,6 +12,36 @@ export default defineConfig(async () => ({
     },
   },
   clearScreen: false,
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (id.includes("node_modules")) {
+            if (
+              id.includes("/react/") ||
+              id.includes("/react-dom/") ||
+              id.includes("scheduler")
+            ) {
+              return "react-vendor";
+            }
+            if (id.includes("/monaco-editor/") || id.includes("/@monaco-editor/")) {
+              return "monaco";
+            }
+            if (
+              id.includes("/react-markdown/") ||
+              id.includes("/remark-gfm/") ||
+              id.includes("/rehype-highlight/")
+            ) {
+              return "markdown";
+            }
+            if (id.includes("/framer-motion/")) {
+              return "motion";
+            }
+          }
+        },
+      },
+    },
+  },
   server: {
     port: 1420,
     strictPort: true,
