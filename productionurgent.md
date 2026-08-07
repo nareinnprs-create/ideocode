@@ -27,9 +27,20 @@ below as missing has been implemented and verified on this machine (Windows).
   HTTP 500s. The serve command passes `--no-open` (no browser tab). The health probe
   accepts any 2xx/4xx/5xx HTTP reply except 404, so a warming engine or one with no
   configured providers is no longer stuck in a supervisor restart loop, while 404/3xx
-  still flags unrelated port squatters. Full install -> setup -> serve boot chain was
-  exercised on a live vendored install.
+  still flags unrelated port squatters.
+- **Live verification (fully functional):** a vendored install was exercised end to end
+  — install -> approve -> reinstall -> `setup --non-interactive` -> `serve`. The engine
+  answers `GET /v1/models` with HTTP 200 and the full ~100-model catalog (33 KB, 100+
+  entries incl. `auto/*` routing pools and free providers), and `POST
+  /v1/chat/completions` streams a real response through the zero-auth pool (model
+  `big-pickle`, ~272 ms, no credentials needed). The health probe reads the status
+  line (first byte ~14 ms), so the 2s read timeout is ample even right after boot.
+- **Accurate release metadata:** the shipped binaries are now built with
+  `IDEOCODE_RELEASE_BUILD=1` + `IDEOCODE_BUILD_SEMVER=0.63.1`, so `ideocode --version`
+  reports `v0.63.1 (<commit>)` instead of a stale `-dev`/`dirty` string.
 - Verified: `cargo clippy --all-targets --all-features -- -D warnings` EXIT 0 (workspace),
+  all guardrail ratchets pass (warning 0/0, code-size, test-size, panic, swallowed-error,
+  dependency-boundaries, wildcard-reexport, `cargo metadata --locked`, `cargo machete`),
   4/4 crate unit tests + 5/5 TUI unit tests pass; all three release artifacts rebuilt at
   v0.63.1 with these fixes.
 

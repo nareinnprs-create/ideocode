@@ -23,8 +23,12 @@ self-healing. Port is **20128** (not the outdated 37000), base URL
   - `gateway_healthy()`: accepts any 2xx/4xx/5xx HTTP reply except 404, so a warming engine
     or one with no configured providers stays "online" instead of triggering a restart loop;
     404/3xx still marks an unrelated port squatter (unit-tested in both paths).
-- Verified end-to-end on Windows/npm 12: full install -> approve -> reinstall -> setup ->
-  serve boot chain exercised on a live vendored install.
+- Verified end-to-end on Windows/npm 12 (fully functional): install -> approve ->
+  reinstall -> setup -> serve on a live vendored install. The engine answers `GET
+  /v1/models` with HTTP 200 + full ~100-model catalog and `POST /v1/chat/completions`
+  streams a real response through the zero-auth pool (model `big-pickle`, ~272 ms, no
+  credentials). Health probe reads the status line (~14 ms first byte), so the 2s read
+  timeout is ample even right after boot.
 
 ### 2. Provider Integration: The "Baanzon Verso" Facade — DONE
 - `crates/ideocode-provider-baanzon` implements the client (`client.rs`) and config
