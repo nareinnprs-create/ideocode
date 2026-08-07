@@ -62,7 +62,33 @@ fn gateway_healthy_sync() -> bool {
     );
     let mut buf = [0u8; 256];
     let n = stream.read(&mut buf).unwrap_or(0);
-    n > 0 && String::from_utf8_lossy(&buf[..n]).starts_with("HTTP/1.1 2")
+    is_engine_reply(&String::from_utf8_lossy(&buf[..n]))
+}
+
+/// Interprets the reply to the health probe. A running engine can legitimately
+/// answer non-2xx while it warms up or before any providers are configured
+/// (e.g. HTTP 500 from /v1/models), so any 2xx/4xx/5xx reply means the engine is
+/// alive. A 404 or a redirect is the signature of an unrelated HTTP server
+/// (like a dev server) squatting on the engine's port.
+fn is_engine_reply(reply: &str) -> bool {
+    // Only inspect the status line (first line) so 404/3xx text inside a
+    // response body never counts as the status.
+    let Some(status_line) = reply.lines().next() else {
+        return false;
+    };
+    let mut parts = status_line.split_whitespace();
+    if !matches!(parts.next(), Some("HTTP/1.1") | Some("HTTP/1.0")) {
+        return false;
+    }
+    let Some(code) = parts.next().and_then(|c| c.parse::<u16>().ok()) else {
+        return false;
+    };
+    // Accept 2xx, 5xx, and 4xx except 404; reject 3xx and 404 (squatter
+    // signatures). A running engine can legitimately answer 4xx/5xx while it
+    // warms up or before providers are configured.
+    (200..=299).contains(&code)
+        || (500..=599).contains(&code)
+        || ((400..=499).contains(&code) && code != 404)
 }
 
 /// Returns true when the gateway answers a real `/v1/models` request.
@@ -184,6 +210,7 @@ fn spawn_gateway(bin: &Path, data_dir: &Path) -> std::io::Result<std::process::C
     })?;
     let mut cmd = Command::new(node);
     cmd.arg(bin)
+        .arg("--no-open")
         .env("DATA_DIR", data_dir)
         .env("OMNIROUTE_NO_UPDATE_NOTIFIER", "1")
         .env("OMNIROUTE_HIDE_HEALTHCHECK_LOGS", "1")
@@ -229,6 +256,34 @@ fn spawn_omniroute_global() -> std::io::Result<std::process::Child> {
 /// Silently installs the gateway under IDEOCODE's own app-data directory. This
 /// never prompts and never mutates the user's global npm setup.
 fn install_vendored_gateway() -> Result<bool> {
+    let dir = app_gateway_dir()?;
+    std::fs::create_dir_all(&dir)?;
+
+    // npm >= 11.4 blocks dependency install scripts by default, which would
+    // leave the engine's native binaries (esbuild, @swc/core, better-sqlite3,
+    // onnxruntime-node, ...) unbuilt and the engine serving HTTP 500s. Approve
+    // all scripts, then reinstall so the approved natives actually materialize.
+    // On older npm the approve command does not exist; the plain install already
+    // ran scripts, so the follow-up install is a harmless no-op.
+    crate::logging::info(
+        "Installing the Baanzon Verso local AI engine (first run; this can take several minutes)...",
+    );
+    if !npm_install(&dir, Some("omniroute"))? {
+        return Ok(false);
+    }
+    let _ = approve_install_scripts(&dir);
+    if !npm_install(&dir, None)? {
+        return Ok(false);
+    }
+
+    crate::logging::info("Baanzon Verso install complete");
+    let _ = apply_brand_patch();
+    Ok(true)
+}
+
+/// Runs `npm install` inside the vendored gateway dir (uses `--prefix`, so the
+/// current working directory of the daemon is irrelevant).
+fn npm_install(dir: &Path, package: Option<&str>) -> Result<bool> {
     let Some(npm) = find_npm() else {
         crate::logging::warn("Baanzon Verso install skipped: npm was not found on PATH");
         return Ok(false);
@@ -237,21 +292,18 @@ fn install_vendored_gateway() -> Result<bool> {
         crate::logging::warn("Baanzon Verso install skipped: node was not found on PATH");
         return Ok(false);
     }
-    let dir = app_gateway_dir()?;
-    std::fs::create_dir_all(&dir)?;
-
-    crate::logging::info(
-        "Installing the Baanzon Verso local AI engine (first run; this can take a few minutes)...",
-    );
+    let mut args = vec![
+        "install",
+        "--prefix",
+        dir.to_str().unwrap_or("."),
+        "--no-audit",
+        "--no-fund",
+    ];
+    if let Some(pkg) = package {
+        args.push(pkg);
+    }
     let result = Command::new(npm)
-        .args([
-            "install",
-            "--prefix",
-            dir.to_str().unwrap_or("."),
-            "--no-audit",
-            "--no-fund",
-            "omniroute",
-        ])
+        .args(&args)
         .env("npm_config_update_notifier", "false")
         .env("NO_UPDATE_NOTIFIER", "1")
         .stdin(Stdio::null())
@@ -261,11 +313,7 @@ fn install_vendored_gateway() -> Result<bool> {
         .and_then(|child| child.wait_with_output());
 
     match result {
-        Ok(output) if output.status.success() => {
-            crate::logging::info("Baanzon Verso install complete");
-            let _ = apply_brand_patch();
-            Ok(true)
-        }
+        Ok(output) if output.status.success() => Ok(true),
         Ok(output) => {
             let stderr = String::from_utf8_lossy(&output.stderr);
             crate::logging::error(&format!("Baanzon Verso install failed: {}", stderr.trim()));
@@ -279,6 +327,26 @@ fn install_vendored_gateway() -> Result<bool> {
             Ok(false)
         }
     }
+}
+
+/// Best-effort approval of dependency install scripts (npm >= 11.4). Writes an
+/// allowlist into the vendored package.json so the follow-up `npm install`
+/// builds the engine's native binaries. Must run with the gateway dir as the
+/// current working directory, because the command operates on the local project.
+fn approve_install_scripts(dir: &Path) -> std::io::Result<()> {
+    let Some(npm) = find_npm() else {
+        return Ok(());
+    };
+    Command::new(npm)
+        .args(["install-scripts", "approve", "--all"])
+        .current_dir(dir)
+        .env("npm_config_update_notifier", "false")
+        .env("NO_UPDATE_NOTIFIER", "1")
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .map(|_| ())
 }
 
 /// Applies "Baanzon Verso" branding to the installed dashboard's static assets,
@@ -547,5 +615,21 @@ mod tests {
     #[test]
     fn recovery_budget_is_600_seconds() {
         assert_eq!(SUPERVISOR_RECOVERY_BUDGET, Duration::from_secs(600));
+    }
+
+    #[test]
+    fn health_reply_treats_engine_errors_as_alive() {
+        assert!(is_engine_reply("HTTP/1.1 200 OK\r\n"));
+        assert!(is_engine_reply("HTTP/1.1 500 Internal Server Error\r\n"));
+        assert!(is_engine_reply("HTTP/1.1 503 Service Unavailable\r\n"));
+        assert!(is_engine_reply("HTTP/1.0 500 Internal Server Error\r\n"));
+    }
+
+    #[test]
+    fn health_reply_rejects_squatters_and_garbage() {
+        assert!(!is_engine_reply("HTTP/1.1 404 Not Found\r\n"));
+        assert!(!is_engine_reply("HTTP/1.1 301 Moved Permanently\r\n"));
+        assert!(!is_engine_reply("hello, this is a dev server\r\n"));
+        assert!(!is_engine_reply(""));
     }
 }
