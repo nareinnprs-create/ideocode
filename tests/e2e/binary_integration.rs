@@ -118,7 +118,7 @@ async fn binary_version_command() -> Result<()> {
     use std::process::Command;
     let _env = setup_test_env()?;
 
-    let output = Command::new(env!("CARGO_BIN_EXE_IDEOCODE"))
+    let output = Command::new(ideocode_binary_path())
         .arg("--version")
         .output()?;
 
@@ -167,7 +167,7 @@ async fn binary_integration_reload_handoff() -> Result<()> {
     let debug_socket_path = runtime_dir.join("IDEOCODE-debug.sock");
 
     let stderr_file = std::fs::File::create(&stderr_path)?;
-    let mut child = Command::new(env!("CARGO_BIN_EXE_IDEOCODE"))
+    let mut child = Command::new(ideocode_binary_path())
         .arg("--no-update")
         .arg("--socket")
         .arg(&socket_path)
@@ -403,7 +403,7 @@ async fn binary_integration_selfdev_client_reload_resumes_session() -> Result<()
     let socket_path = runtime_dir.join("IDEOCODE.sock");
     let debug_socket_path = runtime_dir.join("IDEOCODE-debug.sock");
     let starter_binary = temp_root.path().join("IDEOCODE-selfdev-client-starter");
-    std::fs::copy(env!("CARGO_BIN_EXE_IDEOCODE"), &starter_binary)?;
+    std::fs::copy(ideocode_binary_path(), &starter_binary)?;
     let starter_mtime = std::fs::metadata(&release_binary)?
         .modified()?
         .checked_sub(Duration::from_secs(60))
@@ -567,7 +567,7 @@ async fn binary_integration_selfdev_full_reload_resumes_session_quickly() -> Res
     let starter_binary = temp_root
         .path()
         .join("IDEOCODE-selfdev-full-reload-starter");
-    std::fs::copy(env!("CARGO_BIN_EXE_IDEOCODE"), &starter_binary)?;
+    std::fs::copy(ideocode_binary_path(), &starter_binary)?;
     let starter_mtime = std::fs::metadata(&release_binary)?
         .modified()?
         .checked_sub(Duration::from_secs(60))

@@ -47,6 +47,23 @@ pub(crate) use tokio_tungstenite::tungstenite::client::IntoClientRequest;
 
 static IDEOCODE_HOME_LOCK: std::sync::OnceLock<Mutex<()>> = std::sync::OnceLock::new();
 
+/// Absolute path to the compiled `ideocode` binary.
+///
+/// `env!`-style hard requirement would fail under `cargo check --all-targets`
+/// (the binary is only *built* for test targets, so `CARGO_BIN_EXE_IDEOCODE` is
+/// not defined in check mode). These tests are `#[ignore]`d and only run via
+/// `cargo test --test e2e`, where cargo both sets the compile-time variable and
+/// exports it at runtime, so resolving here at runtime is always safe.
+pub(crate) fn ideocode_binary_path() -> std::path::PathBuf {
+    option_env!("CARGO_BIN_EXE_IDEOCODE")
+        .map(std::path::PathBuf::from)
+        .or_else(|| std::env::var_os("CARGO_BIN_EXE_IDEOCODE").map(std::path::PathBuf::from))
+        .expect(
+            "CARGO_BIN_EXE_IDEOCODE must be set; run `cargo test --test e2e` from the repo \
+             root so cargo builds and exposes the ideocode binary",
+        )
+}
+
 pub(crate) fn short_runtime_dir(name: String) -> std::path::PathBuf {
     #[cfg(unix)]
     {

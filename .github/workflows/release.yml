@@ -464,23 +464,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p dist
+          # $OLDPWD is not reliable inside `find -exec sh -c` subshells (empty on
+          # macOS bash 3.2), so use $GITHUB_WORKSPACE, which the runner always
+          # exports as the absolute path to the repo root.
+          mkdir -p "$GITHUB_WORKSPACE/dist"
           cd ideocode-gui/src-tauri/target/release
-          export OLDPWD
 
           if [ "$RUNNER_OS" = "Windows" ]; then
-            cp ideocode-gui.exe "$OLDPWD/dist/${{ matrix.artifact }}.exe"
+            cp ideocode-gui.exe "$GITHUB_WORKSPACE/dist/${{ matrix.artifact }}.exe"
             bundle_dir="bundle/msi"
             if [ -d "$bundle_dir" ]; then
-              find "$bundle_dir" -name '*.msi' -exec cp {} "$OLDPWD/dist/" \;
+              find "$bundle_dir" -name '*.msi' -exec cp {} "$GITHUB_WORKSPACE/dist/" \;
             fi
           elif [ "$RUNNER_OS" = "macOS" ]; then
             bundle_dir="bundle/dmg"
             if [ -d "$bundle_dir" ]; then
               find "$bundle_dir" -name '*.dmg' -exec sh -c '
                 src="$1"
-                base=$(basename "$src")
-                cp "$src" "$OLDPWD/dist/${{ matrix.artifact }}.dmg"
+                cp "$src" "$GITHUB_WORKSPACE/dist/${{ matrix.artifact }}.dmg"
               ' _ {} \;
             else
               # Fallback: app bundle inside macos dir
@@ -489,19 +490,19 @@ jobs:
                 dmg_name="$(ls "$bundle_dir"/*.app 2>/dev/null | head -1)"
                 if [ -n "$dmg_name" ]; then
                   echo "App bundle found at $dmg_name, creating tar.gz"
-                  tar czf "$OLDPWD/dist/${{ matrix.artifact }}.tar.gz" "$bundle_dir"
+                  tar czf "$GITHUB_WORKSPACE/dist/${{ matrix.artifact }}.tar.gz" "$bundle_dir"
                 fi
               fi
             fi
           elif [ "$RUNNER_OS" = "Linux" ]; then
             for dir in bundle/appimage bundle/deb; do
               if [ -d "$dir" ]; then
-                find "$dir" -type f \( -name '*.AppImage' -o -name '*.deb' \) -exec cp {} "$OLDPWD/dist/" \;
+                find "$dir" -type f \( -name '*.AppImage' -o -name '*.deb' \) -exec cp {} "$GITHUB_WORKSPACE/dist/" \;
               fi
             done
           fi
 
-          ls -la "$OLDPWD/dist/"
+          ls -la "$GITHUB_WORKSPACE/dist/"
 
       - name: Upload GUI artifacts
         uses: actions/upload-artifact@v4
