@@ -27,7 +27,7 @@ impl SpawnedWindowsServer {
         if release_binary.exists() {
             return release_binary;
         }
-        std::path::PathBuf::from(ideocode_binary_path())
+        ideocode_binary_path()
     }
 
     fn spawn(prefix: &str) -> Result<Self> {

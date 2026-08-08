@@ -12,6 +12,8 @@ use std::time::{Duration, Instant};
 
 use serde::{Deserialize, Serialize};
 
+use crate::config::BaanzonConfig;
+
 /// The engine listens on port 20128 of the local machine.
 pub const OMNIROUTE_PORT: u16 = 20128;
 /// Where the engine's OpenAI-compatible API is exposed.
@@ -463,6 +465,41 @@ pub fn ensure_gateway() -> bool {
     ensure_with_budget(COLD_START_BUDGET)
 }
 
+/// Blocks until the engine's health probe succeeds or `timeout` elapses.
+/// Returns immediately when the engine is already reachable, so it is safe and
+/// cheap to call on every request path once the engine is up.
+pub fn wait_until_ready(timeout: Duration) -> bool {
+    let deadline = Instant::now() + timeout;
+    loop {
+        if gateway_healthy() {
+            return true;
+        }
+        let remaining = deadline.saturating_duration_since(Instant::now());
+        if remaining.is_zero() {
+            return false;
+        }
+        std::thread::sleep(Duration::from_millis(250).min(remaining));
+    }
+}
+
+/// The shared first-use bootstrap used by every surface (TUI and GUI): writes
+/// the engine's `.env`, ensures the engine is installed and reachable (blocking
+/// up to the cold-start budget while it installs/provisions/spawns on first
+/// run), then hands ongoing recovery to the background supervisor. Idempotent:
+/// when the engine is already healthy it returns immediately. Respects
+/// `IDEOCODE_DISABLE_BAANZON_GATEWAY`.
+pub fn bootstrap_engine() -> GatewayStatus {
+    if std::env::var_os("IDEOCODE_DISABLE_BAANZON_GATEWAY").is_some() {
+        return gateway_status_blocking();
+    }
+    if let Err(err) = BaanzonConfig::new(app_data_dir()).generate_env() {
+        log(&format!("Baanzon Verso config failed: {err}"));
+    }
+    ensure_gateway();
+    spawn_supervisor();
+    gateway_status_blocking()
+}
+
 /// Spawns a background self-heal loop. On first launch it cold-starts the
 /// engine immediately (install/setup may take minutes), then it polls every 10
 /// seconds and restarts the engine whenever it is unreachable; a full recovery
@@ -519,10 +556,16 @@ pub struct GatewayStatus {
 /// (provider panel, status bar) can show ONLINE / starting / offline instead of
 /// failing silently when the engine is cold-starting on first launch.
 pub async fn gateway_status() -> GatewayStatus {
-    let disabled = std::env::var_os("IDEOCODE_DISABLE_BAANZON_GATEWAY").is_some();
-    let online = tokio::task::spawn_blocking(gateway_healthy)
+    tokio::task::spawn_blocking(gateway_status_blocking)
         .await
-        .unwrap_or(false);
+        .unwrap_or_else(|_| gateway_status_blocking())
+}
+
+/// Synchronous core of [`gateway_status`], for callers that are already off the
+/// async runtime (e.g. [`bootstrap_engine`]).
+pub fn gateway_status_blocking() -> GatewayStatus {
+    let disabled = std::env::var_os("IDEOCODE_DISABLE_BAANZON_GATEWAY").is_some();
+    let online = gateway_healthy();
     GatewayStatus {
         engine: "Baanzon Verso".to_string(),
         online,

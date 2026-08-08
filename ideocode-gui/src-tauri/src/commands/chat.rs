@@ -162,6 +162,29 @@ async fn chat_completion(
     match provider {
         // Built-in local engine (OpenAI-compatible endpoint).
         "baanzon-verso" | "omniroute" => {
+            // The built-in engine cold-starts on first launch (install/setup/
+            // spawn can take tens of seconds), so wait for it to be ready
+            // instead of failing with a connection error on the first message.
+            let (ready, disabled) = tokio::task::spawn_blocking(|| {
+                let status = ideocode_provider_baanzon::bootstrap_engine();
+                (status.online, status.disabled)
+            })
+            .await
+            .unwrap_or((false, false));
+            if disabled {
+                return Err(
+                    "The Baanzon Verso engine is disabled (IDEOCODE_DISABLE_BAANZON_GATEWAY is \
+                     set). Remove that variable to use the built-in engine."
+                        .to_string(),
+                );
+            }
+            if !ready {
+                return Err(
+                    "The Baanzon Verso engine is still starting (first launch installs it). It \
+                     keeps retrying in the background; check \
+                     ~/.IDEOCODE/logs/baanzon-verso.log".to_string(),
+                );
+            }
             let url = format!(
                 "{}/chat/completions",
                 ideocode_provider_baanzon::OMNIROUTE_BASE_URL

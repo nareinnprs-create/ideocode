@@ -1790,9 +1790,10 @@ async fn init_provider_with_options(
                 ));
             }
 
-            // OmniRoute: a free, zero-config local AI gateway. It is the seamless
-            // fallback only when nothing else is configured, so a fresh install
-            // "just works" without touching any user-configured provider.
+            // OmniRoute: the free, zero-config built-in Baanzon Verso engine.
+            // It is the seamless fallback when nothing else is configured, and
+            // it is supervised in the background so it is always available in
+            // the TUI (switching to it via /model works without a restart).
             if !availability.has_any_provider()
                 && !availability.has_omniroute
                 && std::env::var_os("IDEOCODE_PROVIDER_PROFILE_ACTIVE").is_none()
@@ -1807,11 +1808,10 @@ async fn init_provider_with_options(
                         "Baanzon Verso engine is not reachable yet; keeping the background supervisor active so it can recover without a restart.",
                     );
                 }
-                // Keep the Baanzon Verso engine running in the background once it
-                // is the only available provider: the supervisor restarts it within
-                // a 600s budget if it ever becomes unreachable. It also retries a
-                // failed first-run startup (e.g. node/npm not yet installed), so a
-                // transient failure does not leave the TUI provider-less.
+            }
+            if !availability.has_omniroute
+                && std::env::var_os("IDEOCODE_DISABLE_BAANZON_GATEWAY").is_none()
+            {
                 crate::cli::omniroute::spawn_supervisor();
             }
 

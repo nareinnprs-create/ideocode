@@ -5,6 +5,6 @@ pub mod daemon;
 pub use client::BaanzonClient;
 pub use config::BaanzonConfig;
 pub use daemon::{
-    BaanzonDaemon, GatewayStatus, OMNIROUTE_BASE_URL, OMNIROUTE_PORT, gateway_status,
-    spawn_supervisor,
+    BaanzonDaemon, GatewayStatus, OMNIROUTE_BASE_URL, OMNIROUTE_PORT, bootstrap_engine,
+    gateway_status, gateway_status_blocking, spawn_supervisor, wait_until_ready,
 };
