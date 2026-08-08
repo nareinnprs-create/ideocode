@@ -1,6 +1,6 @@
 [package]
 name = "ideocode-gui"
-version = "0.63.1"
+version = "0.64.0"
 license = "MIT"
 edition = "2021"
 description = "IDEOCODE Desktop GUI — Tauri 2.x + React"

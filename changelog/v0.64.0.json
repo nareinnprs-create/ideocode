@@ -1,0 +1,23 @@
+{
+  "version": "0.64.0",
+  "date": "2026-08-08",
+  "title": "Built-in Baanzon Verso AI engine",
+  "highlights": [
+    "A built-in AI engine (Baanzon Verso) now auto-installs, auto-starts, and powers the GUI chat with zero configuration — install, serve, and health are handled silently on first launch.",
+    "The GUI chat is fully wired to the engine with automatic gateway resolution and a no-auth fallback, so chats work out of the box.",
+    "The engine's serve path is hardened end to end: npm >= 11.4 install-scripts approval, a --no-open headless boot, and a health probe that keeps warming or provider-less engines online without restart loops."
+  ],
+  "improvements": [
+    "Live Baanzon Verso engine status (installing / online / disabled / port / base URL) in the GUI provider panel.",
+    "P1 GUI polish: all 12 TUI themes ported to the GUI, theme-driven Monaco editor and xterm terminal, and a Monaco diff view.",
+    "Panel error boundaries with toast notifications and a functional run/debug panel.",
+    "Self-hosted Monaco so the GUI works without an internet connection to CDNs.",
+    "Vitest unit tests and a GUI CI job, plus guardrail ratchet maintenance across the workspace."
+  ],
+  "fixes": [
+    "Engine native binaries (esbuild, @swc/core, better-sqlite3, onnxruntime-node) now actually materialize on npm >= 11.4, fixing engines that served HTTP 500s.",
+    "The health probe no longer restarts a healthy-but-warming engine or one without configured providers, while still flagging unrelated port squatters.",
+    "Release binaries no longer report stale -dev/dirty version metadata; artifacts build with accurate version strings.",
+    "jemalloc is gated to non-Windows so --all-features builds succeed on Windows."
+  ]
+}
