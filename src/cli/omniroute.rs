@@ -510,11 +510,20 @@ pub async fn ensure_gateway_with_budget(budget: Duration) -> Result<bool> {
     let _ = provision_gateway()?;
 
     let deadline = Instant::now() + budget;
+    // Spawn at most once per call: a gateway that started but has not answered
+    // yet is left to warm up instead of being replaced every few seconds (which
+    // could pile up processes and thrash the port). A spawn that errors is
+    // retried cheaply each pass.
+    let mut spawned_once = false;
     loop {
-        match spawn_gateway(&vendored_bin()?, &gateway_data_dir()?) {
-            Ok(_) => {}
-            Err(err) => {
-                crate::logging::warn(&format!("Could not start the Baanzon Verso engine: {err}"));
+        if !spawned_once {
+            match spawn_gateway(&vendored_bin()?, &gateway_data_dir()?) {
+                Ok(_) => spawned_once = true,
+                Err(err) => {
+                    crate::logging::warn(&format!(
+                        "Could not start the Baanzon Verso engine: {err}"
+                    ));
+                }
             }
         }
         let wait_until = std::cmp::min(Instant::now() + Duration::from_secs(3), deadline);
