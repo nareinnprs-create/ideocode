@@ -134,10 +134,10 @@ async fn process_list(filter: Option<&str>) -> Result<ToolOutput> {
     }
 
     for line in lines {
-        if let Some(f) = filter {
-            if !line.to_lowercase().contains(&f.to_lowercase()) {
-                continue;
-            }
+        if let Some(f) = filter
+            && !line.to_lowercase().contains(&f.to_lowercase())
+        {
+            continue;
         }
         result.push_str(line);
         result.push('\n');

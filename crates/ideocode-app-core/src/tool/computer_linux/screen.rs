@@ -42,7 +42,7 @@ pub fn ocr(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> Re
     if let (Some(rx), Some(ry), Some(rw), Some(rh)) = (x, y, w, h) {
         std::process::Command::new("import")
             .arg("-crop")
-            .arg(&format!("{rw:.0}x{rh:.0}+{rx:.0}+{ry:.0}"))
+            .arg(format!("{rw:.0}x{rh:.0}+{rx:.0}+{ry:.0}"))
             .arg(&path)
             .status()
             .context("Failed to capture region")?;
