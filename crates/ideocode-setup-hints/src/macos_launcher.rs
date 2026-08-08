@@ -17,23 +17,17 @@ const MACOS_APP_ICON_BYTES: &[u8] = include_bytes!(concat!(
 ));
 
 pub(super) fn should_refresh_macos_app_launcher(state: &SetupHintsState) -> bool {
-    match (macos_app_launcher_dir(), legacy_macos_app_launcher_dir()) {
-        (Ok(app_dir), Ok(legacy_app_dir)) => {
-            should_refresh_macos_app_launcher_paths(state, &app_dir, &legacy_app_dir)
-        }
+    match macos_app_launcher_dir() {
+        Ok(app_dir) => should_refresh_macos_app_launcher_paths(state, &app_dir),
         _ => !state.desktop_shortcut_created,
     }
 }
 
 pub(super) fn install_macos_app_launcher() -> Result<(PathBuf, MacTerminalKind)> {
     let app_dir = macos_app_launcher_dir()?;
-    let legacy_app_dir = legacy_macos_app_launcher_dir()?;
 
     if app_dir.exists() && !macos_app_launcher_is_valid(&app_dir) {
         remove_path_if_exists(&app_dir)?;
-    }
-    if legacy_app_dir != app_dir && legacy_app_dir.exists() {
-        remove_path_if_exists(&legacy_app_dir)?;
     }
 
     let contents_dir = app_dir.join("Contents");
@@ -107,11 +101,6 @@ fn macos_app_launcher_dir() -> Result<PathBuf> {
     Ok(home.join("Applications").join("IDEOCODE.app"))
 }
 
-fn legacy_macos_app_launcher_dir() -> Result<PathBuf> {
-    let home = dirs::home_dir().context("Could not find home directory")?;
-    Ok(home.join("Applications").join("IDEOCODE.app"))
-}
-
 fn macos_app_launcher_info_plist_path(app_dir: &Path) -> PathBuf {
     app_dir.join("Contents").join("Info.plist")
 }
@@ -169,32 +158,8 @@ fn register_macos_app_launcher(app_dir: &Path) {
     let _ = std::process::Command::new("mdimport").arg(app_dir).status();
 }
 
-fn should_refresh_macos_app_launcher_paths(
-    state: &SetupHintsState,
-    app_dir: &Path,
-    legacy_app_dir: &Path,
-) -> bool {
-    !state.desktop_shortcut_created
-        || !macos_app_launcher_is_valid(app_dir)
-        || path_exists_with_exact_name(legacy_app_dir)
-}
-
-/// Check that `path` exists under its exact byte-for-byte file name.
-///
-/// macOS system volumes are case-insensitive by default, so a plain
-/// `Path::exists()` on `IDEOCODE.app` also matches `IDEOCODE.app`. The legacy-bundle
-/// check needs an exact-name match or the launcher would refresh itself on
-/// every launch once the new bundle exists.
-fn path_exists_with_exact_name(path: &Path) -> bool {
-    let (Some(parent), Some(name)) = (path.parent(), path.file_name()) else {
-        return path.exists();
-    };
-    let Ok(entries) = std::fs::read_dir(parent) else {
-        return false;
-    };
-    entries
-        .filter_map(|entry| entry.ok())
-        .any(|entry| entry.file_name() == name)
+fn should_refresh_macos_app_launcher_paths(state: &SetupHintsState, app_dir: &Path) -> bool {
+    !state.desktop_shortcut_created || !macos_app_launcher_is_valid(app_dir)
 }
 
 fn macos_launcher_script(terminal: MacTerminalKind, exe_path: &str, app_dir: &Path) -> String {
