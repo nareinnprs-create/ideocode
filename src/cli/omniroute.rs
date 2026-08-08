@@ -37,6 +37,11 @@ pub const SUPERVISOR_RECOVERY_BUDGET: Duration = Duration::from_secs(600);
 #[cfg(windows)]
 const COLD_START_BUDGET_WINDOWS: Duration = Duration::from_secs(120);
 
+/// Cold-start wait budget on non-Windows platforms, matching the gateway
+/// daemon's default 30s before handing control to the supervisor.
+#[cfg(not(windows))]
+const COLD_START_BUDGET: Duration = Duration::from_secs(30);
+
 /// Returns true when the engine's TCP port accepts connections.
 pub async fn gateway_reachable() -> bool {
     tokio::time::timeout(

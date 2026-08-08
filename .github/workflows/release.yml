@@ -466,6 +466,7 @@ jobs:
           set -euo pipefail
           mkdir -p dist
           cd ideocode-gui/src-tauri/target/release
+          export OLDPWD
 
           if [ "$RUNNER_OS" = "Windows" ]; then
             cp ideocode-gui.exe "$OLDPWD/dist/${{ matrix.artifact }}.exe"
