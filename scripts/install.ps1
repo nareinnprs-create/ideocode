@@ -954,6 +954,9 @@ if (-not $Version) {
 
 if (-not $Version) { Write-Err "Failed to determine latest version" }
 
+# Release assets embed the version in the filename (IDEOCODE-v0.64.1-windows-x86_64.exe).
+$VersionedArtifact = "IDEOCODE-$Version-$($Artifact.Substring('IDEOCODE-'.Length))"
+
 $VersionNum = $Version.TrimStart('v')
 $DownloadBases = Get-IDEOCODEReleaseDownloadBases $Version
 
@@ -1000,8 +1003,8 @@ if ($ResolvedArtifactExePath) {
     $DownloadMode = "tar"
 } else {
     foreach ($candidate in @(
-        @{ Name = "$Artifact.exe"; Mode = "bin" },
-        @{ Name = "$Artifact.tar.gz"; Mode = "tar" }
+        @{ Name = "$VersionedArtifact.exe"; Mode = "bin" },
+        @{ Name = "$VersionedArtifact.tar.gz"; Mode = "tar" }
     )) {
         foreach ($base in $DownloadBases) {
             try {
@@ -1017,7 +1020,7 @@ if ($ResolvedArtifactExePath) {
 }
 
 if (-not $ResolvedArtifactExePath -and -not $ResolvedArtifactTgzPath -and $DownloadMode) {
-    $downloadedAssetName = if ($DownloadMode -eq "bin") { "$Artifact.exe" } else { "$Artifact.tar.gz" }
+    $downloadedAssetName = if ($DownloadMode -eq "bin") { "$VersionedArtifact.exe" } else { "$VersionedArtifact.tar.gz" }
     $expectedSha256 = Get-ReleaseChecksum -ReleaseTag $Version -AssetName $downloadedAssetName
     Assert-IDEOCODEFileChecksum -FilePath $DownloadPath -ExpectedSha256 $expectedSha256 -AssetName $downloadedAssetName | Out-Null
 }
@@ -1027,9 +1030,9 @@ $DestBin = Join-Path $VersionDir "IDEOCODE.exe"
 if ($DownloadMode -eq "tar") {
     Write-Info "Extracting..."
     tar xzf $DownloadPath -C $TempDir 2>$null
-    $SrcBin = Join-Path $TempDir "$Artifact.exe"
+    $SrcBin = Join-Path $TempDir "$VersionedArtifact.exe"
     if (-not (Test-Path $SrcBin)) {
-        Write-Err "Downloaded archive did not contain expected binary: $Artifact.exe"
+        Write-Err "Downloaded archive did not contain expected binary: $VersionedArtifact.exe"
     }
     Move-Item -Path $SrcBin -Destination $DestBin -Force
 } elseif ($DownloadMode -eq "bin") {
@@ -1037,10 +1040,10 @@ if ($DownloadMode -eq "tar") {
 } else {
     if (-not $BuildFromSource) {
         $releaseUrl = "https://github.com/$Repo/releases/tag/$Version"
-        Write-Err "No prebuilt $Artifact asset was found in $Version. Check $releaseUrl or rerun the downloaded script with -BuildFromSource. The installer will not start a long source build automatically."
+        Write-Err "No prebuilt $VersionedArtifact asset was found in $Version. Check $releaseUrl or rerun the downloaded script with -BuildFromSource. The installer will not start a long source build automatically."
     }
 
-    Write-Info "No prebuilt asset found for $Artifact in $Version; -BuildFromSource was requested"
+    Write-Info "No prebuilt asset found for $VersionedArtifact in $Version; -BuildFromSource was requested"
     Assert-IDEOCODESourceBuildPrerequisites
 
     $SrcDir = Join-Path $TempDir "IDEOCODE-src"

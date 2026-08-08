@@ -8,10 +8,10 @@ VERSION_NUM="${VERSION#v}"
 
 echo "Updating packages for $VERSION..."
 
-LINUX_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-linux-x86_64.tar.gz"
-LINUX_ARM_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-linux-aarch64.tar.gz"
-MACOS_ARM_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-macos-aarch64.tar.gz"
-MACOS_INTEL_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-macos-x86_64.tar.gz"
+LINUX_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-${VERSION}-linux-x86_64.tar.gz"
+LINUX_ARM_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-${VERSION}-linux-aarch64.tar.gz"
+MACOS_ARM_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-${VERSION}-macos-aarch64.tar.gz"
+MACOS_INTEL_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-${VERSION}-macos-x86_64.tar.gz"
 
 tmpdir=$(mktemp -d)
 trap 'rm -rf "$tmpdir"' EXIT
@@ -51,7 +51,7 @@ class IDEOCODE < Formula
       sha256 "$MACOS_ARM_SHA"
 
       def install
-        bin.install "IDEOCODE-macos-aarch64" => "IDEOCODE"
+        bin.install "IDEOCODE-${VERSION}-macos-aarch64" => "IDEOCODE"
       end
     end
 
@@ -60,7 +60,7 @@ class IDEOCODE < Formula
       sha256 "$MACOS_INTEL_SHA"
 
       def install
-        bin.install "IDEOCODE-macos-x86_64" => "IDEOCODE"
+        bin.install "IDEOCODE-${VERSION}-macos-x86_64" => "IDEOCODE"
       end
     end
   end
@@ -71,11 +71,11 @@ class IDEOCODE < Formula
       sha256 "$LINUX_SHA"
 
       def install
-        libexec.install "IDEOCODE-linux-x86_64", "IDEOCODE-linux-x86_64.bin"
+        libexec.install "IDEOCODE-${VERSION}-linux-x86_64", "IDEOCODE-${VERSION}-linux-x86_64.bin"
         libexec.install Dir["libssl.so*"], Dir["libcrypto.so*"]
         (bin/"IDEOCODE").write <<~SH
           #!/bin/sh
-          exec "#{libexec}/IDEOCODE-linux-x86_64" "\$@"
+          exec "#{libexec}/IDEOCODE-${VERSION}-linux-x86_64" "\$@"
         SH
       end
     end
@@ -85,7 +85,7 @@ class IDEOCODE < Formula
       sha256 "$LINUX_ARM_SHA"
 
       def install
-        bin.install "IDEOCODE-linux-aarch64" => "IDEOCODE"
+        bin.install "IDEOCODE-${VERSION}-linux-aarch64" => "IDEOCODE"
       end
     end
   end
@@ -120,12 +120,12 @@ source=("$LINUX_URL")
 sha256sums=('$LINUX_SHA')
 
 package() {
-    install -Dm755 "\${srcdir}/IDEOCODE-linux-x86_64" "\${pkgdir}/usr/lib/IDEOCODE/IDEOCODE-linux-x86_64"
-    install -Dm755 "\${srcdir}/IDEOCODE-linux-x86_64.bin" "\${pkgdir}/usr/lib/IDEOCODE/IDEOCODE-linux-x86_64.bin"
+    install -Dm755 "\${srcdir}/IDEOCODE-${VERSION}-linux-x86_64" "\${pkgdir}/usr/lib/IDEOCODE/IDEOCODE-${VERSION}-linux-x86_64"
+    install -Dm755 "\${srcdir}/IDEOCODE-${VERSION}-linux-x86_64.bin" "\${pkgdir}/usr/lib/IDEOCODE/IDEOCODE-${VERSION}-linux-x86_64.bin"
     install -Dm644 "\${srcdir}"/libssl.so* "\${pkgdir}/usr/lib/IDEOCODE/"
     install -Dm644 "\${srcdir}"/libcrypto.so* "\${pkgdir}/usr/lib/IDEOCODE/"
     mkdir -p "\${pkgdir}/usr/bin"
-    ln -s /usr/lib/IDEOCODE/IDEOCODE-linux-x86_64 "\${pkgdir}/usr/bin/IDEOCODE"
+    ln -s /usr/lib/IDEOCODE/IDEOCODE-${VERSION}-linux-x86_64 "\${pkgdir}/usr/bin/IDEOCODE"
 }
 EOF
 

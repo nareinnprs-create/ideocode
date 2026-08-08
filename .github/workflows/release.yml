@@ -89,6 +89,13 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Compute versioned artifact name
+        shell: bash
+        run: |
+          suffix="${{ matrix.artifact }}"
+          suffix="${suffix#IDEOCODE-}"
+          echo "ARTIFACT=IDEOCODE-${GITHUB_REF_NAME}-${suffix}" >> "$GITHUB_ENV"
+
       - name: Configure SSH for cargo git dependencies
         if: false
         uses: webfactory/ssh-agent@v0.9.0
@@ -142,21 +149,21 @@ jobs:
         env:
           IDEOCODE_RELEASE_BUILD: "1"
           IDEOCODE_BUILD_SEMVER: ${{ github.ref_name }}
-          IDEOCODE_COMPAT_ARTIFACT: ${{ matrix.artifact }}
+          IDEOCODE_COMPAT_ARTIFACT: ${{ env.ARTIFACT }}
 
       - name: Package binary
         if: matrix.compat_container != true
         run: |
           mkdir -p dist
-          cp target/${{ matrix.target }}/release/ideocode dist/${{ matrix.artifact }}
-          chmod +x dist/${{ matrix.artifact }}
-          cd dist && tar czf ${{ matrix.artifact }}.tar.gz ${{ matrix.artifact }}
+          cp target/${{ matrix.target }}/release/ideocode dist/${ARTIFACT}
+          chmod +x dist/${ARTIFACT}
+          cd dist && tar czf ${ARTIFACT}.tar.gz ${ARTIFACT}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: dist/${{ matrix.artifact }}.tar.gz
+          path: dist/${{ env.ARTIFACT }}.tar.gz
 
       # Attach this platform's asset to the draft release. It remains hidden
       # until the final job verifies the complete release set.
@@ -165,7 +172,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${GITHUB_REF_NAME}" "dist/${{ matrix.artifact }}.tar.gz" --clobber
+          gh release upload "${GITHUB_REF_NAME}" "dist/${ARTIFACT}.tar.gz" --clobber
 
   build-windows:
     name: Build (${{ matrix.target }})
@@ -196,6 +203,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Compute versioned artifact name
+        shell: bash
+        run: |
+          suffix="${{ matrix.artifact }}"
+          suffix="${suffix#IDEOCODE-}"
+          echo "ARTIFACT=IDEOCODE-${GITHUB_REF_NAME}-${suffix}" >> "$GITHUB_ENV"
 
       - name: Configure MSVC build environment (x64)
         if: matrix.target == 'x86_64-pc-windows-msvc'
@@ -263,13 +277,13 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          Copy-Item "target/${{ matrix.target }}/release/ideocode.exe" "dist/${{ matrix.artifact }}.exe"
+          Copy-Item "target/${{ matrix.target }}/release/ideocode.exe" "dist/$env:ARTIFACT.exe"
 
       - name: Upload unsigned binary for signing
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.unsigned_artifact }}
-          path: dist/${{ matrix.artifact }}.exe
+          path: dist/${{ env.ARTIFACT }}.exe
 
       # These debug-harness tests provide extra signal, but they must not block
       # publishing a release binary that already built, launched, and passed the
@@ -352,8 +366,8 @@ jobs:
           signing-account-name: ${{ vars.WINDOWS_SIGNING_ACCOUNT }}
           certificate-profile-name: ${{ vars.WINDOWS_SIGNING_CERTIFICATE_PROFILE }}
           files: |
-            ${{ github.workspace }}\artifacts\windows-unsigned-x86_64\IDEOCODE-windows-x86_64.exe
-            ${{ github.workspace }}\artifacts\windows-unsigned-aarch64\IDEOCODE-windows-aarch64.exe
+            ${{ github.workspace }}\artifacts\windows-unsigned-x86_64\IDEOCODE-${{ github.ref_name }}-windows-x86_64.exe
+            ${{ github.workspace }}\artifacts\windows-unsigned-aarch64\IDEOCODE-${{ github.ref_name }}-windows-aarch64.exe
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
@@ -362,9 +376,10 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
+          $versioned = "IDEOCODE-${env:GITHUB_REF_NAME}"
           $assets = @(
-            @{ Name = 'IDEOCODE-windows-x86_64'; Path = 'artifacts/windows-unsigned-x86_64/IDEOCODE-windows-x86_64.exe' },
-            @{ Name = 'IDEOCODE-windows-aarch64'; Path = 'artifacts/windows-unsigned-aarch64/IDEOCODE-windows-aarch64.exe' }
+            @{ Name = "${versioned}-windows-x86_64"; Path = "artifacts/windows-unsigned-x86_64/${versioned}-windows-x86_64.exe" },
+            @{ Name = "${versioned}-windows-aarch64"; Path = "artifacts/windows-unsigned-aarch64/${versioned}-windows-aarch64.exe" }
           )
 
           foreach ($asset in $assets) {
@@ -387,16 +402,16 @@ jobs:
         with:
           name: IDEOCODE-windows-x86_64
           path: |
-            dist/IDEOCODE-windows-x86_64.exe
-            dist/IDEOCODE-windows-x86_64.tar.gz
+            dist/IDEOCODE-${{ github.ref_name }}-windows-x86_64.exe
+            dist/IDEOCODE-${{ github.ref_name }}-windows-x86_64.tar.gz
 
       - name: Upload final Windows ARM64 artifacts
         uses: actions/upload-artifact@v4
         with:
           name: IDEOCODE-windows-aarch64
           path: |
-            dist/IDEOCODE-windows-aarch64.exe
-            dist/IDEOCODE-windows-aarch64.tar.gz
+            dist/IDEOCODE-${{ github.ref_name }}-windows-aarch64.exe
+            dist/IDEOCODE-${{ github.ref_name }}-windows-aarch64.tar.gz
 
       - name: Publish Windows assets to release
         shell: pwsh
@@ -404,7 +419,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          gh release upload "${env:GITHUB_REF_NAME}" dist/IDEOCODE-windows-x86_64.exe dist/IDEOCODE-windows-x86_64.tar.gz dist/IDEOCODE-windows-aarch64.exe dist/IDEOCODE-windows-aarch64.tar.gz --clobber
+          gh release upload "${env:GITHUB_REF_NAME}" "dist/IDEOCODE-${env:GITHUB_REF_NAME}-windows-x86_64.exe" "dist/IDEOCODE-${env:GITHUB_REF_NAME}-windows-x86_64.tar.gz" "dist/IDEOCODE-${env:GITHUB_REF_NAME}-windows-aarch64.exe" "dist/IDEOCODE-${env:GITHUB_REF_NAME}-windows-aarch64.tar.gz" --clobber
 
   build-gui:
     name: Build GUI (${{ matrix.target }})
@@ -433,6 +448,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      - name: Compute versioned artifact name
+        shell: bash
+        run: |
+          suffix="${{ matrix.artifact }}"
+          suffix="${suffix#IDEOCODE-}"
+          echo "ARTIFACT=IDEOCODE-${GITHUB_REF_NAME}-${suffix}" >> "$GITHUB_ENV"
 
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
@@ -471,18 +493,15 @@ jobs:
           cd ideocode-gui/src-tauri/target/release
 
           if [ "$RUNNER_OS" = "Windows" ]; then
-            cp ideocode-gui.exe "$GITHUB_WORKSPACE/dist/${{ matrix.artifact }}.exe"
+            cp ideocode-gui.exe "$GITHUB_WORKSPACE/dist/${ARTIFACT}.exe"
             bundle_dir="bundle/msi"
             if [ -d "$bundle_dir" ]; then
-              find "$bundle_dir" -name '*.msi' -exec cp {} "$GITHUB_WORKSPACE/dist/" \;
+              find "$bundle_dir" -name '*.msi' -exec cp {} "$GITHUB_WORKSPACE/dist/${ARTIFACT}.msi" \;
             fi
           elif [ "$RUNNER_OS" = "macOS" ]; then
             bundle_dir="bundle/dmg"
             if [ -d "$bundle_dir" ]; then
-              find "$bundle_dir" -name '*.dmg' -exec sh -c '
-                src="$1"
-                cp "$src" "$GITHUB_WORKSPACE/dist/${{ matrix.artifact }}.dmg"
-              ' _ {} \;
+              find "$bundle_dir" -name '*.dmg' -exec cp {} "$GITHUB_WORKSPACE/dist/${ARTIFACT}.dmg" \;
             else
               # Fallback: app bundle inside macos dir
               bundle_dir="bundle/macos"
@@ -490,14 +509,22 @@ jobs:
                 dmg_name="$(ls "$bundle_dir"/*.app 2>/dev/null | head -1)"
                 if [ -n "$dmg_name" ]; then
                   echo "App bundle found at $dmg_name, creating tar.gz"
-                  tar czf "$GITHUB_WORKSPACE/dist/${{ matrix.artifact }}.tar.gz" "$bundle_dir"
+                  tar czf "$GITHUB_WORKSPACE/dist/${ARTIFACT}.tar.gz" "$bundle_dir"
                 fi
               fi
             fi
           elif [ "$RUNNER_OS" = "Linux" ]; then
             for dir in bundle/appimage bundle/deb; do
               if [ -d "$dir" ]; then
-                find "$dir" -type f \( -name '*.AppImage' -o -name '*.deb' \) -exec cp {} "$GITHUB_WORKSPACE/dist/" \;
+                find "$dir" -type f \( -name '*.AppImage' -o -name '*.deb' \) -exec sh -c '
+                  src="$1"
+                  case "$src" in
+                    *.AppImage) dst="$GITHUB_WORKSPACE/dist/${ARTIFACT}.AppImage" ;;
+                    *.deb) dst="$GITHUB_WORKSPACE/dist/${ARTIFACT}.deb" ;;
+                    *) exit 0 ;;
+                  esac
+                  cp "$src" "$dst"
+                ' _ {} \;
               fi
             done
           fi
@@ -568,22 +595,22 @@ jobs:
             echo "::endgroup::"
 
             mkdir -p dist
-            cp target/release/ideocode dist/IDEOCODE-freebsd-x86_64
-            chmod +x dist/IDEOCODE-freebsd-x86_64
-            cd dist && tar czf IDEOCODE-freebsd-x86_64.tar.gz IDEOCODE-freebsd-x86_64
+            cp target/release/ideocode "dist/IDEOCODE-${GITHUB_REF_NAME}-freebsd-x86_64"
+            chmod +x "dist/IDEOCODE-${GITHUB_REF_NAME}-freebsd-x86_64"
+            cd dist && tar czf "IDEOCODE-${GITHUB_REF_NAME}-freebsd-x86_64.tar.gz" "IDEOCODE-${GITHUB_REF_NAME}-freebsd-x86_64"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: IDEOCODE-freebsd-x86_64
-          path: dist/IDEOCODE-freebsd-x86_64.tar.gz
+          path: dist/IDEOCODE-${{ github.ref_name }}-freebsd-x86_64.tar.gz
 
       - name: Publish asset to release
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${GITHUB_REF_NAME}" "dist/IDEOCODE-freebsd-x86_64.tar.gz" --clobber
+          gh release upload "${GITHUB_REF_NAME}" "dist/IDEOCODE-${GITHUB_REF_NAME}-freebsd-x86_64.tar.gz" --clobber
 
   release:
     name: Finalize release
@@ -612,21 +639,21 @@ jobs:
         run: |
           set -euo pipefail
           required=(
-            artifacts/IDEOCODE-linux-x86_64/IDEOCODE-linux-x86_64.tar.gz
-            artifacts/IDEOCODE-linux-aarch64/IDEOCODE-linux-aarch64.tar.gz
-            artifacts/IDEOCODE-macos-aarch64/IDEOCODE-macos-aarch64.tar.gz
-            artifacts/IDEOCODE-macos-x86_64/IDEOCODE-macos-x86_64.tar.gz
-            artifacts/IDEOCODE-freebsd-x86_64/IDEOCODE-freebsd-x86_64.tar.gz
+            artifacts/IDEOCODE-linux-x86_64/IDEOCODE-${{ github.ref_name }}-linux-x86_64.tar.gz
+            artifacts/IDEOCODE-linux-aarch64/IDEOCODE-${{ github.ref_name }}-linux-aarch64.tar.gz
+            artifacts/IDEOCODE-macos-aarch64/IDEOCODE-${{ github.ref_name }}-macos-aarch64.tar.gz
+            artifacts/IDEOCODE-macos-x86_64/IDEOCODE-${{ github.ref_name }}-macos-x86_64.tar.gz
+            artifacts/IDEOCODE-freebsd-x86_64/IDEOCODE-${{ github.ref_name }}-freebsd-x86_64.tar.gz
           )
           optional=(
-            artifacts/IDEOCODE-windows-x86_64/IDEOCODE-windows-x86_64.exe
-            artifacts/IDEOCODE-windows-x86_64/IDEOCODE-windows-x86_64.tar.gz
-            artifacts/IDEOCODE-windows-aarch64/IDEOCODE-windows-aarch64.exe
-            artifacts/IDEOCODE-windows-aarch64/IDEOCODE-windows-aarch64.tar.gz
-            artifacts/IDEOCODE-gui-windows-x86_64/IDEOCODE-gui-windows-x86_64.exe
-            artifacts/IDEOCODE-gui-macos-aarch64/IDEOCODE-gui-macos-aarch64.dmg
-            artifacts/IDEOCODE-gui-macos-x86_64/IDEOCODE-gui-macos-x86_64.dmg
-            artifacts/IDEOCODE-gui-linux-x86_64/IDEOCODE-gui-linux-x86_64.AppImage
+            artifacts/IDEOCODE-windows-x86_64/IDEOCODE-${{ github.ref_name }}-windows-x86_64.exe
+            artifacts/IDEOCODE-windows-x86_64/IDEOCODE-${{ github.ref_name }}-windows-x86_64.tar.gz
+            artifacts/IDEOCODE-windows-aarch64/IDEOCODE-${{ github.ref_name }}-windows-aarch64.exe
+            artifacts/IDEOCODE-windows-aarch64/IDEOCODE-${{ github.ref_name }}-windows-aarch64.tar.gz
+            artifacts/IDEOCODE-gui-windows-x86_64/IDEOCODE-${{ github.ref_name }}-gui-windows-x86_64.exe
+            artifacts/IDEOCODE-gui-macos-aarch64/IDEOCODE-${{ github.ref_name }}-gui-macos-aarch64.dmg
+            artifacts/IDEOCODE-gui-macos-x86_64/IDEOCODE-${{ github.ref_name }}-gui-macos-x86_64.dmg
+            artifacts/IDEOCODE-gui-linux-x86_64/IDEOCODE-${{ github.ref_name }}-gui-linux-x86_64.AppImage
           )
 
           missing=()
@@ -672,17 +699,17 @@ jobs:
             if [ -f "$1" ]; then printf true; else printf false; fi
           }
 
-          linux_x86_64=$(available artifacts/IDEOCODE-linux-x86_64/IDEOCODE-linux-x86_64.tar.gz)
-          linux_aarch64=$(available artifacts/IDEOCODE-linux-aarch64/IDEOCODE-linux-aarch64.tar.gz)
-          macos_aarch64=$(available artifacts/IDEOCODE-macos-aarch64/IDEOCODE-macos-aarch64.tar.gz)
-          macos_x86_64=$(available artifacts/IDEOCODE-macos-x86_64/IDEOCODE-macos-x86_64.tar.gz)
-          windows_x86_64=$(available artifacts/IDEOCODE-windows-x86_64/IDEOCODE-windows-x86_64.exe)
-          windows_aarch64=$(available artifacts/IDEOCODE-windows-aarch64/IDEOCODE-windows-aarch64.exe)
-          freebsd_x86_64=$(available artifacts/IDEOCODE-freebsd-x86_64/IDEOCODE-freebsd-x86_64.tar.gz)
-          gui_windows_x86_64=$(available artifacts/IDEOCODE-gui-windows-x86_64/IDEOCODE-gui-windows-x86_64.exe)
-          gui_macos_aarch64=$(available artifacts/IDEOCODE-gui-macos-aarch64/IDEOCODE-gui-macos-aarch64.dmg)
-          gui_macos_x86_64=$(available artifacts/IDEOCODE-gui-macos-x86_64/IDEOCODE-gui-macos-x86_64.dmg)
-          gui_linux_x86_64=$(available artifacts/IDEOCODE-gui-linux-x86_64/IDEOCODE-gui-linux-x86_64.AppImage)
+          linux_x86_64=$(available artifacts/IDEOCODE-linux-x86_64/IDEOCODE-${{ github.ref_name }}-linux-x86_64.tar.gz)
+          linux_aarch64=$(available artifacts/IDEOCODE-linux-aarch64/IDEOCODE-${{ github.ref_name }}-linux-aarch64.tar.gz)
+          macos_aarch64=$(available artifacts/IDEOCODE-macos-aarch64/IDEOCODE-${{ github.ref_name }}-macos-aarch64.tar.gz)
+          macos_x86_64=$(available artifacts/IDEOCODE-macos-x86_64/IDEOCODE-${{ github.ref_name }}-macos-x86_64.tar.gz)
+          windows_x86_64=$(available artifacts/IDEOCODE-windows-x86_64/IDEOCODE-${{ github.ref_name }}-windows-x86_64.exe)
+          windows_aarch64=$(available artifacts/IDEOCODE-windows-aarch64/IDEOCODE-${{ github.ref_name }}-windows-aarch64.exe)
+          freebsd_x86_64=$(available artifacts/IDEOCODE-freebsd-x86_64/IDEOCODE-${{ github.ref_name }}-freebsd-x86_64.tar.gz)
+          gui_windows_x86_64=$(available artifacts/IDEOCODE-gui-windows-x86_64/IDEOCODE-${{ github.ref_name }}-gui-windows-x86_64.exe)
+          gui_macos_aarch64=$(available artifacts/IDEOCODE-gui-macos-aarch64/IDEOCODE-${{ github.ref_name }}-gui-macos-aarch64.dmg)
+          gui_macos_x86_64=$(available artifacts/IDEOCODE-gui-macos-x86_64/IDEOCODE-${{ github.ref_name }}-gui-macos-x86_64.dmg)
+          gui_linux_x86_64=$(available artifacts/IDEOCODE-gui-linux-x86_64/IDEOCODE-${{ github.ref_name }}-gui-linux-x86_64.AppImage)
 
           homebrew_ready=false
           aur_ready=false
@@ -831,10 +858,10 @@ jobs:
           VERSION="${GITHUB_REF_NAME}"
           VERSION_NUM="${VERSION#v}"
 
-          LINUX_SHA=$(sha256sum artifacts/IDEOCODE-linux-x86_64/IDEOCODE-linux-x86_64.tar.gz | cut -d' ' -f1)
-          LINUX_ARM_SHA=$(sha256sum artifacts/IDEOCODE-linux-aarch64/IDEOCODE-linux-aarch64.tar.gz | cut -d' ' -f1)
-          MACOS_ARM_SHA=$(sha256sum artifacts/IDEOCODE-macos-aarch64/IDEOCODE-macos-aarch64.tar.gz | cut -d' ' -f1)
-          MACOS_INTEL_SHA=$(sha256sum artifacts/IDEOCODE-macos-x86_64/IDEOCODE-macos-x86_64.tar.gz | cut -d' ' -f1)
+          LINUX_SHA=$(sha256sum artifacts/IDEOCODE-linux-x86_64/IDEOCODE-${VERSION}-linux-x86_64.tar.gz | cut -d' ' -f1)
+          LINUX_ARM_SHA=$(sha256sum artifacts/IDEOCODE-linux-aarch64/IDEOCODE-${VERSION}-linux-aarch64.tar.gz | cut -d' ' -f1)
+          MACOS_ARM_SHA=$(sha256sum artifacts/IDEOCODE-macos-aarch64/IDEOCODE-${VERSION}-macos-aarch64.tar.gz | cut -d' ' -f1)
+          MACOS_INTEL_SHA=$(sha256sum artifacts/IDEOCODE-macos-x86_64/IDEOCODE-${VERSION}-macos-x86_64.tar.gz | cut -d' ' -f1)
 
           mkdir -p ~/.ssh
           echo "$HOMEBREW_DEPLOY_KEY" > ~/.ssh/deploy_key
@@ -852,45 +879,45 @@ jobs:
 
             on_macos do
               on_arm do
-                url "https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-macos-aarch64.tar.gz"
+                url "https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-${VERSION}-macos-aarch64.tar.gz"
                 sha256 "${MACOS_ARM_SHA}"
 
                 def install
-                  bin.install "IDEOCODE-macos-aarch64" => "IDEOCODE"
+                  bin.install "IDEOCODE-${VERSION}-macos-aarch64" => "IDEOCODE"
                 end
               end
 
               on_intel do
-                url "https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-macos-x86_64.tar.gz"
+                url "https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-${VERSION}-macos-x86_64.tar.gz"
                 sha256 "${MACOS_INTEL_SHA}"
 
                 def install
-                  bin.install "IDEOCODE-macos-x86_64" => "IDEOCODE"
+                  bin.install "IDEOCODE-${VERSION}-macos-x86_64" => "IDEOCODE"
                 end
               end
             end
 
             on_linux do
               on_intel do
-                url "https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-linux-x86_64.tar.gz"
+                url "https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-${VERSION}-linux-x86_64.tar.gz"
                 sha256 "${LINUX_SHA}"
 
                 def install
-                  libexec.install "IDEOCODE-linux-x86_64"
+                  libexec.install "IDEOCODE-${VERSION}-linux-x86_64"
                   libexec.install Dir["libssl.so*"], Dir["libcrypto.so*"] unless Dir["libssl.so*", "libcrypto.so*"].empty?
                   (bin/"IDEOCODE").write <<~SH
                     #!/bin/sh
-                    exec "#{libexec}/IDEOCODE-linux-x86_64" "$@"
+                    exec "#{libexec}/IDEOCODE-${VERSION}-linux-x86_64" "$@"
                   SH
                 end
               end
 
               on_arm do
-                url "https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-linux-aarch64.tar.gz"
+                url "https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-${VERSION}-linux-aarch64.tar.gz"
                 sha256 "${LINUX_ARM_SHA}"
 
                 def install
-                  bin.install "IDEOCODE-linux-aarch64" => "IDEOCODE"
+                  bin.install "IDEOCODE-${VERSION}-linux-aarch64" => "IDEOCODE"
                 end
               end
             end
@@ -937,8 +964,8 @@ jobs:
           VERSION="${GITHUB_REF_NAME}"
           VERSION_NUM="${VERSION#v}"
 
-          LINUX_SHA=$(sha256sum artifacts/IDEOCODE-linux-x86_64/IDEOCODE-linux-x86_64.tar.gz | cut -d' ' -f1)
-          LINUX_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-linux-x86_64.tar.gz"
+          LINUX_SHA=$(sha256sum artifacts/IDEOCODE-linux-x86_64/IDEOCODE-${VERSION}-linux-x86_64.tar.gz | cut -d' ' -f1)
+          LINUX_URL="https://github.com/nareinnprs-create/ideocode/releases/download/${VERSION}/IDEOCODE-${VERSION}-linux-x86_64.tar.gz"
 
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
@@ -969,8 +996,8 @@ jobs:
           sha256sums=('SHA_PLACEHOLDER')
 
           package() {
-              install -Dm755 "${srcdir}/IDEOCODE-linux-x86_64" "${pkgdir}/usr/lib/IDEOCODE/IDEOCODE-linux-x86_64"
-              install -Dm755 "${srcdir}/IDEOCODE-linux-x86_64.bin" "${pkgdir}/usr/lib/IDEOCODE/IDEOCODE-linux-x86_64.bin"
+              install -Dm755 "${srcdir}/ASSET_PLACEHOLDER" "${pkgdir}/usr/lib/IDEOCODE/ASSET_PLACEHOLDER"
+              install -Dm755 "${srcdir}/ASSET_PLACEHOLDER.bin" "${pkgdir}/usr/lib/IDEOCODE/ASSET_PLACEHOLDER.bin"
               if compgen -G "${srcdir}/libssl.so*" >/dev/null; then
                   install -Dm644 "${srcdir}"/libssl.so* "${pkgdir}/usr/lib/IDEOCODE/"
               fi
@@ -978,13 +1005,15 @@ jobs:
                   install -Dm644 "${srcdir}"/libcrypto.so* "${pkgdir}/usr/lib/IDEOCODE/"
               fi
               mkdir -p "${pkgdir}/usr/bin"
-              ln -s /usr/lib/IDEOCODE/IDEOCODE-linux-x86_64 "${pkgdir}/usr/bin/IDEOCODE"
+              ln -s /usr/lib/IDEOCODE/ASSET_PLACEHOLDER "${pkgdir}/usr/bin/IDEOCODE"
           }
           PKGBUILD_END
 
+          ASSET="IDEOCODE-${VERSION}-linux-x86_64"
           sed -i "s|VERSION_PLACEHOLDER|${VERSION_NUM}|" PKGBUILD
           sed -i "s|URL_PLACEHOLDER|${LINUX_URL}|" PKGBUILD
           sed -i "s|SHA_PLACEHOLDER|${LINUX_SHA}|" PKGBUILD
+          sed -i "s|ASSET_PLACEHOLDER|${ASSET}|" PKGBUILD
           sed -i 's/^          //' PKGBUILD
 
           # Generate .SRCINFO without makepkg (AUR uses tab indentation)

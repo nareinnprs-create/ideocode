@@ -37,7 +37,7 @@
     "crates/ideocode-tui/src/tui/ui_messages/tests.rs": 2899,
     "crates/ideocode-tui/src/tui/ui_tests/prepare.rs": 1289,
     "crates/ideocode-tui/src/tui/ui_tests/tools.rs": 1356,
-    "tests/e2e/test_support/mod.rs": 1456
+    "tests/e2e/test_support/mod.rs": 1473
   },
   "version": 1
 }

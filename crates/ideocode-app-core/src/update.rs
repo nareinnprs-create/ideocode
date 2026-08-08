@@ -7,7 +7,7 @@ use crate::storage;
 use anyhow::{Context, Result};
 use ideocode_update_core::{
     BACKGROUND_UPDATE_THRESHOLD, estimate_release_update_duration, estimate_source_update_duration,
-    format_duration_estimate, get_asset_name, summarize_git_pull_failure, update_estimate,
+    format_duration_estimate, get_asset_name_for, summarize_git_pull_failure, update_estimate,
     verify_asset_checksum_text, version_is_newer,
 };
 pub use ideocode_update_core::{
@@ -243,11 +243,11 @@ fn latest_main_sha_blocking() -> Result<String> {
 }
 
 fn platform_asset(release: &GitHubRelease) -> Result<&GitHubAsset> {
-    let asset_name = get_asset_name();
+    let asset_name = get_asset_name_for(&release.tag_name);
     release
         .assets
         .iter()
-        .find(|a| a.name.starts_with(asset_name))
+        .find(|a| a.name.starts_with(&asset_name))
         .ok_or_else(|| anyhow::anyhow!("No asset found for platform: {}", asset_name))
 }
 
@@ -569,11 +569,11 @@ fn check_for_stable_update_blocking() -> Result<Option<GitHubRelease>> {
     }
 
     if version_is_newer(release_version, current_version.trim_start_matches('v')) {
-        let asset_name = get_asset_name();
+        let asset_name = get_asset_name_for(&release.tag_name);
         let has_asset = release
             .assets
             .iter()
-            .any(|a| a.name.starts_with(asset_name));
+            .any(|a| a.name.starts_with(&asset_name));
 
         if has_asset {
             return Ok(Some(release));
@@ -636,11 +636,11 @@ fn check_for_main_update_blocking() -> Result<Option<GitHubRelease>> {
 
     // Fallback: use latest stable release if available
     if let Ok(release) = fetch_latest_release_blocking() {
-        let asset_name = get_asset_name();
+        let asset_name = get_asset_name_for(&release.tag_name);
         let has_asset = release
             .assets
             .iter()
-            .any(|a| a.name.starts_with(asset_name));
+            .any(|a| a.name.starts_with(&asset_name));
         if has_asset {
             let release_version = release.tag_name.trim_start_matches('v');
             let current_version = current_update_semver().trim_start_matches('v');
@@ -950,11 +950,11 @@ pub fn download_and_install_blocking_with_progress(
     mut on_progress: impl FnMut(DownloadProgress),
 ) -> Result<PathBuf> {
     let started = Instant::now();
-    let asset_name = get_asset_name();
+    let asset_name = get_asset_name_for(&release.tag_name);
     let asset = release
         .assets
         .iter()
-        .find(|a| a.name.starts_with(asset_name))
+        .find(|a| a.name.starts_with(&asset_name))
         .ok_or_else(|| anyhow::anyhow!("No asset found for platform: {}", asset_name))?;
 
     let download_url = asset.browser_download_url.clone();
@@ -1030,8 +1030,8 @@ pub fn download_and_install_blocking_with_progress(
             }
             let name = entry.file_name();
             let name_string = name.to_string_lossy();
-            let dest_name = if name_string == get_asset_name()
-                || name_string == format!("{}.exe", get_asset_name())
+            let dest_name = if name_string == get_asset_name_for(&release.tag_name)
+                || name_string == format!("{}.exe", get_asset_name_for(&release.tag_name))
             {
                 build::binary_name().to_string()
             } else {
@@ -1217,7 +1217,8 @@ mod tests {
 
     #[test]
     fn test_asset_name() {
-        let name = get_asset_name();
+        let name = get_asset_name_for("v0.64.1");
+        assert!(name.starts_with("IDEOCODE-v0.64.1-"));
         assert!(name.starts_with("IDEOCODE-"));
     }
 

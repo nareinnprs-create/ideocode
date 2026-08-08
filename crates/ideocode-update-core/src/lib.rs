@@ -142,30 +142,39 @@ pub fn update_estimate(summary: String, duration: Duration) -> UpdateEstimate {
     }
 }
 
-pub fn get_asset_name() -> &'static str {
+/// The release asset name for this platform, with the release tag embedded so
+/// every version's assets carry a distinct filename. `version` is the GitHub
+/// tag (e.g. `v0.64.1`), producing names like
+/// `IDEOCODE-v0.64.1-linux-x86_64` / `IDEOCODE-v0.64.1-windows-x86_64.exe`.
+pub fn get_asset_name_for(version: &str) -> String {
+    format!("IDEOCODE-{version}-{}", platform_asset_suffix())
+}
+
+/// The platform portion of the release asset name (includes `.exe` on Windows).
+fn platform_asset_suffix() -> &'static str {
     #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
     {
-        "IDEOCODE-linux-x86_64"
+        "linux-x86_64"
     }
     #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
     {
-        "IDEOCODE-linux-aarch64"
+        "linux-aarch64"
     }
     #[cfg(all(target_os = "macos", target_arch = "x86_64"))]
     {
-        "IDEOCODE-macos-x86_64"
+        "macos-x86_64"
     }
     #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
     {
-        "IDEOCODE-macos-aarch64"
+        "macos-aarch64"
     }
     #[cfg(all(target_os = "windows", target_arch = "x86_64"))]
     {
-        "IDEOCODE-windows-x86_64.exe"
+        "windows-x86_64.exe"
     }
     #[cfg(all(target_os = "windows", target_arch = "aarch64"))]
     {
-        "IDEOCODE-windows-aarch64.exe"
+        "windows-aarch64.exe"
     }
     #[cfg(not(any(
         all(target_os = "linux", target_arch = "x86_64"),
@@ -176,7 +185,7 @@ pub fn get_asset_name() -> &'static str {
         all(target_os = "windows", target_arch = "aarch64"),
     )))]
     {
-        "IDEOCODE-unknown"
+        "unknown"
     }
 }
 
@@ -519,7 +528,9 @@ mod tests {
 
     #[test]
     fn asset_name_is_supported() {
-        assert_ne!(get_asset_name(), "IDEOCODE-unknown");
+        let name = get_asset_name_for("v0.64.1");
+        assert!(name.starts_with("IDEOCODE-v0.64.1-"));
+        assert_ne!(name, "IDEOCODE-v0.64.1-unknown");
     }
 
     #[test]

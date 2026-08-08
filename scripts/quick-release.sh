@@ -247,10 +247,10 @@ if [[ "$MODE" == "fast-local" ]]; then
         exit 1
     }
 
-    cp "$source_bin" "$DIST/IDEOCODE-linux-x86_64.bin"
-    strip --strip-unneeded "$DIST/IDEOCODE-linux-x86_64.bin"
-    chmod +x "$DIST/IDEOCODE-linux-x86_64.bin"
-    cat > "$DIST/IDEOCODE-linux-x86_64" <<WRAPPER
+    cp "$source_bin" "$DIST/IDEOCODE-$VERSION-linux-x86_64.bin"
+    strip --strip-unneeded "$DIST/IDEOCODE-$VERSION-linux-x86_64.bin"
+    chmod +x "$DIST/IDEOCODE-$VERSION-linux-x86_64.bin"
+    cat > "$DIST/IDEOCODE-$VERSION-linux-x86_64" <<WRAPPER
 #!/usr/bin/env sh
 set -eu
 export IDEOCODE_RUNTIME_RELEASE_SEMVER="$VERSION_NUM"
@@ -258,18 +258,18 @@ export IDEOCODE_RUNTIME_RELEASE_GIT_HASH="$(git rev-parse --short HEAD)"
 export IDEOCODE_RUNTIME_RELEASE_GIT_DATE="$(git log -1 --format=%ci)"
 export IDEOCODE_RUNTIME_RELEASE_GIT_TAG="$VERSION"
 self_dir=\$(CDPATH= cd -- "\$(dirname -- "\$0")" && pwd)
-exec "\$self_dir/IDEOCODE-linux-x86_64.bin" "\$@"
+exec "\$self_dir/IDEOCODE-$VERSION-linux-x86_64.bin" "\$@"
 WRAPPER
-    chmod +x "$DIST/IDEOCODE-linux-x86_64"
-    file "$DIST/IDEOCODE-linux-x86_64.bin" | grep -q 'ELF 64-bit' || { echo "Error: bad Linux binary" >&2; exit 1; }
-    version_output="$("$DIST/IDEOCODE-linux-x86_64" --version)"
+    chmod +x "$DIST/IDEOCODE-$VERSION-linux-x86_64"
+    file "$DIST/IDEOCODE-$VERSION-linux-x86_64.bin" | grep -q 'ELF 64-bit' || { echo "Error: bad Linux binary" >&2; exit 1; }
+    version_output="$("$DIST/IDEOCODE-$VERSION-linux-x86_64" --version)"
     printf '%s\n' "$version_output" | grep -Fq "v$VERSION_NUM" || {
         echo "Error: fast binary reports the wrong version: $version_output" >&2
         exit 1
     }
-    (cd "$DIST" && tar -cf - IDEOCODE-linux-x86_64 IDEOCODE-linux-x86_64.bin | gzip -1 > IDEOCODE-linux-x86_64.tar.gz)
-    (cd "$DIST" && sha256sum IDEOCODE-linux-x86_64.tar.gz > SHA256SUMS)
-    echo "  ✅ Linux artifact ready ($(( $(date +%s) - build_start ))s validation/package, $(du -h "$DIST/IDEOCODE-linux-x86_64.tar.gz" | cut -f1))"
+    (cd "$DIST" && tar -cf - IDEOCODE-$VERSION-linux-x86_64 IDEOCODE-$VERSION-linux-x86_64.bin | gzip -1 > IDEOCODE-$VERSION-linux-x86_64.tar.gz)
+    (cd "$DIST" && sha256sum IDEOCODE-$VERSION-linux-x86_64.tar.gz > SHA256SUMS)
+    echo "  ✅ Linux artifact ready ($(( $(date +%s) - build_start ))s validation/package, $(du -h "$DIST/IDEOCODE-$VERSION-linux-x86_64.tar.gz" | cut -f1))"
 
     if $DRY_RUN; then
         echo ""
@@ -282,7 +282,7 @@ WRAPPER
     echo "▸ Publishing immediate Linux release..."
     ensure_release_draft
     gh release upload "$VERSION" \
-        "$DIST/IDEOCODE-linux-x86_64.tar.gz" \
+        "$DIST/IDEOCODE-$VERSION-linux-x86_64.tar.gz" \
         "$DIST/SHA256SUMS" \
         --clobber
     gh release edit "$VERSION" --draft=false --latest
@@ -299,7 +299,9 @@ fi
 # Standard local distribution build: Linux + macOS in parallel.
 echo "▸ Building Linux x86_64 + macOS aarch64 in parallel..."
 (
-    IDEOCODE_RELEASE_BUILD=1 IDEOCODE_BUILD_SEMVER="$VERSION_NUM" scripts/build_linux_compat.sh "$DIST" >/dev/null
+    IDEOCODE_RELEASE_BUILD=1 IDEOCODE_BUILD_SEMVER="$VERSION_NUM" \
+        IDEOCODE_COMPAT_ARTIFACT="IDEOCODE-$VERSION-linux-x86_64" \
+        scripts/build_linux_compat.sh "$DIST" >/dev/null
     echo "  ✅ Linux done ($(elapsed)s)"
 ) &
 LINUX_PID=$!
@@ -307,9 +309,9 @@ LINUX_PID=$!
     IDEOCODE_RELEASE_BUILD=1 IDEOCODE_BUILD_SEMVER="$VERSION_NUM" \
         CARGO_INCREMENTAL=0 CARGO_BUILD_JOBS="${CARGO_BUILD_JOBS:-1}" \
         cargo build --release --target aarch64-apple-darwin --bin ideocode 2>/dev/null
-    cp target/aarch64-apple-darwin/release/ideocode "$DIST/IDEOCODE-macos-aarch64"
-    chmod +x "$DIST/IDEOCODE-macos-aarch64"
-    (cd "$DIST" && tar czf IDEOCODE-macos-aarch64.tar.gz IDEOCODE-macos-aarch64)
+    cp target/aarch64-apple-darwin/release/ideocode "$DIST/IDEOCODE-$VERSION-macos-aarch64"
+    chmod +x "$DIST/IDEOCODE-$VERSION-macos-aarch64"
+    (cd "$DIST" && tar czf IDEOCODE-$VERSION-macos-aarch64.tar.gz IDEOCODE-$VERSION-macos-aarch64)
     echo "  ✅ macOS done ($(elapsed)s)"
 ) &
 MACOS_PID=$!
@@ -319,9 +321,9 @@ wait $MACOS_PID || { echo "Error: macOS build failed"; exit 1; }
 echo ""
 echo "Build time: $(elapsed)s"
 ls -lh "$DIST"/*.tar.gz
-file "$DIST/IDEOCODE-linux-x86_64.bin" | grep -q 'ELF 64-bit' || { echo "Error: bad Linux binary"; exit 1; }
-head -1 "$DIST/IDEOCODE-linux-x86_64" | grep -q '^#!/' || { echo "Error: bad Linux wrapper"; exit 1; }
-file "$DIST/IDEOCODE-macos-aarch64" | grep -q 'Mach-O 64-bit' || { echo "Error: bad macOS binary"; exit 1; }
+file "$DIST/IDEOCODE-$VERSION-linux-x86_64.bin" | grep -q 'ELF 64-bit' || { echo "Error: bad Linux binary"; exit 1; }
+head -1 "$DIST/IDEOCODE-$VERSION-linux-x86_64" | grep -q '^#!/' || { echo "Error: bad Linux wrapper"; exit 1; }
+file "$DIST/IDEOCODE-$VERSION-macos-aarch64" | grep -q 'Mach-O 64-bit' || { echo "Error: bad macOS binary"; exit 1; }
 
 if $DRY_RUN; then
     echo ""
@@ -335,8 +337,8 @@ tag_and_push
 echo "▸ Staging GitHub draft release..."
 ensure_release_draft
 gh release upload "$VERSION" \
-    "$DIST/IDEOCODE-linux-x86_64.tar.gz" \
-    "$DIST/IDEOCODE-macos-aarch64.tar.gz" \
+    "$DIST/IDEOCODE-$VERSION-linux-x86_64.tar.gz" \
+    "$DIST/IDEOCODE-$VERSION-macos-aarch64.tar.gz" \
     --clobber
 
 echo ""

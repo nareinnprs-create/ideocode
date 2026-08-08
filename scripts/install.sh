@@ -173,6 +173,9 @@ fi
 valid_release_tag "$VERSION" || err "Failed to determine latest version"
 INSTALL_VERSION="${VERSION#v}"
 
+# Release assets embed the version in the filename (IDEOCODE-v0.64.1-linux-x86_64.tar.gz).
+VERSIONED_ARTIFACT="IDEOCODE-${VERSION}-${ARTIFACT#IDEOCODE-}"
+
 GITHUB_RELEASE_BASE="https://github.com/$REPO/releases/download/$VERSION"
 
 if [ "$IS_WINDOWS" = true ]; then
@@ -213,7 +216,7 @@ DOWNLOAD_BASES=$(curl -fsSL --retry 2 --connect-timeout 10 \
 DOWNLOAD_BASES=$(printf '%s\n%s\n' "$DOWNLOAD_BASES" "$GITHUB_RELEASE_BASE" |
   awk '/^https:\/\/[^[:space:]]+$/ && !seen[$0]++')
 
-for candidate in "$ARTIFACT.tar.gz" "$ARTIFACT$EXE"; do
+for candidate in "$VERSIONED_ARTIFACT.tar.gz" "$VERSIONED_ARTIFACT$EXE"; do
   while IFS= read -r base; do
     [ -n "$base" ] || continue
     if curl -fsSL --retry 2 --connect-timeout 10 \
@@ -265,15 +268,15 @@ bin_name="IDEOCODE${EXE}"
 
 if [ "$download_mode" = "tar" ]; then
   tar xzf "$tmpdir/IDEOCODE.download" -C "$tmpdir"
-  src_bin="$tmpdir/${ARTIFACT}${EXE}"
-  [ -f "$src_bin" ] || err "Downloaded archive did not contain expected binary: ${ARTIFACT}${EXE}"
-  find "$tmpdir" -maxdepth 1 -type f \( -name "${ARTIFACT}${EXE}.bin" -o -name 'libssl.so*' -o -name 'libcrypto.so*' \) \
+  src_bin="$tmpdir/${VERSIONED_ARTIFACT}${EXE}"
+  [ -f "$src_bin" ] || err "Downloaded archive did not contain expected binary: ${VERSIONED_ARTIFACT}${EXE}"
+  find "$tmpdir" -maxdepth 1 -type f \( -name "${VERSIONED_ARTIFACT}${EXE}.bin" -o -name 'libssl.so*' -o -name 'libcrypto.so*' \) \
     -exec cp -f {} "$dest_version_dir/" \;
   mv "$src_bin" "$dest_version_dir/$bin_name"
 elif [ "$download_mode" = "bin" ]; then
   mv "$tmpdir/IDEOCODE.download" "$dest_version_dir/$bin_name"
 else
-  info "No prebuilt asset found for $ARTIFACT in $VERSION; building from source..."
+  info "No prebuilt asset found for $VERSIONED_ARTIFACT in $VERSION; building from source..."
   command -v git >/dev/null 2>&1 || err "git is required to build from source"
   command -v cargo >/dev/null 2>&1 || err "cargo is required to build from source"
 

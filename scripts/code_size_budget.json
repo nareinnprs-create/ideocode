@@ -18,7 +18,7 @@
     "crates/ideocode-app-core/src/tool/discover.rs": 2134,
     "crates/ideocode-app-core/src/tool/mod.rs": 1229,
     "crates/ideocode-app-core/src/tool/session_search.rs": 1896,
-    "crates/ideocode-app-core/src/update.rs": 1725,
+    "crates/ideocode-app-core/src/update.rs": 1726,
     "crates/ideocode-base/src/auth/lifecycle.rs": 2596,
     "crates/ideocode-base/src/auth/mod.rs": 1490,
     "crates/ideocode-base/src/auth/oauth.rs": 1523,

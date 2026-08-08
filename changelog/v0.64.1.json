@@ -1,0 +1,17 @@
+{
+  "version": "0.64.1",
+  "date": "2026-08-08",
+  "title": "macOS launcher fix and versioned release assets",
+  "highlights": [
+    "Release assets now embed the version in the filename (e.g. IDEOCODE-v0.64.1-linux-x86_64.tar.gz and IDEOCODE-gui-v0.64.1-macos-aarch64.dmg), so the TUI and GUI ship distinct, versioned artifacts for every platform.",
+    "The updater, installers, Homebrew, and AUR all follow the new naming, and existing installs update cleanly from v0.64.0."
+  ],
+  "improvements": [
+    "The macOS launcher no longer maintains the legacy app-launcher directory, removing the code path that forced a launcher refresh on every launch and app-switch after the rebrand.",
+    "TUI test helpers for terminal launch and env-var scoping are gated to Unix, so the test suite compiles and runs on Windows."
+  ],
+  "fixes": [
+    "IDEOCODE on macOS no longer re-creates the .app launcher every time it launches after the IDEOCODE rebrand.",
+    "Clippy -D warnings in ideocode-app-core tooling are resolved."
+  ]
+}
