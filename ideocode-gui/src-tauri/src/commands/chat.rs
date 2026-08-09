@@ -4,7 +4,8 @@
 // SPDX-License-Identifier: MIT
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
+use tauri::Emitter;
 use tauri::State;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -40,16 +41,17 @@ pub struct Session {
     pub save_label: Option<String>,
 }
 
+#[derive(Clone)]
 pub struct ChatState {
-    pub messages: Mutex<Vec<Message>>,
-    pub current_session_id: Mutex<String>,
+    pub messages: Arc<Mutex<Vec<Message>>>,
+    pub current_session_id: Arc<Mutex<String>>,
 }
 
 impl ChatState {
     pub fn new() -> Self {
         Self {
-            messages: Mutex::new(Vec::new()),
-            current_session_id: Mutex::new(new_id()),
+            messages: Arc::new(Mutex::new(Vec::new())),
+            current_session_id: Arc::new(Mutex::new(new_id())),
         }
     }
 }
@@ -326,6 +328,162 @@ async fn chat_completion(
     }
 }
 
+/// Streams an OpenAI-compatible chat completion, emitting `chat://delta`
+/// events as chunks arrive. Gracefully handles engines that ignore `stream`
+/// and return a plain JSON body.
+async fn stream_openai_completion(
+    provider: &str,
+    model: &str,
+    messages: &[serde_json::Value],
+    app: &tauri::AppHandle,
+    assistant_id: &str,
+) -> Result<String, String> {
+    let client = http_client();
+
+    if provider == "baanzon-verso" || provider == "omniroute" {
+        // The built-in engine cold-starts on first launch, so wait for it.
+        let (ready, disabled) = tokio::task::spawn_blocking(|| {
+            let status = ideocode_provider_baanzon::bootstrap_engine();
+            (status.online, status.disabled)
+        })
+        .await
+        .unwrap_or((false, false));
+        if disabled {
+            return Err(
+                "The Baanzon Verso engine is disabled (IDEOCODE_DISABLE_BAANZON_GATEWAY is \
+                 set). Remove that variable to use the built-in engine."
+                    .to_string(),
+            );
+        }
+        if !ready {
+            return Err(
+                "The Baanzon Verso engine is still starting (first launch installs it). It \
+                 keeps retrying in the background; check \
+                 ~/.IDEOCODE/logs/baanzon-verso.log"
+                    .to_string(),
+            );
+        }
+    }
+
+    let url = match provider {
+        "baanzon-verso" | "omniroute" => format!(
+            "{}/chat/completions",
+            ideocode_provider_baanzon::OMNIROUTE_BASE_URL
+        ),
+        "openai" => "https://api.openai.com/v1/chat/completions".to_string(),
+        "openrouter" => "https://openrouter.ai/api/v1/chat/completions".to_string(),
+        other => return Err(format!("Provider {other} does not support streaming")),
+    };
+
+    let body = serde_json::json!({
+        "model": if model.is_empty() || model == "auto" { "auto" } else { model },
+        "messages": messages,
+        "stream": true,
+        "temperature": 0.7,
+    });
+
+    let mut req = client.post(&url).json(&body);
+    if provider == "openai" {
+        let key = std::env::var("OPENAI_API_KEY").map_err(|_| {
+            "OPENAI_API_KEY is not set. Set it in your environment to use OpenAI.".to_string()
+        })?;
+        req = req.bearer_auth(&key);
+    } else if provider == "openrouter" {
+        let key = std::env::var("OPENROUTER_API_KEY").map_err(|_| {
+            "OPENROUTER_API_KEY is not set. Set it in your environment to use OpenRouter."
+                .to_string()
+        })?;
+        req = req.bearer_auth(&key);
+    }
+
+    let mut resp = req
+        .send()
+        .await
+        .map_err(|e| format!("Stream request failed: {e}"))?;
+    if !resp.status().is_success() {
+        let status = resp.status();
+        let text = resp.text().await.map_err(|e| e.to_string())?;
+        return Err(format!(
+            "Engine returned HTTP {status}: {}",
+            truncate(&text)
+        ));
+    }
+
+    let mut buf = String::new();
+    let mut full = String::new();
+    loop {
+        match resp.chunk().await {
+            Ok(Some(chunk)) => {
+                buf.push_str(&String::from_utf8_lossy(&chunk));
+                while let Some(idx) = buf.find("\n\n") {
+                    let event = buf[..idx].to_string();
+                    buf = buf[idx + 2..].to_string();
+                    emit_sse_event(&event, &mut full, app, assistant_id);
+                }
+            }
+            Ok(None) => break,
+            Err(e) => return Err(format!("Stream read failed: {e}")),
+        }
+    }
+    if !buf.is_empty() {
+        emit_sse_event(&buf, &mut full, app, assistant_id);
+    }
+
+    // Graceful fallback: the engine may have returned a plain OpenAI JSON body.
+    if full.is_empty() {
+        let v: serde_json::Value =
+            serde_json::from_str(&buf).map_err(|e| format!("Invalid stream response: {e}"))?;
+        full = v
+            .pointer("/choices/0/message/content")
+            .and_then(|c| c.as_str())
+            .unwrap_or_default()
+            .to_string();
+        if !full.is_empty() {
+            let _ = app.emit(
+                "chat://delta",
+                serde_json::json!({ "id": assistant_id, "content": full }),
+            );
+        }
+    }
+
+    if full.is_empty() {
+        Err("Empty response from engine".to_string())
+    } else {
+        Ok(full)
+    }
+}
+
+/// Parses a single SSE event and emits any content delta found in it.
+fn emit_sse_event(event: &str, full: &mut String, app: &tauri::AppHandle, assistant_id: &str) {
+    for line in event.lines() {
+        let line = line.trim();
+        let Some(payload) = line.strip_prefix("data:") else {
+            continue;
+        };
+        let payload = payload.trim();
+        if payload.is_empty() || payload == "[DONE]" {
+            continue;
+        }
+        let Ok(v) = serde_json::from_str::<serde_json::Value>(payload) else {
+            continue;
+        };
+        let delta = v
+            .pointer("/choices/0/delta/content")
+            .and_then(|c| c.as_str())
+            .or_else(|| {
+                v.pointer("/choices/0/message/content")
+                    .and_then(|c| c.as_str())
+            });
+        if let Some(d) = delta {
+            full.push_str(d);
+            let _ = app.emit(
+                "chat://delta",
+                serde_json::json!({ "id": assistant_id, "content": d }),
+            );
+        }
+    }
+}
+
 /// Builds the request message list (system prompt + conversation history) for a
 /// completion call. `mode` may inject Plan/Agent behaviour into the system prompt.
 fn build_completion_request(history: &[Message], mode: Option<&str>) -> Vec<serde_json::Value> {
@@ -386,6 +544,53 @@ async fn run_completion(
     })
 }
 
+/// Runs a completion, streaming `chat://delta` events to the frontend as text
+/// arrives, and returns the produced assistant message.
+async fn run_streaming_completion(
+    history: &[Message],
+    model_override: Option<String>,
+    mode: Option<&str>,
+    app: &tauri::AppHandle,
+    assistant_id: &str,
+) -> Result<Message, String> {
+    let settings = super::settings::get_settings();
+    let provider = if settings.active_provider.is_empty() {
+        "baanzon-verso".to_string()
+    } else {
+        settings.active_provider
+    };
+    let model = if let Some(model) = model_override.filter(|m| !m.is_empty()) {
+        model
+    } else if settings.active_model.is_empty() {
+        "auto".to_string()
+    } else {
+        settings.active_model
+    };
+
+    let req_messages = build_completion_request(history, mode);
+    let full = match provider.as_str() {
+        "baanzon-verso" | "omniroute" | "openai" | "openrouter" => {
+            stream_openai_completion(&provider, &model, &req_messages, app, assistant_id).await?
+        }
+        _ => {
+            let text = chat_completion(&provider, &model, &req_messages).await?;
+            let _ = app.emit(
+                "chat://delta",
+                serde_json::json!({ "id": assistant_id, "content": text }),
+            );
+            text
+        }
+    };
+
+    Ok(Message {
+        id: assistant_id.to_string(),
+        role: "assistant".into(),
+        content: full,
+        tool_calls: None,
+        timestamp: Some(now_ms()),
+    })
+}
+
 #[tauri::command]
 pub async fn send_message(
     content: String,
@@ -422,6 +627,62 @@ pub async fn send_message(
         .push(assistant_msg.clone());
     save_session(&state);
     Ok(assistant_msg)
+}
+
+/// Starts a streaming chat completion. Pushes the user message immediately and
+/// returns it; the assistant response is streamed back via `chat://delta`,
+/// `chat://done`, and `chat://error` events.
+#[tauri::command]
+pub async fn stream_chat(
+    content: String,
+    state: State<'_, ChatState>,
+    app: tauri::AppHandle,
+    model: Option<String>,
+    mode: Option<String>,
+) -> Result<Message, String> {
+    let user_msg = Message {
+        id: new_id(),
+        role: "user".into(),
+        content,
+        tool_calls: None,
+        timestamp: Some(now_ms()),
+    };
+    state
+        .messages
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .push(user_msg.clone());
+
+    let history: Vec<Message> = state
+        .messages
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .clone();
+    let task_state = state.inner().clone();
+    let assistant_id = new_id();
+    let task_app = app.clone();
+    tauri::async_runtime::spawn(async move {
+        match run_streaming_completion(&history, model, mode.as_deref(), &task_app, &assistant_id)
+            .await
+        {
+            Ok(assistant_msg) => {
+                task_state
+                    .messages
+                    .lock()
+                    .unwrap_or_else(|e| e.into_inner())
+                    .push(assistant_msg.clone());
+                save_session(&task_state);
+                let _ = task_app.emit(
+                    "chat://done",
+                    serde_json::json!({ "message": assistant_msg }),
+                );
+            }
+            Err(e) => {
+                let _ = task_app.emit("chat://error", serde_json::json!({ "error": e }));
+            }
+        }
+    });
+    Ok(user_msg)
 }
 
 /// Re-runs the last exchange: drops the trailing assistant response(s) and

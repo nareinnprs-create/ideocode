@@ -22,6 +22,8 @@ export function EditorPane() {
   const [input, setInput] = useState("");
   const [micActive, setMicActive] = useState(false);
   const { messages, loading, error, sendMessage } = useChatStore();
+  const streaming = useChatStore((s) => s.streaming);
+  const streamingContent = useChatStore((s) => s.streamingContent);
   const clearMessages = useChatStore((s) => s.clearMessages);
   const { activeFile, openFile } = useFileStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -48,7 +50,7 @@ export function EditorPane() {
   }, [messages, loading]);
 
   const handleSend = async () => {
-    if (!input.trim() || loading) return;
+    if (!input.trim() || loading || streaming) return;
     const msg = input;
     setInput("");
     await sendMessage(msg);
@@ -79,6 +81,8 @@ export function EditorPane() {
           <ChatSection
             messages={messages}
             loading={loading}
+            streaming={streaming}
+            streamingContent={streamingContent}
             error={error}
             messagesEndRef={messagesEndRef}
             onFileClick={handleFileClick}
@@ -93,6 +97,8 @@ export function EditorPane() {
         <ChatSection
           messages={messages}
           loading={loading}
+          streaming={streaming}
+          streamingContent={streamingContent}
           error={error}
           messagesEndRef={messagesEndRef}
           onFileClick={handleFileClick}
@@ -214,7 +220,7 @@ export function EditorPane() {
 
           <button
             onClick={handleSend}
-            disabled={!input.trim() || loading}
+            disabled={!input.trim() || loading || streaming}
             title="Send message"
             className="p-1.5 rounded-md transition-fast
               bg-accent-primary text-white
@@ -232,6 +238,8 @@ export function EditorPane() {
 function ChatSection({
   messages,
   loading,
+  streaming,
+  streamingContent,
   error,
   messagesEndRef,
   onFileClick,
@@ -239,6 +247,8 @@ function ChatSection({
 }: {
   messages: Message[];
   loading: boolean;
+  streaming: boolean;
+  streamingContent: string;
   error: string | null;
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
   onFileClick: (path: string) => void;
@@ -250,9 +260,9 @@ function ChatSection({
         <div className="flex items-center gap-2">
           <MessageSquare size={13} className="text-text-muted" />
           <span className="text-xs font-medium text-text-secondary">Chat</span>
-          {loading && (
+          {(loading || streaming) && (
             <span className="text-[10px] text-accent-primary animate-pulse">
-              responding…
+              {streaming ? "streaming…" : "responding…"}
             </span>
           )}
         </div>
@@ -263,6 +273,8 @@ function ChatSection({
       <ChatArea
         messages={messages}
         loading={loading}
+        streaming={streaming}
+        streamingContent={streamingContent}
         error={error}
         messagesEndRef={messagesEndRef}
         onFileClick={onFileClick}
@@ -274,12 +286,16 @@ function ChatSection({
 function ChatArea({
   messages,
   loading,
+  streaming,
+  streamingContent,
   error,
   messagesEndRef,
   onFileClick,
 }: {
   messages: Message[];
   loading: boolean;
+  streaming: boolean;
+  streamingContent: string;
   error: string | null;
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
   onFileClick: (path: string) => void;
@@ -327,6 +343,26 @@ function ChatArea({
           </motion.div>
         ))}
       </AnimatePresence>
+
+      {streaming && streamingContent && (
+        <div className="flex justify-start gap-2">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-accent-primary to-accent-secondary shrink-0 flex items-center justify-center text-white text-[10px] font-bold">
+            BV
+          </div>
+          <div className="space-y-1 max-w-[85%]">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-text-primary">
+                Baanzon Verso
+              </span>
+              <span className="text-[10px] text-accent-primary">streaming…</span>
+            </div>
+            <div className="rounded-xl px-4 py-3 text-sm leading-relaxed bg-bg-elevated text-text-primary border border-border-subtle">
+              <MarkdownRenderer content={streamingContent} onFileClick={onFileClick} />
+              <span className="inline-block w-1.5 h-4 bg-accent-primary animate-pulse align-middle ml-0.5 rounded-sm" />
+            </div>
+          </div>
+        </div>
+      )}
 
       {loading && (
         <div className="flex items-center gap-2 text-text-muted text-sm">

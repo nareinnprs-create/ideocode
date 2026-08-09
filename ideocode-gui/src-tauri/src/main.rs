@@ -80,6 +80,7 @@ fn main() {
             get_version,
             log_error,
             commands::send_message,
+            commands::stream_chat,
             commands::get_messages,
             commands::clear_messages,
             commands::regenerate_last_message,

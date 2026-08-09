@@ -109,6 +109,17 @@ export async function sendMessage(
   });
 }
 
+export async function streamChat(
+  content: string,
+  opts?: { model?: string; mode?: "normal" | "plan" | "agent" },
+): Promise<Message> {
+  return invoke<Message>("stream_chat", {
+    content,
+    model: opts?.model ?? null,
+    mode: opts?.mode ?? null,
+  });
+}
+
 export async function getMessages(): Promise<Message[]> {
   return invoke<Message[]>("get_messages");
 }

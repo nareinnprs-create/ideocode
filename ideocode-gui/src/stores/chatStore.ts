@@ -1,6 +1,7 @@
 import { create } from "zustand";
+import { listen } from "@tauri-apps/api/event";
 import {
-  sendMessage as tauriSend,
+  streamChat as tauriStream,
   getMessages,
   clearMessages as tauriClear,
   listSessions,
@@ -19,6 +20,8 @@ export type ComposerMode = "normal" | "plan" | "agent";
 interface ChatState {
   messages: Message[];
   loading: boolean;
+  streaming: boolean;
+  streamingContent: string;
   error: string | null;
   sessions: Session[];
   model: string;
@@ -36,9 +39,57 @@ interface ChatState {
   deleteSession: (id: string) => Promise<void>;
 }
 
+async function refreshSessions() {
+  try {
+    const sessions = await listSessions();
+    useChatStore.setState({ sessions });
+  } catch (e) {
+    useChatStore.setState({ error: `Session list refresh failed: ${e}` });
+    notify("warning", "Session list refresh failed", `${e}`);
+  }
+}
+
+let listenersReady: Promise<void> | null = null;
+
+function ensureStreamListeners(): Promise<void> {
+  if (!listenersReady) {
+    listenersReady = (async () => {
+      await listen<{ id: string; content: string }>("chat://delta", (e) => {
+        useChatStore.setState((s) =>
+          s.streaming
+            ? { streamingContent: s.streamingContent + e.payload.content }
+            : s,
+        );
+      });
+      await listen<{ message: Message }>("chat://done", (e) => {
+        useChatStore.setState((s) => ({
+          messages: [...s.messages, e.payload.message],
+          streaming: false,
+          streamingContent: "",
+          loading: false,
+          error: null,
+        }));
+        void refreshSessions();
+      });
+      await listen<{ error: string }>("chat://error", (e) => {
+        useChatStore.setState({
+          streaming: false,
+          streamingContent: "",
+          loading: false,
+          error: `Failed to stream response: ${e.payload.error}`,
+        });
+        notify("error", "Stream failed", e.payload.error);
+      });
+    })();
+  }
+  return listenersReady;
+}
+
 export const useChatStore = create<ChatState>((set) => ({
   messages: [],
   loading: false,
+  streaming: false,
+  streamingContent: "",
   error: null,
   sessions: [],
   model: "auto",
@@ -47,36 +98,31 @@ export const useChatStore = create<ChatState>((set) => ({
   setMode: (mode) => set({ mode }),
 
   sendMessage: async (content: string) => {
-    const { model, mode } = useChatStore.getState();
-    const userMsg: Message = {
-      id: crypto.randomUUID(),
-      role: "user",
-      content,
-      timestamp: Date.now(),
-    };
-
-    set((s) => ({ messages: [...s.messages, userMsg], loading: true }));
-
+    const { model, mode, streaming } = useChatStore.getState();
+    if (streaming) return;
+    set((s) => ({
+      loading: true,
+      error: null,
+      streamingContent: "",
+      messages: s.messages,
+    }));
     try {
-      const response = await tauriSend(content, { model, mode });
+      await ensureStreamListeners();
+      const userMsg = await tauriStream(content, { model, mode });
       set((s) => ({
-        messages: [...s.messages, response],
+        messages: [...s.messages, userMsg],
         loading: false,
+        streaming: true,
+        streamingContent: "",
         error: null,
       }));
     } catch (e) {
-      set({ loading: false, error: `Failed to send: ${e}` });
+      set({
+        loading: false,
+        streaming: false,
+        error: `Failed to send: ${e}`,
+      });
       notify("error", "Message failed to send", `${e}`);
-      return;
-    }
-    // The message was delivered; failing to refresh the session list is a
-    // separate, non-fatal error and must not be reported as a failed send.
-    try {
-      const sessions = await listSessions();
-      set({ sessions });
-    } catch (e) {
-      set({ error: `Message sent, but session list refresh failed: ${e}` });
-      notify("warning", "Session list refresh failed", `${e}`);
     }
   },
 
@@ -101,8 +147,7 @@ export const useChatStore = create<ChatState>((set) => ({
     try {
       const assistant = await regenerateLast();
       set({ messages: [...head, assistant], loading: false, error: null });
-      const sessions = await listSessions();
-      set({ sessions });
+      void refreshSessions();
     } catch (e) {
       set({ loading: false, error: `Failed to regenerate: ${e}` });
       notify("error", "Failed to regenerate", `${e}`);
@@ -126,8 +171,7 @@ export const useChatStore = create<ChatState>((set) => ({
         loading: false,
         error: null,
       });
-      const sessions = await listSessions();
-      set({ sessions });
+      void refreshSessions();
     } catch (e) {
       set({ loading: false, error: `Failed to edit: ${e}` });
       notify("error", "Failed to edit message", `${e}`);
@@ -137,9 +181,8 @@ export const useChatStore = create<ChatState>((set) => ({
   clearMessages: async () => {
     try {
       await tauriClear();
-      set({ messages: [], error: null });
-      const sessions = await listSessions();
-      set({ sessions });
+      set({ messages: [], streaming: false, streamingContent: "", error: null });
+      void refreshSessions();
     } catch (e) {
       set({ error: `Failed to clear: ${e}` });
     }
@@ -148,7 +191,7 @@ export const useChatStore = create<ChatState>((set) => ({
   loadSession: async (id: string) => {
     try {
       const messages = await tauriLoadSession(id);
-      set({ messages, error: null });
+      set({ messages, streaming: false, streamingContent: "", error: null });
       notify("success", "Session resumed", "");
     } catch (e) {
       set({ error: `Failed to resume session: ${e}` });
@@ -159,8 +202,8 @@ export const useChatStore = create<ChatState>((set) => ({
   renameSession: async (id: string, title: string) => {
     try {
       await tauriRenameSession(id, title);
-      const sessions = await listSessions();
-      set({ sessions, error: null });
+      void refreshSessions();
+      set({ error: null });
     } catch (e) {
       set({ error: `Failed to rename session: ${e}` });
       notify("error", "Failed to rename session", `${e}`);
