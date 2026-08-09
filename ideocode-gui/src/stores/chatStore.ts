@@ -7,6 +7,8 @@ import {
   loadSession as tauriLoadSession,
   renameSession as tauriRenameSession,
   deleteSession as tauriDeleteSession,
+  regenerateLastMessage as regenerateLast,
+  editLastMessage,
   type Message,
   type Session,
 } from "../lib/tauri-commands";
@@ -26,6 +28,8 @@ interface ChatState {
   sendMessage: (content: string) => Promise<void>;
   loadMessages: () => Promise<void>;
   clearMessages: () => Promise<void>;
+  regenerate: () => Promise<void>;
+  editLast: (content: string) => Promise<void>;
   loadSessions: () => Promise<void>;
   loadSession: (id: string) => Promise<void>;
   renameSession: (id: string, title: string) => Promise<void>;
@@ -82,6 +86,51 @@ export const useChatStore = create<ChatState>((set) => ({
       set({ messages, error: null });
     } catch (e) {
       set({ error: `Failed to load messages: ${e}` });
+    }
+  },
+
+  regenerate: async () => {
+    const { messages } = useChatStore.getState();
+    const lastIdx = messages.map((m) => m.role).lastIndexOf("assistant");
+    if (lastIdx === -1) {
+      notify("error", "Nothing to regenerate", "");
+      return;
+    }
+    const head = messages.slice(0, lastIdx);
+    set({ messages: head, loading: true, error: null });
+    try {
+      const assistant = await regenerateLast();
+      set({ messages: [...head, assistant], loading: false, error: null });
+      const sessions = await listSessions();
+      set({ sessions });
+    } catch (e) {
+      set({ loading: false, error: `Failed to regenerate: ${e}` });
+      notify("error", "Failed to regenerate", `${e}`);
+    }
+  },
+
+  editLast: async (content: string) => {
+    const { messages } = useChatStore.getState();
+    const lastIdx = messages.map((m) => m.role).lastIndexOf("user");
+    if (lastIdx === -1) {
+      notify("error", "Nothing to edit", "");
+      return;
+    }
+    const head = messages.slice(0, lastIdx);
+    const editedUser = { ...messages[lastIdx], content };
+    set({ messages: [...head, editedUser], loading: true, error: null });
+    try {
+      const assistant = await editLastMessage(content);
+      set({
+        messages: [...head, editedUser, assistant],
+        loading: false,
+        error: null,
+      });
+      const sessions = await listSessions();
+      set({ sessions });
+    } catch (e) {
+      set({ loading: false, error: `Failed to edit: ${e}` });
+      notify("error", "Failed to edit message", `${e}`);
     }
   },
 

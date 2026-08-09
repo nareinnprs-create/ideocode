@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Paperclip, Mic, Zap, ListChecks, Bot } from "lucide-react";
+import { Send, Paperclip, Mic, Zap, ListChecks, Bot, Copy, RefreshCw, Pencil, Check, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useChatStore } from "../../stores/chatStore";
 import { useFileStore } from "../../stores/fileStore";
 import { useProviderStore } from "../../stores/providerStore";
 import { getSettings } from "../../lib/tauri-commands";
+import { notify } from "../../stores/toastStore";
 import { MarkdownRenderer } from "../chat/MarkdownRenderer";
 import { ToolCallCard } from "../chat/ToolCallCard";
 import { CodeEditor } from "../editor/CodeEditor";
@@ -241,14 +242,19 @@ function ChatArea({
       )}
 
       <AnimatePresence initial={false}>
-        {messages.map((msg) => (
+        {messages.map((msg, i) => (
           <motion.div
             key={msg.id}
+            className="group"
             initial={{ opacity: 0, y: 8, scale: 0.99 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
           >
-            <MessageBubble message={msg} onFileClick={onFileClick} />
+            <MessageBubble
+              message={msg}
+              isLast={i === messages.length - 1}
+              onFileClick={onFileClick}
+            />
           </motion.div>
         ))}
       </AnimatePresence>
@@ -275,12 +281,18 @@ function ChatArea({
 
 function MessageBubble({
   message,
+  isLast,
   onFileClick,
 }: {
   message: Message;
+  isLast: boolean;
   onFileClick: (path: string) => void;
 }) {
   const isUser = message.role === "user";
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(message.content);
+  const regenerate = useChatStore((s) => s.regenerate);
+  const editLast = useChatStore((s) => s.editLast);
   const time = message.timestamp
     ? new Date(message.timestamp).toLocaleTimeString([], {
         hour: "2-digit",
@@ -288,11 +300,82 @@ function MessageBubble({
       })
     : "";
 
+  const copy = () => {
+    navigator.clipboard
+      .writeText(message.content)
+      .then(() => notify("success", "Copied to clipboard", ""))
+      .catch(() => notify("error", "Copy failed", ""));
+  };
+
+  const commitEdit = () => {
+    const content = draft.trim();
+    setEditing(false);
+    if (content && content !== message.content) {
+      editLast(content);
+    }
+  };
+
   if (isUser) {
     return (
       <div className="flex justify-end gap-2">
-        <div className="max-w-[80%] rounded-xl px-4 py-2.5 text-sm leading-relaxed bg-accent-primary text-white">
-          {message.content}
+        <div className="max-w-[80%] flex flex-col items-end gap-1">
+          {editing ? (
+            <div className="w-full bg-accent-primary/10 border border-accent-primary rounded-xl p-2">
+              <textarea
+                autoFocus
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    commitEdit();
+                  }
+                  if (e.key === "Escape") {
+                    setDraft(message.content);
+                    setEditing(false);
+                  }
+                }}
+                className="w-full bg-transparent text-white text-sm leading-relaxed resize-none outline-none min-h-[48px]"
+              />
+              <div className="flex items-center justify-end gap-1 mt-1">
+                <button
+                  onClick={commitEdit}
+                  title="Save edit"
+                  className="p-1 rounded text-white/80 hover:text-white hover:bg-white/10 transition-fast"
+                >
+                  <Check size={14} />
+                </button>
+                <button
+                  onClick={() => {
+                    setDraft(message.content);
+                    setEditing(false);
+                  }}
+                  title="Cancel edit"
+                  className="p-1 rounded text-white/80 hover:text-white hover:bg-white/10 transition-fast"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-xl px-4 py-2.5 text-sm leading-relaxed bg-accent-primary text-white">
+              {message.content}
+            </div>
+          )}
+          <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-fast">
+            <button onClick={copy} title="Copy" className="msg-action">
+              <Copy size={12} />
+            </button>
+            {isLast && (
+              <button
+                onClick={() => setEditing(true)}
+                title="Edit message"
+                className="msg-action"
+              >
+                <Pencil size={12} />
+              </button>
+            )}
+          </div>
         </div>
         <div className="w-7 h-7 rounded-lg bg-accent-secondary shrink-0 flex items-center justify-center text-white text-xs font-bold">
           You
@@ -322,6 +405,17 @@ function MessageBubble({
             <MarkdownRenderer content={message.content} onFileClick={onFileClick} />
           </div>
         )}
+
+        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-fast">
+          <button onClick={copy} title="Copy" className="msg-action">
+            <Copy size={12} />
+          </button>
+          {isLast && (
+            <button onClick={regenerate} title="Regenerate" className="msg-action">
+              <RefreshCw size={12} />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

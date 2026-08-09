@@ -325,6 +325,66 @@ async fn chat_completion(
     }
 }
 
+/// Builds the request message list (system prompt + conversation history) for a
+/// completion call. `mode` may inject Plan/Agent behaviour into the system prompt.
+fn build_completion_request(history: &[Message], mode: Option<&str>) -> Vec<serde_json::Value> {
+    let mut system_prompt = SYSTEM_PROMPT.to_string();
+    match mode {
+        Some("plan") => {
+            system_prompt.push_str(
+                "\nYou are in PLAN MODE: analyze the request, propose a clear step-by-step plan, \
+                 and explain your reasoning. Do not write or modify code yet.",
+            );
+        }
+        Some("agent") => {
+            system_prompt.push_str(
+                "\nYou are in AGENT MODE: act as an autonomous coding agent. Break the task into \
+                 steps and produce complete, ready-to-apply code and instructions.",
+            );
+        }
+        _ => {}
+    }
+
+    let mut req_messages: Vec<serde_json::Value> = Vec::with_capacity(history.len() + 1);
+    req_messages.push(serde_json::json!({ "role": "system", "content": system_prompt }));
+    for m in history {
+        req_messages.push(serde_json::json!({ "role": m.role, "content": m.content }));
+    }
+    req_messages
+}
+
+/// Runs a completion against the active provider for the given history and
+/// returns the produced assistant message.
+async fn run_completion(
+    history: &[Message],
+    model_override: Option<String>,
+    mode: Option<&str>,
+) -> Result<Message, String> {
+    let settings = super::settings::get_settings();
+    let provider = if settings.active_provider.is_empty() {
+        "baanzon-verso".to_string()
+    } else {
+        settings.active_provider
+    };
+    let model = if let Some(model) = model_override.filter(|m| !m.is_empty()) {
+        model
+    } else if settings.active_model.is_empty() {
+        "auto".to_string()
+    } else {
+        settings.active_model
+    };
+
+    let req_messages = build_completion_request(history, mode);
+    let response_text = chat_completion(&provider, &model, &req_messages).await?;
+    Ok(Message {
+        id: new_id(),
+        role: "assistant".into(),
+        content: response_text,
+        tool_calls: None,
+        timestamp: Some(now_ms()),
+    })
+}
+
 #[tauri::command]
 pub async fn send_message(
     content: String,
@@ -352,52 +412,89 @@ pub async fn send_message(
         .unwrap_or_else(|e| e.into_inner())
         .clone();
 
-    let settings = super::settings::get_settings();
-    let provider = if settings.active_provider.is_empty() {
-        "baanzon-verso".to_string()
-    } else {
-        settings.active_provider
-    };
-    let model = if let Some(model) = model.filter(|m| !m.is_empty()) {
-        model
-    } else if settings.active_model.is_empty() {
-        "auto".to_string()
-    } else {
-        settings.active_model
-    };
+    let assistant_msg = run_completion(&history, model, mode.as_deref()).await?;
 
-    let mut system_prompt = SYSTEM_PROMPT.to_string();
-    match mode.as_deref() {
-        Some("plan") => {
-            system_prompt.push_str(
-                "\nYou are in PLAN MODE: analyze the request, propose a clear step-by-step plan, \
-                 and explain your reasoning. Do not write or modify code yet.",
-            );
+    state
+        .messages
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .push(assistant_msg.clone());
+    save_session(&state);
+    Ok(assistant_msg)
+}
+
+/// Re-runs the last exchange: drops the trailing assistant response(s) and
+/// produces a fresh completion from the remaining history.
+#[tauri::command]
+pub async fn regenerate_last_message(state: State<'_, ChatState>) -> Result<Message, String> {
+    {
+        let mut msgs = state
+            .messages
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+        while matches!(msgs.last(), Some(m) if m.role == "assistant") {
+            msgs.pop();
         }
-        Some("agent") => {
-            system_prompt.push_str(
-                "\nYou are in AGENT MODE: act as an autonomous coding agent. Break the task into \
-                 steps and produce complete, ready-to-apply code and instructions.",
-            );
-        }
-        _ => {}
     }
 
-    let mut req_messages: Vec<serde_json::Value> = Vec::with_capacity(history.len() + 1);
-    req_messages.push(serde_json::json!({ "role": "system", "content": system_prompt }));
-    for m in &history {
-        req_messages.push(serde_json::json!({ "role": m.role, "content": m.content }));
+    let history: Vec<Message> = state
+        .messages
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .clone();
+    if !history.iter().any(|m| m.role == "user") {
+        return Err("Nothing to regenerate".to_string());
     }
 
-    let response_text = chat_completion(&provider, &model, &req_messages).await?;
+    let assistant_msg = run_completion(&history, None, None).await?;
+    state
+        .messages
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .push(assistant_msg.clone());
+    save_session(&state);
+    Ok(assistant_msg)
+}
 
-    let assistant_msg = Message {
-        id: new_id(),
-        role: "assistant".into(),
-        content: response_text,
-        tool_calls: None,
-        timestamp: Some(now_ms()),
-    };
+/// Edits the last user message in place, drops the trailing assistant
+/// response(s), and produces a fresh completion.
+#[tauri::command]
+pub async fn edit_last_message(
+    content: String,
+    state: State<'_, ChatState>,
+) -> Result<Message, String> {
+    let content = content.trim().to_string();
+    if content.is_empty() {
+        return Err("Message cannot be empty".to_string());
+    }
+
+    {
+        let mut msgs = state
+            .messages
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+        while matches!(msgs.last(), Some(m) if m.role == "assistant") {
+            msgs.pop();
+        }
+        match msgs.iter_mut().rev().find(|m| m.role == "user") {
+            Some(m) => m.content = content,
+            None => msgs.push(Message {
+                id: new_id(),
+                role: "user".into(),
+                content,
+                tool_calls: None,
+                timestamp: Some(now_ms()),
+            }),
+        }
+    }
+
+    let history: Vec<Message> = state
+        .messages
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .clone();
+
+    let assistant_msg = run_completion(&history, None, None).await?;
     state
         .messages
         .lock()

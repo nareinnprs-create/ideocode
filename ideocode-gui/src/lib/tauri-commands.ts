@@ -117,6 +117,14 @@ export async function clearMessages(): Promise<void> {
   return invoke<void>("clear_messages");
 }
 
+export async function regenerateLastMessage(): Promise<Message> {
+  return invoke<Message>("regenerate_last_message");
+}
+
+export async function editLastMessage(content: string): Promise<Message> {
+  return invoke<Message>("edit_last_message", { content });
+}
+
 export async function loadSession(id: string): Promise<Message[]> {
   return invoke<Message[]>("load_session", { id });
 }

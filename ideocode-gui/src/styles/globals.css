@@ -623,6 +623,11 @@ body {
     focus-visible:outline-2 focus-visible:outline-accent-primary;
 }
 
+.msg-action {
+  @apply p-1 rounded-md text-text-muted hover:text-accent-primary hover:bg-bg-hover transition-all duration-150
+    focus-visible:outline-2 focus-visible:outline-accent-primary;
+}
+
 .kbd {
   @apply px-1.5 py-0.5 rounded bg-bg-elevated text-[10px] font-mono text-text-secondary border border-border-subtle;
 }

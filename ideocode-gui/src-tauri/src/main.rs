@@ -82,6 +82,8 @@ fn main() {
             commands::send_message,
             commands::get_messages,
             commands::clear_messages,
+            commands::regenerate_last_message,
+            commands::edit_last_message,
             commands::load_session,
             commands::rename_session,
             commands::list_sessions,
