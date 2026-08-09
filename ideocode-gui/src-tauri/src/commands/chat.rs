@@ -182,7 +182,8 @@ async fn chat_completion(
                 return Err(
                     "The Baanzon Verso engine is still starting (first launch installs it). It \
                      keeps retrying in the background; check \
-                     ~/.IDEOCODE/logs/baanzon-verso.log".to_string(),
+                     ~/.IDEOCODE/logs/baanzon-verso.log"
+                        .to_string(),
                 );
             }
             let url = format!(
@@ -428,10 +429,7 @@ pub async fn send_message(
 #[tauri::command]
 pub async fn regenerate_last_message(state: State<'_, ChatState>) -> Result<Message, String> {
     {
-        let mut msgs = state
-            .messages
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let mut msgs = state.messages.lock().unwrap_or_else(|e| e.into_inner());
         while matches!(msgs.last(), Some(m) if m.role == "assistant") {
             msgs.pop();
         }
@@ -469,10 +467,7 @@ pub async fn edit_last_message(
     }
 
     {
-        let mut msgs = state
-            .messages
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let mut msgs = state.messages.lock().unwrap_or_else(|e| e.into_inner());
         while matches!(msgs.last(), Some(m) if m.role == "assistant") {
             msgs.pop();
         }
@@ -552,10 +547,7 @@ pub fn load_session(id: String, state: State<'_, ChatState>) -> Result<Vec<Messa
         .unwrap_or(&id)
         .to_string();
 
-    *state
-        .messages
-        .lock()
-        .unwrap_or_else(|e| e.into_inner()) = messages.clone();
+    *state.messages.lock().unwrap_or_else(|e| e.into_inner()) = messages.clone();
     *state
         .current_session_id
         .lock()
