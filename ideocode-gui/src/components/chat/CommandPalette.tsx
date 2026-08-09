@@ -3,7 +3,7 @@ import { useAppStore } from "../../stores/appStore";
 import { useChatStore } from "../../stores/chatStore";
 import { getSettings, updateSettings } from "../../lib/tauri-commands";
 import { notify } from "../../stores/toastStore";
-import { THEME_IDS } from "../../lib/theme-registry";
+import { THEMES, type Theme } from "../../lib/theme-registry";
 import {
   Search,
   Settings,
@@ -18,6 +18,8 @@ import {
   MessageSquare,
   RefreshCw,
   ClipboardCopy,
+  ArrowLeft,
+  Check,
   X,
 } from "lucide-react";
 
@@ -48,34 +50,59 @@ const COMMANDS: Command[] = [
 export function CommandPalette() {
   const commandPaletteOpen = useAppStore((s) => s.commandPaletteOpen);
   const setCommandPaletteOpen = useAppStore((s) => s.setCommandPaletteOpen);
+  const theme = useAppStore((s) => s.theme);
+  const setTheme = useAppStore((s) => s.setTheme);
   const [query, setQuery] = useState("");
   const [selectedIdx, setSelectedIdx] = useState(0);
+  const [mode, setMode] = useState<"commands" | "themes">("commands");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const applyTheme = (next: Theme) => {
+    setTheme(next);
+    void getSettings()
+      .then((settings) => updateSettings({ ...settings, theme: next }))
+      .catch(() => {});
+    setCommandPaletteOpen(false);
+  };
 
   const filtered = COMMANDS.filter((c) =>
     c.label.toLowerCase().includes(query.toLowerCase()),
+  );
+
+  const themes = THEMES.filter((t) =>
+    t.label.toLowerCase().includes(query.toLowerCase()),
   );
 
   useEffect(() => {
     if (commandPaletteOpen) {
       setQuery("");
       setSelectedIdx(0);
+      setMode("commands");
       const t = setTimeout(() => inputRef.current?.focus(), 50);
       return () => clearTimeout(t);
     }
   }, [commandPaletteOpen]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    const count = mode === "themes" ? themes.length : filtered.length;
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setSelectedIdx((i) => Math.min(i + 1, Math.max(filtered.length - 1, 0)));
+      setSelectedIdx((i) => Math.min(i + 1, Math.max(count - 1, 0)));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setSelectedIdx((i) => Math.max(i - 1, 0));
     } else if (e.key === "Enter") {
       e.preventDefault();
-      if (filtered[selectedIdx]) {
+      if (mode === "themes") {
+        const t = themes[selectedIdx];
+        if (t) applyTheme(t.id);
+      } else if (filtered[selectedIdx]) {
         executeCommand(filtered[selectedIdx].id);
+      }
+    } else if (e.key === "Escape") {
+      if (mode === "themes") {
+        setMode("commands");
+        setQuery("");
       }
     }
   };
@@ -104,14 +131,10 @@ export function CommandPalette() {
         s.setRightPanel("providers"); s.setRightPanelOpen(true); break;
       case "open-settings":
         s.setRightPanel("settings"); s.setRightPanelOpen(true); break;
-      case "change-theme": {
-        const next = THEME_IDS[(THEME_IDS.indexOf(s.theme) + 1) % THEME_IDS.length];
-        s.setTheme(next);
-        void getSettings()
-          .then((settings) => updateSettings({ ...settings, theme: next }))
-          .catch(() => {});
-        break;
-      }
+      case "change-theme":
+        setMode("themes");
+        setQuery("");
+        return;
       case "new-chat":
         void useChatStore.getState().clearMessages();
         break;
@@ -147,7 +170,21 @@ export function CommandPalette() {
       <div className="relative w-full max-w-lg glass-elevated overflow-hidden animate-slide-up">
         {/* Search input */}
         <div className="flex items-center gap-2 px-4 py-3 border-b border-border-subtle">
-          <Search size={16} className="text-text-muted shrink-0" />
+          {mode === "themes" && (
+            <button
+              onClick={() => {
+                setMode("commands");
+                setQuery("");
+              }}
+              className="p-1 text-text-muted hover:text-text-primary transition-fast"
+              title="Back to commands"
+            >
+              <ArrowLeft size={16} />
+            </button>
+          )}
+          {mode === "commands" && (
+            <Search size={16} className="text-text-muted shrink-0" />
+          )}
           <input
             ref={inputRef}
             type="text"
@@ -157,7 +194,7 @@ export function CommandPalette() {
               setSelectedIdx(0);
             }}
             onKeyDown={handleKeyDown}
-            placeholder="Type a command..."
+            placeholder={mode === "themes" ? "Search themes..." : "Type a command..."}
             className="flex-1 bg-transparent text-text-primary text-sm outline-none placeholder:text-text-muted"
           />
           <button
@@ -168,39 +205,83 @@ export function CommandPalette() {
           </button>
         </div>
 
-        {/* Results */}
-        <div className="max-h-[300px] overflow-y-auto py-1">
-          {filtered.length === 0 ? (
-            <div className="px-4 py-6 text-center text-text-muted text-sm">
-              No commands found
-            </div>
-          ) : (
-            filtered.map((cmd, idx) => {
-              const Icon = cmd.icon;
-              return (
-                <button
-                  key={cmd.id}
-                  onClick={() => executeCommand(cmd.id)}
-                  onMouseEnter={() => setSelectedIdx(idx)}
-                  className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast
-                    ${
-                      idx === selectedIdx
-                        ? "bg-bg-elevated text-text-primary"
-                        : "text-text-secondary hover:bg-bg-elevated"
-                    }`}
-                >
-                  <Icon size={16} className="shrink-0 opacity-50" />
-                  <span className="flex-1 text-left">{cmd.label}</span>
-                  {cmd.shortcut && (
-                    <kbd className="text-[11px] text-text-muted bg-bg-tertiary px-1.5 py-0.5 rounded font-mono">
-                      {cmd.shortcut}
-                    </kbd>
-                  )}
-                </button>
-              );
-            })
-          )}
-        </div>
+        {mode === "themes" ? (
+          <div className="max-h-[300px] overflow-y-auto py-1">
+            {themes.length === 0 ? (
+              <div className="px-4 py-6 text-center text-text-muted text-sm">
+                No themes found
+              </div>
+            ) : (
+              themes.map((t) => {
+                const active = t.id === theme;
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => applyTheme(t.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast
+                      ${
+                        active
+                          ? "bg-bg-elevated text-text-primary"
+                          : "text-text-secondary hover:bg-bg-elevated"
+                      }`}
+                  >
+                    <span
+                      className="w-8 h-6 rounded border border-border-subtle shrink-0 flex items-center justify-center text-[9px] font-mono"
+                      style={{ backgroundColor: t.bg, color: t.accent }}
+                    >
+                      Aa
+                    </span>
+                    <span className="flex-1 text-left">
+                      <span className="block font-medium text-text-primary">
+                        {t.label}
+                      </span>
+                      <span className="block text-[11px] text-text-muted">
+                        {t.description} · {t.tier}
+                      </span>
+                    </span>
+                    {active && (
+                      <Check size={14} className="text-accent-primary shrink-0" />
+                    )}
+                  </button>
+                );
+              })
+            )}
+          </div>
+        ) : (
+          /* Results */
+          <div className="max-h-[300px] overflow-y-auto py-1">
+            {filtered.length === 0 ? (
+              <div className="px-4 py-6 text-center text-text-muted text-sm">
+                No commands found
+              </div>
+            ) : (
+              filtered.map((cmd, idx) => {
+                const Icon = cmd.icon;
+                return (
+                  <button
+                    key={cmd.id}
+                    onClick={() => executeCommand(cmd.id)}
+                    onMouseEnter={() => setSelectedIdx(idx)}
+                    className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast
+                      ${
+                        idx === selectedIdx
+                          ? "bg-bg-elevated text-text-primary"
+                          : "text-text-secondary hover:bg-bg-elevated"
+                      }`}
+                  >
+                    <Icon size={16} className="shrink-0 opacity-50" />
+                    <span className="flex-1 text-left">{cmd.label}</span>
+                    {cmd.shortcut && (
+                      <kbd className="text-[11px] text-text-muted bg-bg-tertiary px-1.5 py-0.5 rounded font-mono">
+                        {cmd.shortcut}
+                      </kbd>
+                    )}
+                  </button>
+                );
+              })
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
