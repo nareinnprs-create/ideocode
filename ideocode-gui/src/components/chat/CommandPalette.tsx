@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useAppStore } from "../../stores/appStore";
+import { useChatStore } from "../../stores/chatStore";
 import { getSettings, updateSettings } from "../../lib/tauri-commands";
+import { notify } from "../../stores/toastStore";
 import { THEME_IDS } from "../../lib/theme-registry";
 import {
   Search,
@@ -13,6 +15,9 @@ import {
   Hammer,
   History,
   BugPlay,
+  MessageSquare,
+  RefreshCw,
+  ClipboardCopy,
   X,
 } from "lucide-react";
 
@@ -35,6 +40,9 @@ const COMMANDS: Command[] = [
   { id: "open-providers", label: "Open Providers", icon: Cpu, category: "Panels" },
   { id: "open-settings", label: "Open Settings", shortcut: "⌘,", icon: Settings, category: "Settings" },
   { id: "change-theme", label: "Change Theme", icon: Palette, category: "Settings" },
+  { id: "new-chat", label: "New Chat", shortcut: "⌘N", icon: MessageSquare, category: "Chat" },
+  { id: "regenerate", label: "Regenerate Last Response", icon: RefreshCw, category: "Chat" },
+  { id: "copy-conversation", label: "Copy Conversation", icon: ClipboardCopy, category: "Chat" },
 ];
 
 export function CommandPalette() {
@@ -102,6 +110,23 @@ export function CommandPalette() {
         void getSettings()
           .then((settings) => updateSettings({ ...settings, theme: next }))
           .catch(() => {});
+        break;
+      }
+      case "new-chat":
+        void useChatStore.getState().clearMessages();
+        break;
+      case "regenerate":
+        void useChatStore.getState().regenerate();
+        break;
+      case "copy-conversation": {
+        const text = useChatStore
+          .getState()
+          .messages.map((m) => `${m.role.toUpperCase()}:\n${m.content}`)
+          .join("\n\n");
+        navigator.clipboard
+          .writeText(text)
+          .then(() => notify("success", "Conversation copied", ""))
+          .catch(() => notify("error", "Copy failed", ""));
         break;
       }
     }
