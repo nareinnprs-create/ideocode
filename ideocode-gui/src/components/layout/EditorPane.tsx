@@ -18,9 +18,27 @@ const MODES = [
   { id: "agent" as const, label: "Agent", icon: Bot },
 ];
 
+interface VoiceResult {
+  [0]: { transcript: string };
+}
+interface VoiceResultEvent {
+  results: VoiceResult[];
+}
+interface VoiceRecognition {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  start: () => void;
+  stop: () => void;
+  onresult: ((e: VoiceResultEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+}
+
 export function EditorPane() {
   const [input, setInput] = useState("");
   const [micActive, setMicActive] = useState(false);
+  const recognitionRef = useRef<VoiceRecognition | null>(null);
   const { messages, loading, error, sendMessage } = useChatStore();
   const streaming = useChatStore((s) => s.streaming);
   const streamingContent = useChatStore((s) => s.streamingContent);
@@ -66,6 +84,51 @@ export function EditorPane() {
   const handleFileClick = (path: string) => {
     openFile(path);
   };
+
+  const handleMicToggle = () => {
+    const w = window as unknown as {
+      SpeechRecognition?: new () => VoiceRecognition;
+      webkitSpeechRecognition?: new () => VoiceRecognition;
+    };
+    const Ctor = w.SpeechRecognition || w.webkitSpeechRecognition;
+    if (!Ctor) {
+      notify(
+        "error",
+        "Voice input not supported",
+        "This browser has no SpeechRecognition API.",
+      );
+      return;
+    }
+    if (micActive) {
+      recognitionRef.current?.stop();
+      setMicActive(false);
+      return;
+    }
+    const rec = new Ctor();
+    rec.lang = "en-US";
+    rec.interimResults = false;
+    rec.continuous = false;
+    rec.onresult = (e) => {
+      const text = Array.from(e.results)
+        .map((r) => r[0].transcript)
+        .join("");
+      setInput((prev) => (prev.trim() ? prev + " " + text : text));
+    };
+    rec.onend = () => setMicActive(false);
+    rec.onerror = () => {
+      setMicActive(false);
+      notify("error", "Voice input failed", "");
+    };
+    rec.start();
+    recognitionRef.current = rec;
+    setMicActive(true);
+  };
+
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.stop();
+    };
+  }, []);
 
   return (
     <main className="flex flex-col flex-1 min-w-0">
@@ -210,7 +273,7 @@ export function EditorPane() {
 
           <button
             title={micActive ? "Stop voice input" : "Voice input"}
-            onClick={() => setMicActive(!micActive)}
+            onClick={handleMicToggle}
             className={`p-1.5 transition-fast rounded-md hover:bg-bg-elevated ${
               micActive ? "text-accent-primary bg-accent-primary/10" : "text-text-muted hover:text-text-primary"
             }`}
