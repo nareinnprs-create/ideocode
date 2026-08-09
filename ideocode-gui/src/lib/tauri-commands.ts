@@ -269,6 +269,7 @@ export interface AppSettings {
   minimap: boolean;
   auto_save: boolean;
   language: string;
+  mode: string;
 }
 
 export async function getSettings(): Promise<AppSettings> {

@@ -4,9 +4,10 @@ import { getSettings, updateSettings } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
 import { THEMES } from "../../lib/theme-registry";
 import { useAppStore } from "../../stores/appStore";
+import { useProviderStore } from "../../stores/providerStore";
 import { notify } from "../../stores/toastStore";
 
-type Tab = "appearance" | "editor" | "about";
+type Tab = "appearance" | "chat" | "editor" | "about";
 
 const FONT_SIZES = [11, 12, 13, 14, 15, 16, 18, 20];
 const FONT_FAMILIES = [
@@ -16,6 +17,11 @@ const FONT_FAMILIES = [
   "Source Code Pro",
   "Monaco",
   "monospace",
+];
+const MODES = [
+  { id: "normal", label: "Normal" },
+  { id: "plan", label: "Plan" },
+  { id: "agent", label: "Agent" },
 ];
 
 export function SettingsPanel() {
@@ -57,7 +63,7 @@ export function SettingsPanel() {
     <div className="flex flex-col h-full">
       {/* Tabs */}
       <div className="flex gap-px px-2 pt-2 border-b border-border-subtle bg-bg-tertiary">
-        {(["appearance", "editor", "about"] as const).map((t) => (
+        {(["appearance", "chat", "editor", "about"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -92,6 +98,8 @@ export function SettingsPanel() {
           <div className="p-4 text-center text-text-muted text-xs">Loading...</div>
         ) : tab === "appearance" ? (
           <AppearanceTab settings={settings} onChange={handleChange} />
+        ) : tab === "chat" ? (
+          <ChatTab settings={settings} onChange={handleChange} />
         ) : tab === "editor" ? (
           <EditorTab settings={settings} onChange={handleChange} />
         ) : (
@@ -171,6 +179,57 @@ function AppearanceTab({
             </button>
           ))}
         </div>
+      </Section>
+    </div>
+  );
+}
+
+function ChatTab({
+  settings,
+  onChange,
+}: {
+  settings: AppSettings;
+  onChange: (p: Partial<AppSettings>) => void;
+}) {
+  const providers = useProviderStore((s) => s.providers);
+  const modelOptions = providers.flatMap((p) => p.models.map((m) => m.id));
+
+  return (
+    <div className="p-4 space-y-5">
+      <Section label="Default Mode">
+        <div className="flex gap-1.5">
+          {MODES.map((m) => (
+            <button
+              key={m.id}
+              onClick={() => onChange({ mode: m.id })}
+              className={`px-2.5 py-1 text-xs rounded transition-fast border
+                ${settings.mode === m.id
+                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
+                  : "border-border-subtle text-text-muted hover:border-text-muted"
+                }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+      </Section>
+
+      <Section label="Default Model">
+        <select
+          value={settings.active_model}
+          onChange={(e) => onChange({ active_model: e.target.value })}
+          className="w-full bg-bg-primary border border-border-subtle rounded px-2 py-1.5 text-xs text-text-primary outline-none font-mono"
+        >
+          <option value="auto">auto</option>
+          {modelOptions.map((id) => (
+            <option key={id} value={id}>{id}</option>
+          ))}
+        </select>
+        {modelOptions.length === 0 && (
+          <p className="text-[10px] text-text-muted mt-1">
+            No providers loaded yet — pick a model in the chat composer to populate this list.
+          </p>
+        )}
       </Section>
     </div>
   );

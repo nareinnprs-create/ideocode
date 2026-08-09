@@ -72,6 +72,7 @@ export function OnboardingWizard({ onComplete }: Props) {
         minimap: false,
         auto_save: true,
         language: "en",
+        mode: "normal",
       };
       updateSettings(settings)
         .then(() => {

@@ -17,6 +17,8 @@ pub struct AppSettings {
     pub minimap: bool,
     pub auto_save: bool,
     pub language: String,
+    #[serde(default)]
+    pub mode: String,
 }
 
 impl Default for AppSettings {
@@ -32,6 +34,7 @@ impl Default for AppSettings {
             minimap: false,
             auto_save: true,
             language: "en".into(),
+            mode: "normal".into(),
         }
     }
 }

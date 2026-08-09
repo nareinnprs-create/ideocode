@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Paperclip, Mic, Zap, ListChecks, Bot, Copy, RefreshCw, Pencil, Check, X, Plus, MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useChatStore } from "../../stores/chatStore";
+import { useChatStore, type ComposerMode } from "../../stores/chatStore";
 import { useFileStore } from "../../stores/fileStore";
 import { useProviderStore } from "../../stores/providerStore";
-import { getSettings } from "../../lib/tauri-commands";
+import { getSettings, updateSettings } from "../../lib/tauri-commands";
 import { notify } from "../../stores/toastStore";
 import { MarkdownRenderer } from "../chat/MarkdownRenderer";
 import { ToolCallCard } from "../chat/ToolCallCard";
@@ -60,8 +60,27 @@ export function EditorPane() {
     loadProviders();
     getSettings().then((s) => {
       if (s.active_model) setModel(s.active_model);
+      if (s.mode === "normal" || s.mode === "plan" || s.mode === "agent") {
+        setMode(s.mode);
+      }
     }).catch(() => {});
-  }, [loadProviders, setModel]);
+  }, [loadProviders, setModel, setMode]);
+
+  const persistSelection = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const persistPatch = (patch: { active_model?: string; mode?: ComposerMode }) => {
+    if (persistSelection.current) clearTimeout(persistSelection.current);
+    persistSelection.current = setTimeout(() => {
+      getSettings()
+        .then((s) => updateSettings({ ...s, ...patch }))
+        .catch(() => {});
+    }, 300);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (persistSelection.current) clearTimeout(persistSelection.current);
+    };
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -180,7 +199,10 @@ export function EditorPane() {
             {MODES.map(({ id, label, icon: ModeIcon }) => (
               <button
                 key={id}
-                onClick={() => setMode(id)}
+                onClick={() => {
+                  setMode(id);
+                  persistPatch({ mode: id });
+                }}
                 title={`${label} mode`}
                 className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium transition-fast
                   ${
@@ -200,7 +222,10 @@ export function EditorPane() {
             <span className="text-[10px] text-text-muted uppercase tracking-wider">Model</span>
             <select
               value={model}
-              onChange={(e) => setModel(e.target.value)}
+              onChange={(e) => {
+                setModel(e.target.value);
+                persistPatch({ active_model: e.target.value });
+              }}
               className="bg-bg-primary border border-border-subtle rounded-md px-2 py-1 text-[11px] text-text-secondary outline-none focus:border-accent-primary font-mono max-w-[220px]"
             >
               {model === "auto" && <option value="auto">auto</option>}
