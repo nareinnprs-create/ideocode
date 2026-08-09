@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Paperclip, Mic, Zap, ListChecks, Bot, Copy, RefreshCw, Pencil, Check, X } from "lucide-react";
+import { Send, Paperclip, Mic, Zap, ListChecks, Bot, Copy, RefreshCw, Pencil, Check, X, Plus, MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useChatStore } from "../../stores/chatStore";
 import { useFileStore } from "../../stores/fileStore";
@@ -22,6 +22,7 @@ export function EditorPane() {
   const [input, setInput] = useState("");
   const [micActive, setMicActive] = useState(false);
   const { messages, loading, error, sendMessage } = useChatStore();
+  const clearMessages = useChatStore((s) => s.clearMessages);
   const { activeFile, openFile } = useFileStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -75,24 +76,30 @@ export function EditorPane() {
               <CodeEditor />
             </div>
           </div>
-          <div className="flex-1 min-h-0 flex flex-col">
-            <ChatArea
-              messages={messages}
-              loading={loading}
-              error={error}
-              messagesEndRef={messagesEndRef}
-              onFileClick={handleFileClick}
-            />
-          </div>
+          <ChatSection
+            messages={messages}
+            loading={loading}
+            error={error}
+            messagesEndRef={messagesEndRef}
+            onFileClick={handleFileClick}
+            onNewChat={() => {
+              clearMessages();
+              setInput("");
+            }}
+          />
         </div>
       ) : (
         /* Chat only */
-        <ChatArea
+        <ChatSection
           messages={messages}
           loading={loading}
           error={error}
           messagesEndRef={messagesEndRef}
           onFileClick={handleFileClick}
+          onNewChat={() => {
+            clearMessages();
+            setInput("");
+          }}
         />
       )}
 
@@ -149,10 +156,30 @@ export function EditorPane() {
             className="hidden"
             onChange={(e) => {
               const files = Array.from(e.target.files || []);
-              if (files.length > 0) {
-                setInput((prev) => prev + files.map((f) => `[Attached: ${f.name}]`).join("\n"));
-              }
               e.target.value = "";
+              for (const f of files) {
+                const placeholder = `[Attaching ${f.name}...]`;
+                setInput((prev) => prev + placeholder);
+                const reader = new FileReader();
+                reader.onload = () => {
+                  let body = String(reader.result ?? "");
+                  const MAX = 100_000;
+                  if (body.length > MAX) {
+                    body = body.slice(0, MAX) + "\n... [truncated]";
+                  }
+                  const ext = f.name.includes(".")
+                    ? f.name.split(".").pop()!
+                    : "";
+                  const block = `\n\n<file: ${f.name}>\n\`\`\`${ext}\n${body}\n\`\`\`\n`;
+                  setInput((prev) => prev.replace(placeholder, block));
+                };
+                reader.onerror = () => {
+                  setInput((prev) =>
+                    prev.replace(placeholder, `\n\n[Attached: ${f.name}]\n`),
+                  );
+                };
+                reader.readAsText(f);
+              }
             }}
           />
           <button
@@ -199,6 +226,48 @@ export function EditorPane() {
         </div>
       </div>
     </main>
+  );
+}
+
+function ChatSection({
+  messages,
+  loading,
+  error,
+  messagesEndRef,
+  onFileClick,
+  onNewChat,
+}: {
+  messages: Message[];
+  loading: boolean;
+  error: string | null;
+  messagesEndRef: React.RefObject<HTMLDivElement | null>;
+  onFileClick: (path: string) => void;
+  onNewChat: () => void;
+}) {
+  return (
+    <div className="flex-1 min-h-0 flex flex-col">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border-subtle bg-bg-secondary/60 shrink-0">
+        <div className="flex items-center gap-2">
+          <MessageSquare size={13} className="text-text-muted" />
+          <span className="text-xs font-medium text-text-secondary">Chat</span>
+          {loading && (
+            <span className="text-[10px] text-accent-primary animate-pulse">
+              responding…
+            </span>
+          )}
+        </div>
+        <button onClick={onNewChat} title="Start a new chat" className="btn-icon">
+          <Plus size={14} />
+        </button>
+      </div>
+      <ChatArea
+        messages={messages}
+        loading={loading}
+        error={error}
+        messagesEndRef={messagesEndRef}
+        onFileClick={onFileClick}
+      />
+    </div>
   );
 }
 
