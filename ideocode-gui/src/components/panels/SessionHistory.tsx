@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
 import { useChatStore } from "../../stores/chatStore";
-import { MessageSquare, Trash2, Search, Clock, Tag, Download } from "lucide-react";
+import {
+  MessageSquare,
+  Trash2,
+  Search,
+  Clock,
+  Tag,
+  Download,
+  Play,
+  Pencil,
+  Check,
+} from "lucide-react";
 import { exportSession } from "../../lib/tauri-commands";
 import { notify } from "../../stores/toastStore";
 import type { Session } from "../../lib/tauri-commands";
@@ -88,17 +98,51 @@ export function SessionHistory() {
 
 function SessionCard({ session }: { session: Session }) {
   const [deleting, setDeleting] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(session.title || "");
   const deleteSession = useChatStore((s) => s.deleteSession);
+  const loadSession = useChatStore((s) => s.loadSession);
+  const renameSession = useChatStore((s) => s.renameSession);
   const time = formatTime(session.updated_at);
 
+  const commitRename = async () => {
+    const title = draft.trim();
+    setEditing(false);
+    if (title && title !== session.title) {
+      await renameSession(session.id, title);
+    }
+  };
+
   return (
-    <div className="group px-3 py-2 hover:bg-bg-elevated transition-fast cursor-pointer border-b border-border-subtle/50">
+    <div className="group px-3 py-2 hover:bg-bg-elevated transition-fast border-b border-border-subtle/50">
       <div className="flex items-start gap-2">
         <MessageSquare size={14} className="shrink-0 text-text-muted mt-0.5" />
         <div className="flex-1 min-w-0">
-          <div className="text-xs text-text-primary truncate font-medium">
-            {session.title || "Untitled Session"}
-          </div>
+          {editing ? (
+            <input
+              autoFocus
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                e.stopPropagation();
+                if (e.key === "Enter") commitRename();
+                if (e.key === "Escape") {
+                  setDraft(session.title || "");
+                  setEditing(false);
+                }
+              }}
+              onBlur={commitRename}
+              className="w-full text-xs bg-bg-primary border border-accent-primary rounded px-1.5 py-0.5 text-text-primary outline-none"
+            />
+          ) : (
+            <button
+              onClick={() => loadSession(session.id)}
+              title="Resume session"
+              className="text-xs text-text-primary truncate font-medium hover:text-accent-primary transition-fast block max-w-full"
+            >
+              {session.title || "Untitled Session"}
+            </button>
+          )}
           <div className="flex items-center gap-2 mt-0.5">
             <span className="flex items-center gap-1 text-[10px] text-text-muted">
               <MessageSquare size={10} />
@@ -116,6 +160,24 @@ function SessionCard({ session }: { session: Session }) {
             )}
           </div>
         </div>
+        <button
+          onClick={() => loadSession(session.id)}
+          title="Resume session"
+          className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-accent-primary transition-fast"
+        >
+          <Play size={12} />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setDraft(session.title || "");
+            setEditing(true);
+          }}
+          title="Rename session"
+          className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-accent-primary transition-fast"
+        >
+          <Pencil size={12} />
+        </button>
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -147,6 +209,18 @@ function SessionCard({ session }: { session: Session }) {
           <Download size={12} />
         </button>
       </div>
+
+      {editing && (
+        <div className="mt-2 flex items-center gap-2 px-1">
+          <span className="text-[10px] text-text-muted flex-1">Press Enter to save, Esc to cancel</span>
+          <button
+            className="px-2 py-0.5 text-[10px] bg-accent-primary text-white rounded hover:opacity-80"
+            onClick={commitRename}
+          >
+            <Check size={11} />
+          </button>
+        </div>
+      )}
 
       {deleting && (
         <div className="mt-2 px-2 py-1.5 bg-error/10 rounded border border-error/30 flex items-center gap-2">

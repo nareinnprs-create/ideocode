@@ -98,8 +98,15 @@ export async function getVersion(): Promise<string> {
 // Chat Commands
 // ============================================
 
-export async function sendMessage(content: string): Promise<Message> {
-  return invoke<Message>("send_message", { content });
+export async function sendMessage(
+  content: string,
+  opts?: { model?: string; mode?: "normal" | "plan" | "agent" },
+): Promise<Message> {
+  return invoke<Message>("send_message", {
+    content,
+    model: opts?.model ?? null,
+    mode: opts?.mode ?? null,
+  });
 }
 
 export async function getMessages(): Promise<Message[]> {
@@ -108,6 +115,17 @@ export async function getMessages(): Promise<Message[]> {
 
 export async function clearMessages(): Promise<void> {
   return invoke<void>("clear_messages");
+}
+
+export async function loadSession(id: string): Promise<Message[]> {
+  return invoke<Message[]>("load_session", { id });
+}
+
+export async function renameSession(
+  id: string,
+  title: string,
+): Promise<void> {
+  return invoke<void>("rename_session", { id, title });
 }
 
 export async function listSessions(): Promise<Session[]> {

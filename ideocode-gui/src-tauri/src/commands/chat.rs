@@ -326,7 +326,12 @@ async fn chat_completion(
 }
 
 #[tauri::command]
-pub async fn send_message(content: String, state: State<'_, ChatState>) -> Result<Message, String> {
+pub async fn send_message(
+    content: String,
+    state: State<'_, ChatState>,
+    model: Option<String>,
+    mode: Option<String>,
+) -> Result<Message, String> {
     let user_msg = Message {
         id: new_id(),
         role: "user".into(),
@@ -353,14 +358,33 @@ pub async fn send_message(content: String, state: State<'_, ChatState>) -> Resul
     } else {
         settings.active_provider
     };
-    let model = if settings.active_model.is_empty() {
+    let model = if let Some(model) = model.filter(|m| !m.is_empty()) {
+        model
+    } else if settings.active_model.is_empty() {
         "auto".to_string()
     } else {
         settings.active_model
     };
 
+    let mut system_prompt = SYSTEM_PROMPT.to_string();
+    match mode.as_deref() {
+        Some("plan") => {
+            system_prompt.push_str(
+                "\nYou are in PLAN MODE: analyze the request, propose a clear step-by-step plan, \
+                 and explain your reasoning. Do not write or modify code yet.",
+            );
+        }
+        Some("agent") => {
+            system_prompt.push_str(
+                "\nYou are in AGENT MODE: act as an autonomous coding agent. Break the task into \
+                 steps and produce complete, ready-to-apply code and instructions.",
+            );
+        }
+        _ => {}
+    }
+
     let mut req_messages: Vec<serde_json::Value> = Vec::with_capacity(history.len() + 1);
-    req_messages.push(serde_json::json!({ "role": "system", "content": SYSTEM_PROMPT }));
+    req_messages.push(serde_json::json!({ "role": "system", "content": system_prompt }));
     for m in &history {
         req_messages.push(serde_json::json!({ "role": m.role, "content": m.content }));
     }
@@ -404,6 +428,63 @@ pub fn clear_messages(state: State<'_, ChatState>) {
         .current_session_id
         .lock()
         .unwrap_or_else(|e| e.into_inner()) = new_id();
+}
+
+/// Loads a saved session into the active chat so the user can resume it.
+#[tauri::command]
+pub fn load_session(id: String, state: State<'_, ChatState>) -> Result<Vec<Message>, String> {
+    let path = sessions_dir().join(format!("{}.json", super::sanitize_id(&id)));
+    let content =
+        std::fs::read_to_string(&path).map_err(|e| format!("Failed to read session: {}", e))?;
+    let parsed: serde_json::Value =
+        serde_json::from_str(&content).map_err(|e| format!("Invalid session JSON: {}", e))?;
+
+    let messages: Vec<Message> = parsed
+        .get("messages")
+        .and_then(|v| v.as_array())
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|m| serde_json::from_value(m.clone()).ok())
+                .collect()
+        })
+        .unwrap_or_default();
+
+    let session_id = parsed
+        .get("id")
+        .and_then(|v| v.as_str())
+        .unwrap_or(&id)
+        .to_string();
+
+    *state
+        .messages
+        .lock()
+        .unwrap_or_else(|e| e.into_inner()) = messages.clone();
+    *state
+        .current_session_id
+        .lock()
+        .unwrap_or_else(|e| e.into_inner()) = session_id;
+    Ok(messages)
+}
+
+/// Renames a saved session (title + optional save_label).
+#[tauri::command]
+pub fn rename_session(id: String, title: String) -> Result<(), String> {
+    let title = title.trim().to_string();
+    if title.is_empty() {
+        return Err("Session title cannot be empty".to_string());
+    }
+    let path = sessions_dir().join(format!("{}.json", super::sanitize_id(&id)));
+    let content =
+        std::fs::read_to_string(&path).map_err(|e| format!("Failed to read session: {}", e))?;
+    let mut parsed: serde_json::Value =
+        serde_json::from_str(&content).map_err(|e| format!("Invalid session JSON: {}", e))?;
+    parsed["title"] = serde_json::json!(title);
+    parsed["save_label"] = serde_json::json!(title);
+    let now = now_ms() / 1000;
+    parsed["updated_at"] = serde_json::json!(now);
+    let json = serde_json::to_string_pretty(&parsed)
+        .map_err(|e| format!("Failed to serialize session: {}", e))?;
+    std::fs::write(&path, json).map_err(|e| format!("Failed to write session: {}", e))
 }
 
 #[tauri::command]

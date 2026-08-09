@@ -1,13 +1,21 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Paperclip, Mic } from "lucide-react";
+import { Send, Paperclip, Mic, Zap, ListChecks, Bot } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useChatStore } from "../../stores/chatStore";
 import { useFileStore } from "../../stores/fileStore";
+import { useProviderStore } from "../../stores/providerStore";
+import { getSettings } from "../../lib/tauri-commands";
 import { MarkdownRenderer } from "../chat/MarkdownRenderer";
 import { ToolCallCard } from "../chat/ToolCallCard";
 import { CodeEditor } from "../editor/CodeEditor";
 import { TabBar } from "./TabBar";
 import type { Message } from "../../lib/tauri-commands";
+
+const MODES = [
+  { id: "normal" as const, label: "Normal", icon: Zap },
+  { id: "plan" as const, label: "Plan", icon: ListChecks },
+  { id: "agent" as const, label: "Agent", icon: Bot },
+];
 
 export function EditorPane() {
   const [input, setInput] = useState("");
@@ -17,8 +25,21 @@ export function EditorPane() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const model = useChatStore((s) => s.model);
+  const setModel = useChatStore((s) => s.setModel);
+  const mode = useChatStore((s) => s.mode);
+  const setMode = useChatStore((s) => s.setMode);
+  const providers = useProviderStore((s) => s.providers);
+  const loadProviders = useProviderStore((s) => s.loadProviders);
 
   const hasFileSelected = !!activeFile;
+
+  useEffect(() => {
+    loadProviders();
+    getSettings().then((s) => {
+      if (s.active_model) setModel(s.active_model);
+    }).catch(() => {});
+  }, [loadProviders, setModel]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -75,7 +96,50 @@ export function EditorPane() {
       )}
 
       {/* Input bar */}
-      <div className="border-t border-border-subtle bg-bg-secondary p-3">
+      <div className="border-t border-border-subtle bg-bg-secondary p-3 space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          {/* Mode toggle */}
+          <div className="flex items-center gap-0.5 bg-bg-primary rounded-lg border border-border-subtle p-0.5">
+            {MODES.map(({ id, label, icon: ModeIcon }) => (
+              <button
+                key={id}
+                onClick={() => setMode(id)}
+                title={`${label} mode`}
+                className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium transition-fast
+                  ${
+                    mode === id
+                      ? "bg-accent-primary/15 text-accent-primary"
+                      : "text-text-muted hover:text-text-secondary"
+                  }`}
+              >
+                <ModeIcon size={11} />
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Model selector */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] text-text-muted uppercase tracking-wider">Model</span>
+            <select
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+              className="bg-bg-primary border border-border-subtle rounded-md px-2 py-1 text-[11px] text-text-secondary outline-none focus:border-accent-primary font-mono max-w-[220px]"
+            >
+              {model === "auto" && <option value="auto">auto</option>}
+              {providers
+                .flatMap((p) =>
+                  p.models.map((m) => ({ id: m.id, provider: p.name })),
+                )
+                .map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.id}
+                  </option>
+                ))}
+            </select>
+          </div>
+        </div>
+
         <div className="flex items-end gap-2 glass rounded-xl px-3 py-2">
           <input
             ref={fileInputRef}

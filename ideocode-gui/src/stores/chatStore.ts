@@ -4,21 +4,31 @@ import {
   getMessages,
   clearMessages as tauriClear,
   listSessions,
+  loadSession as tauriLoadSession,
+  renameSession as tauriRenameSession,
   deleteSession as tauriDeleteSession,
   type Message,
   type Session,
 } from "../lib/tauri-commands";
 import { notify } from "./toastStore";
 
+export type ComposerMode = "normal" | "plan" | "agent";
+
 interface ChatState {
   messages: Message[];
   loading: boolean;
   error: string | null;
   sessions: Session[];
+  model: string;
+  mode: ComposerMode;
+  setModel: (model: string) => void;
+  setMode: (mode: ComposerMode) => void;
   sendMessage: (content: string) => Promise<void>;
   loadMessages: () => Promise<void>;
   clearMessages: () => Promise<void>;
   loadSessions: () => Promise<void>;
+  loadSession: (id: string) => Promise<void>;
+  renameSession: (id: string, title: string) => Promise<void>;
   deleteSession: (id: string) => Promise<void>;
 }
 
@@ -27,8 +37,13 @@ export const useChatStore = create<ChatState>((set) => ({
   loading: false,
   error: null,
   sessions: [],
+  model: "auto",
+  mode: "normal",
+  setModel: (model) => set({ model }),
+  setMode: (mode) => set({ mode }),
 
   sendMessage: async (content: string) => {
+    const { model, mode } = useChatStore.getState();
     const userMsg: Message = {
       id: crypto.randomUUID(),
       role: "user",
@@ -39,7 +54,7 @@ export const useChatStore = create<ChatState>((set) => ({
     set((s) => ({ messages: [...s.messages, userMsg], loading: true }));
 
     try {
-      const response = await tauriSend(content);
+      const response = await tauriSend(content, { model, mode });
       set((s) => ({
         messages: [...s.messages, response],
         loading: false,
@@ -78,6 +93,28 @@ export const useChatStore = create<ChatState>((set) => ({
       set({ sessions });
     } catch (e) {
       set({ error: `Failed to clear: ${e}` });
+    }
+  },
+
+  loadSession: async (id: string) => {
+    try {
+      const messages = await tauriLoadSession(id);
+      set({ messages, error: null });
+      notify("success", "Session resumed", "");
+    } catch (e) {
+      set({ error: `Failed to resume session: ${e}` });
+      notify("error", "Failed to resume session", `${e}`);
+    }
+  },
+
+  renameSession: async (id: string, title: string) => {
+    try {
+      await tauriRenameSession(id, title);
+      const sessions = await listSessions();
+      set({ sessions, error: null });
+    } catch (e) {
+      set({ error: `Failed to rename session: ${e}` });
+      notify("error", "Failed to rename session", `${e}`);
     }
   },
 
