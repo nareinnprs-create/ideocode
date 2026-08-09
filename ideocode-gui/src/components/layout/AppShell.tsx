@@ -2,6 +2,7 @@ import { useAppStore } from "../../stores/appStore";
 import { Sidebar } from "./Sidebar";
 import { EditorPane } from "./EditorPane";
 import { RightPanel } from "./RightPanel";
+import { BottomPanelDock } from "./BottomPanelDock";
 import { StatusBar } from "./StatusBar";
 import { CommandPalette } from "../chat/CommandPalette";
 import { ToastHost } from "./ToastHost";
@@ -26,6 +27,9 @@ export function AppShell() {
           {rightPanelOpen && <RightPanel />}
         </ErrorBoundary>
       </div>
+      <ErrorBoundary variant="panel">
+        <BottomPanelDock />
+      </ErrorBoundary>
       <ErrorBoundary variant="panel">
         <StatusBar />
       </ErrorBoundary>

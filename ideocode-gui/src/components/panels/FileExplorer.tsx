@@ -12,7 +12,7 @@ import {
 import type { FileNode } from "../../lib/tauri-commands";
 
 export function FileExplorer() {
-  const { rootPath, tree, loading, error, expandedPaths, loadTree, toggleExpanded, selectFile, selectedFile, setRootPath } =
+  const { rootPath, tree, loading, error, expandedPaths, loadTree, toggleExpanded, openFile, activeFile, setRootPath } =
     useFileStore();
   const [pathInput, setPathInput] = useState("");
 
@@ -77,9 +77,9 @@ export function FileExplorer() {
               node={node}
               depth={0}
               expandedPaths={expandedPaths}
-              selectedFile={selectedFile}
+              activeFile={activeFile}
               onToggle={toggleExpanded}
-              onSelect={selectFile}
+              onSelect={openFile}
             />
           ))
         )}
@@ -99,19 +99,19 @@ function TreeNode({
   node,
   depth,
   expandedPaths,
-  selectedFile,
+  activeFile,
   onToggle,
   onSelect,
 }: {
   node: FileNode;
   depth: number;
   expandedPaths: Set<string>;
-  selectedFile: string | null;
+  activeFile: string | null;
   onToggle: (path: string) => void;
   onSelect: (path: string) => void;
 }) {
   const isExpanded = expandedPaths.has(node.path);
-  const isSelected = selectedFile === node.path;
+  const isSelected = activeFile === node.path;
 
   const handleClick = () => {
     if (node.is_dir) {
@@ -165,7 +165,7 @@ function TreeNode({
               node={child}
               depth={depth + 1}
               expandedPaths={expandedPaths}
-              selectedFile={selectedFile}
+              activeFile={activeFile}
               onToggle={onToggle}
               onSelect={onSelect}
             />

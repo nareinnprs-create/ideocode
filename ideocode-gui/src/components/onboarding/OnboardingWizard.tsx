@@ -1,11 +1,20 @@
-import { useState } from "react";
-import { ChevronRight, ChevronLeft, Check, Sparkles } from "lucide-react";
-import { updateSettings } from "../../lib/tauri-commands";
+import { useEffect, useRef, useState } from "react";
+import {
+  ChevronRight,
+  ChevronLeft,
+  Check,
+  Sparkles,
+  Server,
+  Wifi,
+  AlertTriangle,
+  RefreshCw,
+} from "lucide-react";
+import { updateSettings, getGatewayStatus } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
 import { THEMES, type Theme } from "../../lib/theme-registry";
 import { useAppStore } from "../../stores/appStore";
 
-type Step = "welcome" | "theme" | "provider" | "done";
+type Step = "welcome" | "theme" | "provider" | "provision" | "done";
 
 const PROVIDERS = [
   { id: "baanzon-verso", label: "Baanzon Verso", models: "Built-in AI (auto routing)" },
@@ -23,6 +32,8 @@ const DEFAULT_MODEL_BY_PROVIDER: Record<string, string> = {
   openrouter: "anthropic/claude-sonnet-4-6",
 };
 
+const PROVISION_TIMEOUT_MS = 45_000;
+
 interface Props {
   onComplete: () => void;
 }
@@ -33,6 +44,16 @@ export function OnboardingWizard({ onComplete }: Props) {
   const [provider, setProvider] = useState("baanzon-verso");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [engine, setEngine] = useState<{
+    online: boolean;
+    installing: boolean;
+    port: number;
+    engine: string;
+  } | null>(null);
+  const [provisionError, setProvisionError] = useState<string | null>(null);
+  const [provisionTimedOut, setProvisionTimedOut] = useState(false);
+
+  const provisionRef = useRef(false);
 
   const next = () => {
     if (step === "welcome") setStep("theme");
@@ -55,7 +76,11 @@ export function OnboardingWizard({ onComplete }: Props) {
       updateSettings(settings)
         .then(() => {
           setSaving(false);
-          setStep("done");
+          if (provider === "baanzon-verso") {
+            setStep("provision");
+          } else {
+            setStep("done");
+          }
         })
         .catch((e) => {
           setSaving(false);
@@ -63,6 +88,52 @@ export function OnboardingWizard({ onComplete }: Props) {
         });
     }
   };
+
+  useEffect(() => {
+    if (step !== "provision") {
+      provisionRef.current = false;
+      return;
+    }
+    provisionRef.current = true;
+    setProvisionError(null);
+    setProvisionTimedOut(false);
+    setEngine(null);
+
+    let cancelled = false;
+    const startedAt = Date.now();
+
+    const poll = async () => {
+      if (!provisionRef.current || cancelled) return;
+      try {
+        const status = await getGatewayStatus();
+        if (cancelled) return;
+        setEngine({
+          online: status.online,
+          installing: status.installing,
+          port: status.port,
+          engine: status.engine,
+        });
+        if (status.online) {
+          setTimeout(() => {
+            if (!cancelled && provisionRef.current) setStep("done");
+          }, 600);
+          return;
+        }
+      } catch (e) {
+        if (!cancelled) setProvisionError(`Engine status unavailable: ${e}`);
+      }
+      if (Date.now() - startedAt > PROVISION_TIMEOUT_MS) {
+        if (!cancelled) setProvisionTimedOut(true);
+        return;
+      }
+      setTimeout(poll, 800);
+    };
+
+    poll();
+    return () => {
+      cancelled = true;
+    };
+  }, [step]);
 
   const chooseTheme = (id: Theme) => {
     setTheme(id);
@@ -72,9 +143,18 @@ export function OnboardingWizard({ onComplete }: Props) {
   const prev = () => {
     if (step === "theme") setStep("welcome");
     else if (step === "provider") setStep("theme");
+    else if (step === "provision") {
+      provisionRef.current = false;
+      setStep("provider");
+    }
   };
 
-  const progress = step === "welcome" ? 25 : step === "theme" ? 50 : step === "provider" ? 75 : 100;
+  const progress =
+    step === "welcome" ? 25 :
+    step === "theme" ? 50 :
+    step === "provider" ? 75 :
+    step === "provision" ? 90 :
+    100;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg-primary">
@@ -194,6 +274,91 @@ export function OnboardingWizard({ onComplete }: Props) {
                 {saving ? "Saving..." : "Continue"}
                 <ChevronRight size={14} />
               </button>
+            </div>
+          </div>
+        )}
+
+        {step === "provision" && (
+          <div className="space-y-6 animate-blur-in">
+            <div className="text-center">
+              <div className="mx-auto w-16 h-16 rounded-full bg-accent-primary/10 border border-accent-primary/30 flex items-center justify-center mb-4">
+                {engine?.online ? (
+                  <Check size={28} className="text-success" />
+                ) : (
+                  <Server size={28} className="text-accent-primary" />
+                )}
+              </div>
+              <h2 className="text-lg font-display font-semibold text-text-primary">
+                Provisioning Baanzon Verso
+              </h2>
+              <p className="text-text-muted text-xs mt-1 max-w-sm mx-auto">
+                {engine?.online
+                  ? "Your AI engine is ready. Setting things up..."
+                  : engine?.installing
+                    ? "Installing the Baanzon Verso engine on your machine..."
+                    : "Starting the Baanzon Verso engine (invisible, automatic)..."
+                  }
+              </p>
+            </div>
+
+            <div className="h-1 bg-bg-tertiary rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${
+                  engine?.online ? "bg-success" : "shimmer"
+                }`}
+                style={{
+                  width: engine?.online
+                    ? "100%"
+                    : engine?.installing
+                      ? "55%"
+                      : "75%",
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs">
+                <span className={`w-1.5 h-1.5 rounded-full ${engine?.online ? "bg-success" : "bg-accent-primary animate-pulse"}`} />
+                <span className="text-text-secondary">
+                  {engine?.engine || "baanzon-verso"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-text-muted">
+                <Wifi size={12} className={engine?.online ? "text-success" : ""} />
+                <span>
+                  {engine?.online
+                    ? `Engine online at http://localhost:${engine.port}`
+                    : "Local engine endpoint"}
+                </span>
+              </div>
+            </div>
+
+            {(provisionError || provisionTimedOut) && (
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-warning/10 border border-warning/30">
+                <AlertTriangle size={14} className="text-warning shrink-0 mt-0.5" />
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  {provisionTimedOut
+                    ? "The engine is taking longer than expected to come online. You can continue anyway and it will keep starting in the background."
+                    : provisionError}
+                </p>
+              </div>
+            )}
+
+            <div className="flex justify-between">
+              <button
+                onClick={prev}
+                className="flex items-center gap-1 text-xs text-text-muted hover:text-text-primary transition-fast"
+              >
+                <ChevronLeft size={14} /> Back
+              </button>
+              {(provisionError || provisionTimedOut) && (
+                <button
+                  onClick={() => setStep("done")}
+                  className="flex items-center gap-1 px-4 py-1.5 rounded-lg bg-accent-primary text-white text-xs font-medium hover:bg-accent-hover transition-fast"
+                >
+                  Continue anyway <RefreshCw size={12} />
+                </button>
+              )}
             </div>
           </div>
         )}

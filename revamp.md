@@ -25,15 +25,15 @@ Codex, Claude Code, and Zcode.
 - [x] P0.1 Shared engine bootstrap (ensure installed -> start -> wait-for-ready) in `ideocode-provider-baanzon`
 - [x] P0.2 TUI auto-starts engine at startup; sidebar status Starting/Running/Error + retry
 - [x] P0.3 GUI bootstrap + wait-for-ready chat gating; status bar engine state + restart
-- [ ] P0.4 Stabilize supervisor (readiness probe before "recovered"; no tight restart loop)
-- [ ] P0.5 TUI prod panic!/unreachable! sweep -> graceful errors
-- [ ] P0.6 Full test suite + guardrails pass
+- [x] P0.4 Stabilize supervisor (readiness probe before "recovered"; no tight restart loop)
+- [x] P0.5 TUI prod panic!/unreachable! sweep -> graceful errors
+- [x] P0.6 Full test suite + guardrails pass
 
 ### Phase 1 — GUI premium foundation
-- [ ] P1.1 Design system v2 (tokens, themes, motion, glassmorphism)
-- [ ] P1.2 Professional shell (activity bar, tabs, right/bottom panels, status bar)
-- [ ] P1.3 Premium onboarding incl. Baanzon provisioning progress
-- [ ] P1.4 Streaming markdown (syntax highlight, tables, mermaid, copy)
+- [x] P1.1 Design system v2 (tokens, themes, motion, glassmorphism) — motion keyframes, primitives (.btn/.kbd/.chip/.card/.surface/.panel/.text-gradient), shimmer/typing dots, reduced-motion, resize handles
+- [x] P1.2 Professional shell (activity bar, tabs, right/bottom panels, status bar) — editor tab bar (multi-file), bottom panel dock (terminal, Ctrl+J), drag-resize on right/bottom panels, engine status in status bar
+- [x] P1.3 Premium onboarding incl. Baanzon provisioning progress — gateway provisioning step (install/start/online), timeout + continue-anyway
+- [x] P1.4 Streaming markdown (syntax highlight, tables, mermaid, copy) — mermaid diagrams (lazy), file-path chips open files, avatars + typing dots + framer entrance, code copy
 
 ### Phase 2 — Cursor / Codex / Claude Code / Zcode feature parity
 - [ ] P2.1 Multi-tab composer, model selector, agent mode

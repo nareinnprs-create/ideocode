@@ -1,0 +1,62 @@
+import { X, FileCode2 } from "lucide-react";
+import { useFileStore } from "../../stores/fileStore";
+import { basename } from "../../lib/tabs";
+
+export function TabBar() {
+  const openFiles = useFileStore((s) => s.openFiles);
+  const activeFile = useFileStore((s) => s.activeFile);
+  const dirty = useFileStore((s) => s.dirty);
+  const openFile = useFileStore((s) => s.openFile);
+  const closeFile = useFileStore((s) => s.closeFile);
+
+  if (openFiles.length === 0) return null;
+
+  return (
+    <div className="flex items-center h-9 bg-bg-secondary border-b border-border-subtle overflow-x-auto">
+      <div className="flex h-full items-stretch">
+        {openFiles.map((path) => {
+          const isActive = path === activeFile;
+          const isDirty = dirty[path] === true;
+          return (
+            <div
+              key={path}
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => openFile(path)}
+              className={`group flex items-center gap-1.5 px-3 text-xs border-r border-border-subtle transition-fast cursor-pointer select-none
+                ${
+                  isActive
+                    ? "bg-bg-primary text-text-primary"
+                    : "bg-bg-secondary text-text-muted hover:bg-bg-hover hover:text-text-secondary"
+                }`}
+            >
+              <FileCode2
+                size={13}
+                className={
+                  isActive ? "text-accent-primary" : "text-text-muted"
+                }
+              />
+              <span className="font-mono whitespace-nowrap">{basename(path)}</span>
+              {isDirty && (
+                <span
+                  className="w-1.5 h-1.5 rounded-full bg-warning shrink-0"
+                  title="Unsaved changes"
+                />
+              )}
+              <button
+                title={`Close ${basename(path)}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  closeFile(path);
+                }}
+                className="ml-0.5 p-0.5 rounded hover:bg-bg-elevated text-text-muted hover:text-text-primary transition-fast opacity-0 group-hover:opacity-100"
+              >
+                <X size={11} />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

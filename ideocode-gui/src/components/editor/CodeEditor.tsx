@@ -58,9 +58,10 @@ function detectLanguage(filename: string): string {
 }
 
 export function CodeEditor() {
-  const selectedFile = useFileStore((s) => s.selectedFile);
-  const fileContent = useFileStore((s) => s.fileContent);
-  const dirty = useFileStore((s) => s.dirty);
+  const activeFile = useFileStore((s) => s.activeFile);
+  const fileContent = useFileStore((s) =>
+    s.activeFile ? s.contents[s.activeFile] : null,
+  );
   const setContent = useFileStore((s) => s.setContent);
   const saveFile = useFileStore((s) => s.saveFile);
   const theme = useAppStore((s) => s.theme);
@@ -82,7 +83,8 @@ export function CodeEditor() {
 
   const handleChange = useCallback(
     (value: string | undefined) => {
-      setContent(value ?? "");
+      if (!activeFile) return;
+      setContent(activeFile, value ?? "");
       if (editorSettings?.auto_save) {
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(() => {
@@ -90,7 +92,7 @@ export function CodeEditor() {
         }, 800);
       }
     },
-    [editorSettings?.auto_save, setContent, saveFile],
+    [activeFile, editorSettings?.auto_save, setContent, saveFile],
   );
 
   useEffect(() => {
@@ -104,34 +106,15 @@ export function CodeEditor() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [saveFile]);
 
-  if (!selectedFile) {
+  if (!activeFile) {
     return null;
   }
 
-  const filename = selectedFile.split(/[/\\]/).pop() ?? "untitled";
+  const filename = activeFile.split(/[/\\]/).pop() ?? "untitled";
   const language = detectLanguage(filename);
 
   return (
     <div className="flex flex-col h-full">
-      {/* File tab header */}
-      <div className="flex items-center h-9 px-3 border-b border-border-subtle bg-bg-secondary">
-        <div className="flex items-center gap-1.5 px-2 py-1 bg-bg-elevated rounded-t text-xs border border-border-subtle border-b-0 -mb-px">
-          <span className="w-3 h-3 rounded-full bg-accent-primary/30" />
-          <span className="text-text-primary font-mono text-[11px]">
-            {filename}
-          </span>
-          {dirty && (
-            <span
-              className="w-1.5 h-1.5 rounded-full bg-warning shrink-0"
-              title="Unsaved changes"
-            />
-          )}
-          <span className="text-text-muted text-[10px]">
-            {language}
-          </span>
-        </div>
-      </div>
-
       {/* Editor */}
       <div className="flex-1 min-h-0">
         <Editor

@@ -1,5 +1,6 @@
-import { lazy, Suspense } from "react";
+import { Suspense, useRef } from "react";
 import { useAppStore } from "../../stores/appStore";
+import { useDragResize } from "../../hooks/useDragResize";
 import { ErrorBoundary } from "../ErrorBoundary";
 import { X } from "lucide-react";
 import { FileExplorer } from "../panels/FileExplorer";
@@ -13,8 +14,6 @@ import { SettingsPanel } from "../panels/SettingsPanel";
 import { MemoryPanel } from "../panels/MemoryPanel";
 import { IssuePanel } from "../panels/IssuePanel";
 import { BrowserPanel } from "../panels/BrowserPanel";
-
-const TerminalPane = lazy(() => import("../terminal/TerminalPane").then(m => ({ default: m.TerminalPane })));
 
 const PANEL_TITLES: Record<string, string> = {
   files: "File Explorer",
@@ -32,13 +31,32 @@ const PANEL_TITLES: Record<string, string> = {
 };
 
 export function RightPanel() {
-  const { rightPanel, setRightPanelOpen } = useAppStore();
+  const { rightPanel, setRightPanelOpen, rightPanelWidth, setRightPanelWidth } =
+    useAppStore();
   const title = PANEL_TITLES[rightPanel] ?? rightPanel;
 
+  const widthRef = useRef(rightPanelWidth);
+  widthRef.current = rightPanelWidth;
+
+  const bind = useDragResize(
+    (dx, _dy) => setRightPanelWidth(widthRef.current - dx),
+    "col-resize",
+  );
+
   return (
-    <aside className="w-[320px] min-w-[280px] max-w-[450px] border-l border-border-subtle bg-bg-secondary flex flex-col">
+    <aside
+      className="flex border-l border-border-subtle bg-bg-secondary flex-col relative"
+      style={{ width: rightPanelWidth }}
+    >
+      {/* Drag handle on the left edge */}
+      <div
+        {...bind}
+        role="separator"
+        aria-label="Resize panel"
+        className="absolute left-0 top-0 bottom-0 w-[3px] -ml-[1px] cursor-col-resize touch-none z-10"
+      />
       {/* Header */}
-      <div className="flex items-center justify-between h-10 px-3 border-b border-border-subtle">
+      <div className="flex items-center justify-between h-10 pl-2 pr-3 border-b border-border-subtle">
         <span className="text-xs font-medium text-text-secondary uppercase tracking-wider">
           {title}
         </span>
@@ -76,8 +94,6 @@ function PanelContent({ panel }: { panel: string }) {
       return wrapped(<SearchPanel />);
     case "providers":
       return wrapped(<ProviderPanel />);
-    case "terminal":
-      return wrapped(<TerminalPane visible={true} />);
     case "sessions":
       return wrapped(<SessionHistory />);
     case "build":

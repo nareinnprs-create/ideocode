@@ -565,3 +565,150 @@ body {
 .transition-normal {
   transition: all 200ms ease-out;
 }
+
+/* ============================================
+   Motion — Design System v2
+   ============================================ */
+
+@theme {
+  --animate-scale-in: scaleIn 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-blur-in: blurIn 260ms ease-out;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-bounce-dot: bounceDot 1.2s ease-in-out infinite;
+
+  @keyframes scaleIn {
+    0% { opacity: 0; transform: scale(0.96); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes blurIn {
+    0% { opacity: 0; filter: blur(8px); transform: translateY(4px); }
+    100% { opacity: 1; filter: blur(0); transform: translateY(0); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  @keyframes bounceDot {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+}
+
+/* ============================================
+   Component Primitives
+   ============================================ */
+
+.btn {
+  @apply inline-flex items-center justify-center gap-1.5 text-sm font-medium rounded-lg px-3 py-1.5 transition-all duration-150 select-none
+    focus-visible:outline-2 focus-visible:outline-accent-primary disabled:opacity-40 disabled:cursor-not-allowed;
+}
+
+.btn-primary {
+  @apply bg-accent-primary text-white hover:bg-accent-hover;
+}
+
+.btn-ghost {
+  @apply text-text-secondary hover:text-text-primary hover:bg-bg-hover;
+}
+
+.btn-danger {
+  @apply text-error hover:bg-error/10;
+}
+
+.btn-icon {
+  @apply p-1.5 rounded-md text-text-muted hover:text-text-primary hover:bg-bg-hover transition-all duration-150
+    focus-visible:outline-2 focus-visible:outline-accent-primary;
+}
+
+.kbd {
+  @apply px-1.5 py-0.5 rounded bg-bg-elevated text-[10px] font-mono text-text-secondary border border-border-subtle;
+}
+
+.chip {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border border-border-subtle bg-bg-elevated/60 text-text-secondary;
+}
+
+.card {
+  @apply rounded-xl border border-border-subtle bg-bg-secondary;
+}
+
+.card-hover {
+  @apply transition-all duration-150 hover:border-border-default hover:bg-bg-hover;
+}
+
+.surface {
+  @apply bg-bg-elevated/80 rounded-lg;
+}
+
+.panel {
+  @apply bg-bg-secondary border border-border-subtle rounded-xl;
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--color-accent-primary), var(--color-accent-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.overlay {
+  background: color-mix(in srgb, var(--color-bg-primary) 72%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--color-accent-primary) 35%, transparent) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* Resize handles (drag to resize panels) */
+.resize-handle-x {
+  cursor: col-resize;
+  touch-action: none;
+  user-select: none;
+}
+
+.resize-handle-x:hover,
+.resize-handle-x:active {
+  background: var(--color-accent-primary);
+  opacity: 0.4;
+}
+
+.resize-handle-y {
+  cursor: row-resize;
+  touch-action: none;
+  user-select: none;
+}
+
+.resize-handle-y:hover,
+.resize-handle-y:active {
+  background: var(--color-accent-primary);
+  opacity: 0.4;
+}
+
+/* Typing indicator dots */
+.typing-dot {
+  animation: bounceDot 1.2s ease-in-out infinite;
+}
+
+/* ============================================
+   Reduced motion
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

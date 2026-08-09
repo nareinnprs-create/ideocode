@@ -1,15 +1,19 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
-import { Copy, Check } from "lucide-react";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
+import { Copy, Check, FileCode2 } from "lucide-react";
+
+const MermaidDiagram = lazy(() =>
+  import("./MermaidDiagram").then((m) => ({ default: m.MermaidDiagram })),
+);
 
 interface Props {
   content: string;
   onFileClick?: (path: string) => void;
 }
 
-export function MarkdownRenderer({ content }: Props) {
+export function MarkdownRenderer({ content, onFileClick }: Props) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
@@ -20,11 +24,38 @@ export function MarkdownRenderer({ content }: Props) {
         },
         code({ className, children, ...props }) {
           const match = /language-(\w+)/.exec(className || "");
+          const raw = extractText(children);
+          if (match && match[1].toLowerCase() === "mermaid") {
+            return (
+              <Suspense
+                fallback={
+                  <div className="my-2 p-3 text-xs text-text-muted animate-pulse rounded-lg bg-bg-secondary">
+                    Rendering diagram...
+                  </div>
+                }
+              >
+                <MermaidDiagram code={raw} />
+              </Suspense>
+            );
+          }
           if (match) {
             return (
               <code className={className} {...props}>
                 {children}
               </code>
+            );
+          }
+          const looksLikePath = isFilePath(raw);
+          if (looksLikePath && onFileClick) {
+            return (
+              <button
+                onClick={() => onFileClick(raw)}
+                title={`Open ${raw}`}
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-bg-elevated text-accent-secondary text-[13px] font-mono hover:text-accent-primary hover:bg-bg-hover transition-fast cursor-pointer align-middle"
+              >
+                <FileCode2 size={12} />
+                {raw}
+              </button>
             );
           }
           return (
@@ -154,4 +185,16 @@ function extractText(node: React.ReactNode): string {
     return node.map(extractText).join("");
   }
   return "";
+}
+
+export function isFilePath(text: string): boolean {
+  const t = text.trim();
+  if (t.length === 0 || t.length > 160) return false;
+  if (/\s/.test(t)) return false;
+  const hasPathSeparator = /[/\\]/.test(t);
+  const hasExtension = /\.[a-zA-Z0-9]{1,8}$/.test(t);
+  if (!hasPathSeparator && !hasExtension) return false;
+  const withoutDrive = t.replace(/^[a-zA-Z]:/, "");
+  if (/[{}().,;:<>'"`=+*@!#&|]/.test(withoutDrive.replace(/\.[a-zA-Z0-9]+$/, ""))) return false;
+  return true;
 }

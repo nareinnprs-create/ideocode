@@ -35,6 +35,19 @@ interface AppState {
   rightPanel: PanelId;
   setRightPanel: (p: PanelId) => void;
 
+  rightPanelWidth: number;
+  setRightPanelWidth: (w: number) => void;
+
+  bottomPanelOpen: boolean;
+  toggleBottomPanel: () => void;
+  setBottomPanelOpen: (open: boolean) => void;
+
+  bottomPanel: PanelId;
+  setBottomPanel: (p: PanelId) => void;
+
+  bottomPanelHeight: number;
+  setBottomPanelHeight: (h: number) => void;
+
   commandPaletteOpen: boolean;
   toggleCommandPalette: () => void;
   setCommandPaletteOpen: (open: boolean) => void;
@@ -60,6 +73,21 @@ export const useAppStore = create<AppState>((set) => ({
 
   rightPanel: "files",
   setRightPanel: (p) => set({ rightPanel: p }),
+
+  rightPanelWidth: 320,
+  setRightPanelWidth: (w) =>
+    set({ rightPanelWidth: Math.min(560, Math.max(280, Math.round(w))) }),
+
+  bottomPanelOpen: false,
+  toggleBottomPanel: () => set((s) => ({ bottomPanelOpen: !s.bottomPanelOpen })),
+  setBottomPanelOpen: (open) => set({ bottomPanelOpen: open }),
+
+  bottomPanel: "terminal",
+  setBottomPanel: (p) => set({ bottomPanel: p }),
+
+  bottomPanelHeight: 200,
+  setBottomPanelHeight: (h) =>
+    set({ bottomPanelHeight: Math.min(560, Math.max(96, Math.round(h))) }),
 
   commandPaletteOpen: false,
   toggleCommandPalette: () =>
