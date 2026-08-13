@@ -14,8 +14,8 @@ export function useKeyboard() {
     const handler = (e: KeyboardEvent) => {
       const mod = e.metaKey || e.ctrlKey;
 
-      // Cmd+K — Command Palette
-      if (mod && e.key === "k") {
+      // Cmd+K / Cmd+Shift+P — Command Palette
+      if ((mod && e.key === "k") || (mod && e.shiftKey && e.key === "P")) {
         e.preventDefault();
         toggleCommandPalette();
       }
