@@ -14,6 +14,8 @@ import {
   type Session,
 } from "../lib/tauri-commands";
 import { notify } from "./toastStore";
+import { useFileStore } from "./fileStore";
+import { buildFileContext } from "../lib/context";
 
 export type ComposerMode = "normal" | "plan" | "agent";
 
@@ -108,9 +110,12 @@ export const useChatStore = create<ChatState>((set) => ({
     }));
     try {
       await ensureStreamListeners();
-      const userMsg = await tauriStream(content, { model, mode });
+      const fs = useFileStore.getState();
+      const ctx = buildFileContext(content, fs.activeFile, fs.activeFile ? fs.contents[fs.activeFile] : undefined);
+      const userMsg = await tauriStream(ctx?.payload ?? content, { model, mode });
+      const displayMsg = ctx ? { ...userMsg, content: ctx.strip(userMsg.content) } : userMsg;
       set((s) => ({
-        messages: [...s.messages, userMsg],
+        messages: [...s.messages, displayMsg],
         loading: false,
         streaming: true,
         streamingContent: "",

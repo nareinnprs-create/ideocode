@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Send, Paperclip, Mic, Zap, ListChecks, Bot, Sparkles } from "lucide-react";
 import { useChatStore, type ComposerMode } from "../../stores/chatStore";
 import { useProviderStore } from "../../stores/providerStore";
+import { useFileStore } from "../../stores/fileStore";
 import { getSettings, updateSettings } from "../../lib/tauri-commands";
 import { notify } from "../../stores/toastStore";
 import { Tooltip } from "../ui/Tooltip";
@@ -128,6 +129,8 @@ export function Composer() {
 
   const userTurns = messages.filter((m) => m.role === "user").length;
   const inputTokens = Math.round(input.trim().length / 4);
+  const activeFile = useFileStore((s) => s.activeFile);
+  const activeFileName = activeFile ? activeFile.split(/[/\\]/).pop() : null;
 
   return (
     <div className="border-t border-border-subtle bg-bg-secondary p-3 space-y-2 shrink-0">
@@ -256,7 +259,13 @@ export function Composer() {
       <div className="flex items-center justify-between px-1">
         <span className="flex items-center gap-1 text-[10px] text-text-muted">
           <Sparkles size={10} className="text-accent-primary" />
-          Context: session + active file
+          {activeFileName ? (
+            <>
+              Context: session + <span className="font-mono text-text-secondary max-w-40 truncate inline-block align-bottom">{activeFileName}</span>
+            </>
+          ) : (
+            "Context: session"
+          )}
         </span>
         <span className="flex items-center gap-2 text-[10px] text-text-muted font-mono">
           {inputTokens > 0 && <span>~{inputTokens} tok</span>}
