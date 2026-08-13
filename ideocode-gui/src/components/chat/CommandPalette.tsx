@@ -93,10 +93,9 @@ export function CommandPalette() {
       }
     } else if (e.key === "Escape") {
       if (mode === "themes") {
+        e.stopPropagation();
         setMode("commands");
         setQuery("");
-      } else {
-        setCommandPaletteOpen(false);
       }
     }
   };
