@@ -1,4 +1,4 @@
-import { Suspense, useRef } from "react";
+import { Suspense, lazy, useRef } from "react";
 import { useAppStore } from "../../stores/appStore";
 import { useDragResize } from "../../hooks/useDragResize";
 import { ErrorBoundary } from "../ErrorBoundary";
@@ -9,12 +9,13 @@ import { GitPanel } from "../panels/GitPanel";
 import { ProviderPanel } from "../panels/ProviderPanel";
 import { SearchPanel } from "../panels/SearchPanel";
 import { SessionHistory } from "../panels/SessionHistory";
-import { BuildPanel } from "../panels/BuildPanel";
-import { DebugPanel } from "../panels/DebugPanel";
 import { SettingsPanel } from "../panels/SettingsPanel";
-import { MemoryPanel } from "../panels/MemoryPanel";
-import { IssuePanel } from "../panels/IssuePanel";
 import { BrowserPanel } from "../panels/BrowserPanel";
+
+const BuildPanel = lazy(() => import("../panels/BuildPanel").then((m) => ({ default: m.BuildPanel })));
+const DebugPanel = lazy(() => import("../panels/DebugPanel").then((m) => ({ default: m.DebugPanel })));
+const MemoryPanel = lazy(() => import("../panels/MemoryPanel").then((m) => ({ default: m.MemoryPanel })));
+const IssuePanel = lazy(() => import("../panels/IssuePanel").then((m) => ({ default: m.IssuePanel })));
 
 const PANEL_TITLES: Record<string, string> = {
   files: "File Explorer",

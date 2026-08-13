@@ -114,7 +114,7 @@ export function CodeEditor() {
       if (editorSettings?.auto_save) {
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(() => {
-          void saveFile();
+          void saveFile(undefined, { silent: true });
         }, 800);
       }
     },

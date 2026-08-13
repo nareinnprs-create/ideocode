@@ -24,7 +24,7 @@ interface FileState {
   openFile: (path: string) => Promise<void>;
   closeFile: (path: string) => void;
   setContent: (path: string, content: string) => void;
-  saveFile: (path?: string) => Promise<void>;
+  saveFile: (path?: string, opts?: { silent?: boolean }) => Promise<void>;
 }
 
 export const useFileStore = create<FileState>((set, get) => ({
@@ -112,14 +112,16 @@ export const useFileStore = create<FileState>((set, get) => ({
       dirty: { ...s.dirty, [path]: true },
     })),
 
-  saveFile: async (path) => {
+  saveFile: async (path, opts) => {
     const { activeFile, contents } = get();
     const target = path ?? activeFile;
     if (!target || contents[target] === undefined) return;
     try {
       await writeFile(target, contents[target]);
       set((s) => ({ dirty: { ...s.dirty, [target]: false } }));
-      notify("success", "File saved", target.split(/[/\\]/).pop());
+      if (!opts?.silent) {
+        notify("success", "File saved", target.split(/[/\\]/).pop());
+      }
     } catch (e) {
       set({ error: `Failed to save file: ${e}` });
       notify("error", "Failed to save file", `${e}`);
