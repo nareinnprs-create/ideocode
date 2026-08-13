@@ -9,6 +9,10 @@ import { isFirstLaunch, getVersion, getSettings } from "./lib/tauri-commands";
 function App() {
   const setVersion = useAppStore((s) => s.setVersion);
   const theme = useAppStore((s) => s.theme);
+  const accentColor = useAppStore((s) => s.accentColor);
+  const setAccentColor = useAppStore((s) => s.setAccentColor);
+  const uiFontSize = useAppStore((s) => s.uiFontSize);
+  const setUiFontSize = useAppStore((s) => s.setUiFontSize);
   const [onboarding, setOnboarding] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -19,17 +23,31 @@ function App() {
         if (isTheme(t)) {
           useAppStore.getState().setTheme(t);
         }
+        useAppStore.getState().setAccentColor(s.accent_color ?? "#7C3AED");
+        useAppStore.getState().setUiFontSize(s.ui_font_size ?? 13);
       })
       .catch(() => {});
     useFileStore.getState().loadTree();
     isFirstLaunch()
       .then((first) => setOnboarding(first))
       .catch(() => setOnboarding(false));
-  }, [setVersion]);
+  }, [setVersion, setAccentColor, setUiFontSize]);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty("--idc-accent-primary", accentColor);
+    document.documentElement.style.setProperty("--idc-accent-hover", accentColor);
+    document.documentElement.style.setProperty("--idc-glow", `${accentColor}33`);
+    document.documentElement.style.setProperty("--idc-glow-accent", `${accentColor}4d`);
+  }, [accentColor]);
+
+  useEffect(() => {
+    const scale = (uiFontSize / 13) * 16;
+    document.documentElement.style.fontSize = `${scale.toFixed(2)}px`;
+  }, [uiFontSize]);
 
   if (onboarding === null) {
     return (

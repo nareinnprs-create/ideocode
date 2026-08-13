@@ -19,6 +19,22 @@ pub struct AppSettings {
     pub language: String,
     #[serde(default)]
     pub mode: String,
+    #[serde(default = "default_accent")]
+    pub accent_color: String,
+    #[serde(default)]
+    pub ui_font_size: u32,
+    #[serde(default = "default_reasoning_effort")]
+    pub reasoning_effort: String,
+    #[serde(default)]
+    pub dev_mode: bool,
+}
+
+fn default_accent() -> String {
+    "#7C3AED".to_string()
+}
+
+fn default_reasoning_effort() -> String {
+    "medium".to_string()
 }
 
 impl Default for AppSettings {
@@ -35,6 +51,10 @@ impl Default for AppSettings {
             auto_save: true,
             language: "en".into(),
             mode: "normal".into(),
+            accent_color: default_accent(),
+            ui_font_size: 13,
+            reasoning_effort: default_reasoning_effort(),
+            dev_mode: false,
         }
     }
 }

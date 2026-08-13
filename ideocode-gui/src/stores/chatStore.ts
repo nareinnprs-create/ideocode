@@ -10,6 +10,8 @@ import {
   deleteSession as tauriDeleteSession,
   regenerateLastMessage as regenerateLast,
   editLastMessage,
+  interruptStream as tauriInterrupt,
+  compactSession as tauriCompact,
   type Message,
   type Session,
 } from "../lib/tauri-commands";
@@ -28,9 +30,13 @@ interface ChatState {
   sessions: Session[];
   model: string;
   mode: ComposerMode;
+  reasoningEffort: string;
   setModel: (model: string) => void;
   setMode: (mode: ComposerMode) => void;
+  setReasoningEffort: (effort: string) => void;
   sendMessage: (content: string) => Promise<void>;
+  interrupt: () => Promise<void>;
+  compact: () => Promise<void>;
   loadMessages: () => Promise<void>;
   clearMessages: () => Promise<void>;
   regenerate: () => Promise<void>;
@@ -96,11 +102,13 @@ export const useChatStore = create<ChatState>((set) => ({
   sessions: [],
   model: "auto",
   mode: "normal",
+  reasoningEffort: "medium",
   setModel: (model) => set({ model }),
   setMode: (mode) => set({ mode }),
+  setReasoningEffort: (effort) => set({ reasoningEffort: effort }),
 
   sendMessage: async (content: string) => {
-    const { model, mode, streaming } = useChatStore.getState();
+    const { model, mode, reasoningEffort, streaming } = useChatStore.getState();
     if (streaming) return;
     set((s) => ({
       loading: true,
@@ -112,7 +120,7 @@ export const useChatStore = create<ChatState>((set) => ({
       await ensureStreamListeners();
       const fs = useFileStore.getState();
       const ctx = buildFileContext(content, fs.activeFile, fs.activeFile ? fs.contents[fs.activeFile] : undefined);
-      const userMsg = await tauriStream(ctx?.payload ?? content, { model, mode });
+      const userMsg = await tauriStream(ctx?.payload ?? content, { model, mode, reasoningEffort });
       const displayMsg = ctx ? { ...userMsg, content: ctx.strip(userMsg.content) } : userMsg;
       set((s) => ({
         messages: [...s.messages, displayMsg],
@@ -128,6 +136,53 @@ export const useChatStore = create<ChatState>((set) => ({
         error: `Failed to send: ${e}`,
       });
       notify("error", "Message failed to send", `${e}`);
+    }
+  },
+
+  interrupt: async () => {
+    const { streamingContent } = useChatStore.getState();
+    let stopped = false;
+    try {
+      stopped = await tauriInterrupt();
+    } catch {
+      stopped = false;
+    }
+    if (!stopped) return;
+    const content = streamingContent.trim();
+    set((s) => {
+      if (!content) {
+        return { streaming: false, loading: false, streamingContent: "" };
+      }
+      const partial: Message = {
+        id: `partial-${Date.now()}`,
+        role: "assistant",
+        content,
+        timestamp: Date.now(),
+      };
+      return {
+        messages: [...s.messages, partial],
+        streaming: false,
+        loading: false,
+        streamingContent: "",
+      };
+    });
+    void refreshSessions();
+  },
+
+  compact: async () => {
+    set({ loading: true, error: null });
+    try {
+      const messages = await tauriCompact();
+      set({ messages, loading: false, error: null });
+      notify(
+        "success",
+        "Conversation compacted",
+        "Older turns were summarized to keep context focused.",
+      );
+      void refreshSessions();
+    } catch (e) {
+      set({ loading: false, error: `Failed to compact: ${e}` });
+      notify("warning", "Compact unavailable", `${e}`);
     }
   },
 

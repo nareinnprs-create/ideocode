@@ -17,6 +17,8 @@ pub struct Message {
     pub tool_calls: Option<Vec<ToolCall>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timestamp: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub usage: Option<Usage>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -28,6 +30,13 @@ pub struct ToolCall {
     pub output: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Usage {
+    pub prompt_tokens: u64,
+    pub completion_tokens: u64,
+    pub total_tokens: u64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -45,6 +54,7 @@ pub struct Session {
 pub struct ChatState {
     pub messages: Arc<Mutex<Vec<Message>>>,
     pub current_session_id: Arc<Mutex<String>>,
+    pub active_task: Arc<Mutex<Option<tauri::async_runtime::JoinHandle<()>>>>,
 }
 
 impl ChatState {
@@ -52,6 +62,7 @@ impl ChatState {
         Self {
             messages: Arc::new(Mutex::new(Vec::new())),
             current_session_id: Arc::new(Mutex::new(new_id())),
+            active_task: Arc::new(Mutex::new(None)),
         }
     }
 }
@@ -335,9 +346,10 @@ async fn stream_openai_completion(
     provider: &str,
     model: &str,
     messages: &[serde_json::Value],
+    reasoning_effort: Option<&str>,
     app: &tauri::AppHandle,
     assistant_id: &str,
-) -> Result<String, String> {
+) -> Result<(String, Option<Usage>), String> {
     let client = http_client();
 
     if provider == "baanzon-verso" || provider == "omniroute" {
@@ -375,12 +387,23 @@ async fn stream_openai_completion(
         other => return Err(format!("Provider {other} does not support streaming")),
     };
 
-    let body = serde_json::json!({
+    let mut body_obj = serde_json::json!({
         "model": if model.is_empty() || model == "auto" { "auto" } else { model },
         "messages": messages,
         "stream": true,
         "temperature": 0.7,
     });
+    if matches!(provider, "openai" | "openrouter") {
+        // Ask OpenAI-compatible endpoints to include the usage block in the
+        // final streamed chunk so we can surface token counts in the UI.
+        body_obj["stream_options"] = serde_json::json!({ "include_usage": true });
+        if provider == "openai" {
+            if let Some(effort) = reasoning_effort.filter(|e| !e.is_empty()) {
+                body_obj["reasoning_effort"] = serde_json::json!(effort);
+            }
+        }
+    }
+    let body = body_obj;
 
     let mut req = client.post(&url).json(&body);
     if provider == "openai" {
@@ -411,6 +434,7 @@ async fn stream_openai_completion(
 
     let mut buf = String::new();
     let mut full = String::new();
+    let mut usage: Option<Usage> = None;
     loop {
         match resp.chunk().await {
             Ok(Some(chunk)) => {
@@ -418,7 +442,7 @@ async fn stream_openai_completion(
                 while let Some(idx) = buf.find("\n\n") {
                     let event = buf[..idx].to_string();
                     buf = buf[idx + 2..].to_string();
-                    emit_sse_event(&event, &mut full, app, assistant_id);
+                    emit_sse_event(&event, &mut full, &mut usage, app, assistant_id);
                 }
             }
             Ok(None) => break,
@@ -426,7 +450,7 @@ async fn stream_openai_completion(
         }
     }
     if !buf.is_empty() {
-        emit_sse_event(&buf, &mut full, app, assistant_id);
+        emit_sse_event(&buf, &mut full, &mut usage, app, assistant_id);
     }
 
     // Graceful fallback: the engine may have returned a plain OpenAI JSON body.
@@ -449,12 +473,20 @@ async fn stream_openai_completion(
     if full.is_empty() {
         Err("Empty response from engine".to_string())
     } else {
-        Ok(full)
+        Ok((full, usage))
     }
 }
 
-/// Parses a single SSE event and emits any content delta found in it.
-fn emit_sse_event(event: &str, full: &mut String, app: &tauri::AppHandle, assistant_id: &str) {
+/// Parses a single SSE event and emits any content delta found in it. Also
+/// captures the `usage` block included in the final chunk of a streamed
+/// OpenAI-compatible response.
+fn emit_sse_event(
+    event: &str,
+    full: &mut String,
+    usage: &mut Option<Usage>,
+    app: &tauri::AppHandle,
+    assistant_id: &str,
+) {
     for line in event.lines() {
         let line = line.trim();
         let Some(payload) = line.strip_prefix("data:") else {
@@ -467,6 +499,11 @@ fn emit_sse_event(event: &str, full: &mut String, app: &tauri::AppHandle, assist
         let Ok(v) = serde_json::from_str::<serde_json::Value>(payload) else {
             continue;
         };
+        if usage.is_none() {
+            if let Some(u) = v.get("usage") {
+                *usage = serde_json::from_value(u.clone()).ok();
+            }
+        }
         let delta = v
             .pointer("/choices/0/delta/content")
             .and_then(|c| c.as_str())
@@ -541,6 +578,7 @@ async fn run_completion(
         content: response_text,
         tool_calls: None,
         timestamp: Some(now_ms()),
+        usage: None,
     })
 }
 
@@ -550,6 +588,7 @@ async fn run_streaming_completion(
     history: &[Message],
     model_override: Option<String>,
     mode: Option<&str>,
+    reasoning_effort: Option<&str>,
     app: &tauri::AppHandle,
     assistant_id: &str,
 ) -> Result<Message, String> {
@@ -568,9 +607,17 @@ async fn run_streaming_completion(
     };
 
     let req_messages = build_completion_request(history, mode);
-    let full = match provider.as_str() {
+    let (full, usage) = match provider.as_str() {
         "baanzon-verso" | "omniroute" | "openai" | "openrouter" => {
-            stream_openai_completion(&provider, &model, &req_messages, app, assistant_id).await?
+            stream_openai_completion(
+                &provider,
+                &model,
+                &req_messages,
+                reasoning_effort,
+                app,
+                assistant_id,
+            )
+            .await?
         }
         _ => {
             let text = chat_completion(&provider, &model, &req_messages).await?;
@@ -578,7 +625,7 @@ async fn run_streaming_completion(
                 "chat://delta",
                 serde_json::json!({ "id": assistant_id, "content": text }),
             );
-            text
+            (text, None)
         }
     };
 
@@ -588,6 +635,7 @@ async fn run_streaming_completion(
         content: full,
         tool_calls: None,
         timestamp: Some(now_ms()),
+        usage,
     })
 }
 
@@ -604,6 +652,7 @@ pub async fn send_message(
         content,
         tool_calls: None,
         timestamp: Some(now_ms()),
+        usage: None,
     };
 
     state
@@ -639,6 +688,7 @@ pub async fn stream_chat(
     app: tauri::AppHandle,
     model: Option<String>,
     mode: Option<String>,
+    reasoning_effort: Option<String>,
 ) -> Result<Message, String> {
     let user_msg = Message {
         id: new_id(),
@@ -646,6 +696,7 @@ pub async fn stream_chat(
         content,
         tool_calls: None,
         timestamp: Some(now_ms()),
+        usage: None,
     };
     state
         .messages
@@ -661,9 +712,16 @@ pub async fn stream_chat(
     let task_state = state.inner().clone();
     let assistant_id = new_id();
     let task_app = app.clone();
-    tauri::async_runtime::spawn(async move {
-        match run_streaming_completion(&history, model, mode.as_deref(), &task_app, &assistant_id)
-            .await
+    let handle = tauri::async_runtime::spawn(async move {
+        match run_streaming_completion(
+            &history,
+            model,
+            mode.as_deref(),
+            reasoning_effort.as_deref(),
+            &task_app,
+            &assistant_id,
+        )
+        .await
         {
             Ok(assistant_msg) => {
                 task_state
@@ -682,7 +740,22 @@ pub async fn stream_chat(
             }
         }
     });
+    *state.active_task.lock().unwrap_or_else(|e| e.into_inner()) = Some(handle);
     Ok(user_msg)
+}
+
+/// Aborts the in-flight streaming generation, if any. Returns `true` when a
+/// task was stopped.
+#[tauri::command]
+pub fn interrupt_stream(state: State<'_, ChatState>) -> bool {
+    let mut guard = state.active_task.lock().unwrap_or_else(|e| e.into_inner());
+    match guard.take() {
+        Some(handle) => {
+            handle.abort();
+            true
+        }
+        None => false,
+    }
 }
 
 /// Re-runs the last exchange: drops the trailing assistant response(s) and
@@ -740,6 +813,7 @@ pub async fn edit_last_message(
                 content,
                 tool_calls: None,
                 timestamp: Some(now_ms()),
+                usage: None,
             }),
         }
     }
@@ -781,6 +855,66 @@ pub fn clear_messages(state: State<'_, ChatState>) {
         .current_session_id
         .lock()
         .unwrap_or_else(|e| e.into_inner()) = new_id();
+}
+
+/// Collapses the active conversation into a short summary plus the most recent
+/// turns, keeping long sessions usable without losing all context.
+#[tauri::command]
+pub async fn compact_session(state: State<'_, ChatState>) -> Result<Vec<Message>, String> {
+    let settings = super::settings::get_settings();
+    let provider = if settings.active_provider.is_empty() {
+        "baanzon-verso".to_string()
+    } else {
+        settings.active_provider
+    };
+    let model = if settings.active_model.is_empty() {
+        "auto".to_string()
+    } else {
+        settings.active_model
+    };
+
+    let messages = state
+        .messages
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .clone();
+    if messages.len() <= 6 {
+        return Err("Conversation is already short".to_string());
+    }
+
+    let keep = 4;
+    let split = messages.len() - keep;
+    let (older, recent) = messages.split_at(split);
+
+    let mut req_messages: Vec<serde_json::Value> = Vec::with_capacity(older.len() + 2);
+    req_messages.push(serde_json::json!({
+        "role": "system",
+        "content": "You are a conversation summarizer. Condense the following conversation \
+                    into a concise but complete summary that preserves all decisions, code \
+                    changes, error messages, and open questions."
+    }));
+    for m in older {
+        req_messages.push(serde_json::json!({ "role": m.role, "content": m.content }));
+    }
+    req_messages.push(serde_json::json!({
+        "role": "user",
+        "content": "Produce a concise summary of the conversation above. No preamble."
+    }));
+
+    let summary = chat_completion(&provider, &model, &req_messages).await?;
+    let mut compacted = vec![Message {
+        id: new_id(),
+        role: "system".into(),
+        content: format!("[Conversation summary]\n{}", summary),
+        tool_calls: None,
+        timestamp: Some(now_ms()),
+        usage: None,
+    }];
+    compacted.extend_from_slice(recent);
+
+    *state.messages.lock().unwrap_or_else(|e| e.into_inner()) = compacted.clone();
+    save_session(&state);
+    Ok(compacted)
 }
 
 /// Loads a saved session into the active chat so the user can resume it.

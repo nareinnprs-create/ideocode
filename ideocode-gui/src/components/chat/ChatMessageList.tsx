@@ -98,6 +98,15 @@ export function ChatMessageList() {
 }
 
 function EmptyChat() {
+  const sendMessage = useChatStore((s) => s.sendMessage);
+  const streaming = useChatStore((s) => s.streaming);
+  const loading = useChatStore((s) => s.loading);
+  const suggestions = [
+    "Plan a refactor of the current file",
+    "Explain what this codebase does",
+    "Write unit tests for the current file",
+    "Fix the lint errors in the current file",
+  ];
   return (
     <div className="flex items-center justify-center h-full">
       <div className="text-center space-y-3 animate-blur-in">
@@ -110,6 +119,18 @@ function EmptyChat() {
           <span>+</span>
           <Kbd>P</Kbd>
           <span className="ml-1">Command Palette</span>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-2 max-w-md mx-auto mt-4">
+          {suggestions.map((s) => (
+            <button
+              key={s}
+              onClick={() => void sendMessage(s)}
+              disabled={streaming || loading}
+              className="px-3 py-1.5 rounded-lg border border-border-subtle bg-bg-secondary text-xs text-text-muted hover:text-text-primary hover:border-accent-primary/50 hover:bg-accent-primary/5 transition-fast disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {s}
+            </button>
+          ))}
         </div>
       </div>
     </div>
@@ -167,6 +188,7 @@ function MessageBubble({
     content: string;
     tool_calls?: { id: string; name: string; input: string; output?: string; status?: string }[];
     timestamp?: number;
+    usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
   };
   isLast: boolean;
   onFileClick: (path: string) => void;
@@ -279,6 +301,18 @@ function MessageBubble({
           <div className="rounded-xl px-4 py-3 text-sm leading-relaxed bg-bg-elevated text-text-primary border border-border-subtle">
             <MarkdownRenderer content={message.content} onFileClick={onFileClick} />
             <Checklist content={message.content} />
+          </div>
+        )}
+
+        {message.usage && (
+          <div className="flex items-center gap-3 text-[10px] text-text-muted font-mono">
+            <span>{message.usage.total_tokens.toLocaleString()} tokens total</span>
+            {message.usage.prompt_tokens > 0 && (
+              <span>{message.usage.prompt_tokens.toLocaleString()} in</span>
+            )}
+            {message.usage.completion_tokens > 0 && (
+              <span>{message.usage.completion_tokens.toLocaleString()} out</span>
+            )}
           </div>
         )}
 

@@ -73,6 +73,10 @@ export function OnboardingWizard({ onComplete }: Props) {
         auto_save: true,
         language: "en",
         mode: "normal",
+        accent_color: "#7C3AED",
+        ui_font_size: 13,
+        reasoning_effort: "medium",
+        dev_mode: false,
       };
       updateSettings(settings)
         .then(() => {

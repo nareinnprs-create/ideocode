@@ -10,6 +10,22 @@ import { notify } from "../../stores/toastStore";
 type Tab = "appearance" | "chat" | "editor" | "about";
 
 const FONT_SIZES = [11, 12, 13, 14, 15, 16, 18, 20];
+const UI_FONT_SIZES = [11, 12, 13, 14, 15, 16, 18];
+const ACCENTS = [
+  "#7C3AED",
+  "#6366F1",
+  "#0EA5E9",
+  "#14B8A6",
+  "#10B981",
+  "#F59E0B",
+  "#EF4444",
+  "#EC4899",
+];
+const REASONING_LEVELS = [
+  { id: "low", label: "Low" },
+  { id: "medium", label: "Medium" },
+  { id: "high", label: "High" },
+];
 const FONT_FAMILIES = [
   "JetBrains Mono",
   "Fira Code",
@@ -44,6 +60,12 @@ export function SettingsPanel() {
     setError(null);
     if (patch.theme) {
       useAppStore.getState().setTheme(patch.theme);
+    }
+    if (patch.accent_color) {
+      useAppStore.getState().setAccentColor(patch.accent_color);
+    }
+    if (patch.ui_font_size) {
+      useAppStore.getState().setUiFontSize(patch.ui_font_size);
     }
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
@@ -180,6 +202,57 @@ function AppearanceTab({
           ))}
         </div>
       </Section>
+
+      {/* Accent Color */}
+      <Section label="Accent Color">
+        <div className="flex gap-2 flex-wrap">
+          {ACCENTS.map((c) => (
+            <button
+              key={c}
+              onClick={() => onChange({ accent_color: c })}
+              aria-label={`Accent ${c}`}
+              className={`w-7 h-7 rounded-full transition-fast border-2 ${
+                settings.accent_color === c
+                  ? "border-text-primary scale-110 shadow-glow"
+                  : "border-transparent hover:scale-105"
+              }`}
+              style={{ backgroundColor: c }}
+            />
+          ))}
+        </div>
+        <div className="flex items-center gap-2 mt-2">
+          <input
+            type="color"
+            value={settings.accent_color}
+            onChange={(e) => onChange({ accent_color: e.target.value })}
+            className="w-7 h-7 rounded cursor-pointer bg-transparent border border-border-subtle"
+            aria-label="Custom accent color"
+          />
+          <span className="text-[10px] text-text-muted font-mono">{settings.accent_color}</span>
+        </div>
+      </Section>
+
+      {/* UI Font Size */}
+      <Section label="UI Scale">
+        <div className="flex gap-1.5 flex-wrap">
+          {UI_FONT_SIZES.map((s) => (
+            <button
+              key={s}
+              onClick={() => onChange({ ui_font_size: s })}
+              className={`px-2.5 py-1 text-xs rounded transition-fast border
+                ${settings.ui_font_size === s
+                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
+                  : "border-border-subtle text-text-muted hover:border-text-muted"
+                }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+        <p className="text-[10px] text-text-muted mt-1">
+          Scales the whole interface. The editor font size above is independent.
+        </p>
+      </Section>
     </div>
   );
 }
@@ -231,6 +304,34 @@ function ChatTab({
           </p>
         )}
       </Section>
+
+      <Section label="Reasoning Effort">
+        <div className="flex gap-1.5">
+          {REASONING_LEVELS.map((r) => (
+            <button
+              key={r.id}
+              onClick={() => onChange({ reasoning_effort: r.id })}
+              className={`px-2.5 py-1 text-xs rounded transition-fast border
+                ${settings.reasoning_effort === r.id
+                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
+                  : "border-border-subtle text-text-muted hover:border-text-muted"
+                }`}
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-[10px] text-text-muted mt-1">
+          Controls how much effort reasoning models spend on each response.
+        </p>
+      </Section>
+
+      <ToggleRow
+        label="Dev Mode"
+        description="Show extra debugging details (raw tool inputs, timing, low-level errors)"
+        checked={settings.dev_mode}
+        onChange={(v) => onChange({ dev_mode: v })}
+      />
     </div>
   );
 }

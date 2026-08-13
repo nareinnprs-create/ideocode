@@ -151,3 +151,84 @@ pub fn git_commit(path: String, message: String) -> Result<(), String> {
     run_git(&["commit", "-am", &message], &cwd)?;
     Ok(())
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GitBranch {
+    pub name: String,
+    pub current: bool,
+    pub remote: bool,
+}
+
+/// Lists local branches (plus remote-tracking branches without a local copy)
+/// and marks which one is checked out.
+#[tauri::command]
+pub fn git_branches(path: String) -> Result<Vec<GitBranch>, String> {
+    let cwd = PathBuf::from(&path).to_string_lossy().to_string();
+
+    let mut branches: Vec<GitBranch> = Vec::new();
+    let current = run_git(&["rev-parse", "--abbrev-ref", "HEAD"], &cwd)
+        .map(|s| s.trim().to_string())
+        .unwrap_or_default();
+
+    for line in run_git(&["branch", "--list"], &cwd)
+        .unwrap_or_default()
+        .lines()
+    {
+        let line = line.trim_start();
+        if line.is_empty() {
+            continue;
+        }
+        let (checked, name) = match line.strip_prefix('*') {
+            Some(rest) => (true, rest.trim().to_string()),
+            None => (false, line.trim().to_string()),
+        };
+        if !branches.iter().any(|b: &GitBranch| b.name == name) {
+            branches.push(GitBranch {
+                current: checked || name == current,
+                name: name.clone(),
+                remote: false,
+            });
+        }
+    }
+
+    for line in run_git(&["branch", "--list", "-r"], &cwd)
+        .unwrap_or_default()
+        .lines()
+    {
+        let name = line.trim().to_string();
+        if name.is_empty() {
+            continue;
+        }
+        let name = name
+            .strip_prefix("origin/")
+            .map(|n| n.to_string())
+            .unwrap_or(name);
+        if !branches.iter().any(|b: &GitBranch| b.name == name) {
+            branches.push(GitBranch {
+                current: name == current,
+                name: name.clone(),
+                remote: true,
+            });
+        }
+    }
+
+    Ok(branches)
+}
+
+/// Switches to the given branch, creating a local tracking branch first when
+/// the name only exists on the remote.
+#[tauri::command]
+pub fn git_checkout(path: String, branch: String) -> Result<(), String> {
+    let cwd = PathBuf::from(&path).to_string_lossy().to_string();
+    let branch = branch.trim().to_string();
+    if branch.is_empty() {
+        return Err("Branch name cannot be empty".to_string());
+    }
+    match run_git(&["checkout", &branch], &cwd) {
+        Ok(_) => Ok(()),
+        Err(_) => {
+            let remote_ref = format!("origin/{}", branch);
+            run_git(&["checkout", "-b", &branch, &remote_ref], &cwd).map(|_| ())
+        }
+    }
+}

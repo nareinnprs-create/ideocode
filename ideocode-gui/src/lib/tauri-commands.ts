@@ -13,6 +13,13 @@ export interface Message {
   content: string;
   tool_calls?: ToolCall[];
   timestamp?: number;
+  usage?: Usage;
+}
+
+export interface Usage {
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
 }
 
 export interface ToolCall {
@@ -111,13 +118,22 @@ export async function sendMessage(
 
 export async function streamChat(
   content: string,
-  opts?: { model?: string; mode?: "normal" | "plan" | "agent" },
+  opts?: { model?: string; mode?: "normal" | "plan" | "agent"; reasoningEffort?: string },
 ): Promise<Message> {
   return invoke<Message>("stream_chat", {
     content,
     model: opts?.model ?? null,
     mode: opts?.mode ?? null,
+    reasoning_effort: opts?.reasoningEffort ?? null,
   });
+}
+
+export async function interruptStream(): Promise<boolean> {
+  return invoke<boolean>("interrupt_stream");
+}
+
+export async function compactSession(): Promise<Message[]> {
+  return invoke<Message[]>("compact_session");
 }
 
 export async function getMessages(): Promise<Message[]> {
@@ -214,6 +230,23 @@ export async function gitCommit(
   return invoke<void>("git_commit", { path, message });
 }
 
+export interface GitBranch {
+  name: string;
+  current: boolean;
+  remote: boolean;
+}
+
+export async function gitBranches(path: string): Promise<GitBranch[]> {
+  return invoke<GitBranch[]>("git_branches", { path });
+}
+
+export async function gitCheckout(
+  path: string,
+  branch: string,
+): Promise<void> {
+  return invoke<void>("git_checkout", { path, branch });
+}
+
 // ============================================
 // Provider Commands
 // ============================================
@@ -270,6 +303,10 @@ export interface AppSettings {
   auto_save: boolean;
   language: string;
   mode: string;
+  accent_color: string;
+  ui_font_size: number;
+  reasoning_effort: string;
+  dev_mode: boolean;
 }
 
 export async function getSettings(): Promise<AppSettings> {

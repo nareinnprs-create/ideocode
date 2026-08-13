@@ -57,6 +57,12 @@ interface AppState {
 
   theme: Theme;
   setTheme: (t: Theme) => void;
+
+  accentColor: string;
+  setAccentColor: (c: string) => void;
+
+  uiFontSize: number;
+  setUiFontSize: (n: number) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -102,4 +108,10 @@ export const useAppStore = create<AppState>((set) => ({
 
   theme: "ideo_dark",
   setTheme: (t) => set({ theme: t }),
+
+  accentColor: "#7C3AED",
+  setAccentColor: (c) => set({ accentColor: c }),
+
+  uiFontSize: 13,
+  setUiFontSize: (n) => set({ uiFontSize: n }),
 }));
