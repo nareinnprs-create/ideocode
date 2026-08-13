@@ -41,6 +41,33 @@ const BOTTOM_ITEMS: SidebarItem[] = [
   { id: "settings", icon: Settings, label: "Settings" },
 ];
 
+function SidebarButton({
+  icon: Icon,
+  label,
+  active,
+  onClick,
+}: {
+  icon: typeof MessageSquare;
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label}
+      aria-pressed={active}
+      className={`relative w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-150 ${
+        active
+          ? "text-accent-primary bg-accent-primary/10"
+          : "text-text-muted hover:text-text-primary hover:bg-bg-hover"
+      }`}
+    >
+      <Icon size={19} strokeWidth={active ? 2.2 : 1.8} />
+    </button>
+  );
+}
+
 export function Sidebar() {
   const {
     activePanel,
@@ -82,69 +109,37 @@ export function Sidebar() {
   return (
     <aside className="flex flex-col w-[52px] bg-bg-secondary border-r border-border-subtle py-2 items-center justify-between shrink-0">
       <nav className="flex flex-col gap-1 items-center" aria-label="Primary">
-        {TOP_ITEMS.map(({ id, icon: Icon, label, shortcut }) => (
+        {TOP_ITEMS.map(({ id, icon, label, shortcut }) => (
           <Tooltip key={id} label={`${label}${shortcut ? ` (${shortcut})` : ""}`} position="right">
-            <button
+            <SidebarButton
+              icon={icon}
+              label={label}
+              active={isActive(id)}
               onClick={() => handleClick(id)}
-              aria-label={label}
-              aria-pressed={isActive(id)}
-              className={`relative w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-150 ${
-                isActive(id)
-                  ? "text-accent-primary bg-bg-tertiary"
-                  : "text-text-muted hover:text-text-primary hover:bg-bg-hover"
-              }`}
-            >
-              {isActive(id) && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full bg-accent-primary -ml-[13px]" />
-              )}
-              <Icon size={19} strokeWidth={isActive(id) ? 2.2 : 1.8} />
-            </button>
+            />
           </Tooltip>
         ))}
       </nav>
 
       <nav className="flex flex-col gap-1 items-center" aria-label="Utility">
         <Tooltip label="Terminal" position="right">
-          <button
+          <SidebarButton
+            icon={Terminal}
+            label="Terminal"
+            active={bottomPanelOpen && bottomPanel === "terminal"}
             onClick={() => handleClick("terminal")}
-            aria-label="Terminal"
-            aria-pressed={bottomPanelOpen && bottomPanel === "terminal"}
-            className={`relative w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-150 ${
-              bottomPanelOpen && bottomPanel === "terminal"
-                ? "text-accent-primary bg-bg-tertiary"
-                : "text-text-muted hover:text-text-primary hover:bg-bg-hover"
-            }`}
-          >
-            {bottomPanelOpen && bottomPanel === "terminal" && (
-              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full bg-accent-primary -ml-[13px]" />
-            )}
-            <Terminal size={19} strokeWidth={bottomPanelOpen && bottomPanel === "terminal" ? 2.2 : 1.8} />
-          </button>
+          />
         </Tooltip>
-        {BOTTOM_ITEMS.map(({ id, icon: Icon, label }) => (
+        {BOTTOM_ITEMS.map(({ id, icon, label }) => (
           <Tooltip key={id} label={label} position="right">
-            <button
+            <SidebarButton
+              icon={icon}
+              label={label}
+              active={isActive(id)}
               onClick={() => handleClick(id)}
-              aria-label={label}
-              aria-pressed={isActive(id)}
-              className={`relative w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-150 ${
-                isActive(id)
-                  ? "text-accent-primary bg-bg-tertiary"
-                  : "text-text-muted hover:text-text-primary hover:bg-bg-hover"
-              }`}
-            >
-              {isActive(id) && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full bg-accent-primary -ml-[13px]" />
-              )}
-              <Icon size={19} strokeWidth={isActive(id) ? 2.2 : 1.8} />
-            </button>
+            />
           </Tooltip>
         ))}
-        <div className="mt-1 pt-2 border-t border-border-subtle w-8 flex justify-center">
-          <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center text-[9px] font-bold text-white shadow-glow">
-            ID
-          </span>
-        </div>
       </nav>
     </aside>
   );

@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   Send,
   Paperclip,
-  Mic,
   Zap,
   ListChecks,
   Bot,
@@ -17,7 +16,6 @@ import { useChatStore, type ComposerMode } from "../../stores/chatStore";
 import { useProviderStore } from "../../stores/providerStore";
 import { useFileStore } from "../../stores/fileStore";
 import { getSettings, updateSettings } from "../../lib/tauri-commands";
-import { notify } from "../../stores/toastStore";
 import { Tooltip } from "../ui/Tooltip";
 
 const MODES: { id: ComposerMode; label: string; icon: typeof Zap; hint: string }[] = [
@@ -47,23 +45,6 @@ const HELP_TEXT = `You can use these shortcuts in the composer:
 - @<file> — reference an open file by path
 - Enter to send, Shift+Enter for a newline`;
 
-interface VoiceResult {
-  [0]: { transcript: string };
-}
-interface VoiceResultEvent {
-  results: VoiceResult[];
-}
-interface VoiceRecognition {
-  lang: string;
-  interimResults: boolean;
-  continuous: boolean;
-  start: () => void;
-  stop: () => void;
-  onresult: ((e: VoiceResultEvent) => void) | null;
-  onend: (() => void) | null;
-  onerror: (() => void) | null;
-}
-
 function detectMention(value: string, cursor: number): string | null {
   const before = value.slice(0, cursor);
   const lastSep = Math.max(before.lastIndexOf(" "), before.lastIndexOf("\n"));
@@ -79,11 +60,9 @@ function detectSlash(value: string, cursor: number): boolean {
 
 export function Composer() {
   const [input, setInput] = useState("");
-  const [micActive, setMicActive] = useState(false);
   const [menuOpen, setMenuOpen] = useState<"slash" | "mention" | null>(null);
   const [mentionQuery, setMentionQuery] = useState("");
   const [activeIdx, setActiveIdx] = useState(0);
-  const recognitionRef = useRef<VoiceRecognition | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selEndRef = useRef(0);
@@ -101,10 +80,10 @@ export function Composer() {
   const setMode = useChatStore((s) => s.setMode);
   const reasoningEffort = useChatStore((s) => s.reasoningEffort);
   const setReasoningEffort = useChatStore((s) => s.setReasoningEffort);
-  const messages = useChatStore((s) => s.messages);
   const providers = useProviderStore((s) => s.providers);
   const loadProviders = useProviderStore((s) => s.loadProviders);
   const openFiles = useFileStore((s) => s.openFiles);
+  const activeFile = useFileStore((s) => s.activeFile);
 
   useEffect(() => {
     loadProviders();
@@ -135,7 +114,6 @@ export function Composer() {
   useEffect(() => {
     return () => {
       if (persistSelection.current) clearTimeout(persistSelection.current);
-      recognitionRef.current?.stop();
     };
   }, []);
 
@@ -209,6 +187,13 @@ export function Composer() {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (menuOpen) {
       const list = menuOpen === "slash" ? SLASH_COMMANDS : mentionCandidates;
+      if (list.length === 0 && menuOpen === "mention") {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          setMenuOpen(null);
+        }
+        return;
+      }
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setActiveIdx((i) => (i + 1) % list.length);
@@ -224,7 +209,7 @@ export function Composer() {
         const item = list[activeIdx];
         if (item) {
           if (menuOpen === "slash") runSlash((item as { id: string }).id);
-          else insertMention((item as string));
+          else insertMention(item as string);
         }
         return;
       }
@@ -245,44 +230,6 @@ export function Composer() {
     }
   };
 
-  const handleMicToggle = () => {
-    const w = window as unknown as {
-      SpeechRecognition?: new () => VoiceRecognition;
-      webkitSpeechRecognition?: new () => VoiceRecognition;
-    };
-    const Ctor = w.SpeechRecognition || w.webkitSpeechRecognition;
-    if (!Ctor) {
-      notify("error", "Voice input not supported", "This browser has no SpeechRecognition API.");
-      return;
-    }
-    if (micActive) {
-      recognitionRef.current?.stop();
-      setMicActive(false);
-      return;
-    }
-    const rec = new Ctor();
-    rec.lang = "en-US";
-    rec.interimResults = false;
-    rec.continuous = false;
-    rec.onresult = (e) => {
-      const text = Array.from(e.results)
-        .map((r) => r[0].transcript)
-        .join("");
-      setInput((prev) => (prev.trim() ? prev + " " + text : text));
-    };
-    rec.onend = () => setMicActive(false);
-    rec.onerror = () => {
-      setMicActive(false);
-      notify("error", "Voice input failed", "");
-    };
-    rec.start();
-    recognitionRef.current = rec;
-    setMicActive(true);
-  };
-
-  const userTurns = messages.filter((m) => m.role === "user").length;
-  const inputTokens = Math.round(input.trim().length / 4);
-  const activeFile = useFileStore((s) => s.activeFile);
   const activeFileName = activeFile ? activeFile.split(/[/\\]/).pop() : null;
 
   return (
@@ -300,8 +247,8 @@ export function Composer() {
               }`}
             >
               <cmd.icon size={14} className="text-accent-primary shrink-0" />
-              <span className="text-xs text-text-primary font-mono">{cmd.label}</span>
-              <span className="text-[10px] text-text-muted flex-1 text-right truncate">{cmd.hint}</span>
+              <span className="text-[13px] text-text-primary">{cmd.label}</span>
+              <span className="text-xs text-text-muted flex-1 text-right truncate">{cmd.hint}</span>
             </button>
           ))}
         </div>
@@ -310,7 +257,7 @@ export function Composer() {
       {/* @ mention palette */}
       {menuOpen === "mention" && (
         <div className="absolute bottom-full left-3 right-3 mb-2 z-30 rounded-lg border border-border-default bg-bg-primary shadow-pop overflow-hidden animate-scale-in">
-          <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-text-muted border-b border-border-subtle">
+          <div className="px-3 py-1.5 text-[11px] uppercase tracking-wider text-text-muted border-b border-border-subtle">
             {mentionCandidates.length === 0 ? "No matching open files" : "Open files"}
           </div>
           {mentionCandidates.map((path, i) => (
@@ -323,83 +270,23 @@ export function Composer() {
               }`}
             >
               <FileText size={14} className="text-text-muted shrink-0" />
-              <span className="text-xs font-mono text-text-primary truncate">{path}</span>
+              <span className="text-[13px] text-text-primary truncate font-mono">{path}</span>
             </button>
           ))}
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-2">
-        {/* Mode toggle */}
-        <div className="flex items-center gap-0.5 bg-bg-primary rounded-lg border border-border-subtle p-0.5">
-          {MODES.map(({ id, label, icon: ModeIcon, hint }) => (
-            <Tooltip key={id} label={hint}>
-              <button
-                onClick={() => {
-                  setMode(id);
-                  persistPatch({ mode: id });
-                }}
-                aria-pressed={mode === id}
-                className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium transition-fast ${
-                  mode === id ? "bg-accent-primary/15 text-accent-primary" : "text-text-muted hover:text-text-secondary"
-                }`}
-              >
-                <ModeIcon size={11} />
-                {label}
-              </button>
-            </Tooltip>
-          ))}
-        </div>
+      {/* Input row */}
+      <div className="flex items-end gap-1.5 bg-bg-primary border border-border-subtle rounded-xl px-2 py-1.5 focus-within:border-accent-primary/40 transition-colors">
+        <Tooltip label="Attach file">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="p-1.5 text-text-muted hover:text-text-primary transition-fast rounded-md hover:bg-bg-hover shrink-0"
+          >
+            <Paperclip size={17} />
+          </button>
+        </Tooltip>
 
-        <div className="flex items-center gap-2">
-          {/* Reasoning effort selector */}
-          <div className="flex items-center gap-0.5 bg-bg-primary rounded-lg border border-border-subtle p-0.5">
-            {REASONING_LEVELS.map(({ id, label, hint }) => (
-              <Tooltip key={id} label={`Reasoning: ${hint}`}>
-                <button
-                  onClick={() => {
-                    setReasoningEffort(id);
-                    persistPatch({ reasoning_effort: id });
-                  }}
-                  aria-pressed={reasoningEffort === id}
-                  className={`px-2 py-0.5 rounded-md text-[10px] font-medium transition-fast ${
-                    reasoningEffort === id
-                      ? "bg-accent-primary/15 text-accent-primary"
-                      : "text-text-muted hover:text-text-secondary"
-                  }`}
-                >
-                  {label}
-                </button>
-              </Tooltip>
-            ))}
-          </div>
-
-          {/* Model selector */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-text-muted uppercase tracking-wider hidden sm:inline">Model</span>
-            <select
-              value={model}
-              onChange={(e) => {
-                setModel(e.target.value);
-                persistPatch({ active_model: e.target.value });
-              }}
-              aria-label="Select model"
-              className="bg-bg-primary border border-border-subtle rounded-md px-2 py-1 text-[11px] text-text-secondary outline-none focus:border-accent-primary font-mono max-w-[220px]"
-            >
-              {model === "auto" && <option value="auto">auto</option>}
-              {providers
-                .flatMap((p) => p.models.map((m) => ({ id: m.id, provider: p.name })))
-                .map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.id}
-                  </option>
-                ))}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex items-end gap-2 glass rounded-xl px-3 py-2">
         <input
           ref={fileInputRef}
           type="file"
@@ -430,15 +317,6 @@ export function Composer() {
           }}
         />
 
-        <Tooltip label="Attach file">
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="p-1.5 text-text-muted hover:text-text-primary transition-fast rounded-md hover:bg-bg-elevated"
-          >
-            <Paperclip size={18} />
-          </button>
-        </Tooltip>
-
         <textarea
           ref={textareaRef}
           value={input}
@@ -464,28 +342,17 @@ export function Composer() {
           onSelect={(e) => {
             selEndRef.current = e.currentTarget.selectionEnd ?? e.currentTarget.value.length;
           }}
-          placeholder="Type a message… (Enter to send, / for commands, @ to reference a file)"
+          placeholder="Ask anything… (/ for commands, @ to reference a file)"
           rows={1}
-          className="flex-1 bg-transparent text-text-primary placeholder:text-text-muted resize-none outline-none text-sm leading-relaxed max-h-32 font-mono"
+          className="flex-1 bg-transparent text-text-primary placeholder:text-text-muted resize-none outline-none text-sm leading-relaxed max-h-32 py-1"
         />
-
-        <Tooltip label={micActive ? "Stop voice input" : "Voice input"}>
-          <button
-            onClick={handleMicToggle}
-            className={`p-1.5 transition-fast rounded-md hover:bg-bg-elevated ${
-              micActive ? "text-accent-primary bg-accent-primary/10" : "text-text-muted hover:text-text-primary"
-            }`}
-          >
-            <Mic size={18} />
-          </button>
-        </Tooltip>
 
         {streaming ? (
           <Tooltip label="Stop generating (Esc)">
             <button
               onClick={() => void interrupt()}
               title="Stop generating"
-              className="p-1.5 rounded-md transition-fast bg-error/15 text-error hover:bg-error/25 animate-pulse-glow"
+              className="p-1.5 rounded-md transition-fast bg-error/15 text-error hover:bg-error/25 animate-pulse-glow shrink-0"
             >
               <Square size={16} className="fill-current" />
             </button>
@@ -495,33 +362,87 @@ export function Composer() {
             onClick={() => void handleSend()}
             disabled={!input.trim() || loading}
             title="Send message"
-            className="p-1.5 rounded-md transition-fast bg-accent-primary text-white hover:bg-accent-hover disabled:opacity-30 disabled:cursor-not-allowed shadow-glow"
+            className="p-1.5 rounded-md transition-fast bg-accent-primary text-white hover:bg-accent-hover disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
           >
             {loading ? (
               <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin block" />
             ) : (
-              <Send size={18} />
+              <Send size={17} />
             )}
           </button>
         )}
       </div>
 
-      {/* Meta row: context + counters */}
-      <div className="flex items-center justify-between px-1">
-        <span className="flex items-center gap-1 text-[10px] text-text-muted">
-          <Sparkles size={10} className="text-accent-primary" />
-          {activeFileName ? (
-            <>
-              Context: session + <span className="font-mono text-text-secondary max-w-40 truncate inline-block align-bottom">{activeFileName}</span>
-            </>
-          ) : (
-            "Context: session"
-          )}
-        </span>
-        <span className="flex items-center gap-2 text-[10px] text-text-muted font-mono">
-          {inputTokens > 0 && <span>~{inputTokens} tok</span>}
-          {userTurns > 0 && <span>Turn {userTurns}</span>}
-        </span>
+      {/* Footer row: mode · reasoning · model */}
+      <div className="flex items-center justify-between gap-2 px-0.5">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <div className="flex items-center gap-0.5 bg-bg-primary rounded-lg border border-border-subtle p-0.5 shrink-0">
+            {MODES.map(({ id, label, icon: ModeIcon, hint }) => (
+              <Tooltip key={id} label={hint}>
+                <button
+                  onClick={() => {
+                    setMode(id);
+                    persistPatch({ mode: id });
+                  }}
+                  aria-pressed={mode === id}
+                  className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-medium transition-fast ${
+                    mode === id ? "bg-accent-primary/15 text-accent-primary" : "text-text-muted hover:text-text-secondary"
+                  }`}
+                >
+                  <ModeIcon size={12} />
+                  {label}
+                </button>
+              </Tooltip>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-0.5 bg-bg-primary rounded-lg border border-border-subtle p-0.5 shrink-0">
+            {REASONING_LEVELS.map(({ id, label, hint }) => (
+              <Tooltip key={id} label={`Reasoning: ${hint}`}>
+                <button
+                  onClick={() => {
+                    setReasoningEffort(id);
+                    persistPatch({ reasoning_effort: id });
+                  }}
+                  aria-pressed={reasoningEffort === id}
+                  className={`px-1.5 py-0.5 rounded-md text-[11px] font-medium transition-fast ${
+                    reasoningEffort === id
+                      ? "bg-accent-primary/15 text-accent-primary"
+                      : "text-text-muted hover:text-text-secondary"
+                  }`}
+                >
+                  {label}
+                </button>
+              </Tooltip>
+            ))}
+          </div>
+
+          <select
+            value={model}
+            onChange={(e) => {
+              setModel(e.target.value);
+              persistPatch({ active_model: e.target.value });
+            }}
+            aria-label="Select model"
+            className="bg-bg-primary border border-border-subtle rounded-md px-2 py-1 text-xs text-text-secondary outline-none focus:border-accent-primary max-w-40 min-w-0"
+          >
+            {model === "auto" && <option value="auto">auto</option>}
+            {providers
+              .flatMap((p) => p.models.map((m) => ({ id: m.id, provider: p.name })))
+              .map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.id}
+                </option>
+              ))}
+          </select>
+        </div>
+
+        {activeFileName && (
+          <span className="flex items-center gap-1 text-[11px] text-text-muted min-w-0 shrink-0">
+            <Sparkles size={11} className="text-accent-primary shrink-0" />
+            <span className="truncate max-w-36">{activeFileName}</span>
+          </span>
+        )}
       </div>
     </div>
   );

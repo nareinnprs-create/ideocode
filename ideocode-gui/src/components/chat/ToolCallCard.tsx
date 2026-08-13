@@ -66,7 +66,7 @@ export function ToolCallCard({ toolCall }: Props) {
           <span className="text-[10px] text-text-muted font-mono tabular-nums">{elapsedText}</span>
         )}
         <span
-          className={`text-[9px] uppercase tracking-wider font-medium px-1.5 py-0.5 rounded ${colorClass} ${
+          className={`text-[10px] uppercase tracking-wider font-medium px-1.5 py-0.5 rounded ${colorClass} ${
             status === "running" ? "bg-info/10" : status === "error" ? "bg-error/10" : status === "completed" ? "bg-success/10" : "bg-bg-elevated"
           }`}
         >
@@ -84,7 +84,7 @@ export function ToolCallCard({ toolCall }: Props) {
         <div className="border-t border-border-subtle">
           {/* Input */}
           <div className="px-3 py-2">
-            <div className="text-[10px] uppercase tracking-wider text-text-muted mb-1">
+            <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1">
               Input
             </div>
             <pre className="text-xs font-mono text-text-secondary bg-bg-primary rounded p-2 overflow-x-auto max-h-40 overflow-y-auto">
@@ -95,7 +95,7 @@ export function ToolCallCard({ toolCall }: Props) {
           {/* Output */}
           {toolCall.output && (
             <div className="px-3 py-2 border-t border-border-subtle">
-              <div className="text-[10px] uppercase tracking-wider text-text-muted mb-1">
+              <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1">
                 Output
               </div>
               <pre className="text-xs font-mono text-text-secondary bg-bg-primary rounded p-2 overflow-x-auto max-h-40 overflow-y-auto">

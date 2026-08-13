@@ -605,6 +605,14 @@ body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
+html.theme-transition body,
+html.theme-transition body * {
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease !important;
+}
+
 /* ============================================
    Scrollbar Styling
    ============================================ */
@@ -668,7 +676,7 @@ body {
    ============================================ */
 
 :focus-visible {
-  outline: 2px solid var(--color-accent-primary);
+  outline: 1px solid var(--color-accent-primary);
   outline-offset: 2px;
 }
 

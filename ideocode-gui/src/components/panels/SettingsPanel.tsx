@@ -89,7 +89,7 @@ export function SettingsPanel() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-3 py-1.5 text-[10px] font-medium rounded-t transition-fast uppercase tracking-wider
+            className={`px-3 py-1.5 text-[11px] font-medium rounded-t transition-fast uppercase tracking-wider
               ${tab === t
                 ? "text-accent-primary bg-bg-secondary border-b-2 border-accent-primary"
                 : "text-text-muted hover:text-text-secondary"

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GitBranch, ShieldCheck, Radio, Loader2 } from "lucide-react";
+import { GitBranch, ShieldCheck, Loader2 } from "lucide-react";
 import { useAppStore } from "../../stores/appStore";
 import { useGitStore } from "../../stores/gitStore";
 import { useChatStore } from "../../stores/chatStore";
@@ -8,7 +8,7 @@ import { getGatewayStatus, type GatewayStatus } from "../../lib/tauri-commands";
 import { Tooltip } from "../ui/Tooltip";
 
 export function StatusBar() {
-  const { version, activePanel, theme } = useAppStore();
+  const version = useAppStore((s) => s.version);
   const model = useChatStore((s) => s.model);
   const busy = useChatStore((s) => s.loading || s.streaming);
   const gitStatus = useGitStore((s) => s.status);
@@ -90,14 +90,12 @@ export function StatusBar() {
           )}
           <span className={engineState.text}>{busy ? "Working" : engineState.label}</span>
         </span>
-        {gateway?.online && <span className="opacity-50 font-mono">:{gateway.port}</span>}
       </div>
 
-      {/* Center — panel + model */}
+      {/* Center — model */}
       <div className="flex items-center gap-3 min-w-0">
-        <span className="opacity-60 truncate">Panel: {activePanel}</span>
         {model && (
-          <span className="font-mono text-text-secondary truncate max-w-48" title={model}>
+          <span className="text-text-secondary truncate max-w-48" title={model}>
             {model}
           </span>
         )}
@@ -111,14 +109,7 @@ export function StatusBar() {
             <span>Local</span>
           </span>
         </Tooltip>
-        {gateway?.online && (
-          <span className="flex items-center gap-1 text-accent-primary">
-            <Radio size={11} />
-            <span className="text-[10px]">Live</span>
-          </span>
-        )}
-        <span className="opacity-50 font-mono">v{version}</span>
-        <span className="opacity-50 hidden md:inline">{theme}</span>
+        <span className="opacity-50">v{version}</span>
       </div>
     </footer>
   );

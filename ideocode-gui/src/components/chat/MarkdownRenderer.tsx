@@ -20,7 +20,7 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
       rehypePlugins={[rehypeHighlight]}
       components={{
         pre({ children }) {
-          return <CodeBlock>{children}</CodeBlock>;
+          return <CodeBlock lang={extractLanguage(children)}>{children}</CodeBlock>;
         },
         code({ className, children, ...props }) {
           const match = /language-(\w+)/.exec(className || "");
@@ -51,7 +51,7 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
               <button
                 onClick={() => onFileClick(raw)}
                 title={`Open ${raw}`}
-                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-bg-elevated text-accent-secondary text-[13px] font-mono hover:text-accent-primary hover:bg-bg-hover transition-fast cursor-pointer align-middle"
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-bg-elevated text-text-primary text-[13px] font-mono hover:text-accent-primary hover:bg-bg-hover transition-fast cursor-pointer align-middle underline decoration-dotted decoration-text-muted underline-offset-2"
               >
                 <FileCode2 size={12} />
                 {raw}
@@ -60,7 +60,7 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
           }
           return (
             <code
-              className="bg-bg-elevated px-1.5 py-0.5 rounded text-accent-tertiary text-[13px] font-mono"
+              className="bg-bg-elevated px-1.5 py-0.5 rounded text-text-primary text-[13px] font-mono"
               {...props}
             >
               {children}
@@ -80,11 +80,11 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
           );
         },
         ul({ children }) {
-          return <ul className="list-disc list-inside space-y-1">{children}</ul>;
+          return <ul className="list-disc list-outside space-y-1 pl-5 my-2">{children}</ul>;
         },
         ol({ children }) {
           return (
-            <ol className="list-decimal list-inside space-y-1">{children}</ol>
+            <ol className="list-decimal list-outside space-y-1 pl-5 my-2">{children}</ol>
           );
         },
         h1({ children }) {
@@ -146,7 +146,7 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
   );
 }
 
-function CodeBlock({ children }: { children: React.ReactNode }) {
+function CodeBlock({ children, lang }: { children: React.ReactNode; lang: string | null }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -158,19 +158,31 @@ function CodeBlock({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="relative group my-2 rounded-lg overflow-hidden border border-border-subtle">
-      <button
-        onClick={handleCopy}
-        className="absolute top-2 right-2 p-1.5 rounded-md bg-bg-elevated/80 backdrop-blur
-          text-text-muted hover:text-text-primary opacity-0 group-hover:opacity-100 transition-fast z-10"
-      >
-        {copied ? <Check size={14} /> : <Copy size={14} />}
-      </button>
+    <div className="group/cb my-2 rounded-lg overflow-hidden border border-border-subtle">
+      <div className="flex items-center justify-between px-3 py-1.5 bg-bg-tertiary/60 border-b border-border-subtle">
+        <span className="text-[11px] text-text-muted font-mono">{lang || "code"}</span>
+        <button
+          onClick={handleCopy}
+          className="flex items-center gap-1.5 p-1 rounded-md text-text-muted hover:text-text-primary hover:bg-bg-hover opacity-60 group-hover/cb:opacity-100 focus-visible:opacity-100 transition-fast"
+        >
+          {copied ? <Check size={12} /> : <Copy size={12} />}
+          <span className="text-[11px]">{copied ? "Copied" : "Copy"}</span>
+        </button>
+      </div>
       <pre className="bg-bg-secondary p-3 overflow-x-auto text-[13px] leading-relaxed font-mono">
         {children}
       </pre>
     </div>
   );
+}
+
+function extractLanguage(node: React.ReactNode): string | null {
+  if (node && typeof node === "object" && "props" in node) {
+    const props = node.props as { className?: string };
+    const match = /language-(\w+)/.exec(props.className || "");
+    if (match) return match[1];
+  }
+  return null;
 }
 
 function extractText(node: React.ReactNode): string {

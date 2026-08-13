@@ -34,7 +34,11 @@ function App() {
   }, [setVersion, setAccentColor, setUiFontSize]);
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
+    const root = document.documentElement;
+    root.classList.add("theme-transition");
+    root.setAttribute("data-theme", theme);
+    const timer = window.setTimeout(() => root.classList.remove("theme-transition"), 250);
+    return () => window.clearTimeout(timer);
   }, [theme]);
 
   useEffect(() => {
