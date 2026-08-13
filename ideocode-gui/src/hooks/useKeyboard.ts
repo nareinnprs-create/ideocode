@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { useAppStore } from "../stores/appStore";
+import { useChatStore } from "../stores/chatStore";
+import { useFileStore } from "../stores/fileStore";
 
 export function useKeyboard() {
   const {
@@ -36,6 +38,26 @@ export function useKeyboard() {
       if (mod && e.key === "j") {
         e.preventDefault();
         toggleBottomPanel();
+      }
+
+      // Cmd+` — Open terminal
+      if (mod && e.key === "`") {
+        e.preventDefault();
+        const state = useAppStore.getState();
+        state.setBottomPanel("terminal");
+        state.setBottomPanelOpen(true);
+      }
+
+      // Cmd+N — New chat
+      if (mod && e.key === "n") {
+        e.preventDefault();
+        void useChatStore.getState().clearMessages();
+      }
+
+      // Cmd+S — Save current file
+      if (mod && e.key === "s") {
+        e.preventDefault();
+        void useFileStore.getState().saveFile();
       }
 
       // Esc — Close overlays and panels

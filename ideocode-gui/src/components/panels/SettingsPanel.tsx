@@ -285,13 +285,14 @@ function EditorTab({
 }
 
 function AboutTab() {
+  const version = useAppStore((s) => s.version);
   return (
     <div className="p-6 text-center space-y-4">
       <div className="text-2xl font-display font-bold bg-gradient-to-r from-accent-primary to-accent-secondary bg-clip-text text-transparent">
         IDEOCODE
       </div>
       <div className="text-text-muted text-xs">
-        <p>Version 0.1.0</p>
+        <p>Version {version}</p>
         <p className="mt-2">Multi-model AI coding assistant</p>
         <p className="mt-4 text-text-muted/60">
           Built with Tauri 2.x + React 19 + TypeScript

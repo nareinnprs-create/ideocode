@@ -121,17 +121,6 @@ export function CodeEditor() {
     [activeFile, editorSettings?.auto_save, setContent, saveFile],
   );
 
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
-        e.preventDefault();
-        void saveFile();
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [saveFile]);
-
   if (!activeFile) {
     return null;
   }
