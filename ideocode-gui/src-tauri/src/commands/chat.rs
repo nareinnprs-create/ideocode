@@ -758,6 +758,36 @@ pub fn interrupt_stream(state: State<'_, ChatState>) -> bool {
     }
 }
 
+/// Persists the partial assistant response captured by the frontend when the
+/// user stops a stream. Uses the same message id the deltas were emitted under,
+/// so a racing `chat://done` event replaces it instead of duplicating it.
+#[tauri::command]
+pub fn save_partial_message(
+    id: String,
+    content: String,
+    state: State<'_, ChatState>,
+) -> Result<Message, String> {
+    let content = content.trim().to_string();
+    if content.is_empty() {
+        return Err("Nothing to save".to_string());
+    }
+    let msg = Message {
+        id,
+        role: "assistant".into(),
+        content,
+        tool_calls: None,
+        timestamp: Some(now_ms()),
+        usage: None,
+    };
+    state
+        .messages
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .push(msg.clone());
+    save_session(&state);
+    Ok(msg)
+}
+
 /// Re-runs the last exchange: drops the trailing assistant response(s) and
 /// produces a fresh completion from the remaining history.
 #[tauri::command]

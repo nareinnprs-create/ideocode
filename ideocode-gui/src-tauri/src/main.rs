@@ -82,6 +82,7 @@ fn main() {
             commands::send_message,
             commands::stream_chat,
             commands::interrupt_stream,
+            commands::save_partial_message,
             commands::compact_session,
             commands::get_messages,
             commands::clear_messages,

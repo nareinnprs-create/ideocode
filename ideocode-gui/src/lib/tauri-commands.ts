@@ -132,6 +132,13 @@ export async function interruptStream(): Promise<boolean> {
   return invoke<boolean>("interrupt_stream");
 }
 
+export async function savePartialMessage(
+  id: string,
+  content: string,
+): Promise<Message> {
+  return invoke<Message>("save_partial_message", { id, content });
+}
+
 export async function compactSession(): Promise<Message[]> {
   return invoke<Message[]>("compact_session");
 }

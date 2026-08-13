@@ -11,6 +11,7 @@ import {
   regenerateLastMessage as regenerateLast,
   editLastMessage,
   interruptStream as tauriInterrupt,
+  savePartialMessage,
   compactSession as tauriCompact,
   type Message,
   type Session,
@@ -26,6 +27,7 @@ interface ChatState {
   loading: boolean;
   streaming: boolean;
   streamingContent: string;
+  streamingAssistantId: string | null;
   error: string | null;
   sessions: Session[];
   model: string;
@@ -65,24 +67,38 @@ function ensureStreamListeners(): Promise<void> {
       await listen<{ id: string; content: string }>("chat://delta", (e) => {
         useChatStore.setState((s) =>
           s.streaming
-            ? { streamingContent: s.streamingContent + e.payload.content }
+            ? {
+                streamingContent: s.streamingContent + e.payload.content,
+                streamingAssistantId: s.streamingAssistantId ?? e.payload.id,
+              }
             : s,
         );
       });
       await listen<{ message: Message }>("chat://done", (e) => {
-        useChatStore.setState((s) => ({
-          messages: [...s.messages, e.payload.message],
-          streaming: false,
-          streamingContent: "",
-          loading: false,
-          error: null,
-        }));
+        useChatStore.setState((s) => {
+          const existingIdx = s.messages.findIndex(
+            (m) => m.id === e.payload.message.id,
+          );
+          const messages =
+            existingIdx >= 0
+              ? s.messages.map((m, i) => (i === existingIdx ? e.payload.message : m))
+              : [...s.messages, e.payload.message];
+          return {
+            messages,
+            streaming: false,
+            streamingContent: "",
+            streamingAssistantId: null,
+            loading: false,
+            error: null,
+          };
+        });
         void refreshSessions();
       });
       await listen<{ error: string }>("chat://error", (e) => {
         useChatStore.setState({
           streaming: false,
           streamingContent: "",
+          streamingAssistantId: null,
           loading: false,
           error: `Failed to stream response: ${e.payload.error}`,
         });
@@ -98,6 +114,7 @@ export const useChatStore = create<ChatState>((set) => ({
   loading: false,
   streaming: false,
   streamingContent: "",
+  streamingAssistantId: null,
   error: null,
   sessions: [],
   model: "auto",
@@ -114,6 +131,7 @@ export const useChatStore = create<ChatState>((set) => ({
       loading: true,
       error: null,
       streamingContent: "",
+      streamingAssistantId: null,
       messages: s.messages,
     }));
     try {
@@ -140,7 +158,7 @@ export const useChatStore = create<ChatState>((set) => ({
   },
 
   interrupt: async () => {
-    const { streamingContent } = useChatStore.getState();
+    const { streamingContent, streamingAssistantId } = useChatStore.getState();
     let stopped = false;
     try {
       stopped = await tauriInterrupt();
@@ -149,23 +167,42 @@ export const useChatStore = create<ChatState>((set) => ({
     }
     if (!stopped) return;
     const content = streamingContent.trim();
-    set((s) => {
-      if (!content) {
-        return { streaming: false, loading: false, streamingContent: "" };
+    if (!content) {
+      set({
+        streaming: false,
+        loading: false,
+        streamingContent: "",
+        streamingAssistantId: null,
+      });
+      return;
+    }
+    let partial: Message;
+    if (streamingAssistantId) {
+      try {
+        partial = await savePartialMessage(streamingAssistantId, content);
+      } catch {
+        partial = {
+          id: `partial-${Date.now()}`,
+          role: "assistant",
+          content,
+          timestamp: Date.now(),
+        };
       }
-      const partial: Message = {
+    } else {
+      partial = {
         id: `partial-${Date.now()}`,
         role: "assistant",
         content,
         timestamp: Date.now(),
       };
-      return {
-        messages: [...s.messages, partial],
-        streaming: false,
-        loading: false,
-        streamingContent: "",
-      };
-    });
+    }
+    set((s) => ({
+      messages: [...s.messages, partial],
+      streaming: false,
+      loading: false,
+      streamingContent: "",
+      streamingAssistantId: null,
+    }));
     void refreshSessions();
   },
 
@@ -241,7 +278,7 @@ export const useChatStore = create<ChatState>((set) => ({
   clearMessages: async () => {
     try {
       await tauriClear();
-      set({ messages: [], streaming: false, streamingContent: "", error: null });
+      set({ messages: [], streaming: false, streamingContent: "", streamingAssistantId: null, error: null });
       void refreshSessions();
     } catch (e) {
       set({ error: `Failed to clear: ${e}` });
@@ -251,7 +288,7 @@ export const useChatStore = create<ChatState>((set) => ({
   loadSession: async (id: string) => {
     try {
       const messages = await tauriLoadSession(id);
-      set({ messages, streaming: false, streamingContent: "", error: null });
+      set({ messages, streaming: false, streamingContent: "", streamingAssistantId: null, error: null });
       notify("success", "Session resumed", "");
     } catch (e) {
       set({ error: `Failed to resume session: ${e}` });
