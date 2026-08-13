@@ -1,9 +1,19 @@
 import { useEffect, useState } from "react";
+import { GitBranch, ShieldCheck, Radio, Loader2 } from "lucide-react";
 import { useAppStore } from "../../stores/appStore";
+import { useGitStore } from "../../stores/gitStore";
+import { useChatStore } from "../../stores/chatStore";
+import { useFileStore } from "../../stores/fileStore";
 import { getGatewayStatus, type GatewayStatus } from "../../lib/tauri-commands";
+import { Tooltip } from "../ui/Tooltip";
 
 export function StatusBar() {
   const { version, activePanel, theme } = useAppStore();
+  const model = useChatStore((s) => s.model);
+  const busy = useChatStore((s) => s.loading || s.streaming);
+  const gitStatus = useGitStore((s) => s.status);
+  const loadGitStatus = useGitStore((s) => s.loadStatus);
+  const rootPath = useFileStore((s) => s.rootPath);
   const [gateway, setGateway] = useState<GatewayStatus | null>(null);
 
   useEffect(() => {
@@ -24,38 +34,91 @@ export function StatusBar() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!rootPath) return;
+    loadGitStatus(rootPath).catch(() => {});
+    const timer = setInterval(() => loadGitStatus(rootPath).catch(() => {}), 30000);
+    return () => clearInterval(timer);
+  }, [rootPath, loadGitStatus]);
+
   const engineState =
     gateway?.online
-      ? { label: "Engine online", cls: "bg-success", text: "text-success" }
+      ? { label: "Engine online", dot: "bg-success", text: "text-success", pulse: false }
       : gateway?.installing
-        ? { label: "Engine installing", cls: "bg-warning", text: "text-warning" }
-        : { label: "Engine starting", cls: "bg-accent-primary animate-pulse", text: "text-accent-primary" };
+        ? { label: "Engine installing", dot: "bg-warning", text: "text-warning", pulse: true }
+        : { label: "Engine starting", dot: "bg-accent-primary", text: "text-accent-primary", pulse: true };
+
+  const gitChanges =
+    gitStatus
+      ? gitStatus.staged.length +
+        gitStatus.modified.length +
+        gitStatus.untracked.length +
+        gitStatus.conflicted.length
+      : 0;
 
   return (
-    <footer className="flex items-center justify-between h-7 px-3 bg-bg-secondary border-t border-border-subtle text-[11px] text-text-muted select-none">
-      {/* Left */}
-      <div className="flex items-center gap-3">
-        <span className="font-mono text-text-secondary">IDEOCODE</span>
-        <span className="opacity-50">v{version}</span>
-        <span className="opacity-50">{theme}</span>
+    <footer className="flex items-center justify-between h-7 px-3 bg-bg-secondary border-t border-border-subtle text-[11px] text-text-muted select-none gap-3">
+      {/* Left — git + engine */}
+      <div className="flex items-center gap-3 min-w-0">
+        {gitStatus ? (
+          <Tooltip label={`${gitChanges} changed file${gitChanges === 1 ? "" : "s"}`}>
+            <button
+              onClick={() => useAppStore.getState().setRightPanel("git")}
+              className="flex items-center gap-1.5 text-text-secondary hover:text-text-primary transition-fast"
+              title="Open Git panel"
+            >
+              <GitBranch size={12} className="text-text-secondary" />
+              <span className="font-medium max-w-40 truncate">{gitStatus.branch}</span>
+              {gitChanges > 0 && (
+                <span className="px-1 rounded bg-bg-elevated text-text-secondary font-mono text-[10px]">
+                  {gitChanges}
+                </span>
+              )}
+              {gitStatus.ahead > 0 && <span className="text-text-muted">↑{gitStatus.ahead}</span>}
+              {gitStatus.behind > 0 && <span className="text-text-muted">↓{gitStatus.behind}</span>}
+            </button>
+          </Tooltip>
+        ) : (
+          <span className="opacity-60">No git repo</span>
+        )}
+
+        <span className="flex items-center gap-1.5">
+          {busy ? (
+            <Loader2 size={12} className="animate-spin text-accent-primary" />
+          ) : (
+            <span className={`w-1.5 h-1.5 rounded-full ${engineState.dot} ${engineState.pulse ? "animate-pulse" : ""}`} />
+          )}
+          <span className={engineState.text}>{busy ? "Working" : engineState.label}</span>
+        </span>
+        {gateway?.online && <span className="opacity-50 font-mono">:{gateway.port}</span>}
       </div>
 
-      {/* Center */}
-      <div className="flex items-center gap-3">
-        <span className="flex items-center gap-1.5">
-          <span className={`w-1.5 h-1.5 rounded-full ${engineState.cls}`} />
-          <span className={engineState.text}>{engineState.label}</span>
-        </span>
-        {gateway?.online && (
-          <span className="opacity-50">:{gateway.port}</span>
+      {/* Center — panel + model */}
+      <div className="flex items-center gap-3 min-w-0">
+        <span className="opacity-60 truncate">Panel: {activePanel}</span>
+        {model && (
+          <span className="font-mono text-text-secondary truncate max-w-48" title={model}>
+            {model}
+          </span>
         )}
       </div>
 
-      {/* Right */}
-      <div className="flex items-center gap-3">
-        <span className="opacity-50">Panel: {activePanel}</span>
-        <span className="text-success">Ready</span>
-        <span className="opacity-50">UTF-8</span>
+      {/* Right — privacy, version */}
+      <div className="flex items-center gap-3 shrink-0">
+        <Tooltip label="Runs locally — your code never leaves this machine">
+          <span className="flex items-center gap-1 text-success">
+            <ShieldCheck size={12} />
+            <span>Local</span>
+          </span>
+        </Tooltip>
+        {gateway?.online && (
+          <span className="flex items-center gap-1 text-accent-primary">
+            <Radio size={11} />
+            <span className="text-[10px]">Live</span>
+          </span>
+        )}
+        <span className="opacity-50 font-mono">v{version}</span>
+        <span className="opacity-50 hidden md:inline">{theme}</span>
       </div>
     </footer>
   );

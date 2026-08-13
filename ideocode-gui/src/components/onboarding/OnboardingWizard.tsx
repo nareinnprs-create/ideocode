@@ -40,7 +40,7 @@ interface Props {
 
 export function OnboardingWizard({ onComplete }: Props) {
   const [step, setStep] = useState<Step>("welcome");
-  const [theme, setTheme] = useState<Theme>("midnight");
+  const [theme, setTheme] = useState<Theme>("ideo_dark");
   const [provider, setProvider] = useState("baanzon-verso");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);

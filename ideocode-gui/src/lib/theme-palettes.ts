@@ -26,6 +26,20 @@ export interface ThemeColors {
 // Hex values must stay in sync with the [data-theme="..."] blocks in
 // src/styles/globals.css.
 export const THEME_COLORS: Record<Theme, ThemeColors> = {
+  ideo_dark: {
+    bg: "#0a0b0f", bgSecondary: "#14151a", bgTertiary: "#1e2027", bgElevated: "#26282f", bgHover: "#1a1b22",
+    fg: "#e6e8ef", textSecondary: "#a5aab8", textMuted: "#5d6272",
+    accent: "#6366f1", accentSecondary: "#8b5cf6", accentTertiary: "#22d3ee", accentHover: "#7c7ff2",
+    success: "#34d399", warning: "#fbbf24", error: "#f87171", info: "#818cf8",
+    borderSubtle: "#1c1e26", borderDefault: "#2a2d38", selection: "#6366f133", glow: "#6366f140",
+  },
+  ideo_light: {
+    bg: "#fafafb", bgSecondary: "#f1f1f4", bgTertiary: "#e6e6eb", bgElevated: "#d8d8df", bgHover: "#ececf0",
+    fg: "#17181d", textSecondary: "#3f4050", textMuted: "#71727f",
+    accent: "#5b5fe7", accentSecondary: "#7c3aed", accentTertiary: "#0891b2", accentHover: "#474cd1",
+    success: "#059669", warning: "#d97706", error: "#dc2626", info: "#6366f1",
+    borderSubtle: "#e9e9ee", borderDefault: "#d3d4dd", selection: "#5b5fe733", glow: "#5b5fe733",
+  },
   midnight: {
     bg: "#0a0a0f", bgSecondary: "#17171d", bgTertiary: "#27272c", bgElevated: "#36363c", bgHover: "#202026",
     fg: "#e8e8f0", textSecondary: "#b3b3c2", textMuted: "#6a6a82",

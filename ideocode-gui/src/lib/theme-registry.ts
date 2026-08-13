@@ -1,4 +1,6 @@
 export type Theme =
+  | "ideo_dark"
+  | "ideo_light"
   | "midnight"
   | "dark"
   | "light"
@@ -29,6 +31,8 @@ export interface ThemeInfo {
 }
 
 export const THEMES: ThemeInfo[] = [
+  { id: "ideo_dark", label: "Ideo Dark", description: "Signature Ideo 2027 dark theme", tier: "Default", bg: "#0a0b0f", bgSecondary: "#14151a", accent: "#6366f1", text: "#e6e8ef" },
+  { id: "ideo_light", label: "Ideo Light", description: "Signature Ideo 2027 light theme", tier: "Default", bg: "#fafafb", bgSecondary: "#f1f1f4", accent: "#5b5fe7", text: "#17181d" },
   { id: "midnight", label: "Midnight Noir", description: "Dark with indigo accents", tier: "Default", bg: "#0a0a0f", bgSecondary: "#17171d", accent: "#6366f1", text: "#e8e8f0" },
   { id: "dark", label: "Dark", description: "Classic dark theme", tier: "Default", bg: "#1e1e2e", bgSecondary: "#292a39", accent: "#89b4fa", text: "#d8dee9" },
   { id: "light", label: "Light", description: "Clean light theme", tier: "Default", bg: "#ffffff", bgSecondary: "#f1f1f2", accent: "#6366f1", text: "#1a1a2e" },

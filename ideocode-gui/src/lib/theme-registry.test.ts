@@ -23,6 +23,8 @@ describe("theme-registry", () => {
   });
 
   it("isTheme validates known ids and rejects unknown values", () => {
+    expect(isTheme("ideo_dark")).toBe(true);
+    expect(isTheme("ideo_light")).toBe(true);
     expect(isTheme("midnight")).toBe(true);
     expect(isTheme("dracula")).toBe(true);
     expect(isTheme("neon_city")).toBe(true);

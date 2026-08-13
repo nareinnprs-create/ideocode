@@ -52,6 +52,9 @@ interface AppState {
   toggleCommandPalette: () => void;
   setCommandPaletteOpen: (open: boolean) => void;
 
+  editorSplit: boolean;
+  toggleEditorSplit: () => void;
+
   theme: Theme;
   setTheme: (t: Theme) => void;
 }
@@ -94,6 +97,9 @@ export const useAppStore = create<AppState>((set) => ({
     set((s) => ({ commandPaletteOpen: !s.commandPaletteOpen })),
   setCommandPaletteOpen: (open) => set({ commandPaletteOpen: open }),
 
-  theme: "midnight",
+  editorSplit: false,
+  toggleEditorSplit: () => set((s) => ({ editorSplit: !s.editorSplit })),
+
+  theme: "ideo_dark",
   setTheme: (t) => set({ theme: t }),
 }));

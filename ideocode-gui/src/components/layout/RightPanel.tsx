@@ -3,6 +3,7 @@ import { useAppStore } from "../../stores/appStore";
 import { useDragResize } from "../../hooks/useDragResize";
 import { ErrorBoundary } from "../ErrorBoundary";
 import { X } from "lucide-react";
+import { IconButton } from "../ui/IconButton";
 import { FileExplorer } from "../panels/FileExplorer";
 import { GitPanel } from "../panels/GitPanel";
 import { ProviderPanel } from "../panels/ProviderPanel";
@@ -45,7 +46,7 @@ export function RightPanel() {
 
   return (
     <aside
-      className="flex border-l border-border-subtle bg-bg-secondary flex-col relative"
+      className="flex border-l border-border-subtle bg-bg-secondary flex-col relative animate-slide-in-right"
       style={{ width: rightPanelWidth }}
     >
       {/* Drag handle on the left edge */}
@@ -53,19 +54,16 @@ export function RightPanel() {
         {...bind}
         role="separator"
         aria-label="Resize panel"
-        className="absolute left-0 top-0 bottom-0 w-[3px] -ml-[1px] cursor-col-resize touch-none z-10"
+        className="absolute left-0 top-0 bottom-0 w-[3px] -ml-[1px] cursor-col-resize touch-none z-10 resize-handle-x"
       />
       {/* Header */}
-      <div className="flex items-center justify-between h-10 pl-2 pr-3 border-b border-border-subtle">
+      <div className="flex items-center justify-between h-10 pl-3 pr-2 border-b border-border-subtle">
         <span className="text-xs font-medium text-text-secondary uppercase tracking-wider">
           {title}
         </span>
-        <button
-          onClick={() => setRightPanelOpen(false)}
-          className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
-        >
-          <X size={14} />
-        </button>
+        <IconButton size="sm" label="Close panel" onClick={() => setRightPanelOpen(false)}>
+          <X />
+        </IconButton>
       </div>
 
       {/* Content */}

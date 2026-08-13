@@ -1,4 +1,5 @@
 import { useAppStore } from "../../stores/appStore";
+import { TopBar } from "./TopBar";
 import { Sidebar } from "./Sidebar";
 import { EditorPane } from "./EditorPane";
 import { RightPanel } from "./RightPanel";
@@ -16,6 +17,7 @@ export function AppShell() {
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden">
+      <TopBar />
       <div className="flex flex-1 min-h-0">
         <ErrorBoundary variant="panel">
           {sidebarOpen && <Sidebar />}

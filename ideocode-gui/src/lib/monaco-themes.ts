@@ -14,7 +14,7 @@ export function defineAllMonacoThemes(monaco: typeof import("monaco-editor")): v
 
 export function defineMonacoTheme(monaco: typeof import("monaco-editor"), theme: Theme): void {
   const c = getThemeColors(theme);
-  const isLight = theme === "light";
+  const isLight = theme === "light" || theme === "ideo_light";
 
   const data: editor.IStandaloneThemeData = {
     base: isLight ? "vs" : "vs-dark",
