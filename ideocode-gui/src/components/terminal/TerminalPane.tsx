@@ -185,7 +185,7 @@ export function TerminalPane({ visible }: Props) {
       <div className="flex items-center gap-2 px-3 h-9 border-b border-border-subtle bg-bg-secondary">
         <div className="w-2 h-2 rounded-full bg-success" />
         <span className="text-xs font-medium text-text-primary">Terminal</span>
-        <span className="text-[10px] text-text-muted">
+        <span className="text-[11px] text-text-muted">
           {rootPath.split(/[/\\]/).pop()}
         </span>
       </div>

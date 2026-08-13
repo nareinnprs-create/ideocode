@@ -34,7 +34,7 @@ export function DiffViewer({ file, diff, height = 224, sideBySide = true }: Diff
 
   if (!parsed) {
     return (
-      <pre className="px-3 py-2 text-[10px] font-mono text-text-secondary max-h-48 overflow-y-auto whitespace-pre-wrap">
+      <pre className="px-3 py-2 text-[11px] font-mono text-text-secondary max-h-48 overflow-y-auto whitespace-pre-wrap">
         {diff ? "Binary or unparseable diff" : "No diff available"}
       </pre>
     );

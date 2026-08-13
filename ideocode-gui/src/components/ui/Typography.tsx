@@ -56,5 +56,5 @@ export function Label({ children, className = "" }: { children: ReactNode; class
 }
 
 export function Caption({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <span className={`text-[10px] text-text-muted ${className}`}>{children}</span>;
+  return <span className={`text-[11px] text-text-muted ${className}`}>{children}</span>;
 }

@@ -218,7 +218,7 @@ export function OnboardingWizard({ onComplete }: Props) {
                     }}
                   />
                   <div className="text-xs font-medium text-text-primary">{t.label}</div>
-                  <div className="text-[10px] text-text-muted">{t.description}</div>
+                  <div className="text-[11px] text-text-muted">{t.description}</div>
                 </button>
               ))}
             </div>
@@ -256,7 +256,7 @@ export function OnboardingWizard({ onComplete }: Props) {
                   </div>
                   <div className="flex-1">
                     <div className="text-xs font-medium text-text-primary">{p.label}</div>
-                    <div className="text-[10px] text-text-muted">{p.models}</div>
+                    <div className="text-[11px] text-text-muted">{p.models}</div>
                   </div>
                   {provider === p.id && <Check size={16} className="text-accent-primary" />}
                 </button>

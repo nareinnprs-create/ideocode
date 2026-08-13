@@ -78,7 +78,7 @@ export function SearchPanel() {
         <div className="flex gap-0.5">
           <button
             onClick={() => { setMode("filename"); setResults([]); setSearched(false); }}
-            className={`px-2 py-1 text-[10px] rounded transition-fast ${
+            className={`px-2 py-1 text-[11px] rounded transition-fast ${
               mode === "filename"
                 ? "bg-accent-primary text-white"
                 : "text-text-muted hover:text-text-primary"
@@ -88,7 +88,7 @@ export function SearchPanel() {
           </button>
           <button
             onClick={() => { setMode("content"); setResults([]); setSearched(false); }}
-            className={`px-2 py-1 text-[10px] rounded transition-fast ${
+            className={`px-2 py-1 text-[11px] rounded transition-fast ${
               mode === "content"
                 ? "bg-accent-primary text-white"
                 : "text-text-muted hover:text-text-primary"
@@ -123,7 +123,7 @@ export function SearchPanel() {
             value={pathDraft}
             onChange={(e) => handlePathChange(e.target.value)}
             placeholder="Search path (default: project root)"
-            className="w-full px-2.5 py-1 text-[10px] bg-bg-tertiary border border-border-subtle rounded text-text-muted placeholder:text-text-muted/50 focus:outline-none focus:border-accent-primary font-mono"
+            className="w-full px-2.5 py-1 text-[11px] bg-bg-tertiary border border-border-subtle rounded text-text-muted placeholder:text-text-muted/50 focus:outline-none focus:border-accent-primary font-mono"
           />
         </div>
       </div>
@@ -158,7 +158,7 @@ export function SearchPanel() {
         )}
 
         {searched && !loading && results.length > 0 && (
-          <div className="px-3 py-1 text-[10px] text-text-muted">
+          <div className="px-3 py-1 text-[11px] text-text-muted">
             {results.length} result{results.length !== 1 ? "s" : ""}
           </div>
         )}
@@ -176,11 +176,11 @@ export function SearchPanel() {
                   <span className="text-text-muted ml-1">:{(r as CodeSearchResult).line}</span>
                 )}
               </div>
-              <div className="text-text-muted truncate text-[10px]">
+              <div className="text-text-muted truncate text-[11px]">
                 {r.file}
               </div>
               {"content" in r && r.content && (
-                <div className="text-[10px] text-text-muted mt-0.5 font-mono truncate">
+                <div className="text-[11px] text-text-muted mt-0.5 font-mono truncate">
                   {(r as CodeSearchResult).content.slice(0, 150)}
                 </div>
               )}

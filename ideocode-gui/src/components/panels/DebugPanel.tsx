@@ -186,7 +186,7 @@ export function DebugPanel() {
         >
           <ArrowUp size={14} />
         </button>
-        <div className="ml-auto flex items-center gap-1.5 text-[10px] text-text-muted">
+        <div className="ml-auto flex items-center gap-1.5 text-[11px] text-text-muted">
           {running && <Loader2 size={11} className="animate-spin text-success" />}
           <span className={running ? "text-success" : undefined}>
             {running ? "RUNNING" : proc.state === "exited" ? `EXITED ${proc.code}` : title}

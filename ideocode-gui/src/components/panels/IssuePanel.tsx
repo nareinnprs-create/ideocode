@@ -173,7 +173,7 @@ export function IssuePanel() {
         <div className="flex flex-col items-center justify-center py-8 text-text-muted">
           <AlertCircle size={24} className="mb-2 opacity-50" />
           <div className="text-xs">No issues loaded</div>
-          <div className="text-[10px] mt-1">Click Fetch to load issues from GitHub</div>
+          <div className="text-[11px] mt-1">Click Fetch to load issues from GitHub</div>
         </div>
       )}
 
@@ -203,11 +203,11 @@ export function IssuePanel() {
                   <ExternalLink size={10} className="text-text-muted shrink-0 opacity-0 group-hover:opacity-100" />
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[10px] text-text-muted">
+                  <span className="text-[11px] text-text-muted">
                     {issue.repository}
                   </span>
-                  <span className="text-[10px] text-text-muted">#{issue.id}</span>
-                  <span className={`text-[10px] px-1 rounded ${
+                  <span className="text-[11px] text-text-muted">#{issue.id}</span>
+                  <span className={`text-[11px] px-1 rounded ${
                     issue.state === "open" ? "bg-success/10 text-success" : "bg-text-muted/10 text-text-muted"
                   }`}>
                     {issue.state}
@@ -218,7 +218,7 @@ export function IssuePanel() {
                     {issue.labels.map((label) => (
                       <span
                         key={label}
-                        className="text-[10px] px-1 py-0.5 rounded bg-accent-primary/10 text-accent-primary"
+                        className="text-[11px] px-1 py-0.5 rounded bg-accent-primary/10 text-accent-primary"
                       >
                         {label}
                       </span>
@@ -226,7 +226,7 @@ export function IssuePanel() {
                   </div>
                 )}
                 {issue.body && (
-                  <div className="text-[10px] text-text-muted mt-1 line-clamp-2">
+                  <div className="text-[11px] text-text-muted mt-1 line-clamp-2">
                     {issue.body.slice(0, 200)}
                   </div>
                 )}

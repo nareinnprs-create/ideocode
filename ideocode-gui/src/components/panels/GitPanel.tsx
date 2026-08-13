@@ -53,10 +53,10 @@ export function GitPanel() {
         <GitBranch size={14} className="text-accent-primary" />
         <span className="text-xs font-mono text-text-primary">{status.branch}</span>
         {status.ahead > 0 && (
-          <span className="text-[10px] text-success">↑{status.ahead}</span>
+          <span className="text-[11px] text-success">↑{status.ahead}</span>
         )}
         {status.behind > 0 && (
-          <span className="text-[10px] text-warning">↓{status.behind}</span>
+          <span className="text-[11px] text-warning">↓{status.behind}</span>
         )}
         <button
           onClick={() => loadStatus(rootPath)}
@@ -70,7 +70,7 @@ export function GitPanel() {
       {selectedFile && (
         <div className="border-b border-border-subtle">
           <div className="flex items-center justify-between px-3 py-1">
-            <span className="text-[10px] uppercase tracking-wider text-text-muted">Diff</span>
+            <span className="text-[11px] uppercase tracking-wider text-text-muted">Diff</span>
             <button onClick={() => setSelectedFile(null)} className="text-xs text-text-muted hover:text-text-primary">
               Close
             </button>
@@ -175,7 +175,7 @@ function FileSection({
 }) {
   return (
     <div className="py-1">
-      <div className="flex items-center gap-1.5 px-3 py-1 text-[10px] uppercase tracking-wider text-text-muted">
+      <div className="flex items-center gap-1.5 px-3 py-1 text-[11px] uppercase tracking-wider text-text-muted">
         {icon}
         {title}
         <span className="ml-1 opacity-50">({files.length})</span>
@@ -186,7 +186,7 @@ function FileSection({
           onClick={() => onFileClick(f.path)}
           className="flex items-center gap-2 px-3 py-0.5 text-xs text-text-secondary hover:bg-bg-elevated cursor-pointer"
         >
-          <span className="font-mono text-[10px] text-text-muted w-4 text-center">
+          <span className="font-mono text-[11px] text-text-muted w-4 text-center">
             {f.status.trim() || "?"}
           </span>
           <span className="truncate">{f.path}</span>

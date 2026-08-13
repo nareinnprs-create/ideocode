@@ -41,7 +41,7 @@ interface BadgeProps {
 export function Badge({ tone = "default", style = "soft", children, className = "", dot = false }: BadgeProps) {
   const toneClasses = style === "solid" ? TONE_SOLID[tone] : style === "outline" ? TONE_OUTLINE[tone] : TONE_SOFT[tone];
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium border ${toneClasses} ${className}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium border ${toneClasses} ${className}`}>
       {dot && <span className="w-1.5 h-1.5 rounded-full bg-current" />}
       {children}
     </span>

@@ -37,7 +37,7 @@ export function MermaidDiagram({ code }: Props) {
   if (error) {
     return (
       <div className="my-2 rounded-lg border border-error/30 bg-error/5 p-3">
-        <p className="text-[10px] text-error mb-1">Could not render diagram</p>
+        <p className="text-[11px] text-error mb-1">Could not render diagram</p>
         <pre className="text-xs text-text-secondary overflow-x-auto font-mono whitespace-pre-wrap">
           {code}
         </pre>

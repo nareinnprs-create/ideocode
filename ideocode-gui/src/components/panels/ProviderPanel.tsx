@@ -114,7 +114,7 @@ export function ProviderPanel() {
       {/* Active provider */}
       {status && !loading && (
         <div className="px-3 py-3 border-b border-border-subtle">
-          <div className="text-[10px] uppercase tracking-wider text-text-muted mb-1.5">
+          <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1.5">
             Active
           </div>
           <div className="flex items-center gap-2">
@@ -123,7 +123,7 @@ export function ProviderPanel() {
               <div className="text-xs font-medium text-text-primary">
                 {status.active_provider}
               </div>
-              <div className="text-[10px] text-text-muted font-mono">
+              <div className="text-[11px] text-text-muted font-mono">
                 {status.active_model}
               </div>
             </div>
@@ -144,7 +144,7 @@ export function ProviderPanel() {
             }
           />
           <span className="text-xs font-medium text-text-primary flex-1">{gateway.engine}</span>
-          <span className="text-[10px] text-text-muted font-mono">
+          <span className="text-[11px] text-text-muted font-mono">
             {gateway.online
               ? "ONLINE"
               : gateway.installing
@@ -158,7 +158,7 @@ export function ProviderPanel() {
 
       {/* API Key input */}
       <div className="px-3 py-2 border-b border-border-subtle">
-        <div className="text-[10px] uppercase tracking-wider text-text-muted mb-1.5">API Key</div>
+        <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1.5">API Key</div>
         <div className="flex gap-1">
           <div className="relative flex-1">
             <input
@@ -188,7 +188,7 @@ export function ProviderPanel() {
             Save
           </button>
         </div>
-        <div className="text-[10px] text-text-muted mt-1">
+        <div className="text-[11px] text-text-muted mt-1">
           API keys are set via environment variables (not saved through this UI). Clicking Save refreshes status.
         </div>
       </div>

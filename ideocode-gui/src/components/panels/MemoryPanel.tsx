@@ -130,7 +130,7 @@ export function MemoryPanel() {
         <div className="flex flex-col items-center justify-center py-8 text-text-muted">
           <BookOpen size={24} className="mb-2 opacity-50" />
           <div className="text-xs">No memories yet</div>
-          <div className="text-[10px] mt-1">Click Add to store your first memory</div>
+          <div className="text-[11px] mt-1">Click Add to store your first memory</div>
         </div>
       )}
 
@@ -147,19 +147,19 @@ export function MemoryPanel() {
                   {entry.content}
                 </div>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-bg-tertiary text-text-muted uppercase">
+                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-bg-tertiary text-text-muted uppercase">
                     {entry.category}
                   </span>
                   {entry.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-[10px] px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary"
+                      className="text-[11px] px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
-                <div className="text-[10px] text-text-muted mt-1">
+                <div className="text-[11px] text-text-muted mt-1">
                   {new Date(entry.created_at * 1000).toLocaleDateString()}
                 </div>
               </div>

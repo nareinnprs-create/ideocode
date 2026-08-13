@@ -49,7 +49,7 @@ export function Checklist({ content }: ChecklistProps) {
           )}
           <span className="text-xs font-medium text-text-primary">Checklist</span>
         </div>
-        <span className="text-[10px] font-mono text-text-muted">
+        <span className="text-[11px] font-mono text-text-muted">
           {done}/{items.length}
         </span>
       </div>

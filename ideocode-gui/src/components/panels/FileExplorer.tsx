@@ -87,7 +87,7 @@ export function FileExplorer() {
 
       {/* Root path */}
       {rootPath && (
-        <div className="px-3 py-1.5 border-t border-border-subtle text-[10px] text-text-muted truncate">
+        <div className="px-3 py-1.5 border-t border-border-subtle text-[11px] text-text-muted truncate">
           {rootPath}
         </div>
       )}
@@ -150,7 +150,7 @@ function TreeNode({
         />
         <span className="truncate">{node.name}</span>
         {!node.is_dir && node.size !== undefined && (
-          <span className="ml-auto text-[10px] text-text-muted">
+          <span className="ml-auto text-[11px] text-text-muted">
             {formatSize(node.size)}
           </span>
         )}

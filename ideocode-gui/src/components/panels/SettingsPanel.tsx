@@ -100,7 +100,7 @@ export function SettingsPanel() {
         ))}
         <div className="flex-1" />
         {saved && (
-          <span className="text-[10px] text-success self-center mr-2">Saved</span>
+          <span className="text-[11px] text-success self-center mr-2">Saved</span>
         )}
       </div>
 
@@ -145,7 +145,7 @@ function AppearanceTab({
       <Section label="Theme">
         {(["Default", "Classic", "Cyberpunk", "Minimal"] as const).map((tier) => (
           <div key={tier} className="mb-4 last:mb-0">
-            <div className="text-[10px] uppercase tracking-widest text-text-muted mb-2">{tier}</div>
+            <div className="text-[11px] uppercase tracking-widest text-text-muted mb-2">{tier}</div>
             <div className="grid grid-cols-3 gap-2">
               {THEMES.filter((t) => t.tier === tier).map((t) => (
                 <button
@@ -163,7 +163,7 @@ function AppearanceTab({
                       background: `linear-gradient(135deg, ${t.bg} 0%, ${t.bgSecondary} 60%, ${t.accent} 130%)`,
                     }}
                   />
-                  <div className="text-[10px] font-medium text-text-primary truncate">{t.label}</div>
+                  <div className="text-[11px] font-medium text-text-primary truncate">{t.label}</div>
                 </button>
               ))}
             </div>
@@ -228,7 +228,7 @@ function AppearanceTab({
             className="w-7 h-7 rounded cursor-pointer bg-transparent border border-border-subtle"
             aria-label="Custom accent color"
           />
-          <span className="text-[10px] text-text-muted font-mono">{settings.accent_color}</span>
+          <span className="text-[11px] text-text-muted font-mono">{settings.accent_color}</span>
         </div>
       </Section>
 
@@ -249,7 +249,7 @@ function AppearanceTab({
             </button>
           ))}
         </div>
-        <p className="text-[10px] text-text-muted mt-1">
+        <p className="text-[11px] text-text-muted mt-1">
           Scales the whole interface. The editor font size above is independent.
         </p>
       </Section>
@@ -299,7 +299,7 @@ function ChatTab({
           ))}
         </select>
         {modelOptions.length === 0 && (
-          <p className="text-[10px] text-text-muted mt-1">
+          <p className="text-[11px] text-text-muted mt-1">
             No providers loaded yet — pick a model in the chat composer to populate this list.
           </p>
         )}
@@ -321,7 +321,7 @@ function ChatTab({
             </button>
           ))}
         </div>
-        <p className="text-[10px] text-text-muted mt-1">
+        <p className="text-[11px] text-text-muted mt-1">
           Controls how much effort reasoning models spend on each response.
         </p>
       </Section>
@@ -441,7 +441,7 @@ function ToggleRow({
       </button>
       <div>
         <div className="text-xs text-text-primary">{label}</div>
-        <div className="text-[10px] text-text-muted mt-0.5">{description}</div>
+        <div className="text-[11px] text-text-muted mt-0.5">{description}</div>
       </div>
     </div>
   );

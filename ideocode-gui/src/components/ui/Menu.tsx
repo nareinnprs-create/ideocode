@@ -99,7 +99,7 @@ export function Menu({ trigger, items, align = "end", label = "Menu" }: MenuProp
             >
               {item.icon && <span className="shrink-0 flex items-center">{item.icon}</span>}
               <span className="flex-1 text-left truncate">{item.label}</span>
-              {item.shortcut && <span className="shrink-0 text-[10px] font-mono text-text-muted">{item.shortcut}</span>}
+              {item.shortcut && <span className="shrink-0 text-[11px] font-mono text-text-muted">{item.shortcut}</span>}
             </button>
           ))}
         </div>

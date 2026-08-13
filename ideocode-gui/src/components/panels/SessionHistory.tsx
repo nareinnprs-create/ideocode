@@ -47,7 +47,7 @@ export function SessionHistory() {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-2.5 py-1 text-[10px] font-medium rounded-t transition-fast uppercase tracking-wider
+            className={`px-2.5 py-1 text-[11px] font-medium rounded-t transition-fast uppercase tracking-wider
               ${
                 filter === f
                   ? "text-accent-primary bg-bg-secondary border-b-2 border-accent-primary"
@@ -89,7 +89,7 @@ export function SessionHistory() {
       </div>
 
       {/* Count */}
-      <div className="px-3 py-1.5 border-t border-border-subtle text-[10px] text-text-muted">
+      <div className="px-3 py-1.5 border-t border-border-subtle text-[11px] text-text-muted">
         {sessions.length} total sessions
       </div>
     </div>
@@ -144,16 +144,16 @@ function SessionCard({ session }: { session: Session }) {
             </button>
           )}
           <div className="flex items-center gap-2 mt-0.5">
-            <span className="flex items-center gap-1 text-[10px] text-text-muted">
+            <span className="flex items-center gap-1 text-[11px] text-text-muted">
               <MessageSquare size={10} />
               {session.message_count} msgs
             </span>
-            <span className="flex items-center gap-1 text-[10px] text-text-muted">
+            <span className="flex items-center gap-1 text-[11px] text-text-muted">
               <Clock size={10} />
               {time}
             </span>
             {session.save_label && (
-              <span className="flex items-center gap-1 text-[10px] text-accent-tertiary">
+              <span className="flex items-center gap-1 text-[11px] text-accent-tertiary">
                 <Tag size={10} />
                 {session.save_label}
               </span>
@@ -212,9 +212,9 @@ function SessionCard({ session }: { session: Session }) {
 
       {editing && (
         <div className="mt-2 flex items-center gap-2 px-1">
-          <span className="text-[10px] text-text-muted flex-1">Press Enter to save, Esc to cancel</span>
+          <span className="text-[11px] text-text-muted flex-1">Press Enter to save, Esc to cancel</span>
           <button
-            className="px-2 py-0.5 text-[10px] bg-accent-primary text-white rounded hover:opacity-80"
+            className="px-2 py-0.5 text-[11px] bg-accent-primary text-white rounded hover:opacity-80"
             onClick={commitRename}
           >
             <Check size={11} />
@@ -224,9 +224,9 @@ function SessionCard({ session }: { session: Session }) {
 
       {deleting && (
         <div className="mt-2 px-2 py-1.5 bg-error/10 rounded border border-error/30 flex items-center gap-2">
-          <span className="text-[10px] text-error flex-1">Delete session?</span>
+          <span className="text-[11px] text-error flex-1">Delete session?</span>
           <button
-            className="px-2 py-0.5 text-[10px] bg-error text-white rounded hover:bg-error/80"
+            className="px-2 py-0.5 text-[11px] bg-error text-white rounded hover:bg-error/80"
             onClick={(e) => {
               e.stopPropagation();
               deleteSession(session.id);
@@ -236,7 +236,7 @@ function SessionCard({ session }: { session: Session }) {
             Yes
           </button>
           <button
-            className="px-2 py-0.5 text-[10px] bg-bg-elevated text-text-secondary rounded hover:bg-bg-hover"
+            className="px-2 py-0.5 text-[11px] bg-bg-elevated text-text-secondary rounded hover:bg-bg-hover"
             onClick={(e) => {
               e.stopPropagation();
               setDeleting(false);

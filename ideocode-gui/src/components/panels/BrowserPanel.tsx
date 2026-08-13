@@ -101,7 +101,7 @@ export function BrowserPanel() {
 
       {/* Manual tab input */}
       <div className="px-3 py-2 border-b border-border-subtle">
-        <div className="text-[10px] uppercase tracking-wider text-text-muted mb-1.5">
+        <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1.5">
           Add Tab Manually
         </div>
         <input
@@ -149,7 +149,7 @@ export function BrowserPanel() {
       {/* Active tab */}
       {ctx?.active_tab && (
         <div className="px-3 py-2 border-b border-border-subtle">
-          <div className="text-[10px] uppercase tracking-wider text-text-muted mb-1.5">
+          <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1.5">
             Current Tab
           </div>
           <div className="flex items-center gap-2">
@@ -158,7 +158,7 @@ export function BrowserPanel() {
               <div className="text-xs text-text-primary truncate">
                 {ctx.active_tab.title}
               </div>
-              <div className="text-[10px] text-text-muted truncate">
+              <div className="text-[11px] text-text-muted truncate">
                 {ctx.active_tab.url}
               </div>
             </div>
@@ -177,18 +177,18 @@ export function BrowserPanel() {
       {/* Recent tabs */}
       {ctx && ctx.recent_tabs.length > 0 && (
         <div className="px-3 py-2 border-b border-border-subtle">
-          <div className="text-[10px] uppercase tracking-wider text-text-muted mb-1.5">
+          <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1.5">
             Recent Tabs ({ctx.recent_tabs.length})
           </div>
           <div className="space-y-1 max-h-32 overflow-y-auto">
             {ctx.recent_tabs.map((tab, i) => (
               <div key={i} className="flex items-center gap-2">
-                <span className="text-[10px] text-text-muted w-4">{i + 1}.</span>
+                <span className="text-[11px] text-text-muted w-4">{i + 1}.</span>
                 <div className="flex-1 min-w-0">
                   <div className="text-[11px] text-text-primary truncate">
                     {tab.title}
                   </div>
-                  <div className="text-[10px] text-text-muted truncate">
+                  <div className="text-[11px] text-text-muted truncate">
                     {tab.url}
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export function BrowserPanel() {
       {/* Context text */}
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex items-center justify-between px-3 py-1">
-          <span className="text-[10px] uppercase tracking-wider text-text-muted">
+          <span className="text-[11px] uppercase tracking-wider text-text-muted">
             Context Summary
           </span>
           <button
@@ -221,7 +221,7 @@ export function BrowserPanel() {
 
       {/* Instructions */}
       <div className="px-3 py-2 border-t border-border-subtle bg-bg-elevated">
-        <div className="text-[10px] text-text-muted">
+        <div className="text-[11px] text-text-muted">
           Install the browser extension or use the manual tab input above to share your browsing context with IDEOCODE.
         </div>
       </div>

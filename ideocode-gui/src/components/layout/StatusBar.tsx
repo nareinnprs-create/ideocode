@@ -70,7 +70,7 @@ export function StatusBar() {
               <GitBranch size={12} className="text-text-secondary" />
               <span className="font-medium max-w-40 truncate">{gitStatus.branch}</span>
               {gitChanges > 0 && (
-                <span className="px-1 rounded bg-bg-elevated text-text-secondary font-mono text-[10px]">
+                <span className="px-1 rounded bg-bg-elevated text-text-secondary font-mono text-[11px]">
                   {gitChanges}
                 </span>
               )}

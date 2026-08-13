@@ -63,10 +63,10 @@ export function ToolCallCard({ toolCall }: Props) {
           {toolCall.name}
         </span>
         {elapsedText && (
-          <span className="text-[10px] text-text-muted font-mono tabular-nums">{elapsedText}</span>
+          <span className="text-[11px] text-text-muted font-mono tabular-nums">{elapsedText}</span>
         )}
         <span
-          className={`text-[10px] uppercase tracking-wider font-medium px-1.5 py-0.5 rounded ${colorClass} ${
+          className={`text-[11px] uppercase tracking-wider font-medium px-1.5 py-0.5 rounded ${colorClass} ${
             status === "running" ? "bg-info/10" : status === "error" ? "bg-error/10" : status === "completed" ? "bg-success/10" : "bg-bg-elevated"
           }`}
         >
