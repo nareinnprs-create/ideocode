@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
-import { DiffEditor } from "@monaco-editor/react";
 import { useGitStore } from "../../stores/gitStore";
 import { useFileStore } from "../../stores/fileStore";
-import { useAppStore } from "../../stores/appStore";
-import { defineAllMonacoThemes, monacoThemeName } from "../../lib/monaco-themes";
-import { parseUnifiedDiff } from "../../lib/diff-parser";
+import { DiffViewer } from "../editor/DiffViewer";
 import {
   GitBranch,
   GitCommit,
@@ -71,11 +68,15 @@ export function GitPanel() {
 
       {/* Diff view */}
       {selectedFile && (
-        <DiffView
-          file={selectedFile}
-          diff={diff}
-          onClose={() => setSelectedFile(null)}
-        />
+        <div className="border-b border-border-subtle">
+          <div className="flex items-center justify-between px-3 py-1">
+            <span className="text-[10px] uppercase tracking-wider text-text-muted">Diff</span>
+            <button onClick={() => setSelectedFile(null)} className="text-xs text-text-muted hover:text-text-primary">
+              Close
+            </button>
+          </div>
+          <DiffViewer file={selectedFile} diff={diff} height={224} />
+        </div>
       )}
 
       {/* File lists */}
@@ -157,58 +158,6 @@ export function GitPanel() {
           </button>
         </div>
       </div>
-    </div>
-  );
-}
-
-function DiffView({ file, diff, onClose }: { file: string; diff: string; onClose: () => void }) {
-  const theme = useAppStore((s) => s.theme);
-  const parsed = parseUnifiedDiff(diff);
-  const ext = file.split(".").pop()?.toLowerCase() ?? "";
-  const LANGUAGE_MAP: Record<string, string> = {
-    rs: "rust", ts: "typescript", tsx: "typescript", js: "javascript", jsx: "javascript",
-    py: "python", go: "go", java: "java", cpp: "cpp", c: "c", h: "c", hpp: "cpp",
-    swift: "swift", kt: "kotlin", rb: "ruby", php: "php", css: "css", scss: "scss",
-    html: "html", json: "json", yaml: "yaml", yml: "yaml", toml: "toml", md: "markdown",
-    sql: "sql", sh: "shell", bash: "shell", ps1: "powershell", xml: "xml", svg: "xml",
-  };
-  const language = LANGUAGE_MAP[ext] ?? "plaintext";
-
-  const handleBeforeMount = (monaco: typeof import("monaco-editor")) => {
-    defineAllMonacoThemes(monaco);
-  };
-
-  return (
-    <div className="border-b border-border-subtle">
-      <div className="flex items-center justify-between px-3 py-1">
-        <span className="text-[10px] uppercase tracking-wider text-text-muted">Diff</span>
-        <button onClick={onClose} className="text-xs text-text-muted hover:text-text-primary">Close</button>
-      </div>
-      {parsed ? (
-        <div className="h-56">
-          <DiffEditor
-            original={parsed.original}
-            modified={parsed.modified}
-            language={language}
-            theme={monacoThemeName(theme)}
-            beforeMount={handleBeforeMount}
-            options={{
-              readOnly: true,
-              renderSideBySide: true,
-              originalEditable: false,
-              minimap: { enabled: false },
-              fontSize: 11,
-              lineNumbers: "on",
-              scrollBeyondLastLine: false,
-              automaticLayout: true,
-            }}
-          />
-        </div>
-      ) : (
-        <pre className="px-3 py-2 text-[10px] font-mono text-text-secondary max-h-48 overflow-y-auto whitespace-pre-wrap">
-          {diff ? "Binary or unparseable diff" : "Loading..."}
-        </pre>
-      )}
     </div>
   );
 }
