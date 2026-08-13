@@ -10,8 +10,12 @@ export function Skeleton({ className = "", lines = 1, height = "h-3" }: Skeleton
       {Array.from({ length: lines }).map((_, i) => (
         <div
           key={i}
-          className={`${height} rounded bg-bg-elevated animate-pulse ${i === lines - 1 && lines > 1 ? "w-2/3" : "w-full"}`}
-        />
+          className={`relative overflow-hidden rounded bg-bg-elevated ${height} ${
+            i === lines - 1 && lines > 1 ? "w-2/3" : "w-full"
+          }`}
+        >
+          <span className="absolute inset-0 shimmer" />
+        </div>
       ))}
     </div>
   );
