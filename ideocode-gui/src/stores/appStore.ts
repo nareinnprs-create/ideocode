@@ -122,7 +122,7 @@ export const useAppStore = create<AppState>((set) => ({
   theme: "ideo_dark",
   setTheme: (t) => set({ theme: t }),
 
-  accentColor: "#7C3AED",
+  accentColor: "#22C55E",
   setAccentColor: (c) => set({ accentColor: c }),
 
   uiFontSize: 13,

@@ -23,7 +23,7 @@ function App() {
         if (isTheme(t)) {
           useAppStore.getState().setTheme(t);
         }
-        useAppStore.getState().setAccentColor(s.accent_color ?? "#7C3AED");
+        useAppStore.getState().setAccentColor(s.accent_color ?? "#22C55E");
         useAppStore.getState().setUiFontSize(s.ui_font_size ?? 13);
       })
       .catch(() => {});
