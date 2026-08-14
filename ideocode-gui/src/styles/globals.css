@@ -1125,6 +1125,72 @@ pre .hljs-strong {
 }
 
 /* ============================================
+   Aurora ambient background
+   Animated accent-reactive mesh gradient drifting
+   behind translucent surfaces. Colors derive from
+   the --idc-glow tokens so it follows the accent.
+   ============================================ */
+
+.aurora {
+  position: absolute;
+  inset: -30%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  border-radius: 50%;
+}
+
+.aurora::before {
+  background:
+    radial-gradient(38% 32% at 72% 22%, var(--idc-glow) 0%, transparent 62%),
+    radial-gradient(30% 34% at 18% 84%, var(--idc-glow-accent) 0%, transparent 62%),
+    radial-gradient(26% 30% at 92% 68%, color-mix(in srgb, var(--idc-accent-secondary) 18%, transparent) 0%, transparent 66%);
+  filter: blur(48px);
+  animation: auroraDrift 16s ease-in-out infinite alternate;
+}
+
+.aurora::after {
+  background:
+    radial-gradient(34% 30% at 30% 26%, color-mix(in srgb, var(--idc-accent-primary) 12%, transparent) 0%, transparent 62%),
+    radial-gradient(30% 28% at 82% 92%, var(--idc-glow-accent) 0%, transparent 66%);
+  filter: blur(72px);
+  opacity: 0.65;
+  animation: auroraDrift 24s ease-in-out infinite alternate-reverse;
+}
+
+[data-time="night"] .aurora::after {
+  background:
+    radial-gradient(34% 30% at 30% 26%, color-mix(in srgb, #f59e0b 7%, transparent) 0%, transparent 62%),
+    radial-gradient(30% 28% at 82% 92%, var(--idc-glow-accent) 0%, transparent 66%);
+}
+
+[data-time="night"] .aurora::before {
+  background:
+    radial-gradient(38% 32% at 72% 22%, color-mix(in srgb, var(--idc-accent-secondary) 16%, transparent) 0%, transparent 62%),
+    radial-gradient(30% 34% at 18% 84%, color-mix(in srgb, #f59e0b 8%, transparent) 0%, transparent 62%),
+    radial-gradient(26% 30% at 92% 68%, var(--idc-glow) 0%, transparent 66%);
+}
+
+@keyframes auroraDrift {
+  0% { transform: translate3d(-2%, -1%, 0) scale(1); }
+  100% { transform: translate3d(3%, -4%, 0) scale(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora::before,
+  .aurora::after {
+    animation: none;
+  }
+}
+
+/* ============================================
    Reduced motion
    ============================================ */
 

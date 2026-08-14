@@ -1,4 +1,5 @@
 import { useAppStore } from "../../stores/appStore";
+import { Aurora } from "./Aurora";
 import { TopBar } from "./TopBar";
 import { Sidebar } from "./Sidebar";
 import { EditorPane } from "./EditorPane";
@@ -16,27 +17,30 @@ export function AppShell() {
   useKeyboard();
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-ambient">
-      <TopBar />
-      <div className="flex flex-1 min-h-0">
+    <div className="relative isolate flex flex-col h-screen w-screen overflow-hidden bg-bg-primary">
+      <Aurora />
+      <div className="relative z-10 flex flex-col flex-1 min-h-0">
+        <TopBar />
+        <div className="flex flex-1 min-h-0">
+          <ErrorBoundary variant="panel">
+            {sidebarOpen && <Sidebar />}
+          </ErrorBoundary>
+          <ErrorBoundary variant="panel">
+            <EditorPane />
+          </ErrorBoundary>
+          <ErrorBoundary variant="panel">
+            {rightPanelOpen && <RightPanel />}
+          </ErrorBoundary>
+        </div>
         <ErrorBoundary variant="panel">
-          {sidebarOpen && <Sidebar />}
+          <BottomPanelDock />
         </ErrorBoundary>
         <ErrorBoundary variant="panel">
-          <EditorPane />
+          <StatusBar />
         </ErrorBoundary>
-        <ErrorBoundary variant="panel">
-          {rightPanelOpen && <RightPanel />}
-        </ErrorBoundary>
+        <CommandPalette />
+        <ToastHost />
       </div>
-      <ErrorBoundary variant="panel">
-        <BottomPanelDock />
-      </ErrorBoundary>
-      <ErrorBoundary variant="panel">
-        <StatusBar />
-      </ErrorBoundary>
-      <CommandPalette />
-      <ToastHost />
     </div>
   );
 }

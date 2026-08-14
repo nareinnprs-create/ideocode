@@ -15,6 +15,8 @@ export function CommandPalette() {
   const setCommandPaletteOpen = useAppStore((s) => s.setCommandPaletteOpen);
   const theme = useAppStore((s) => s.theme);
   const setTheme = useAppStore((s) => s.setTheme);
+  const themeMode = useAppStore((s) => s.themeMode);
+  const setThemeMode = useAppStore((s) => s.setThemeMode);
   const [query, setQuery] = useState("");
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [mode, setMode] = useState<"commands" | "themes">("commands");
@@ -155,25 +157,29 @@ export function CommandPalette() {
 
         {mode === "themes" ? (
           <div ref={resultsRef} className="max-h-[300px] overflow-y-auto py-1">
+            <AppearanceModes
+              current={themeMode}
+              onSelect={(m) => setThemeMode(m)}
+            />
             {themes.length === 0 ? (
               <div className="px-4 py-6 text-center text-text-muted text-sm">
                 No themes found
               </div>
             ) : (
               themes.map((t, idx) => {
-                const active = t.id === theme;
+                const active = t.id === effectiveTheme(themeMode, theme);
                 return (
                   <button
                     key={t.id}
                     data-idx={idx}
                     onClick={() => applyTheme(t.id)}
                     onMouseEnter={() => setSelectedIdx(idx)}
-                      className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast
-                        ${
-                          active
-                            ? "bg-accent-primary/10 text-accent-primary"
-                            : "text-text-secondary hover:bg-bg-elevated"
-                        }`}
+                    className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast
+                      ${
+                        active
+                          ? "bg-accent-primary/10 text-accent-primary"
+                          : "text-text-secondary hover:bg-bg-elevated"
+                      }`}
                   >
                     <span
                       className="w-8 h-6 rounded border border-border-subtle shrink-0 flex items-center justify-center text-[9px] font-mono"
@@ -257,6 +263,55 @@ export function CommandPalette() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function effectiveTheme(
+  themeMode: "auto" | "light" | "dark" | "custom",
+  theme: Theme,
+): Theme {
+  if (themeMode === "light") return "ideo_light";
+  if (themeMode === "dark") return "ideo_dark";
+  if (themeMode === "auto") {
+    const light = window.matchMedia?.("(prefers-color-scheme: light)").matches ?? false;
+    return light ? "ideo_light" : "ideo_dark";
+  }
+  return theme;
+}
+
+function AppearanceModes({
+  current,
+  onSelect,
+}: {
+  current: "auto" | "light" | "dark" | "custom";
+  onSelect: (m: "auto" | "light" | "dark") => void;
+}) {
+  const modes: { id: "auto" | "light" | "dark"; label: string; hint: string }[] = [
+    { id: "auto", label: "Auto", hint: "Follow system" },
+    { id: "light", label: "Light", hint: "Force light" },
+    { id: "dark", label: "Dark", hint: "Force dark" },
+  ];
+  return (
+    <div className="px-4 pt-2 pb-1.5 flex items-center gap-1">
+      {modes.map((m) => {
+        const active = current === m.id;
+        return (
+          <button
+            key={m.id}
+            onClick={() => onSelect(m.id)}
+            title={m.hint}
+            className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-150 ${
+              active
+                ? "bg-accent-primary/12 text-accent-primary glow-soft"
+                : "text-text-muted hover:text-text-secondary hover:bg-bg-hover"
+            }`}
+          >
+            {m.label}
+          </button>
+        );
+      })}
+      <span className="ml-auto text-[11px] text-text-muted">Picking a theme below locks it</span>
     </div>
   );
 }

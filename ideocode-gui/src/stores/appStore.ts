@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Theme } from "../lib/theme-registry";
+import { THEME_IDS, type Theme } from "../lib/theme-registry";
 
 export type PanelId =
   | "chat"
@@ -64,6 +64,9 @@ interface AppState {
   theme: Theme;
   setTheme: (t: Theme) => void;
 
+  themeMode: "auto" | "light" | "dark" | "custom";
+  setThemeMode: (m: "auto" | "light" | "dark" | "custom") => void;
+
   accentColor: string;
   setAccentColor: (c: string) => void;
 
@@ -119,8 +122,21 @@ export const useAppStore = create<AppState>((set) => ({
   setChatPanelWidth: (w) =>
     set({ chatPanelWidth: Math.min(680, Math.max(320, Math.round(w))) }),
 
-  theme: "ideo_dark",
-  setTheme: (t) => set({ theme: t }),
+  theme: (() => {
+    const stored = typeof localStorage !== "undefined" ? localStorage.getItem("ideocode.theme") : null;
+    return stored !== null && (THEME_IDS as readonly string[]).includes(stored)
+      ? (stored as Theme)
+      : "ideo_dark";
+  })(),
+  setTheme: (t) => set({ theme: t, themeMode: "custom" }),
+
+  themeMode: (() => {
+    const stored = typeof localStorage !== "undefined" ? localStorage.getItem("ideocode.themeMode") : null;
+    return stored === "light" || stored === "dark" || stored === "custom" || stored === "auto"
+      ? stored
+      : "auto";
+  })(),
+  setThemeMode: (m) => set({ themeMode: m }),
 
   accentColor: "#22C55E",
   setAccentColor: (c) => set({ accentColor: c }),

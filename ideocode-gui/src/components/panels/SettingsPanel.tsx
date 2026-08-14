@@ -141,6 +141,8 @@ function AppearanceTab({
 }) {
   return (
     <div className="p-4 space-y-5">
+      {/* Appearance Mode */}
+      <AppearanceModeSection />
       {/* Theme */}
       <Section label="Theme">
         {(["Default", "Classic", "Cyberpunk", "Minimal"] as const).map((tier) => (
@@ -408,6 +410,46 @@ function Section({ label, children }: { label: string; children: React.ReactNode
         {label}
       </label>
       {children}
+    </div>
+  );
+}
+
+function AppearanceModeSection() {
+  const themeMode = useAppStore((s) => s.themeMode);
+  const setThemeMode = useAppStore((s) => s.setThemeMode);
+  const modes: { id: "auto" | "light" | "dark"; label: string; hint: string }[] = [
+    { id: "auto", label: "Auto", hint: "Follow system & time of day" },
+    { id: "light", label: "Light", hint: "Always light" },
+    { id: "dark", label: "Dark", hint: "Always dark" },
+  ];
+  return (
+    <div>
+      <label className="block text-[11px] font-medium text-text-secondary mb-2 uppercase tracking-wider">
+        Appearance Mode
+      </label>
+      <div className="flex gap-1.5">
+        {modes.map((m) => {
+          const active = themeMode === m.id;
+          return (
+            <button
+              key={m.id}
+              onClick={() => setThemeMode(m.id)}
+              title={m.hint}
+              className={`flex-1 px-2 py-1.5 text-xs rounded transition-fast border
+                ${
+                  active
+                    ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
+                    : "border-border-subtle text-text-muted hover:border-text-muted"
+                }`}
+            >
+              {m.label}
+            </button>
+          );
+        })}
+      </div>
+      <div className="text-[11px] text-text-muted mt-1.5">
+        Picking a theme below locks it (Custom mode).
+      </div>
     </div>
   );
 }
