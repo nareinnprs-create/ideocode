@@ -153,7 +153,7 @@ function SessionCard({ session }: { session: Session }) {
               {time}
             </span>
             {session.save_label && (
-              <span className="flex items-center gap-1 text-[11px] text-accent-tertiary">
+              <span className="flex items-center gap-1 text-[11px] text-accent-primary">
                 <Tag size={10} />
                 {session.save_label}
               </span>

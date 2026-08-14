@@ -49,7 +49,7 @@ export function MemoryPanel() {
         </button>
         <button
           onClick={() => setShowAdd(!showAdd)}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-secondary transition-fast rounded hover:bg-bg-elevated"
+          className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated"
         >
           <Plus size={14} />
           Add
@@ -100,7 +100,7 @@ export function MemoryPanel() {
             </select>
             <button
               onClick={handleAdd}
-              className="px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-secondary transition-fast"
+              className="px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover transition-fast"
             >
               Save
             </button>

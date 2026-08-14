@@ -34,7 +34,7 @@ export function ChatMessageList() {
           onClick={() => void clearMessages()}
           title="Start a new chat"
           aria-label="Start a new chat"
-          className="absolute top-3 right-3 z-10 btn-icon opacity-0 group-hover:opacity-100 transition-fast bg-bg-secondary/80 backdrop-blur"
+          className="absolute top-3 right-3 z-10 btn-icon opacity-0 group-hover:opacity-100 transition-fast bg-bg-secondary border border-border-subtle"
         >
           <Plus size={14} />
         </button>
@@ -104,7 +104,7 @@ function EmptyChat() {
   return (
     <div className="flex items-center justify-center h-full">
       <div className="text-center space-y-3 animate-blur-in max-w-md px-4">
-        <div className="text-2xl font-display font-bold text-gradient">IDEOCODE</div>
+        <div className="text-xl font-semibold text-text-primary">IDEOCODE</div>
         <p className="text-text-muted text-sm">Multi-model AI coding assistant</p>
         <div className="flex items-center justify-center gap-2 text-text-muted text-xs mt-4">
           <Kbd>Ctrl</Kbd>

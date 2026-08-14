@@ -14,7 +14,6 @@ export type Theme =
   | "synthwave"
   | "matrix"
   | "tron"
-  | "glassmorphism"
   | "retro";
 
 export type ThemeTier = "Default" | "Classic" | "Cyberpunk" | "Minimal";
@@ -46,7 +45,6 @@ export const THEMES: ThemeInfo[] = [
   { id: "synthwave", label: "Synthwave", description: "Retro synth sunset", tier: "Cyberpunk", bg: "#190a28", bgSecondary: "#270f2f", accent: "#ff00c8", text: "#ff6496" },
   { id: "matrix", label: "Matrix", description: "Digital green rain", tier: "Cyberpunk", bg: "#000a00", bgSecondary: "#001900", accent: "#00ff00", text: "#00ff00" },
   { id: "tron", label: "Tron", description: "Glowing electric grid", tier: "Cyberpunk", bg: "#050a0f", bgSecondary: "#0b151d", accent: "#00c8ff", text: "#64c8ff" },
-  { id: "glassmorphism", label: "Glassmorphism", description: "Frosted translucent blues", tier: "Minimal", bg: "#0f0f14", bgSecondary: "#1b1b21", accent: "#6496ff", text: "#dcdce6" },
   { id: "retro", label: "Retro", description: "Warm amber terminal", tier: "Minimal", bg: "#32281e", bgSecondary: "#3b3025", accent: "#ff9632", text: "#c8b48c" },
 ];
 

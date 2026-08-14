@@ -34,21 +34,20 @@
   --color-border-default: var(--idc-border-default);
   --color-border-strong: var(--idc-border-strong);
 
-  --radius-sm: 5px;
-  --radius-md: 9px;
-  --radius-lg: 13px;
-  --radius-xl: 18px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
   --radius-pill: 999px;
 
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --shadow-pop: 0 8px 40px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-glow: 0 0 20px var(--idc-glow);
-  --shadow-glow-accent: 0 0 30px var(--idc-glow-accent);
-  --shadow-glow-primary: 0 0 20px var(--idc-glow);
+  --shadow-glass: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-pop: 0 4px 16px rgba(0, 0, 0, 0.14), 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-glow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-glow-accent: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-glow-primary: 0 0 0 1px var(--idc-glow);
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
-  --font-display: "Space Grotesk", sans-serif;
 
   --animate-fade-in: fadeIn 200ms ease-out;
   --animate-slide-up: slideUp 200ms ease-out;
@@ -56,7 +55,6 @@
   --animate-blur-in: blurIn 260ms ease-out;
   --animate-shimmer: shimmer 1.6s linear infinite;
   --animate-bounce-dot: bounceDot 1.2s ease-in-out infinite;
-  --animate-pulse-glow: pulseGlow 2s ease-in-out infinite;
   --animate-slide-in-right: slideInRight 220ms cubic-bezier(0.16, 1, 0.3, 1);
   --animate-mission-control: missionControl 320ms cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -88,11 +86,6 @@
   @keyframes bounceDot {
     0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
     30% { transform: translateY(-4px); opacity: 1; }
-  }
-
-  @keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 0 20px var(--idc-glow); }
-    50% { box-shadow: 0 0 30px var(--idc-glow-accent); }
   }
 
   @keyframes slideInRight {
@@ -477,32 +470,6 @@
   --idc-glow-accent: #ff960033;
 }
 
-[data-theme="glassmorphism"] {
-  --idc-bg-primary: #0f0f14;
-  --idc-bg-secondary: #1b1b21;
-  --idc-bg-tertiary: #2a2a2f;
-  --idc-bg-elevated: #38383e;
-  --idc-bg-hover: #242429;
-  --idc-bg-overlay: #0a0a0f;
-  --idc-text-primary: #dcdce6;
-  --idc-text-secondary: #a1a1af;
-  --idc-text-muted: #505064;
-  --idc-accent-primary: #6496ff;
-  --idc-accent-secondary: #9664ff;
-  --idc-accent-tertiary: #64c896;
-  --idc-accent-hover: #81a7f9;
-  --idc-success: #64c896;
-  --idc-warning: #ffc864;
-  --idc-error: #ff6464;
-  --idc-info: #7d7dff;
-  --idc-border-subtle: #1c1c23;
-  --idc-border-default: #282832;
-  --idc-border-strong: #74747e;
-  --idc-selection: #6496ff4d;
-  --idc-glow: #6496ff4d;
-  --idc-glow-accent: #9664ff33;
-}
-
 [data-theme="retro"] {
   --idc-bg-primary: #32281e;
   --idc-bg-secondary: #3b3025;
@@ -640,20 +607,16 @@ html.theme-transition body * {
    ============================================ */
 
 .glass {
-  background: color-mix(in srgb, var(--color-bg-secondary) 80%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
 }
 
 .glass-elevated {
-  background: color-mix(in srgb, var(--color-bg-elevated) 90%, transparent);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--color-bg-elevated);
   border: 1px solid var(--color-border-default);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-glass);
+  box-shadow: var(--shadow-pop);
 }
 
 .overlay {
@@ -693,28 +656,15 @@ html.theme-transition body * {
 }
 
 /* ============================================
-   Gradient Helpers
+   Gradient Helpers (neutralized — flat surfaces only)
    ============================================ */
 
 .text-gradient {
-  background: linear-gradient(
-    100deg,
-    var(--color-accent-gradient-from),
-    var(--color-accent-gradient-via) 55%,
-    var(--color-accent-gradient-to)
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--color-text-primary);
 }
 
 .accent-gradient-bg {
-  background: linear-gradient(
-    120deg,
-    var(--color-accent-gradient-from),
-    var(--color-accent-gradient-via) 55%,
-    var(--color-accent-gradient-to)
-  );
+  background: var(--color-accent-primary);
 }
 
 /* ============================================

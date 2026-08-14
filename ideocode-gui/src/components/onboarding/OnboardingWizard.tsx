@@ -167,16 +167,14 @@ export function OnboardingWizard({ onComplete }: Props) {
         {/* Progress bar */}
         <div className="h-1 bg-bg-tertiary rounded-full mb-8 overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-accent-primary to-accent-secondary transition-all duration-500 rounded-full"
+            className="h-full bg-accent-primary transition-all duration-500 rounded-full"
             style={{ width: `${progress}%` }}
           />
         </div>
 
         {step === "welcome" && (
           <div className="text-center space-y-6 animate-fade-in">
-            <div className="text-5xl font-display font-bold bg-gradient-to-r from-accent-primary to-accent-secondary bg-clip-text text-transparent">
-              IDEOCODE
-            </div>
+            <div className="text-3xl font-semibold text-text-primary">IDEOCODE</div>
             <p className="text-text-secondary text-sm max-w-md mx-auto">
               Welcome to the multi-model AI coding assistant.
               Let's get you set up in under a minute.
@@ -197,7 +195,7 @@ export function OnboardingWizard({ onComplete }: Props) {
         {step === "theme" && (
           <div className="space-y-6 animate-fade-in">
             <div className="text-center">
-              <h2 className="text-lg font-display font-semibold text-text-primary">Choose Your Theme</h2>
+              <h2 className="text-lg font-semibold text-text-primary">Choose Your Theme</h2>
               <p className="text-text-muted text-xs mt-1">Pick a look that suits your style</p>
             </div>
             <div className="grid grid-cols-3 gap-3">
@@ -207,7 +205,7 @@ export function OnboardingWizard({ onComplete }: Props) {
                   onClick={() => chooseTheme(t.id)}
                   className={`p-3 rounded-xl border-2 transition-all text-left
                     ${theme === t.id
-                      ? "border-accent-primary shadow-glow-primary"
+                      ? "border-accent-primary"
                       : "border-border-subtle hover:border-text-muted"
                     }`}
                 >
@@ -236,7 +234,7 @@ export function OnboardingWizard({ onComplete }: Props) {
         {step === "provider" && (
           <div className="space-y-6 animate-fade-in">
             <div className="text-center">
-              <h2 className="text-lg font-display font-semibold text-text-primary">Select AI Provider</h2>
+              <h2 className="text-lg font-semibold text-text-primary">Select AI Provider</h2>
               <p className="text-text-muted text-xs mt-1">Choose your primary AI provider</p>
             </div>
             <div className="space-y-2">
@@ -293,7 +291,7 @@ export function OnboardingWizard({ onComplete }: Props) {
                   <Server size={28} className="text-accent-primary" />
                 )}
               </div>
-              <h2 className="text-lg font-display font-semibold text-text-primary">
+              <h2 className="text-lg font-semibold text-text-primary">
                 Provisioning Baanzon Verso
               </h2>
               <p className="text-text-muted text-xs mt-1 max-w-sm mx-auto">
@@ -374,7 +372,7 @@ export function OnboardingWizard({ onComplete }: Props) {
               <Check size={32} className="text-success" />
             </div>
             <div>
-              <h2 className="text-lg font-display font-semibold text-text-primary">You're All Set!</h2>
+              <h2 className="text-lg font-semibold text-text-primary">You're All Set!</h2>
               <p className="text-text-muted text-xs mt-1 max-w-sm mx-auto">
                 {THEMES.find(t => t.id === theme)?.label} theme · {PROVIDERS.find(p => p.id === provider)?.label} provider
               </p>

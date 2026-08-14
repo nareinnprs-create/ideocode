@@ -131,13 +131,6 @@ export const THEME_COLORS: Record<Theme, ThemeColors> = {
     success: "#00ff64", warning: "#ff9600", error: "#ff3232", info: "#80af80",
     borderSubtle: "#122335", borderDefault: "#1e3c5a", selection: "#00c8ff4d", glow: "#00c8ff4d",
   },
-  glassmorphism: {
-    bg: "#0f0f14", bgSecondary: "#1b1b21", bgTertiary: "#2a2a2f", bgElevated: "#38383e", bgHover: "#242429",
-    fg: "#dcdce6", textSecondary: "#a1a1af", textMuted: "#505064",
-    accent: "#6496ff", accentSecondary: "#9664ff", accentTertiary: "#64c896", accentHover: "#81a7f9",
-    success: "#64c896", warning: "#ffc864", error: "#ff6464", info: "#7d7dff",
-    borderSubtle: "#1c1c23", borderDefault: "#282832", selection: "#6496ff4d", glow: "#6496ff4d",
-  },
   retro: {
     bg: "#32281e", bgSecondary: "#3b3025", bgTertiary: "#463a2c", bgElevated: "#504434", bgHover: "#413629",
     fg: "#c8b48c", textSecondary: "#9e8a6a", textMuted: "#64503c",

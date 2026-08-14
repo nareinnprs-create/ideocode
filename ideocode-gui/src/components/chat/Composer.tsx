@@ -352,7 +352,7 @@ export function Composer() {
             <button
               onClick={() => void interrupt()}
               title="Stop generating"
-              className="p-1.5 rounded-md transition-fast bg-error/15 text-error hover:bg-error/25 animate-pulse-glow shrink-0"
+              className="p-1.5 rounded-md transition-fast bg-error/15 text-error hover:bg-error/25 shrink-0"
             >
               <Square size={16} className="fill-current" />
             </button>

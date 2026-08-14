@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Search, Minus, Square, Copy, X, Sparkles, Scissors } from "lucide-react";
+import { Search, Minus, Square, Copy, X, Scissors } from "lucide-react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useAppStore } from "../../stores/appStore";
 import { useFileStore } from "../../stores/fileStore";
@@ -62,11 +62,9 @@ export function TopBar() {
       className="flex items-center h-10 px-3 gap-3 bg-bg-primary border-b border-border-subtle select-none shrink-0"
     >
       {/* Brand / project */}
-      <div className="flex items-center gap-2.5 min-w-0" data-tauri-drag-region>
-        <span className="w-5 h-5 rounded-md accent-gradient-bg flex items-center justify-center shrink-0">
-          <Sparkles size={12} className="text-white" />
-        </span>
-        <span className="font-display font-bold text-[13px] text-text-primary tracking-tight shrink-0">
+      <div className="flex items-center gap-2 min-w-0" data-tauri-drag-region>
+        <span className="w-3 h-3 rounded-sm bg-accent-primary shrink-0" />
+        <span className="text-[13px] font-semibold text-text-primary tracking-tight shrink-0">
           IDEOCODE
         </span>
         <span className="text-text-muted opacity-60">/</span>

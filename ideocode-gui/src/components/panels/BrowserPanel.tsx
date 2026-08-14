@@ -122,7 +122,7 @@ export function BrowserPanel() {
           <button
             onClick={handleSetTab}
             disabled={!url.trim()}
-            className="px-2 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-secondary disabled:opacity-50 transition-fast"
+            className="px-2 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast"
           >
             Add
           </button>

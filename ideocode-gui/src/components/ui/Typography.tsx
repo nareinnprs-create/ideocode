@@ -2,7 +2,6 @@ import type { ComponentPropsWithRef, ReactNode } from "react";
 
 interface HeadingProps extends ComponentPropsWithRef<"h2"> {
   level?: 1 | 2 | 3 | 4;
-  display?: boolean;
 }
 
 const LEVEL_CLASSES: Record<number, string> = {
@@ -12,12 +11,12 @@ const LEVEL_CLASSES: Record<number, string> = {
   4: "text-sm font-medium",
 };
 
-export function Heading({ level = 2, display = false, className = "", ref, ...rest }: HeadingProps) {
+export function Heading({ level = 2, className = "", ref, ...rest }: HeadingProps) {
   const Tag = (`h${level}`) as "h1" | "h2" | "h3" | "h4";
   return (
     <Tag
       ref={ref}
-      className={`${LEVEL_CLASSES[level]} ${display ? "font-display" : "font-sans"} text-text-primary ${className}`}
+      className={`${LEVEL_CLASSES[level]} font-sans text-text-primary ${className}`}
       {...rest}
     />
   );

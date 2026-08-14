@@ -81,7 +81,7 @@ export function IssuePanel() {
         </button>
         <button
           onClick={() => setShowFetch(!showFetch)}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-secondary transition-fast rounded hover:bg-bg-elevated"
+          className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated"
         >
           <RefreshCw size={14} />
           Fetch
@@ -141,7 +141,7 @@ export function IssuePanel() {
           <button
             onClick={handleFetch}
             disabled={!owner.trim() || !repo.trim()}
-            className="w-full px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-secondary disabled:opacity-50 transition-fast"
+            className="w-full px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast"
           >
             Fetch Issues
           </button>

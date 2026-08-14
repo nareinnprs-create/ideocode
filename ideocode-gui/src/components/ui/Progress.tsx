@@ -7,7 +7,7 @@ interface ProgressProps {
 }
 
 const TONE_CLASSES = {
-  accent: "bg-gradient-to-r from-accent-primary to-accent-secondary",
+  accent: "bg-accent-primary",
   success: "bg-success",
   warning: "bg-warning",
   error: "bg-error",

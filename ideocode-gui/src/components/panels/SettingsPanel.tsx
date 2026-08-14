@@ -153,7 +153,7 @@ function AppearanceTab({
                   onClick={() => onChange({ theme: t.id })}
                   className={`group rounded-lg border-2 transition-fast p-2 text-left
                     ${settings.theme === t.id
-                      ? "border-accent-primary shadow-glow-primary"
+                      ? "border-accent-primary"
                       : "border-border-subtle hover:border-text-muted"
                     }`}
                 >
@@ -213,7 +213,7 @@ function AppearanceTab({
               aria-label={`Accent ${c}`}
               className={`w-7 h-7 rounded-full transition-fast border-2 ${
                 settings.accent_color === c
-                  ? "border-text-primary scale-110 shadow-glow"
+                  ? "border-text-primary scale-110"
                   : "border-transparent hover:scale-105"
               }`}
               style={{ backgroundColor: c }}
@@ -389,9 +389,7 @@ function AboutTab() {
   const version = useAppStore((s) => s.version);
   return (
     <div className="p-6 text-center space-y-4">
-      <div className="text-2xl font-display font-bold bg-gradient-to-r from-accent-primary to-accent-secondary bg-clip-text text-transparent">
-        IDEOCODE
-      </div>
+      <div className="text-xl font-semibold text-text-primary">IDEOCODE</div>
       <div className="text-text-muted text-xs">
         <p>Version {version}</p>
         <p className="mt-2">Multi-model AI coding assistant</p>
