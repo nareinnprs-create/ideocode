@@ -59,12 +59,12 @@ export function TopBar() {
   return (
     <header
       data-tauri-drag-region
-      className="flex items-center h-11 px-3 gap-3 bg-bg-primary border-b border-border-subtle select-none shrink-0"
+      className="flex items-center h-11 px-3 gap-3 bg-bg-primary/70 border-b border-border-subtle select-none shrink-0 surface-blur"
     >
       {/* Brand / project */}
       <div className="flex items-center gap-2.5 min-w-0" data-tauri-drag-region>
         <span
-          className="w-[18px] h-[18px] rounded-[6px] bg-accent-primary flex items-center justify-center text-white shrink-0"
+          className="w-[18px] h-[18px] rounded-[6px] accent-gradient-bg flex items-center justify-center text-white shrink-0 glow-soft"
           data-tauri-drag-region
         >
           <Sparkles size={10} />
@@ -80,7 +80,7 @@ export function TopBar() {
       <div className="flex-1 flex justify-center min-w-0">
         <button
           onClick={() => setCommandPaletteOpen(true)}
-          className="group flex items-center gap-2 h-7 px-3 rounded-lg border border-border-subtle bg-bg-secondary/50 text-text-muted hover:bg-bg-hover hover:border-border-default hover:text-text-secondary transition-all duration-150 w-full max-w-md"
+          className="group flex items-center gap-2 h-7 px-3 rounded-lg border border-border-subtle bg-bg-secondary/50 text-text-muted hover:bg-bg-hover hover:border-border-default hover:text-text-secondary hover:shadow-glow-soft transition-all duration-150 w-full max-w-md focus-visible:outline-2 focus-visible:outline-accent-secondary"
         >
           <Search size={13} className="transition-colors duration-150 group-hover:text-accent-primary" />
           <span className="text-xs flex-1 text-left truncate">Search commands, files, actions…</span>

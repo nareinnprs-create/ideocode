@@ -35,7 +35,7 @@ export function TabBar() {
                 }`}
             >
               {isActive && (
-                <span className="absolute top-0 left-0 right-0 h-0.5 bg-accent-primary" />
+                <span className="absolute top-0 left-0 right-0 h-[2px] rounded-b-sm accent-gradient-bg shadow-[0_2px_10px_-2px_var(--idc-glow)]" />
               )}
               <FileCode2
                 size={13}

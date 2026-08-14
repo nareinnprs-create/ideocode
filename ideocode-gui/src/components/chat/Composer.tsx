@@ -238,7 +238,7 @@ export function Composer() {
     <div className="px-3 pb-3 pt-2 shrink-0 relative z-20">
       {/* Slash command palette */}
       {menuOpen === "slash" && (
-        <div className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default bg-bg-elevated shadow-lg overflow-hidden animate-scale-in">
+        <div className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default glass-strong overflow-hidden animate-scale-in">
           {SLASH_COMMANDS.map((cmd, i) => (
             <button
               key={cmd.id}
@@ -258,7 +258,7 @@ export function Composer() {
 
       {/* @ mention palette */}
       {menuOpen === "mention" && (
-        <div className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default bg-bg-elevated shadow-lg overflow-hidden animate-scale-in">
+        <div className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default glass-strong overflow-hidden animate-scale-in">
           <div className="px-3 py-1.5 text-[11px] uppercase tracking-wider text-text-muted border-b border-border-subtle">
             {mentionCandidates.length === 0 ? "No matching open files" : "Open files"}
           </div>
@@ -291,7 +291,7 @@ export function Composer() {
                 aria-pressed={mode === id}
                 className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-150 ${
                   mode === id
-                    ? "bg-accent-primary/12 text-accent-primary"
+                    ? "bg-accent-primary/12 text-accent-primary glow-soft"
                     : "text-text-muted hover:text-text-secondary hover:bg-bg-hover"
                 }`}
               >
@@ -326,10 +326,10 @@ export function Composer() {
 
       {/* Composer card */}
       <div
-        className={`rounded-xl border bg-bg-secondary transition-colors duration-150 ${
+        className={`rounded-xl border bg-bg-secondary/70 backdrop-blur-sm transition-all duration-200 ease-spring ${
           focused
-            ? "border-accent-primary/70"
-            : "border-border-default hover:border-border-strong"
+            ? "border-accent-primary/60 shadow-[0_0_0_1px_var(--idc-glow),0_0_28px_-8px_var(--idc-glow),0_2px_8px_-2px_rgba(2,6,23,0.6)]"
+            : "border-border-default hover:border-border-strong hover:shadow-raise"
         }`}
       >
         {/* Input row */}
@@ -410,7 +410,7 @@ export function Composer() {
               <button
                 onClick={() => void interrupt()}
                 title="Stop generating"
-                className="w-8 h-8 rounded-lg transition-fast bg-error/15 text-error hover:bg-error/25 flex items-center justify-center shrink-0"
+                className="w-8 h-8 rounded-lg transition-fast bg-error/15 text-error hover:bg-error/25 flex items-center justify-center shrink-0 shadow-[0_0_0_1px_rgba(239,68,68,0.25)]"
               >
                 <Square size={13} className="fill-current" />
               </button>
@@ -421,7 +421,7 @@ export function Composer() {
                 onClick={() => void handleSend()}
                 disabled={!input.trim() || loading}
                 title="Send message"
-                className="w-8 h-8 rounded-md bg-accent-primary text-white hover:bg-accent-hover disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center shrink-0 transition-colors duration-150"
+                className="w-8 h-8 rounded-md accent-gradient-bg text-white disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center shrink-0 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.18),0_4px_14px_-4px_var(--idc-glow)] transition-all duration-150 ease-spring hover:brightness-110 hover:-translate-y-px active:translate-y-0"
               >
                 {loading ? (
                   <Loader2 size={14} className="animate-spin" />

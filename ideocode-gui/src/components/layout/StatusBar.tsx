@@ -57,7 +57,7 @@ export function StatusBar() {
       : 0;
 
   return (
-    <footer className="flex items-center justify-between h-7 px-3 bg-bg-secondary border-t border-border-subtle text-[11px] text-text-muted select-none gap-3">
+    <footer className="flex items-center justify-between h-7 px-3 bg-bg-secondary/60 border-t border-border-subtle text-[11px] text-text-muted select-none gap-3 surface-blur hairline-top">
       {/* Left — git + engine */}
       <div className="flex items-center gap-3 min-w-0">
         {gitStatus ? (
@@ -86,7 +86,7 @@ export function StatusBar() {
           {busy ? (
             <Loader2 size={12} className="animate-spin text-accent-primary" />
           ) : (
-            <span className={`w-1.5 h-1.5 rounded-full ${engineState.dot} ${engineState.pulse ? "animate-pulse" : ""}`} />
+            <span className={`w-1.5 h-1.5 rounded-full status-dot ${engineState.dot} ${engineState.pulse ? "animate-pulse-glow" : ""}`} />
           )}
           <span className={engineState.text}>{busy ? "Working" : engineState.label}</span>
         </span>

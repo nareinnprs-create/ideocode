@@ -115,12 +115,12 @@ export function CommandPalette() {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
       <div
-        className="absolute inset-0 bg-black/50"
+        className="absolute inset-0 bg-black/50 backdrop-blur-[2px] animate-fade-in"
         onClick={() => setCommandPaletteOpen(false)}
       />
 
-      <div className="relative w-full max-w-lg glass-elevated overflow-hidden animate-slide-up">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-border-subtle">
+      <div className="relative w-full max-w-lg glass-strong overflow-hidden animate-float-in">
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-border-subtle hairline-top">
           {mode === "themes" && (
             <button
               onClick={() => {
@@ -168,12 +168,12 @@ export function CommandPalette() {
                     data-idx={idx}
                     onClick={() => applyTheme(t.id)}
                     onMouseEnter={() => setSelectedIdx(idx)}
-                    className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast
-                      ${
-                        active
-                          ? "bg-bg-elevated text-text-primary"
-                          : "text-text-secondary hover:bg-bg-elevated"
-                      }`}
+                      className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast
+                        ${
+                          active
+                            ? "bg-accent-primary/10 text-accent-primary"
+                            : "text-text-secondary hover:bg-bg-elevated"
+                        }`}
                   >
                     <span
                       className="w-8 h-6 rounded border border-border-subtle shrink-0 flex items-center justify-center text-[9px] font-mono"
@@ -233,7 +233,7 @@ export function CommandPalette() {
                                 className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast
                                   ${
                                     idx === selectedIdx
-                                      ? "bg-bg-elevated text-text-primary"
+                                      ? "bg-accent-primary/10 text-accent-primary"
                                       : "text-text-secondary hover:bg-bg-elevated"
                                   }`}
                               >

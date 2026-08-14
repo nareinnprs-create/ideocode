@@ -68,8 +68,10 @@ export function ToolCallCard({ toolCall }: Props) {
 
   return (
     <div
-      className={`my-1.5 rounded-lg border overflow-hidden bg-bg-secondary/70 transition-colors ${
-        status === "running" ? "border-accent-primary/30" : "border-border-subtle"
+      className={`my-1.5 rounded-lg border overflow-hidden bg-bg-secondary/70 transition-all duration-200 ${
+        status === "running"
+          ? "border-accent-primary/30 glow-soft"
+          : "border-border-subtle hover:border-border-default"
       }`}
     >
       {/* Header — always visible */}
@@ -88,7 +90,7 @@ export function ToolCallCard({ toolCall }: Props) {
           <span className="text-[11px] text-text-muted font-mono tabular-nums">{elapsedText}</span>
         )}
         <span className="flex items-center gap-1.5">
-          <span className={`w-[5px] h-[5px] rounded-full ${colorClass}`} />
+          <span className={`w-[5px] h-[5px] rounded-full ${colorClass} ${status === "running" ? "status-dot animate-pulse-glow" : ""}`} />
           <span className={`text-[11px] font-medium ${colorClass}`}>
             {STATUS_LABELS[status] ?? status}
           </span>

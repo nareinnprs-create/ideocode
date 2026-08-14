@@ -107,8 +107,8 @@ export function ChatMessageList() {
 function AssistantAvatar({ streaming = false }: { streaming?: boolean }) {
   return (
     <div
-      className={`w-[18px] h-[18px] rounded-[6px] bg-accent-primary flex items-center justify-center text-white shrink-0 ${
-        streaming ? "animate-pulse" : ""
+      className={`w-[18px] h-[18px] rounded-[6px] accent-gradient-bg flex items-center justify-center text-white shrink-0 glow-soft ${
+        streaming ? "animate-pulse-glow" : ""
       }`}
     >
       <Sparkles size={10} />
@@ -166,7 +166,7 @@ function EmptyChat() {
               key={prompt}
               onClick={() => void sendMessage(prompt)}
               disabled={streaming || loading}
-              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-border-subtle bg-bg-secondary/60 text-left transition-colors duration-150 hover:border-accent-primary/50 hover:bg-bg-hover disabled:opacity-40 disabled:cursor-not-allowed"
+              className="elevate-hover flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-border-subtle bg-bg-secondary/60 text-left hover:border-accent-primary/50 hover:bg-bg-hover disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Icon size={15} className="text-accent-primary shrink-0" />
               <span className="min-w-0">
@@ -216,7 +216,7 @@ function StreamingBubble({
 
 function Caret() {
   return (
-    <span className="inline-block w-[2px] h-[1em] bg-accent-primary ml-0.5 animate-pulse rounded-full align-text-bottom" />
+    <span className="inline-block w-[2px] h-[1em] bg-accent-primary ml-0.5 animate-stream rounded-full align-text-bottom shadow-[0_0_8px_var(--idc-glow)]" />
   );
 }
 

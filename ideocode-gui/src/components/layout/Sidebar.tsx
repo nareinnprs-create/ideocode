@@ -57,12 +57,15 @@ function SidebarButton({
       onClick={onClick}
       aria-label={label}
       aria-pressed={active}
-      className={`relative w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-150 ${
+      className={`relative w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-150 ease-spring ${
         active
-          ? "text-accent-primary bg-accent-primary/10"
+          ? "text-accent-primary bg-accent-primary/10 glow-soft"
           : "text-text-muted hover:text-text-primary hover:bg-bg-hover"
       }`}
     >
+      {active && (
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-accent-primary shadow-[0_0_8px_var(--idc-glow)]" />
+      )}
       <Icon size={19} strokeWidth={active ? 2.2 : 1.8} />
     </button>
   );
