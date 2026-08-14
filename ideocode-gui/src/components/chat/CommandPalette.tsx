@@ -4,6 +4,7 @@ import { getSettings, updateSettings } from "../../lib/tauri-commands";
 import { THEMES, type Theme } from "../../lib/theme-registry";
 import { COMMANDS, getCommandsByCategory, type CommandAction } from "../../lib/commands";
 import { fuzzySearch } from "../../lib/fuzzy";
+import { effectiveTheme, type ThemeMode } from "../../lib/theme-utils";
 import { Search, ArrowLeft, Check, X } from "lucide-react";
 
 interface RankedCommand extends CommandAction {
@@ -267,24 +268,11 @@ export function CommandPalette() {
   );
 }
 
-function effectiveTheme(
-  themeMode: "auto" | "light" | "dark" | "custom",
-  theme: Theme,
-): Theme {
-  if (themeMode === "light") return "ideo_light";
-  if (themeMode === "dark") return "ideo_dark";
-  if (themeMode === "auto") {
-    const light = window.matchMedia?.("(prefers-color-scheme: light)").matches ?? false;
-    return light ? "ideo_light" : "ideo_dark";
-  }
-  return theme;
-}
-
 function AppearanceModes({
   current,
   onSelect,
 }: {
-  current: "auto" | "light" | "dark" | "custom";
+  current: ThemeMode;
   onSelect: (m: "auto" | "light" | "dark") => void;
 }) {
   const modes: { id: "auto" | "light" | "dark"; label: string; hint: string }[] = [

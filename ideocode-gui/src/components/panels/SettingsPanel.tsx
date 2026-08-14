@@ -3,6 +3,7 @@ import { AlertCircle } from "lucide-react";
 import { getSettings, updateSettings } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
 import { THEMES } from "../../lib/theme-registry";
+import { effectiveTheme } from "../../lib/theme-utils";
 import { useAppStore } from "../../stores/appStore";
 import { useProviderStore } from "../../stores/providerStore";
 import { notify } from "../../stores/toastStore";
@@ -139,6 +140,9 @@ function AppearanceTab({
   settings: AppSettings;
   onChange: (p: Partial<AppSettings>) => void;
 }) {
+  const storeTheme = useAppStore((s) => s.theme);
+  const themeMode = useAppStore((s) => s.themeMode);
+  const effective = effectiveTheme(themeMode, storeTheme);
   return (
     <div className="p-4 space-y-5">
       {/* Appearance Mode */}
@@ -154,7 +158,7 @@ function AppearanceTab({
                   key={t.id}
                   onClick={() => onChange({ theme: t.id })}
                   className={`group rounded-lg border-2 transition-fast p-2 text-left
-                    ${settings.theme === t.id
+                    ${effective === t.id
                       ? "border-accent-primary"
                       : "border-border-subtle hover:border-text-muted"
                     }`}
