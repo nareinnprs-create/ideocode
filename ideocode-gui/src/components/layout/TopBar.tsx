@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Search, Minus, Square, Copy, X, Scissors } from "lucide-react";
+import { Search, Minus, Square, Copy, X, Scissors, Sparkles } from "lucide-react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useAppStore } from "../../stores/appStore";
 import { useFileStore } from "../../stores/fileStore";
@@ -59,15 +59,20 @@ export function TopBar() {
   return (
     <header
       data-tauri-drag-region
-      className="flex items-center h-10 px-3 gap-3 bg-bg-primary border-b border-border-subtle select-none shrink-0"
+      className="flex items-center h-11 px-3 gap-3 bg-bg-primary border-b border-border-subtle select-none shrink-0"
     >
       {/* Brand / project */}
-      <div className="flex items-center gap-2 min-w-0" data-tauri-drag-region>
-        <span className="w-3 h-3 rounded-sm bg-accent-primary shrink-0" />
-        <span className="text-[13px] font-semibold text-text-primary tracking-tight shrink-0">
+      <div className="flex items-center gap-2.5 min-w-0" data-tauri-drag-region>
+        <span
+          className="w-[18px] h-[18px] rounded-[6px] bg-accent-primary flex items-center justify-center text-white shrink-0"
+          data-tauri-drag-region
+        >
+          <Sparkles size={10} />
+        </span>
+        <span className="text-[13px] font-medium text-text-primary tracking-tight shrink-0">
           IDEOCODE
         </span>
-        <span className="text-text-muted opacity-60">/</span>
+        <span className="text-text-muted opacity-50">/</span>
         <span className="text-xs text-text-secondary font-medium truncate max-w-40">{projectName}</span>
       </div>
 
@@ -75,10 +80,13 @@ export function TopBar() {
       <div className="flex-1 flex justify-center min-w-0">
         <button
           onClick={() => setCommandPaletteOpen(true)}
-          className="flex items-center gap-2 h-7 px-3 rounded-lg bg-bg-secondary text-text-muted hover:text-text-secondary transition-all duration-150 w-full max-w-md"
+          className="group flex items-center gap-2 h-7 px-3 rounded-lg border border-border-subtle bg-bg-secondary/50 text-text-muted hover:bg-bg-hover hover:border-border-default hover:text-text-secondary transition-all duration-150 w-full max-w-md"
         >
-          <Search size={13} />
-          <span className="text-xs flex-1 text-left truncate">Search commands…</span>
+          <Search size={13} className="transition-colors duration-150 group-hover:text-accent-primary" />
+          <span className="text-xs flex-1 text-left truncate">Search commands, files, actions…</span>
+          <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded-md bg-bg-tertiary text-[10px] font-mono text-text-muted">
+            ⌘K
+          </kbd>
         </button>
       </div>
 

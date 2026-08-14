@@ -55,6 +55,12 @@ interface AppState {
   editorSplit: boolean;
   toggleEditorSplit: () => void;
 
+  chatPanelOpen: boolean;
+  setChatPanelOpen: (open: boolean) => void;
+
+  chatPanelWidth: number;
+  setChatPanelWidth: (w: number) => void;
+
   theme: Theme;
   setTheme: (t: Theme) => void;
 
@@ -105,6 +111,13 @@ export const useAppStore = create<AppState>((set) => ({
 
   editorSplit: false,
   toggleEditorSplit: () => set((s) => ({ editorSplit: !s.editorSplit })),
+
+  chatPanelOpen: true,
+  setChatPanelOpen: (open) => set({ chatPanelOpen: open }),
+
+  chatPanelWidth: 400,
+  setChatPanelWidth: (w) =>
+    set({ chatPanelWidth: Math.min(680, Math.max(320, Math.round(w))) }),
 
   theme: "ideo_dark",
   setTheme: (t) => set({ theme: t }),

@@ -1,6 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Copy, RefreshCw, Pencil, Check, X } from "lucide-react";
+import {
+  Plus,
+  Copy,
+  RefreshCw,
+  Pencil,
+  Check,
+  X,
+  ListChecks,
+  BookOpen,
+  FlaskConical,
+  Wrench,
+  Sparkles,
+} from "lucide-react";
 import { useChatStore } from "../../stores/chatStore";
 import { useFileStore } from "../../stores/fileStore";
 import { notify } from "../../stores/toastStore";
@@ -29,18 +41,18 @@ export function ChatMessageList() {
 
   return (
     <div className="group relative flex-1 min-h-0 flex flex-col">
-      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-6 space-y-5">
+      <div className="flex-1 overflow-y-auto px-4 pt-5 pb-6 space-y-5 scroll-thin">
         <button
           onClick={() => void clearMessages()}
           title="Start a new chat"
           aria-label="Start a new chat"
-          className="absolute top-3 right-3 z-10 btn-icon opacity-0 group-hover:opacity-100 transition-fast bg-bg-secondary border border-border-subtle"
+          className="absolute top-3 right-3 z-10 btn-icon opacity-0 group-hover:opacity-100 transition-fast bg-bg-secondary/70 border border-border-subtle backdrop-blur"
         >
           <Plus size={14} />
         </button>
 
         {error && (
-          <div className="px-3 py-2 rounded bg-error/10 border border-error/30 text-error text-xs animate-blur-in">
+          <div className="px-3 py-2 rounded-lg bg-error/10 border border-error/30 text-error text-xs animate-blur-in">
             {error}
           </div>
         )}
@@ -52,9 +64,9 @@ export function ChatMessageList() {
             <motion.div
               key={msg.id}
               className="group"
-              initial={{ opacity: 0, y: 8, scale: 0.99 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
             >
               <MessageBubble
                 message={msg}
@@ -71,17 +83,18 @@ export function ChatMessageList() {
         )}
 
         {loading && (
-          <div className="flex items-center gap-2 text-text-muted text-sm">
+          <div className="flex items-center gap-2.5 pl-0.5">
+            <AssistantAvatar streaming />
+            <span className="text-sm text-text-muted">Thinking</span>
             <div className="flex items-center gap-1">
               {[0, 1, 2].map((i) => (
                 <span
                   key={i}
-                  className="w-1.5 h-1.5 rounded-full bg-accent-primary typing-dot"
+                  className="w-1 h-1 rounded-full bg-text-muted typing-dot"
                   style={{ animationDelay: `${i * 0.15}s` }}
                 />
               ))}
             </div>
-            <span>Thinking</span>
           </div>
         )}
 
@@ -91,40 +104,88 @@ export function ChatMessageList() {
   );
 }
 
+function AssistantAvatar({ streaming = false }: { streaming?: boolean }) {
+  return (
+    <div
+      className={`w-[18px] h-[18px] rounded-[6px] bg-accent-primary flex items-center justify-center text-white shrink-0 ${
+        streaming ? "animate-pulse" : ""
+      }`}
+    >
+      <Sparkles size={10} />
+    </div>
+  );
+}
+
 function EmptyChat() {
   const sendMessage = useChatStore((s) => s.sendMessage);
   const streaming = useChatStore((s) => s.streaming);
   const loading = useChatStore((s) => s.loading);
+  const model = useChatStore((s) => s.model);
   const suggestions = [
-    "Plan a refactor of the current file",
-    "Explain what this codebase does",
-    "Write unit tests for the current file",
-    "Fix the lint errors in the current file",
+    {
+      label: "Plan a refactor",
+      desc: "of the current file",
+      prompt: "Plan a refactor of the current file",
+      icon: ListChecks,
+    },
+    {
+      label: "Explain the codebase",
+      desc: "architecture & flow",
+      prompt: "Explain what this codebase does",
+      icon: BookOpen,
+    },
+    {
+      label: "Write unit tests",
+      desc: "for the current file",
+      prompt: "Write unit tests for the current file",
+      icon: FlaskConical,
+    },
+    {
+      label: "Fix lint errors",
+      desc: "in the current file",
+      prompt: "Fix the lint errors in the current file",
+      icon: Wrench,
+    },
   ];
   return (
     <div className="flex items-center justify-center h-full">
-      <div className="text-center space-y-3 animate-blur-in max-w-md px-4">
-        <div className="text-xl font-semibold text-text-primary">IDEOCODE</div>
-        <p className="text-text-muted text-sm">Multi-model AI coding assistant</p>
-        <div className="flex items-center justify-center gap-2 text-text-muted text-xs mt-4">
-          <Kbd>Ctrl</Kbd>
-          <span>+</span>
-          <Kbd>Shift</Kbd>
-          <span>+</span>
-          <Kbd>P</Kbd>
-          <span className="ml-1">Command Palette</span>
+      <div className="text-center space-y-6 animate-blur-in max-w-md px-4 py-8">
+        <div className="flex flex-col items-center gap-2.5">
+          <AssistantAvatar />
+          <h1 className="text-[17px] font-semibold tracking-tight text-text-primary">
+            IDEOCODE
+          </h1>
+          <p className="text-[13px] text-text-muted -mt-1">
+            Multi-model AI coding assistant · {model}
+          </p>
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
-          {suggestions.map((s) => (
+
+        <div className="grid grid-cols-2 gap-2">
+          {suggestions.map(({ label, desc, prompt, icon: Icon }) => (
             <button
-              key={s}
-              onClick={() => void sendMessage(s)}
+              key={prompt}
+              onClick={() => void sendMessage(prompt)}
               disabled={streaming || loading}
-              className="px-3 py-1.5 rounded-lg border border-border-subtle bg-bg-secondary text-sm text-text-muted hover:text-text-primary hover:border-accent-primary/50 hover:bg-accent-primary/5 transition-fast disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-border-subtle bg-bg-secondary/60 text-left transition-colors duration-150 hover:border-accent-primary/50 hover:bg-bg-hover disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {s}
+              <Icon size={15} className="text-accent-primary shrink-0" />
+              <span className="min-w-0">
+                <span className="block text-[12.5px] font-medium text-text-primary truncate">
+                  {label}
+                </span>
+                <span className="block text-[11px] text-text-muted truncate">{desc}</span>
+              </span>
             </button>
           ))}
+        </div>
+
+        <div className="flex items-center justify-center gap-2 text-[11px] text-text-muted">
+          <Kbd>Ctrl</Kbd>
+          <span className="opacity-50">+</span>
+          <Kbd>Shift</Kbd>
+          <span className="opacity-50">+</span>
+          <Kbd>P</Kbd>
+          <span className="ml-0.5 opacity-70">Command Palette</span>
         </div>
       </div>
     </div>
@@ -139,16 +200,15 @@ function StreamingBubble({
   onFileClick: (path: string) => void;
 }) {
   return (
-    <div className="flex justify-start">
-      <div className="max-w-[92%] space-y-1">
-        <div className="flex items-center gap-2 pl-1">
-          <span className="text-xs font-medium text-text-primary">Baanzon Verso</span>
-          <span className="text-[11px] text-accent-primary">streaming…</span>
-        </div>
-        <div className="text-sm leading-relaxed text-text-primary pl-1">
-          <MarkdownRenderer content={content} onFileClick={onFileClick} />
-          <Caret />
-        </div>
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-2 pl-0.5">
+        <AssistantAvatar streaming />
+        <span className="text-xs font-medium text-text-primary">IDEOCODE</span>
+        <span className="text-[11px] text-accent-primary">streaming…</span>
+      </div>
+      <div className="text-sm leading-relaxed text-text-primary pl-0.5 pr-2">
+        <MarkdownRenderer content={content} onFileClick={onFileClick} />
+        <Caret />
       </div>
     </div>
   );
@@ -204,114 +264,111 @@ function MessageBubble({
 
   if (isUser) {
     return (
-      <div className="flex justify-end">
-        <div className="max-w-[85%] flex flex-col items-end gap-1">
-          {editing ? (
-            <div className="w-full bg-accent-primary/10 border border-accent-primary rounded-xl p-2">
-              <textarea
-                autoFocus
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    commitEdit();
-                  }
-                  if (e.key === "Escape") {
-                    setDraft(message.content);
-                    setEditing(false);
-                  }
-                }}
-                className="w-full bg-transparent text-text-primary text-sm leading-relaxed resize-none outline-none min-h-[48px]"
-              />
-              <div className="flex items-center justify-end gap-1 mt-1">
-                <button onClick={commitEdit} title="Save edit" className="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-fast">
-                  <Check size={14} />
-                </button>
-                <button
-                  onClick={() => {
-                    setDraft(message.content);
-                    setEditing(false);
-                  }}
-                  title="Cancel edit"
-                  className="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-fast"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="rounded-2xl px-4 py-2.5 text-sm leading-relaxed bg-accent-primary/10 text-text-primary border border-accent-primary/15">
-              {message.content}
-            </div>
-          )}
-          <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-fast">
-            <button onClick={copy} title="Copy" className="msg-action">
-              <Copy size={12} />
-            </button>
-            {isLast && (
-              <button onClick={() => setEditing(true)} title="Edit message" className="msg-action">
-                <Pencil size={12} />
+      <div className="flex flex-col gap-1">
+        {editing ? (
+          <div className="w-full max-w-[90%] bg-accent-primary/8 border border-accent-primary/40 rounded-lg p-2">
+            <textarea
+              autoFocus
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  commitEdit();
+                }
+                if (e.key === "Escape") {
+                  setDraft(message.content);
+                  setEditing(false);
+                }
+              }}
+              className="w-full bg-transparent text-text-primary text-sm leading-relaxed resize-none outline-none min-h-[48px]"
+            />
+            <div className="flex items-center justify-end gap-1 mt-1">
+              <button onClick={commitEdit} title="Save edit" className="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-fast">
+                <Check size={14} />
               </button>
-            )}
+              <button
+                onClick={() => {
+                  setDraft(message.content);
+                  setEditing(false);
+                }}
+                title="Cancel edit"
+                className="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-fast"
+              >
+                <X size={14} />
+              </button>
+            </div>
           </div>
+        ) : (
+          <div className="text-sm leading-relaxed text-text-primary pl-0.5 pr-2 whitespace-pre-wrap">
+            {message.content}
+          </div>
+        )}
+        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-fast pl-0.5">
+          <button onClick={copy} title="Copy" className="msg-action">
+            <Copy size={12} />
+          </button>
+          {isLast && (
+            <button onClick={() => setEditing(true)} title="Edit message" className="msg-action">
+              <Pencil size={12} />
+            </button>
+          )}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex justify-start">
-      <div className="max-w-[92%] space-y-1">
-        {isGroupStart && (
-          <div className="flex items-center gap-2 pl-1">
-            <span className="text-xs font-medium text-text-primary">Baanzon Verso</span>
-            {time && <span className="text-[11px] text-text-muted">{time}</span>}
-          </div>
-        )}
+    <div className="flex flex-col gap-1">
+      {isGroupStart && (
+        <div className="flex items-center gap-2 pl-0.5">
+          <AssistantAvatar />
+          <span className="text-xs font-medium text-text-primary">IDEOCODE</span>
+          {time && <span className="text-[11px] text-text-muted">{time}</span>}
+        </div>
+      )}
 
-        {message.tool_calls?.map((tc) => (
-          <ToolCallCard
-            key={tc.id}
-            toolCall={{
-              id: tc.id,
-              name: tc.name,
-              input: tc.input,
-              output: tc.output,
-              status: tc.status,
-            }}
-          />
-        ))}
+      {message.tool_calls?.map((tc) => (
+        <ToolCallCard
+          key={tc.id}
+          toolCall={{
+            id: tc.id,
+            name: tc.name,
+            input: tc.input,
+            output: tc.output,
+            status: tc.status,
+          }}
+        />
+      ))}
 
-        {message.content && (
-          <div className="text-sm leading-relaxed text-text-primary pl-1 pr-2">
-            <MarkdownRenderer content={message.content} onFileClick={onFileClick} />
-            <Checklist content={message.content} />
-          </div>
-        )}
+      {message.content && (
+        <div className="text-sm leading-relaxed text-text-primary pl-0.5 pr-2">
+          <MarkdownRenderer content={message.content} onFileClick={onFileClick} />
+          <Checklist content={message.content} />
+        </div>
+      )}
 
-        {message.usage && (
-          <div className="flex items-center gap-3 text-[11px] text-text-muted pl-1">
-            <span>{message.usage.total_tokens.toLocaleString()} tokens</span>
-            {message.usage.prompt_tokens > 0 && (
-              <span>{message.usage.prompt_tokens.toLocaleString()} in</span>
-            )}
-            {message.usage.completion_tokens > 0 && (
-              <span>{message.usage.completion_tokens.toLocaleString()} out</span>
-            )}
-          </div>
-        )}
-
-        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-fast">
-          <button onClick={copy} title="Copy" className="msg-action">
-            <Copy size={12} />
-          </button>
-          {isLast && (
-            <button onClick={() => void regenerate()} title="Regenerate" className="msg-action">
-              <RefreshCw size={12} />
-            </button>
+      {message.usage && (
+        <div className="flex items-center gap-3 text-[11px] text-text-muted pl-1">
+          <span>{message.usage.total_tokens.toLocaleString()} tokens</span>
+          {message.usage.prompt_tokens > 0 && (
+            <span>{message.usage.prompt_tokens.toLocaleString()} in</span>
+          )}
+          {message.usage.completion_tokens > 0 && (
+            <span>{message.usage.completion_tokens.toLocaleString()} out</span>
           )}
         </div>
+      )}
+
+      <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-fast pl-0.5">
+        <button onClick={copy} title="Copy" className="msg-action">
+          <Copy size={12} />
+        </button>
+        {isLast && (
+          <button onClick={() => void regenerate()} title="Regenerate" className="msg-action">
+            <RefreshCw size={12} />
+          </button>
+        )}
       </div>
     </div>
   );

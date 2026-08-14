@@ -27,11 +27,11 @@ export interface ThemeColors {
 // src/styles/globals.css.
 export const THEME_COLORS: Record<Theme, ThemeColors> = {
   ideo_dark: {
-    bg: "#0a0b0f", bgSecondary: "#14151a", bgTertiary: "#1e2027", bgElevated: "#26282f", bgHover: "#1a1b22",
-    fg: "#e6e8ef", textSecondary: "#a5aab8", textMuted: "#5d6272",
-    accent: "#6366f1", accentSecondary: "#8b5cf6", accentTertiary: "#22d3ee", accentHover: "#7c7ff2",
-    success: "#34d399", warning: "#fbbf24", error: "#f87171", info: "#818cf8",
-    borderSubtle: "#1c1e26", borderDefault: "#2a2d38", selection: "#6366f133", glow: "#6366f140",
+    bg: "#0e0f10", bgSecondary: "#141517", bgTertiary: "#1b1c1f", bgElevated: "#222327", bgHover: "#191a1d",
+    fg: "#f7f8f8", textSecondary: "#c6ccd6", textMuted: "#7c818c",
+    accent: "#5e6ad2", accentSecondary: "#7170ff", accentTertiary: "#828fff", accentHover: "#828fff",
+    success: "#27a644", warning: "#eab308", error: "#dc2626", info: "#7170ff",
+    borderSubtle: "#232428", borderDefault: "#2c2e33", selection: "#5e6ad252", glow: "#5e6ad233",
   },
   ideo_light: {
     bg: "#fafafb", bgSecondary: "#f1f1f4", bgTertiary: "#e6e6eb", bgElevated: "#d8d8df", bgHover: "#ececf0",

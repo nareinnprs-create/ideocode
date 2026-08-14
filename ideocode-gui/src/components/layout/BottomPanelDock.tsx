@@ -84,11 +84,11 @@ export function BottomPanelDock() {
                 onClick={() => setBottomPanel(id)}
                 className={`flex items-center gap-1.5 px-2.5 h-7 rounded-md text-xs font-medium transition-all duration-150 ${
                   active
-                    ? "bg-bg-tertiary text-text-primary"
+                    ? "bg-bg-hover text-text-primary"
                     : "text-text-muted hover:text-text-secondary hover:bg-bg-hover"
                 }`}
               >
-                <Icon size={13} className={active ? "text-accent-primary" : ""} />
+                <Icon size={13} className={active ? "text-text-primary" : ""} />
                 <span>{label}</span>
               </button>
             );

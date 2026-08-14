@@ -8,12 +8,10 @@ const SIZE_CLASSES: Record<AvatarSize, string> = {
 };
 
 const AVATAR_GRADIENTS = [
-  "linear-gradient(135deg, #6366f1, #8b5cf6)",
-  "linear-gradient(135deg, #22d3ee, #6366f1)",
-  "linear-gradient(135deg, #34d399, #22d3ee)",
-  "linear-gradient(135deg, #8b5cf6, #d946ef)",
-  "linear-gradient(135deg, #fbbf24, #f87171)",
-  "linear-gradient(135deg, #22d3ee, #34d399)",
+  "linear-gradient(135deg, #5e6ad2, #7170ff)",
+  "linear-gradient(135deg, #7170ff, #828fff)",
+  "linear-gradient(135deg, #4d57ad, #5e6ad2)",
+  "linear-gradient(135deg, #7170ff, #5e6ad2)",
 ];
 
 interface AvatarProps {

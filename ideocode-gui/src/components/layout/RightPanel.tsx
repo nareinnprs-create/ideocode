@@ -59,7 +59,7 @@ export function RightPanel() {
       />
       {/* Header */}
       <div className="flex items-center justify-between h-10 pl-3 pr-2 border-b border-border-subtle">
-        <span className="text-xs font-medium text-text-secondary uppercase tracking-wider">
+        <span className="text-[13px] font-medium text-text-primary">
           {title}
         </span>
         <IconButton size="sm" label="Close panel" onClick={() => setRightPanelOpen(false)}>

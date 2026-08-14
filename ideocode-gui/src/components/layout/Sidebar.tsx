@@ -75,7 +75,9 @@ export function Sidebar() {
     rightPanelOpen,
     bottomPanel,
     bottomPanelOpen,
+    chatPanelOpen,
     setActivePanel,
+    setChatPanelOpen,
     setRightPanel,
     setRightPanelOpen,
     setBottomPanel,
@@ -85,6 +87,7 @@ export function Sidebar() {
   const handleClick = (id: PanelId) => {
     if (id === "chat") {
       setActivePanel("chat");
+      setChatPanelOpen(!chatPanelOpen);
       return;
     }
     if (id === "terminal") {
@@ -101,7 +104,7 @@ export function Sidebar() {
   };
 
   const isActive = (id: PanelId) => {
-    if (id === "chat") return activePanel === "chat";
+    if (id === "chat") return activePanel === "chat" && chatPanelOpen;
     if (id === "terminal") return bottomPanelOpen && bottomPanel === "terminal";
     return rightPanelOpen && rightPanel === id;
   };

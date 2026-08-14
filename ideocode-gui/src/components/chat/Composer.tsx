@@ -5,12 +5,13 @@ import {
   Zap,
   ListChecks,
   Bot,
-  Sparkles,
   Square,
   FileText,
   Command,
   Scissors,
   Plus,
+  ChevronDown,
+  Loader2,
 } from "lucide-react";
 import { useChatStore, type ComposerMode } from "../../stores/chatStore";
 import { useProviderStore } from "../../stores/providerStore";
@@ -19,7 +20,7 @@ import { getSettings, updateSettings } from "../../lib/tauri-commands";
 import { Tooltip } from "../ui/Tooltip";
 
 const MODES: { id: ComposerMode; label: string; icon: typeof Zap; hint: string }[] = [
-  { id: "normal", label: "Normal", icon: Zap, hint: "Ask a question" },
+  { id: "normal", label: "Ask", icon: Zap, hint: "Ask a question" },
   { id: "plan", label: "Plan", icon: ListChecks, hint: "Plan before changing code" },
   { id: "agent", label: "Agent", icon: Bot, hint: "Autonomous multi-step agent" },
 ];
@@ -63,6 +64,7 @@ export function Composer() {
   const [menuOpen, setMenuOpen] = useState<"slash" | "mention" | null>(null);
   const [mentionQuery, setMentionQuery] = useState("");
   const [activeIdx, setActiveIdx] = useState(0);
+  const [focused, setFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selEndRef = useRef(0);
@@ -233,10 +235,10 @@ export function Composer() {
   const activeFileName = activeFile ? activeFile.split(/[/\\]/).pop() : null;
 
   return (
-    <div className="border-t border-border-subtle bg-bg-secondary p-3 space-y-2 shrink-0 relative">
+    <div className="px-3 pb-3 pt-2 shrink-0 relative z-20">
       {/* Slash command palette */}
       {menuOpen === "slash" && (
-        <div className="absolute bottom-full left-3 right-3 mb-2 z-30 rounded-lg border border-border-default bg-bg-primary shadow-pop overflow-hidden animate-scale-in">
+        <div className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default bg-bg-elevated shadow-lg overflow-hidden animate-scale-in">
           {SLASH_COMMANDS.map((cmd, i) => (
             <button
               key={cmd.id}
@@ -256,7 +258,7 @@ export function Composer() {
 
       {/* @ mention palette */}
       {menuOpen === "mention" && (
-        <div className="absolute bottom-full left-3 right-3 mb-2 z-30 rounded-lg border border-border-default bg-bg-primary shadow-pop overflow-hidden animate-scale-in">
+        <div className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default bg-bg-elevated shadow-lg overflow-hidden animate-scale-in">
           <div className="px-3 py-1.5 text-[11px] uppercase tracking-wider text-text-muted border-b border-border-subtle">
             {mentionCandidates.length === 0 ? "No matching open files" : "Open files"}
           </div>
@@ -276,173 +278,197 @@ export function Composer() {
         </div>
       )}
 
-      {/* Input row */}
-      <div className="flex items-end gap-1.5 bg-bg-primary border border-border-subtle rounded-xl px-2 py-1.5 focus-within:border-accent-primary/40 transition-colors">
-        <Tooltip label="Attach file">
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="p-1.5 text-text-muted hover:text-text-primary transition-fast rounded-md hover:bg-bg-hover shrink-0"
-          >
-            <Paperclip size={17} />
-          </button>
-        </Tooltip>
-
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          className="hidden"
-          onChange={(e) => {
-            const files = Array.from(e.target.files || []);
-            e.target.value = "";
-            for (const f of files) {
-              const placeholder = `[Attaching ${f.name}...]`;
-              setInput((prev) => prev + placeholder);
-              const reader = new FileReader();
-              reader.onload = () => {
-                let body = String(reader.result ?? "");
-                const MAX = 100_000;
-                if (body.length > MAX) {
-                  body = body.slice(0, MAX) + "\n... [truncated]";
-                }
-                const ext = f.name.includes(".") ? f.name.split(".").pop()! : "";
-                const block = `\n\n<file: ${f.name}>\n\`\`\`${ext}\n${body}\n\`\`\`\n`;
-                setInput((prev) => prev.replace(placeholder, block));
-              };
-              reader.onerror = () => {
-                setInput((prev) => prev.replace(placeholder, `\n\n[Attached: ${f.name}]\n`));
-              };
-              reader.readAsText(f);
-            }
-          }}
-        />
-
-        <textarea
-          ref={textareaRef}
-          value={input}
-          onChange={(e) => handleChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onKeyUp={(e) => {
-            selEndRef.current = e.currentTarget.selectionEnd ?? e.currentTarget.value.length;
-            const value = e.currentTarget.value;
-            const cursor = selEndRef.current;
-            const mention = detectMention(value, cursor);
-            if (mention !== null) {
-              setMenuOpen("mention");
-              setMentionQuery(mention);
-            } else if (detectSlash(value, cursor)) {
-              setMenuOpen("slash");
-            } else if (menuOpen) {
-              setMenuOpen(null);
-            }
-          }}
-          onClick={(e) => {
-            selEndRef.current = e.currentTarget.selectionEnd ?? e.currentTarget.value.length;
-          }}
-          onSelect={(e) => {
-            selEndRef.current = e.currentTarget.selectionEnd ?? e.currentTarget.value.length;
-          }}
-          placeholder="Ask anything… (/ for commands, @ to reference a file)"
-          rows={1}
-          className="flex-1 bg-transparent text-text-primary placeholder:text-text-muted resize-none outline-none text-sm leading-relaxed max-h-32 py-1"
-        />
-
-        {streaming ? (
-          <Tooltip label="Stop generating (Esc)">
-            <button
-              onClick={() => void interrupt()}
-              title="Stop generating"
-              className="p-1.5 rounded-md transition-fast bg-error/15 text-error hover:bg-error/25 shrink-0"
-            >
-              <Square size={16} className="fill-current" />
-            </button>
-          </Tooltip>
-        ) : (
-          <button
-            onClick={() => void handleSend()}
-            disabled={!input.trim() || loading}
-            title="Send message"
-            className="p-1.5 rounded-md transition-fast bg-accent-primary text-white hover:bg-accent-hover disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
-          >
-            {loading ? (
-              <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin block" />
-            ) : (
-              <Send size={17} />
-            )}
-          </button>
-        )}
-      </div>
-
-      {/* Footer row: mode · reasoning · model */}
-      <div className="flex items-center justify-between gap-2 px-0.5">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <div className="flex items-center gap-0.5 bg-bg-primary rounded-lg border border-border-subtle p-0.5 shrink-0">
-            {MODES.map(({ id, label, icon: ModeIcon, hint }) => (
-              <Tooltip key={id} label={hint}>
-                <button
-                  onClick={() => {
-                    setMode(id);
-                    persistPatch({ mode: id });
-                  }}
-                  aria-pressed={mode === id}
-                  className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-medium transition-fast ${
-                    mode === id ? "bg-accent-primary/15 text-accent-primary" : "text-text-muted hover:text-text-secondary"
-                  }`}
-                >
-                  <ModeIcon size={12} />
-                  {label}
-                </button>
-              </Tooltip>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-0.5 bg-bg-primary rounded-lg border border-border-subtle p-0.5 shrink-0">
-            {REASONING_LEVELS.map(({ id, label, hint }) => (
-              <Tooltip key={id} label={`Reasoning: ${hint}`}>
-                <button
-                  onClick={() => {
-                    setReasoningEffort(id);
-                    persistPatch({ reasoning_effort: id });
-                  }}
-                  aria-pressed={reasoningEffort === id}
-                  className={`px-1.5 py-0.5 rounded-md text-[11px] font-medium transition-fast ${
-                    reasoningEffort === id
-                      ? "bg-accent-primary/15 text-accent-primary"
-                      : "text-text-muted hover:text-text-secondary"
-                  }`}
-                >
-                  {label}
-                </button>
-              </Tooltip>
-            ))}
-          </div>
-
-          <select
-            value={model}
-            onChange={(e) => {
-              setModel(e.target.value);
-              persistPatch({ active_model: e.target.value });
-            }}
-            aria-label="Select model"
-            className="bg-bg-primary border border-border-subtle rounded-md px-2 py-1 text-xs text-text-secondary outline-none focus:border-accent-primary max-w-40 min-w-0"
-          >
-            {model === "auto" && <option value="auto">auto</option>}
-            {providers
-              .flatMap((p) => p.models.map((m) => ({ id: m.id, provider: p.name })))
-              .map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.id}
-                </option>
-              ))}
-          </select>
+      {/* Mode + reasoning row (above composer, Cursor-style) */}
+      <div className="flex items-center justify-between gap-2 pb-2">
+        <div className="flex items-center gap-1" role="tablist" aria-label="Chat mode">
+          {MODES.map(({ id, label, icon: ModeIcon, hint }) => (
+            <Tooltip key={id} label={hint}>
+              <button
+                onClick={() => {
+                  setMode(id);
+                  persistPatch({ mode: id });
+                }}
+                aria-pressed={mode === id}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-150 ${
+                  mode === id
+                    ? "bg-accent-primary/12 text-accent-primary"
+                    : "text-text-muted hover:text-text-secondary hover:bg-bg-hover"
+                }`}
+              >
+                <ModeIcon size={13} />
+                {label}
+              </button>
+            </Tooltip>
+          ))}
         </div>
 
-        {activeFileName && (
-          <span className="flex items-center gap-1 text-[11px] text-text-muted min-w-0 shrink-0">
-            <Sparkles size={11} className="text-accent-primary shrink-0" />
-            <span className="truncate max-w-36">{activeFileName}</span>
-          </span>
-        )}
+        <div className="hidden sm:flex items-center gap-1" role="group" aria-label="Reasoning effort">
+          {REASONING_LEVELS.map(({ id, label, hint }) => (
+            <Tooltip key={id} label={`Reasoning: ${hint}`}>
+              <button
+                onClick={() => {
+                  setReasoningEffort(id);
+                  persistPatch({ reasoning_effort: id });
+                }}
+                aria-pressed={reasoningEffort === id}
+                className={`px-1.5 py-0.5 rounded text-[11px] font-medium transition-all duration-150 ${
+                  reasoningEffort === id
+                    ? "text-text-primary"
+                    : "text-text-muted hover:text-text-secondary"
+                }`}
+              >
+                {label}
+              </button>
+            </Tooltip>
+          ))}
+        </div>
+      </div>
+
+      {/* Composer card */}
+      <div
+        className={`rounded-xl border bg-bg-secondary transition-colors duration-150 ${
+          focused
+            ? "border-accent-primary/70"
+            : "border-border-default hover:border-border-strong"
+        }`}
+      >
+        {/* Input row */}
+        <div className="flex items-end gap-1 px-1.5 py-1.5">
+          <Tooltip label="Attach file">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="p-2 text-text-muted hover:text-text-primary transition-fast rounded-lg hover:bg-bg-hover shrink-0"
+            >
+              <Paperclip size={16} />
+            </button>
+          </Tooltip>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              const files = Array.from(e.target.files || []);
+              e.target.value = "";
+              for (const f of files) {
+                const placeholder = `[Attaching ${f.name}...]`;
+                setInput((prev) => prev + placeholder);
+                const reader = new FileReader();
+                reader.onload = () => {
+                  let body = String(reader.result ?? "");
+                  const MAX = 100_000;
+                  if (body.length > MAX) {
+                    body = body.slice(0, MAX) + "\n... [truncated]";
+                  }
+                  const ext = f.name.includes(".") ? f.name.split(".").pop()! : "";
+                  const block = `\n\n<file: ${f.name}>\n\`\`\`${ext}\n${body}\n\`\`\`\n`;
+                  setInput((prev) => prev.replace(placeholder, block));
+                };
+                reader.onerror = () => {
+                  setInput((prev) => prev.replace(placeholder, `\n\n[Attached: ${f.name}]\n`));
+                };
+                reader.readAsText(f);
+              }
+            }}
+          />
+
+          <textarea
+            ref={textareaRef}
+            value={input}
+            onChange={(e) => handleChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onKeyUp={(e) => {
+              selEndRef.current = e.currentTarget.selectionEnd ?? e.currentTarget.value.length;
+              const value = e.currentTarget.value;
+              const cursor = selEndRef.current;
+              const mention = detectMention(value, cursor);
+              if (mention !== null) {
+                setMenuOpen("mention");
+                setMentionQuery(mention);
+              } else if (detectSlash(value, cursor)) {
+                setMenuOpen("slash");
+              } else if (menuOpen) {
+                setMenuOpen(null);
+              }
+            }}
+            onClick={(e) => {
+              selEndRef.current = e.currentTarget.selectionEnd ?? e.currentTarget.value.length;
+            }}
+            onSelect={(e) => {
+              selEndRef.current = e.currentTarget.selectionEnd ?? e.currentTarget.value.length;
+            }}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            placeholder="Ask IDEOCODE to build, edit, or explain…"
+            rows={1}
+            className="flex-1 bg-transparent text-text-primary placeholder:text-text-muted resize-none outline-none text-sm leading-relaxed max-h-32 py-1.5 px-0.5"
+          />
+
+          {streaming ? (
+            <Tooltip label="Stop generating (Esc)">
+              <button
+                onClick={() => void interrupt()}
+                title="Stop generating"
+                className="w-8 h-8 rounded-lg transition-fast bg-error/15 text-error hover:bg-error/25 flex items-center justify-center shrink-0"
+              >
+                <Square size={13} className="fill-current" />
+              </button>
+            </Tooltip>
+          ) : (
+            <Tooltip label="Send (Enter)">
+              <button
+                onClick={() => void handleSend()}
+                disabled={!input.trim() || loading}
+                title="Send message"
+                className="w-8 h-8 rounded-md bg-accent-primary text-white hover:bg-accent-hover disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center shrink-0 transition-colors duration-150"
+              >
+                {loading ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Send size={14} />
+                )}
+              </button>
+            </Tooltip>
+          )}
+        </div>
+
+        {/* Footer row: context + model */}
+        <div className="flex items-center justify-between gap-2 px-2.5 pb-2">
+          {activeFileName ? (
+            <span className="flex items-center gap-1 min-w-0 text-[11px] text-text-muted">
+              <FileText size={11} className="text-text-muted shrink-0" />
+              <span className="truncate max-w-40">{activeFileName}</span>
+            </span>
+          ) : (
+            <span className="text-[11px] text-text-muted/70">Ctrl+Shift+P for commands</span>
+          )}
+
+          <div className="relative shrink-0">
+            <select
+              value={model}
+              onChange={(e) => {
+                setModel(e.target.value);
+                persistPatch({ active_model: e.target.value });
+              }}
+              aria-label="Select model"
+              className="appearance-none bg-transparent border border-transparent rounded-md pl-2 pr-6 py-0.5 text-[11px] font-medium text-text-secondary outline-none hover:border-border-subtle hover:bg-bg-hover focus:border-accent-primary cursor-pointer max-w-44 min-w-0"
+            >
+              {model === "auto" && <option value="auto">auto</option>}
+              {providers
+                .flatMap((p) => p.models.map((m) => ({ id: m.id, provider: p.name })))
+                .map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.id}
+                  </option>
+                ))}
+            </select>
+            <ChevronDown
+              size={11}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
