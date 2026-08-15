@@ -64,9 +64,6 @@ interface AppState {
   theme: Theme;
   setTheme: (t: Theme) => void;
 
-  themeMode: "auto" | "light" | "dark" | "custom";
-  setThemeMode: (m: "auto" | "light" | "dark" | "custom") => void;
-
   accentColor: string;
   setAccentColor: (c: string) => void;
 
@@ -128,15 +125,7 @@ export const useAppStore = create<AppState>((set) => ({
       ? (stored as Theme)
       : "ideo_light";
   })(),
-  setTheme: (t) => set({ theme: t, themeMode: "custom" }),
-
-  themeMode: (() => {
-    const stored = typeof localStorage !== "undefined" ? localStorage.getItem("ideocode.themeMode") : null;
-    return stored === "light" || stored === "dark" || stored === "custom" || stored === "auto"
-      ? stored
-      : "light";
-  })(),
-  setThemeMode: (m) => set({ themeMode: m }),
+  setTheme: (t) => set({ theme: t }),
 
   accentColor: "#6366F1",
   setAccentColor: (c) => set({ accentColor: c }),
