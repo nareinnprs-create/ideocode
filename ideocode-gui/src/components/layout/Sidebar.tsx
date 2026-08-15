@@ -57,9 +57,9 @@ function SidebarButton({
       onClick={onClick}
       aria-label={label}
       aria-pressed={active}
-      className={`relative w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-150 ease-spring ${
+      className={`relative w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-150 ease-spring ${
         active
-          ? "text-accent-primary bg-accent-primary/10 glow-soft"
+          ? "text-accent-primary bg-accent-primary/12 glow-soft"
           : "text-text-muted hover:text-text-primary hover:bg-bg-hover"
       }`}
     >
@@ -113,7 +113,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="flex flex-col w-[52px] bg-bg-secondary border-r border-border-subtle py-2 items-center justify-between shrink-0">
+    <aside className="flex flex-col w-[52px] bg-bg-secondary/80 border-r border-border-subtle py-2 items-center justify-between shrink-0 surface-blur">
       <nav className="flex flex-col gap-1 items-center" aria-label="Primary">
         {TOP_ITEMS.map(({ id, icon, label, shortcut }) => (
           <Tooltip key={id} label={`${label}${shortcut ? ` (${shortcut})` : ""}`} position="right">

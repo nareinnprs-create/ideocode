@@ -1,36 +1,41 @@
 import { useState, useEffect, useRef } from "react";
 import { useAppStore } from "../../stores/appStore";
-import { getSettings, updateSettings } from "../../lib/tauri-commands";
-import { THEMES, type Theme } from "../../lib/theme-registry";
 import { COMMANDS, getCommandsByCategory, type CommandAction } from "../../lib/commands";
 import { fuzzySearch } from "../../lib/fuzzy";
-import { effectiveTheme, type ThemeMode } from "../../lib/theme-utils";
-import { Search, ArrowLeft, Check, X } from "lucide-react";
+import { Search, X, Plus, FolderOpen, Wand2 } from "lucide-react";
 
 interface RankedCommand extends CommandAction {
   score: number;
 }
 
+const QUICK_ACTIONS: { label: string; icon: typeof Plus; hint: string; run: () => void }[] = [
+  {
+    label: "New Chat",
+    icon: Plus,
+    hint: "⌘N",
+    run: () => useAppStore.getState().setCommandPaletteOpen(false),
+  },
+  {
+    label: "Open Workspace",
+    icon: FolderOpen,
+    hint: "",
+    run: () => useAppStore.getState().setRightPanel("files"),
+  },
+  {
+    label: "New Task",
+    icon: Wand2,
+    hint: "Agent",
+    run: () => useAppStore.getState().setCommandPaletteOpen(false),
+  },
+];
+
 export function CommandPalette() {
   const commandPaletteOpen = useAppStore((s) => s.commandPaletteOpen);
   const setCommandPaletteOpen = useAppStore((s) => s.setCommandPaletteOpen);
-  const theme = useAppStore((s) => s.theme);
-  const setTheme = useAppStore((s) => s.setTheme);
-  const themeMode = useAppStore((s) => s.themeMode);
-  const setThemeMode = useAppStore((s) => s.setThemeMode);
   const [query, setQuery] = useState("");
   const [selectedIdx, setSelectedIdx] = useState(0);
-  const [mode, setMode] = useState<"commands" | "themes">("commands");
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
-
-  const applyTheme = (next: Theme) => {
-    setTheme(next);
-    void getSettings()
-      .then((settings) => updateSettings({ ...settings, theme: next }))
-      .catch(() => {});
-    setCommandPaletteOpen(false);
-  };
 
   const rankCommands = (): RankedCommand[] => {
     const q = query.trim();
@@ -45,17 +50,12 @@ export function CommandPalette() {
   };
 
   const results = rankCommands();
-  const themes = THEMES.filter((t) =>
-    t.label.toLowerCase().includes(query.toLowerCase()),
-  );
-
-  const visibleCount = mode === "themes" ? themes.length : results.length;
+  const visibleCount = results.length;
 
   useEffect(() => {
     if (commandPaletteOpen) {
       setQuery("");
       setSelectedIdx(0);
-      setMode("commands");
       const t = setTimeout(() => inputRef.current?.focus(), 50);
       return () => clearTimeout(t);
     }
@@ -63,7 +63,7 @@ export function CommandPalette() {
 
   useEffect(() => {
     setSelectedIdx(0);
-  }, [query, mode]);
+  }, [query]);
 
   useEffect(() => {
     const el = resultsRef.current?.querySelector<HTMLElement>(
@@ -87,28 +87,14 @@ export function CommandPalette() {
       setSelectedIdx(Math.max(visibleCount - 1, 0));
     } else if (e.key === "Enter") {
       e.preventDefault();
-      if (mode === "themes") {
-        const t = themes[selectedIdx];
-        if (t) applyTheme(t.id);
-      } else {
-        const cmd = results[selectedIdx];
-        if (cmd) executeCommand(cmd);
-      }
+      const cmd = results[selectedIdx];
+      if (cmd) executeCommand(cmd);
     } else if (e.key === "Escape") {
-      if (mode === "themes") {
-        e.stopPropagation();
-        setMode("commands");
-        setQuery("");
-      }
+      setCommandPaletteOpen(false);
     }
   };
 
   const executeCommand = (cmd: CommandAction) => {
-    if (cmd.id === "change-theme") {
-      setMode("themes");
-      setQuery("");
-      return;
-    }
     cmd.run();
     setCommandPaletteOpen(false);
   };
@@ -116,190 +102,115 @@ export function CommandPalette() {
   if (!commandPaletteOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[12vh]">
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-[2px] animate-fade-in"
+        className="absolute inset-0 bg-bg-overlay/40 backdrop-blur-[2px] animate-fade-in"
         onClick={() => setCommandPaletteOpen(false)}
       />
 
-      <div className="relative w-full max-w-lg glass-strong overflow-hidden animate-float-in">
+      <div className="relative w-full max-w-xl glass-strong rounded-xl overflow-hidden animate-float-in">
+        {/* Input */}
         <div className="flex items-center gap-2 px-4 py-3 border-b border-border-subtle hairline-top">
-          {mode === "themes" && (
-            <button
-              onClick={() => {
-                setMode("commands");
-                setQuery("");
-              }}
-              className="p-1 text-text-muted hover:text-text-primary transition-fast"
-              title="Back to commands"
-            >
-              <ArrowLeft size={16} />
-            </button>
-          )}
-          {mode === "commands" && (
-            <Search size={16} className="text-text-muted shrink-0" />
-          )}
+          <Search size={16} className="text-text-muted shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={mode === "themes" ? "Search themes..." : "Type a command..."}
+            placeholder="Search commands…"
             className="flex-1 bg-transparent text-text-primary text-sm outline-none placeholder:text-text-muted"
           />
           <button
             onClick={() => setCommandPaletteOpen(false)}
-            className="p-1 text-text-muted hover:text-text-primary transition-fast"
+            className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-hover"
+            aria-label="Close command palette"
           >
             <X size={14} />
           </button>
         </div>
 
-        {mode === "themes" ? (
-          <div ref={resultsRef} className="max-h-[300px] overflow-y-auto py-1">
-            <AppearanceModes
-              current={themeMode}
-              onSelect={(m) => setThemeMode(m)}
-            />
-            {themes.length === 0 ? (
-              <div className="px-4 py-6 text-center text-text-muted text-sm">
-                No themes found
-              </div>
-            ) : (
-              themes.map((t, idx) => {
-                const active = t.id === effectiveTheme(themeMode, theme);
-                return (
-                  <button
-                    key={t.id}
-                    data-idx={idx}
-                    onClick={() => applyTheme(t.id)}
-                    onMouseEnter={() => setSelectedIdx(idx)}
-                    className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast
-                      ${
-                        active
-                          ? "bg-accent-primary/10 text-accent-primary"
-                          : "text-text-secondary hover:bg-bg-elevated"
-                      }`}
-                  >
-                    <span
-                      className="w-8 h-6 rounded border border-border-subtle shrink-0 flex items-center justify-center text-[9px] font-mono"
-                      style={{ backgroundColor: t.bg, color: t.accent }}
-                    >
-                      Aa
-                    </span>
-                    <span className="flex-1 text-left">
-                      <span className="block font-medium text-text-primary">
-                        {t.label}
-                      </span>
-                      <span className="block text-[11px] text-text-muted">
-                        {t.description} · {t.tier}
-                      </span>
-                    </span>
-                    {active && (
-                      <Check size={14} className="text-accent-primary shrink-0" />
-                    )}
-                  </button>
-                );
-              })
-            )}
-          </div>
-        ) : (
-          <div ref={resultsRef} className="max-h-[300px] overflow-y-auto py-1">
-            {results.length === 0 ? (
-              <div className="px-4 py-6 text-center text-text-muted text-sm">
-                No commands found
-              </div>
-            ) : (
-              (() => {
-                let flatIdx = 0;
-                const groups = getCommandsByCategory().filter((g) =>
-                  g.commands.some((c) =>
-                    results.some((r) => r.id === c.id),
-                  ),
-                );
-                return (
-                  <>
-                    {groups.map((g) => {
-                      const groupResults = results.filter((r) => r.category === g.category);
-                      if (groupResults.length === 0) return null;
-                      return (
-                        <div key={g.category}>
-                          <div className="px-4 pt-2 pb-1 text-[11px] font-medium uppercase tracking-wide text-text-muted">
-                            {g.category}
-                          </div>
-                          {groupResults.map((cmd) => {
-                            const Icon = cmd.icon;
-                            const idx = flatIdx++;
-                            return (
-                              <button
-                                key={cmd.id}
-                                data-idx={idx}
-                                onClick={() => executeCommand(cmd)}
-                                onMouseEnter={() => setSelectedIdx(idx)}
-                                className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast
-                                  ${
-                                    idx === selectedIdx
-                                      ? "bg-accent-primary/10 text-accent-primary"
-                                      : "text-text-secondary hover:bg-bg-elevated"
-                                  }`}
-                              >
-                                <Icon size={16} className="shrink-0 opacity-50" />
-                                <span className="flex-1 text-left">{cmd.label}</span>
-                                {cmd.shortcut && (
-                                  <kbd className="text-[11px] text-text-muted bg-bg-tertiary px-1.5 py-0.5 rounded font-mono">
-                                    {cmd.shortcut}
-                                  </kbd>
-                                )}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      );
-                    })}
-                  </>
-                );
-              })()
-            )}
+        {/* Quick actions (ZCode-style) */}
+        {!query.trim() && (
+          <div className="flex items-center gap-1.5 px-3 py-2.5 border-b border-border-subtle bg-bg-secondary/40">
+            {QUICK_ACTIONS.map((a) => (
+              <button
+                key={a.label}
+                onClick={() => {
+                  a.run();
+                  setCommandPaletteOpen(false);
+                }}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border-subtle bg-bg-secondary text-xs font-medium text-text-secondary hover:border-accent-primary/40 hover:text-accent-primary hover:bg-bg-hover transition-all duration-150"
+              >
+                <a.icon size={13} />
+                {a.label}
+                {a.hint && (
+                  <kbd className="px-1 rounded bg-bg-tertiary text-[10px] font-mono text-text-muted">
+                    {a.hint}
+                  </kbd>
+                )}
+              </button>
+            ))}
           </div>
         )}
-      </div>
-    </div>
-  );
-}
 
-function AppearanceModes({
-  current,
-  onSelect,
-}: {
-  current: ThemeMode;
-  onSelect: (m: "auto" | "light" | "dark") => void;
-}) {
-  const modes: { id: "auto" | "light" | "dark"; label: string; hint: string }[] = [
-    { id: "auto", label: "Auto", hint: "Follow system" },
-    { id: "light", label: "Light", hint: "Force light" },
-    { id: "dark", label: "Dark", hint: "Force dark" },
-  ];
-  return (
-    <div className="px-4 pt-2 pb-1.5 flex items-center gap-1">
-      {modes.map((m) => {
-        const active = current === m.id;
-        return (
-          <button
-            key={m.id}
-            onClick={() => onSelect(m.id)}
-            title={m.hint}
-            className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-150 ${
-              active
-                ? "bg-accent-primary/12 text-accent-primary glow-soft"
-                : "text-text-muted hover:text-text-secondary hover:bg-bg-hover"
-            }`}
-          >
-            {m.label}
-          </button>
-        );
-      })}
-      <span className="ml-auto text-[11px] text-text-muted">Picking a theme below locks it</span>
+        {/* Results */}
+        <div ref={resultsRef} className="max-h-[320px] overflow-y-auto py-1 scroll-thin">
+          {results.length === 0 ? (
+            <div className="px-4 py-6 text-center text-text-muted text-sm">
+              No commands found
+            </div>
+          ) : (
+            (() => {
+              let flatIdx = 0;
+              const groups = getCommandsByCategory().filter((g) =>
+                g.commands.some((c) => results.some((r) => r.id === c.id)),
+              );
+              return (
+                <>
+                  {groups.map((g) => {
+                    const groupResults = results.filter((r) => r.category === g.category);
+                    if (groupResults.length === 0) return null;
+                    return (
+                      <div key={g.category}>
+                        <div className="px-4 pt-2 pb-1 text-[11px] font-medium uppercase tracking-wide text-text-muted">
+                          {g.category}
+                        </div>
+                        {groupResults.map((cmd) => {
+                          const Icon = cmd.icon;
+                          const idx = flatIdx++;
+                          return (
+                            <button
+                              key={cmd.id}
+                              data-idx={idx}
+                              onClick={() => executeCommand(cmd)}
+                              onMouseEnter={() => setSelectedIdx(idx)}
+                              className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast
+                                ${
+                                  idx === selectedIdx
+                                    ? "bg-accent-primary/10 text-accent-primary"
+                                    : "text-text-secondary hover:bg-bg-elevated"
+                                }`}
+                            >
+                              <Icon size={16} className="shrink-0 opacity-50" />
+                              <span className="flex-1 text-left">{cmd.label}</span>
+                              {cmd.shortcut && (
+                                <kbd className="text-[11px] text-text-muted bg-bg-tertiary px-1.5 py-0.5 rounded font-mono border border-border-subtle">
+                                  {cmd.shortcut}
+                                </kbd>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </>
+              );
+            })()
+          )}
+        </div>
+      </div>
     </div>
   );
 }

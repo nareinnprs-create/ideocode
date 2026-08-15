@@ -11,10 +11,8 @@ import {
 } from "lucide-react";
 import { updateSettings, getGatewayStatus } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
-import { THEMES, type Theme } from "../../lib/theme-registry";
-import { useAppStore } from "../../stores/appStore";
 
-type Step = "welcome" | "theme" | "provider" | "provision" | "done";
+type Step = "welcome" | "provider" | "provision" | "done";
 
 const PROVIDERS = [
   { id: "baanzon-verso", label: "Baanzon Verso", models: "Built-in AI (auto routing)" },
@@ -40,7 +38,6 @@ interface Props {
 
 export function OnboardingWizard({ onComplete }: Props) {
   const [step, setStep] = useState<Step>("welcome");
-  const [theme, setTheme] = useState<Theme>("ideo_dark");
   const [provider, setProvider] = useState("baanzon-verso");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -56,13 +53,12 @@ export function OnboardingWizard({ onComplete }: Props) {
   const provisionRef = useRef(false);
 
   const next = () => {
-    if (step === "welcome") setStep("theme");
-    else if (step === "theme") setStep("provider");
+    if (step === "welcome") setStep("provider");
     else if (step === "provider") {
       setSaving(true);
       setSaveError(null);
       const settings: AppSettings = {
-        theme,
+        theme: "ideo_light",
         active_provider: provider,
         active_model: DEFAULT_MODEL_BY_PROVIDER[provider] ?? "auto",
         font_size: 13,
@@ -73,7 +69,7 @@ export function OnboardingWizard({ onComplete }: Props) {
         auto_save: true,
         language: "en",
         mode: "normal",
-        accent_color: "#22C55E",
+        accent_color: "#6366F1",
         ui_font_size: 13,
         reasoning_effort: "medium",
         dev_mode: false,
@@ -140,14 +136,8 @@ export function OnboardingWizard({ onComplete }: Props) {
     };
   }, [step]);
 
-  const chooseTheme = (id: Theme) => {
-    setTheme(id);
-    useAppStore.getState().setTheme(id);
-  };
-
   const prev = () => {
-    if (step === "theme") setStep("welcome");
-    else if (step === "provider") setStep("theme");
+    if (step === "provider") setStep("welcome");
     else if (step === "provision") {
       provisionRef.current = false;
       setStep("provider");
@@ -156,9 +146,8 @@ export function OnboardingWizard({ onComplete }: Props) {
 
   const progress =
     step === "welcome" ? 25 :
-    step === "theme" ? 50 :
-    step === "provider" ? 75 :
-    step === "provision" ? 90 :
+    step === "provider" ? 60 :
+    step === "provision" ? 85 :
     100;
 
   return (
@@ -189,45 +178,6 @@ export function OnboardingWizard({ onComplete }: Props) {
             >
               Get Started <ChevronRight size={16} />
             </button>
-          </div>
-        )}
-
-        {step === "theme" && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="text-center">
-              <h2 className="text-lg font-semibold text-text-primary">Choose Your Theme</h2>
-              <p className="text-text-muted text-xs mt-1">Pick a look that suits your style</p>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              {THEMES.map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => chooseTheme(t.id)}
-                  className={`p-3 rounded-xl border-2 transition-all text-left
-                    ${theme === t.id
-                      ? "border-accent-primary"
-                      : "border-border-subtle hover:border-text-muted"
-                    }`}
-                >
-                  <div
-                    className="h-16 rounded-lg mb-2 border border-border-subtle"
-                    style={{
-                      background: `linear-gradient(135deg, ${t.bg} 0%, ${t.bgSecondary} 60%, ${t.accent} 130%)`,
-                    }}
-                  />
-                  <div className="text-xs font-medium text-text-primary">{t.label}</div>
-                  <div className="text-[11px] text-text-muted">{t.description}</div>
-                </button>
-              ))}
-            </div>
-            <div className="flex justify-between">
-              <button onClick={prev} className="flex items-center gap-1 text-xs text-text-muted hover:text-text-primary transition-fast">
-                <ChevronLeft size={14} /> Back
-              </button>
-              <button onClick={next} className="flex items-center gap-1 px-4 py-1.5 rounded-lg bg-accent-primary text-white text-xs font-medium hover:bg-accent-hover transition-fast">
-                Next <ChevronRight size={14} />
-              </button>
-            </div>
           </div>
         )}
 
@@ -374,7 +324,7 @@ export function OnboardingWizard({ onComplete }: Props) {
             <div>
               <h2 className="text-lg font-semibold text-text-primary">You're All Set!</h2>
               <p className="text-text-muted text-xs mt-1 max-w-sm mx-auto">
-                {THEMES.find(t => t.id === theme)?.label} theme · {PROVIDERS.find(p => p.id === provider)?.label} provider
+                {PROVIDERS.find(p => p.id === provider)?.label} provider
               </p>
             </div>
             <button

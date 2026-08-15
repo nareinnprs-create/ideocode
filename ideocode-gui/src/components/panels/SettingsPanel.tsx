@@ -2,8 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { AlertCircle } from "lucide-react";
 import { getSettings, updateSettings } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
-import { THEMES } from "../../lib/theme-registry";
-import { effectiveTheme } from "../../lib/theme-utils";
 import { useAppStore } from "../../stores/appStore";
 import { useProviderStore } from "../../stores/providerStore";
 import { notify } from "../../stores/toastStore";
@@ -140,41 +138,61 @@ function AppearanceTab({
   settings: AppSettings;
   onChange: (p: Partial<AppSettings>) => void;
 }) {
-  const storeTheme = useAppStore((s) => s.theme);
-  const themeMode = useAppStore((s) => s.themeMode);
-  const effective = effectiveTheme(themeMode, storeTheme);
+  const [scheme, setScheme] = useState<"light" | "system" | "dark">(() => {
+    try {
+      const stored = localStorage.getItem("ideocode.scheme");
+      return stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
+    } catch {
+      return "system";
+    }
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (scheme === "dark") {
+      root.dataset.theme = "dark";
+    } else if (scheme === "light") {
+      root.dataset.theme = "light";
+    } else {
+      delete root.dataset.theme;
+    }
+    try {
+      localStorage.setItem("ideocode.scheme", scheme);
+    } catch {
+      /* storage unavailable */
+    }
+  }, [scheme]);
+
   return (
     <div className="p-4 space-y-5">
-      {/* Appearance Mode */}
-      <AppearanceModeSection />
-      {/* Theme */}
-      <Section label="Theme">
-        {(["Default", "Classic", "Cyberpunk", "Minimal"] as const).map((tier) => (
-          <div key={tier} className="mb-4 last:mb-0">
-            <div className="text-[11px] uppercase tracking-widest text-text-muted mb-2">{tier}</div>
-            <div className="grid grid-cols-3 gap-2">
-              {THEMES.filter((t) => t.tier === tier).map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => onChange({ theme: t.id })}
-                  className={`group rounded-lg border-2 transition-fast p-2 text-left
-                    ${effective === t.id
-                      ? "border-accent-primary"
-                      : "border-border-subtle hover:border-text-muted"
-                    }`}
-                >
-                  <div
-                    className="h-10 rounded-md mb-1.5 border border-border-subtle"
-                    style={{
-                      background: `linear-gradient(135deg, ${t.bg} 0%, ${t.bgSecondary} 60%, ${t.accent} 130%)`,
-                    }}
-                  />
-                  <div className="text-[11px] font-medium text-text-primary truncate">{t.label}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
+      {/* Appearance */}
+      <Section label="Appearance">
+        <div className="flex gap-1.5">
+          {(
+            [
+              { id: "light" as const, label: "Light", hint: "Always light" },
+              { id: "system" as const, label: "System", hint: "Follow OS (light by default)" },
+              { id: "dark" as const, label: "Dark", hint: "Force dark" },
+            ]
+          ).map((m) => (
+            <button
+              key={m.id}
+              onClick={() => setScheme(m.id)}
+              title={m.hint}
+              className={`flex-1 px-2 py-1.5 text-xs rounded transition-fast border
+                ${
+                  scheme === m.id
+                    ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
+                    : "border-border-subtle text-text-muted hover:border-text-muted"
+                }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+        <div className="text-[11px] text-text-muted mt-1.5">
+          Light is the default; System follows your OS appearance.
+        </div>
       </Section>
 
       {/* Font Family */}
@@ -414,46 +432,6 @@ function Section({ label, children }: { label: string; children: React.ReactNode
         {label}
       </label>
       {children}
-    </div>
-  );
-}
-
-function AppearanceModeSection() {
-  const themeMode = useAppStore((s) => s.themeMode);
-  const setThemeMode = useAppStore((s) => s.setThemeMode);
-  const modes: { id: "auto" | "light" | "dark"; label: string; hint: string }[] = [
-    { id: "auto", label: "Auto", hint: "Follow system & time of day" },
-    { id: "light", label: "Light", hint: "Always light" },
-    { id: "dark", label: "Dark", hint: "Always dark" },
-  ];
-  return (
-    <div>
-      <label className="block text-[11px] font-medium text-text-secondary mb-2 uppercase tracking-wider">
-        Appearance Mode
-      </label>
-      <div className="flex gap-1.5">
-        {modes.map((m) => {
-          const active = themeMode === m.id;
-          return (
-            <button
-              key={m.id}
-              onClick={() => setThemeMode(m.id)}
-              title={m.hint}
-              className={`flex-1 px-2 py-1.5 text-xs rounded transition-fast border
-                ${
-                  active
-                    ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-                    : "border-border-subtle text-text-muted hover:border-text-muted"
-                }`}
-            >
-              {m.label}
-            </button>
-          );
-        })}
-      </div>
-      <div className="text-[11px] text-text-muted mt-1.5">
-        Picking a theme below locks it (Custom mode).
-      </div>
     </div>
   );
 }

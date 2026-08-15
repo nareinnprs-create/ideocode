@@ -326,9 +326,9 @@ export function Composer() {
 
       {/* Composer card */}
       <div
-        className={`rounded-xl border bg-bg-secondary/70 backdrop-blur-sm transition-all duration-200 ease-spring ${
+        className={`rounded-xl border bg-bg-secondary shadow-[0_1px_2px_rgba(24,27,39,0.04),0_4px_16px_-8px_rgba(24,27,39,0.08)] transition-all duration-200 ease-spring ${
           focused
-            ? "border-accent-primary/60 shadow-[0_0_0_1px_var(--idc-glow),0_0_28px_-8px_var(--idc-glow),0_2px_8px_-2px_rgba(2,6,23,0.6)]"
+            ? "border-accent-primary/50 shadow-[0_0_0_1px_var(--idc-glow),0_0_28px_-8px_var(--idc-glow),0_2px_8px_-2px_rgba(24,27,39,0.12)]"
             : "border-border-default hover:border-border-strong hover:shadow-raise"
         }`}
       >

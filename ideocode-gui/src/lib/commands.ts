@@ -162,13 +162,11 @@ export const COMMANDS: CommandAction[] = [
   },
   {
     id: "change-theme",
-    label: "Change Theme",
+    label: "Appearance Settings",
     category: "Settings",
     icon: Palette,
-    keywords: ["theme", "color", "dark", "light"],
-    run: () => {
-      /* handled by the palette's themes sub-mode */
-    },
+    keywords: ["theme", "color", "dark", "light", "accent", "appearance"],
+    run: () => openPanel("settings"),
   },
 ];
 

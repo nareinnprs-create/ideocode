@@ -126,7 +126,7 @@ export const useAppStore = create<AppState>((set) => ({
     const stored = typeof localStorage !== "undefined" ? localStorage.getItem("ideocode.theme") : null;
     return stored !== null && (THEME_IDS as readonly string[]).includes(stored)
       ? (stored as Theme)
-      : "ideo_dark";
+      : "ideo_light";
   })(),
   setTheme: (t) => set({ theme: t, themeMode: "custom" }),
 
@@ -134,11 +134,11 @@ export const useAppStore = create<AppState>((set) => ({
     const stored = typeof localStorage !== "undefined" ? localStorage.getItem("ideocode.themeMode") : null;
     return stored === "light" || stored === "dark" || stored === "custom" || stored === "auto"
       ? stored
-      : "auto";
+      : "light";
   })(),
   setThemeMode: (m) => set({ themeMode: m }),
 
-  accentColor: "#22C55E",
+  accentColor: "#6366F1",
   setAccentColor: (c) => set({ accentColor: c }),
 
   uiFontSize: 13,

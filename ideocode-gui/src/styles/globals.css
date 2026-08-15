@@ -2,7 +2,9 @@
 
 /* ============================================
    IDEOCODE Design Tokens — Tailwind v4 CSS-first
-   Cursor-baseline + 2027 enhancement
+   Light-first system (ZCode-grade) with an
+   automatic dark fallback via prefers-color-scheme.
+   Signature accent: indigo/violet.
    ============================================ */
 
 @theme {
@@ -40,29 +42,28 @@
   --radius-xl: 12px;
   --radius-pill: 999px;
 
-  --shadow-glass: 0 0 0 1px rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.4) 0px 2px 4px;
+  --shadow-glass:
+    0 0 0 1px rgba(24, 27, 39, 0.04), 0 1px 2px rgba(24, 27, 39, 0.04),
+    0 4px 12px rgba(24, 27, 39, 0.04);
   --shadow-pop:
-    0 0 0 1px rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.01) 0px 5px 2px,
-    rgba(0, 0, 0, 0.04) 0px 3px 2px, rgba(0, 0, 0, 0.07) 0px 1px 1px;
-  --shadow-glow: 0 0 0 1px rgba(255, 255, 255, 0.04);
-  --shadow-glow-accent: 0 0 0 1px rgba(255, 255, 255, 0.04);
+    0 0 0 1px rgba(24, 27, 39, 0.05), 0 1px 2px rgba(24, 27, 39, 0.05),
+    0 6px 16px -4px rgba(24, 27, 39, 0.08), 0 12px 32px -8px rgba(24, 27, 39, 0.08);
+  --shadow-glow:
+    0 0 0 1px rgba(24, 27, 39, 0.04), 0 1px 2px rgba(24, 27, 39, 0.04);
+  --shadow-glow-accent: 0 0 0 1px rgba(24, 27, 39, 0.04);
   --shadow-glow-primary: 0 0 0 1px var(--idc-glow);
 
   --shadow-panel:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.04),
-    0 1px 0 0 rgba(2, 6, 23, 0.6),
-    0 8px 24px -12px rgba(2, 6, 23, 0.8);
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.6), 0 1px 1px rgba(24, 27, 39, 0.03),
+    0 8px 24px -12px rgba(24, 27, 39, 0.1);
   --shadow-raise:
-    0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 12px 32px -12px rgba(2, 6, 23, 0.9),
-    0 4px 12px -6px rgba(2, 6, 23, 0.6);
+    0 0 0 1px rgba(24, 27, 39, 0.05), 0 4px 10px -2px rgba(24, 27, 39, 0.06),
+    0 12px 32px -8px rgba(24, 27, 39, 0.1);
   --shadow-modal:
-    0 0 0 1px rgba(255, 255, 255, 0.07),
-    0 24px 64px -16px rgba(2, 6, 23, 0.95),
-    0 8px 24px -8px rgba(2, 6, 23, 0.7);
+    0 0 0 1px rgba(24, 27, 39, 0.06), 0 8px 24px -6px rgba(24, 27, 39, 0.1),
+    0 24px 64px -12px rgba(24, 27, 39, 0.16);
   --shadow-glow-soft:
-    0 8px 32px -12px var(--idc-glow),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
+    0 8px 32px -12px var(--idc-glow), 0 0 0 1px rgba(24, 27, 39, 0.04);
 
   --ease-out-spring: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -137,7 +138,7 @@
 
   @keyframes pulseGlow {
     0%, 100% { box-shadow: 0 0 0 0 var(--idc-glow); }
-    50% { box-shadow: 0 0 0 5px rgba(34, 197, 94, 0); }
+    50% { box-shadow: 0 0 0 5px rgba(99, 102, 241, 0); }
   }
 
   @keyframes streamBlink {
@@ -153,451 +154,90 @@
 
 /* ============================================
    Theme Variables
-   Each `data-theme` block overrides the --idc-*
-   custom properties that back every Tailwind color
-   token, so the entire app re-themes instantly.
+   Light is the default. A dark fallback is
+   applied automatically via prefers-color-scheme
+   or via an explicit [data-theme="dark"].
    ============================================ */
 
-:root {
-  --idc-bg-primary: #0f172a;
-  --idc-bg-secondary: #131c31;
-  --idc-bg-tertiary: #1b2336;
-  --idc-bg-elevated: #1e293b;
-  --idc-bg-hover: #18213a;
-  --idc-bg-overlay: #0a1120;
-  --idc-text-primary: #f8fafc;
-  --idc-text-secondary: #cbd5e1;
-  --idc-text-muted: #94a3b8;
-  --idc-accent-primary: #22c55e;
-  --idc-accent-secondary: #3b82f6;
-  --idc-accent-tertiary: #4ade80;
-  --idc-accent-hover: #4ade80;
-  --idc-success: #22c55e;
-  --idc-warning: #f59e0b;
-  --idc-error: #ef4444;
-  --idc-info: #38bdf8;
-  --idc-border-subtle: rgba(148, 163, 184, 0.12);
-  --idc-border-default: rgba(148, 163, 184, 0.2);
-  --idc-border-strong: rgba(148, 163, 184, 0.32);
-  --idc-selection: rgba(59, 130, 246, 0.32);
-  --idc-glow: rgba(34, 197, 94, 0.2);
-  --idc-glow-accent: rgba(59, 130, 246, 0.2);
-}
-
-[data-theme="ideo_dark"] {
-  --idc-bg-primary: #0f172a;
-  --idc-bg-secondary: #131c31;
-  --idc-bg-tertiary: #1b2336;
-  --idc-bg-elevated: #1e293b;
-  --idc-bg-hover: #18213a;
-  --idc-bg-overlay: #0a1120;
-  --idc-text-primary: #f8fafc;
-  --idc-text-secondary: #cbd5e1;
-  --idc-text-muted: #94a3b8;
-  --idc-accent-primary: #22c55e;
-  --idc-accent-secondary: #3b82f6;
-  --idc-accent-tertiary: #4ade80;
-  --idc-accent-hover: #4ade80;
-  --idc-success: #22c55e;
-  --idc-warning: #f59e0b;
-  --idc-error: #ef4444;
-  --idc-info: #38bdf8;
-  --idc-border-subtle: rgba(148, 163, 184, 0.12);
-  --idc-border-default: rgba(148, 163, 184, 0.2);
-  --idc-border-strong: rgba(148, 163, 184, 0.32);
-  --idc-selection: rgba(59, 130, 246, 0.32);
-  --idc-glow: rgba(34, 197, 94, 0.2);
-  --idc-glow-accent: rgba(59, 130, 246, 0.2);
-}
-
-[data-theme="ideo_light"] {
-  --idc-bg-primary: #fafafb;
-  --idc-bg-secondary: #f1f1f4;
-  --idc-bg-tertiary: #e6e6eb;
-  --idc-bg-elevated: #d8d8df;
-  --idc-bg-hover: #ececf0;
-  --idc-bg-overlay: #ffffff;
-  --idc-text-primary: #17181d;
-  --idc-text-secondary: #3f4050;
-  --idc-text-muted: #71727f;
-  --idc-accent-primary: #5b5fe7;
-  --idc-accent-secondary: #7c3aed;
-  --idc-accent-tertiary: #0891b2;
-  --idc-accent-hover: #474cd1;
-  --idc-success: #059669;
-  --idc-warning: #d97706;
-  --idc-error: #dc2626;
-  --idc-info: #6366f1;
-  --idc-border-subtle: #e9e9ee;
-  --idc-border-default: #d3d4dd;
-  --idc-border-strong: #9a9cab;
-  --idc-selection: #5b5fe733;
-  --idc-glow: #5b5fe733;
-  --idc-glow-accent: #7c3aed26;
-}
-
-[data-theme="midnight"] {
-  --idc-bg-primary: #0a0a0f;
-  --idc-bg-secondary: #17171d;
-  --idc-bg-tertiary: #27272c;
-  --idc-bg-elevated: #36363c;
-  --idc-bg-hover: #202026;
-  --idc-bg-overlay: #08080c;
-  --idc-text-primary: #e8e8f0;
-  --idc-text-secondary: #b3b3c2;
-  --idc-text-muted: #6a6a82;
-  --idc-accent-primary: #6366f1;
-  --idc-accent-secondary: #8b5cf6;
-  --idc-accent-tertiary: #a78bfa;
-  --idc-accent-hover: #8385f1;
-  --idc-success: #22c55e;
-  --idc-warning: #f59e0b;
-  --idc-error: #ef4444;
-  --idc-info: #7761f4;
-  --idc-border-subtle: #222232;
-  --idc-border-default: #3a3a54;
-  --idc-border-strong: #838396;
-  --idc-selection: #6366f14d;
-  --idc-glow: #6366f14d;
-  --idc-glow-accent: #8b5cf633;
-}
-
-[data-theme="monokai"] {
-  --idc-bg-primary: #272822;
-  --idc-bg-secondary: #34342e;
-  --idc-bg-tertiary: #42433d;
-  --idc-bg-elevated: #51524c;
-  --idc-bg-hover: #3c3d37;
-  --idc-bg-overlay: #1e1f1a;
-  --idc-text-primary: #f8f8f2;
-  --idc-text-secondary: #c1bfb4;
-  --idc-text-muted: #75715e;
-  --idc-accent-primary: #a6e22e;
-  --idc-accent-secondary: #66d9ef;
-  --idc-accent-tertiary: #ae81ff;
-  --idc-accent-hover: #bae75d;
-  --idc-success: #a6e22e;
-  --idc-warning: #ffff00;
-  --idc-error: #f92672;
-  --idc-info: #86de8f;
-  --idc-border-subtle: #38382a;
-  --idc-border-default: #484832;
-  --idc-border-strong: #929283;
-  --idc-selection: #a6e22e4d;
-  --idc-glow: #a6e22e4d;
-  --idc-glow-accent: #66d9ef33;
-}
-
-[data-theme="dracula"] {
-  --idc-bg-primary: #282a36;
-  --idc-bg-secondary: #343641;
-  --idc-bg-tertiary: #43454e;
-  --idc-bg-elevated: #52535c;
-  --idc-bg-hover: #3d3f49;
-  --idc-bg-overlay: #1f2028;
-  --idc-text-primary: #f8f8f2;
-  --idc-text-secondary: #b9c0d1;
-  --idc-text-muted: #6272a4;
-  --idc-accent-primary: #ff79c6;
-  --idc-accent-secondary: #bd93f9;
-  --idc-accent-tertiary: #50fa7b;
-  --idc-accent-hover: #fd97d1;
-  --idc-success: #50fa7b;
-  --idc-warning: #ffb86c;
-  --idc-error: #ff5555;
-  --idc-info: #de86e0;
-  --idc-border-subtle: #363948;
-  --idc-border-default: #44475a;
-  --idc-border-strong: #90919a;
-  --idc-selection: #ff79c64d;
-  --idc-glow: #ff79c64d;
-  --idc-glow-accent: #bd93f933;
-}
-
-[data-theme="nord"] {
-  --idc-bg-primary: #2e3440;
-  --idc-bg-secondary: #393f4b;
-  --idc-bg-tertiary: #474c57;
-  --idc-bg-elevated: #545964;
-  --idc-bg-hover: #414752;
-  --idc-bg-overlay: #232733;
-  --idc-text-primary: #eceff4;
-  --idc-text-secondary: #a9afba;
-  --idc-text-muted: #4c566a;
-  --idc-accent-primary: #88c0d0;
-  --idc-accent-secondary: #81a1c1;
-  --idc-accent-tertiary: #b48ead;
-  --idc-accent-hover: #a0cbd9;
-  --idc-success: #a3be8c;
-  --idc-warning: #ebcb8b;
-  --idc-error: #bf616a;
-  --idc-info: #85b1c9;
-  --idc-border-subtle: #353b49;
-  --idc-border-default: #3b4252;
-  --idc-border-strong: #858b96;
-  --idc-selection: #88c0d04d;
-  --idc-glow: #88c0d04d;
-  --idc-glow-accent: #81a1c133;
-}
-
-[data-theme="solarized"] {
-  --idc-bg-primary: #002b36;
-  --idc-bg-secondary: #0f3740;
-  --idc-bg-tertiary: #21454c;
-  --idc-bg-elevated: #335459;
-  --idc-bg-hover: #193f47;
-  --idc-bg-overlay: #01232c;
-  --idc-text-primary: #fdf6e3;
-  --idc-text-secondary: #cacdc3;
-  --idc-text-muted: #839496;
-  --idc-accent-primary: #268bd2;
-  --idc-accent-secondary: #2aa198;
-  --idc-accent-tertiary: #859900;
-  --idc-accent-hover: #5aa5d6;
-  --idc-success: #268bd2;
-  --idc-warning: #b58900;
-  --idc-error: #dc322f;
-  --idc-info: #2896b5;
-  --idc-border-subtle: #04313c;
-  --idc-border-default: #073642;
-  --idc-border-strong: #6e8786;
-  --idc-selection: #268bd24d;
-  --idc-glow: #268bd24d;
-  --idc-glow-accent: #2aa19833;
-}
-
-[data-theme="one_dark"] {
-  --idc-bg-primary: #282c34;
-  --idc-bg-secondary: #30343c;
-  --idc-bg-tertiary: #393d46;
-  --idc-bg-elevated: #424750;
-  --idc-bg-hover: #353942;
-  --idc-bg-overlay: #1f232a;
-  --idc-text-primary: #abb2bf;
-  --idc-text-secondary: #8a919e;
-  --idc-text-muted: #5c6370;
-  --idc-accent-primary: #61afef;
-  --idc-accent-secondary: #c678dd;
-  --idc-accent-tertiary: #98c379;
-  --idc-accent-hover: #73b0e3;
-  --idc-success: #98c379;
-  --idc-warning: #e5c07b;
-  --idc-error: #e06c75;
-  --idc-info: #9494e6;
-  --idc-border-subtle: #313640;
-  --idc-border-default: #393f4b;
-  --idc-border-strong: #696f7c;
-  --idc-selection: #61afef4d;
-  --idc-glow: #61afef4d;
-  --idc-glow-accent: #c678dd33;
-}
-
-[data-theme="github_dark"] {
-  --idc-bg-primary: #0d1117;
-  --idc-bg-secondary: #181d23;
-  --idc-bg-tertiary: #252a30;
-  --idc-bg-elevated: #33373e;
-  --idc-bg-hover: #20242a;
-  --idc-bg-overlay: #080c11;
-  --idc-text-primary: #c9d1d9;
-  --idc-text-secondary: #a3abb4;
-  --idc-text-muted: #6e7681;
-  --idc-accent-primary: #58a6ff;
-  --idc-accent-secondary: #d299eb;
-  --idc-accent-tertiary: #79c077;
-  --idc-accent-hover: #73b0f6;
-  --idc-success: #79c077;
-  --idc-warning: #d299eb;
-  --idc-error: #f85149;
-  --idc-info: #95a0f5;
-  --idc-border-subtle: #1f242a;
-  --idc-border-default: #30363d;
-  --idc-border-strong: #70777f;
-  --idc-selection: #58a6ff4d;
-  --idc-glow: #58a6ff4d;
-  --idc-glow-accent: #d299eb33;
-}
-
-[data-theme="neon_city"] {
-  --idc-bg-primary: #0a0a14;
-  --idc-bg-secondary: #091922;
-  --idc-bg-tertiary: #092a33;
-  --idc-bg-elevated: #083b43;
-  --idc-bg-hover: #09232c;
-  --idc-bg-overlay: #06060f;
-  --idc-text-primary: #00ffff;
-  --idc-text-secondary: #15a9b1;
-  --idc-text-muted: #323246;
-  --idc-accent-primary: #00ffff;
-  --idc-accent-secondary: #ff00ff;
-  --idc-accent-tertiary: #8b5cf6;
-  --idc-accent-hover: #00ffff;
-  --idc-success: #00ff80;
-  --idc-warning: #ffc800;
-  --idc-error: #ff3232;
-  --idc-info: #8080ff;
-  --idc-border-subtle: #141423;
-  --idc-border-default: #1e1e32;
-  --idc-border-strong: #117d88;
-  --idc-selection: #00ffff4d;
-  --idc-glow: #00ffff4d;
-  --idc-glow-accent: #ff00ff33;
-}
-
-[data-theme="synthwave"] {
-  --idc-bg-primary: #190a28;
-  --idc-bg-secondary: #270f2f;
-  --idc-bg-tertiary: #371636;
-  --idc-bg-elevated: #471c3e;
-  --idc-bg-hover: #301333;
-  --idc-bg-overlay: #120720;
-  --idc-text-primary: #ff6496;
-  --idc-text-secondary: #be4f89;
-  --idc-text-muted: #643278;
-  --idc-accent-primary: #ff00c8;
-  --idc-accent-secondary: #00c8ff;
-  --idc-accent-tertiary: #ffc800;
-  --idc-accent-hover: #ff18bc;
-  --idc-success: #00ff96;
-  --idc-warning: #ffc800;
-  --idc-error: #ff3264;
-  --idc-info: #8064e4;
-  --idc-border-subtle: #260f3c;
-  --idc-border-default: #321450;
-  --idc-border-strong: #88366d;
-  --idc-selection: #ff00c84d;
-  --idc-glow: #ff00c84d;
-  --idc-glow-accent: #00c8ff33;
-}
-
-[data-theme="matrix"] {
-  --idc-bg-primary: #000a00;
-  --idc-bg-secondary: #001900;
-  --idc-bg-tertiary: #002a00;
-  --idc-bg-elevated: #003b00;
-  --idc-bg-hover: #002300;
-  --idc-bg-overlay: #000600;
-  --idc-text-primary: #00ff00;
-  --idc-text-secondary: #00b600;
-  --idc-text-muted: #005000;
-  --idc-accent-primary: #00ff00;
-  --idc-accent-secondary: #00c800;
-  --idc-accent-tertiary: #009600;
-  --idc-accent-hover: #00ff00;
-  --idc-success: #00ff00;
-  --idc-warning: #c8ff00;
-  --idc-error: #ff0000;
-  --idc-info: #00e400;
-  --idc-border-subtle: #001900;
-  --idc-border-default: #002800;
-  --idc-border-strong: #008200;
-  --idc-selection: #00ff004d;
-  --idc-glow: #00ff004d;
-  --idc-glow-accent: #00c80033;
-}
-
-[data-theme="tron"] {
-  --idc-bg-primary: #050a0f;
-  --idc-bg-secondary: #0b151d;
-  --idc-bg-tertiary: #11232e;
-  --idc-bg-elevated: #18303f;
-  --idc-bg-hover: #0f1d27;
-  --idc-bg-overlay: #03070a;
-  --idc-text-primary: #64c8ff;
-  --idc-text-secondary: #4f9ed3;
-  --idc-text-muted: #326496;
-  --idc-accent-primary: #00c8ff;
-  --idc-accent-secondary: #ff9600;
-  --idc-accent-tertiary: #64c8ff;
-  --idc-accent-hover: #18c8ff;
-  --idc-success: #00ff64;
-  --idc-warning: #ff9600;
-  --idc-error: #ff3232;
-  --idc-info: #80af80;
-  --idc-border-subtle: #122335;
-  --idc-border-default: #1e3c5a;
-  --idc-border-strong: #3b779f;
-  --idc-selection: #00c8ff4d;
-  --idc-glow: #00c8ff4d;
-  --idc-glow-accent: #ff960033;
-}
-
-[data-theme="retro"] {
-  --idc-bg-primary: #32281e;
-  --idc-bg-secondary: #3b3025;
-  --idc-bg-tertiary: #463a2c;
-  --idc-bg-elevated: #504434;
-  --idc-bg-hover: #413629;
-  --idc-bg-overlay: #272014;
-  --idc-text-primary: #c8b48c;
-  --idc-text-secondary: #9e8a6a;
-  --idc-text-muted: #64503c;
-  --idc-accent-primary: #ff9632;
-  --idc-accent-secondary: #c86432;
-  --idc-accent-tertiary: #966432;
-  --idc-accent-hover: #f29d48;
-  --idc-success: #96c864;
-  --idc-warning: #ffc832;
-  --idc-error: #c85050;
-  --idc-info: #e47d32;
-  --idc-border-subtle: #413223;
-  --idc-border-default: #503c28;
-  --idc-border-strong: #826e52;
-  --idc-selection: #ff96324d;
-  --idc-glow: #ff96324d;
-  --idc-glow-accent: #c8643233;
+:root,
+[data-theme="light"] {
+  --idc-bg-primary: oklch(0.98 0.001 265);
+  --idc-bg-secondary: oklch(1 0 0);
+  --idc-bg-tertiary: oklch(0.952 0.003 265);
+  --idc-bg-elevated: oklch(0.925 0.004 265);
+  --idc-bg-hover: oklch(0.945 0.003 265);
+  --idc-bg-overlay: oklch(0.965 0.003 265);
+  --idc-text-primary: oklch(0.205 0.012 270);
+  --idc-text-secondary: oklch(0.42 0.012 270);
+  --idc-text-muted: oklch(0.56 0.01 270);
+  --idc-accent-primary: oklch(0.54 0.21 277);
+  --idc-accent-secondary: oklch(0.52 0.24 292);
+  --idc-accent-tertiary: oklch(0.62 0.16 277);
+  --idc-accent-hover: oklch(0.48 0.2 277);
+  --idc-success: oklch(0.57 0.15 160);
+  --idc-warning: oklch(0.68 0.16 78);
+  --idc-error: oklch(0.55 0.22 27);
+  --idc-info: oklch(0.54 0.21 277);
+  --idc-border-subtle: oklch(0.9 0.005 265);
+  --idc-border-default: oklch(0.85 0.006 265);
+  --idc-border-strong: oklch(0.68 0.012 265);
+  --idc-selection: oklch(0.54 0.21 277 / 0.22);
+  --idc-glow: oklch(0.54 0.21 277 / 0.12);
+  --idc-glow-accent: oklch(0.52 0.24 292 / 0.1);
 }
 
 [data-theme="dark"] {
-  --idc-bg-primary: #1e1e2e;
-  --idc-bg-secondary: #292a39;
-  --idc-bg-tertiary: #363746;
-  --idc-bg-elevated: #434453;
-  --idc-bg-hover: #313141;
-  --idc-bg-overlay: #161623;
-  --idc-text-primary: #d8dee9;
-  --idc-text-secondary: #a7afbe;
-  --idc-text-muted: #646e82;
-  --idc-accent-primary: #89b4fa;
-  --idc-accent-secondary: #81a1c1;
-  --idc-accent-tertiary: #b48ead;
-  --idc-accent-hover: #9cbef6;
-  --idc-success: #a3be8c;
-  --idc-warning: #ebcb8b;
-  --idc-error: #bf616a;
-  --idc-info: #85abde;
-  --idc-border-subtle: #2d3040;
-  --idc-border-default: #3c4252;
-  --idc-border-strong: #7e8491;
-  --idc-selection: #89b4fa4d;
-  --idc-glow: #89b4fa4d;
-  --idc-glow-accent: #81a1c133;
+  --idc-bg-primary: #0f172a;
+  --idc-bg-secondary: #131c31;
+  --idc-bg-tertiary: #1b2336;
+  --idc-bg-elevated: #1e293b;
+  --idc-bg-hover: #18213a;
+  --idc-bg-overlay: #0a1120;
+  --idc-text-primary: #f8fafc;
+  --idc-text-secondary: #cbd5e1;
+  --idc-text-muted: #94a3b8;
+  --idc-accent-primary: #818cf8;
+  --idc-accent-secondary: #a78bfa;
+  --idc-accent-tertiary: #c4b5fd;
+  --idc-accent-hover: #6366f1;
+  --idc-success: #22c55e;
+  --idc-warning: #f59e0b;
+  --idc-error: #ef4444;
+  --idc-info: #818cf8;
+  --idc-border-subtle: rgba(148, 163, 184, 0.12);
+  --idc-border-default: rgba(148, 163, 184, 0.2);
+  --idc-border-strong: rgba(148, 163, 184, 0.32);
+  --idc-selection: rgba(99, 102, 241, 0.32);
+  --idc-glow: rgba(99, 102, 241, 0.22);
+  --idc-glow-accent: rgba(139, 92, 246, 0.2);
 }
 
-[data-theme="light"] {
-  --idc-bg-primary: #ffffff;
-  --idc-bg-secondary: #f1f1f2;
-  --idc-bg-tertiary: #e1e1e4;
-  --idc-bg-elevated: #d1d1d5;
-  --idc-bg-hover: #e8e8ea;
-  --idc-bg-overlay: #ffffff;
-  --idc-text-primary: #1a1a2e;
-  --idc-text-secondary: #3c3c51;
-  --idc-text-muted: #6a6a82;
-  --idc-accent-primary: #6366f1;
-  --idc-accent-secondary: #7c3aed;
-  --idc-accent-tertiary: #8b5cf6;
-  --idc-accent-hover: #5154c2;
-  --idc-success: #16a34a;
-  --idc-warning: #d97706;
-  --idc-error: #dc2626;
-  --idc-info: #7050ef;
-  --idc-border-subtle: #e4e5ee;
-  --idc-border-default: #c8cadc;
-  --idc-border-strong: #7f8093;
-  --idc-selection: #6366f14d;
-  --idc-glow: #6366f14d;
-  --idc-glow-accent: #7c3aed33;
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --idc-bg-primary: #0f172a;
+    --idc-bg-secondary: #131c31;
+    --idc-bg-tertiary: #1b2336;
+    --idc-bg-elevated: #1e293b;
+    --idc-bg-hover: #18213a;
+    --idc-bg-overlay: #0a1120;
+    --idc-text-primary: #f8fafc;
+    --idc-text-secondary: #cbd5e1;
+    --idc-text-muted: #94a3b8;
+    --idc-accent-primary: #818cf8;
+    --idc-accent-secondary: #a78bfa;
+    --idc-accent-tertiary: #c4b5fd;
+    --idc-accent-hover: #6366f1;
+    --idc-success: #22c55e;
+    --idc-warning: #f59e0b;
+    --idc-error: #ef4444;
+    --idc-info: #818cf8;
+    --idc-border-subtle: rgba(148, 163, 184, 0.12);
+    --idc-border-default: rgba(148, 163, 184, 0.2);
+    --idc-border-strong: rgba(148, 163, 184, 0.32);
+    --idc-selection: rgba(99, 102, 241, 0.32);
+    --idc-glow: rgba(99, 102, 241, 0.22);
+    --idc-glow-accent: rgba(139, 92, 246, 0.2);
+  }
 }
 
 /* ============================================
@@ -621,7 +261,8 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "kern", "liga";
+  font-feature-settings: "kern", "liga", "cv11";
+  letter-spacing: -0.01em;
 }
 
 html.theme-transition body,
@@ -637,8 +278,8 @@ html.theme-transition body * {
    ============================================ */
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -647,11 +288,14 @@ html.theme-transition body * {
 
 ::-webkit-scrollbar-thumb {
   background: var(--color-bg-elevated);
-  border-radius: 3px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-muted);
+  background-clip: content-box;
 }
 
 /* ============================================
@@ -659,16 +303,16 @@ html.theme-transition body * {
    ============================================ */
 
 .glass-elevated {
-  background: color-mix(in srgb, var(--color-bg-elevated) 72%, transparent);
+  background: color-mix(in srgb, var(--color-bg-elevated) 78%, transparent);
   backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
   border: 1px solid var(--color-border-default);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-modal), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+  box-shadow: var(--shadow-modal), inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
 }
 
 .overlay {
-  background: color-mix(in srgb, var(--color-bg-overlay) 72%, transparent);
+  background: color-mix(in srgb, var(--color-bg-overlay) 62%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
@@ -687,9 +331,9 @@ html.theme-transition body * {
    ============================================ */
 
 :focus-visible {
-  outline: 1px solid var(--color-accent-secondary);
+  outline: 1.5px solid var(--color-accent-primary);
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent-secondary) 22%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent-primary) 18%, transparent);
 }
 
 /* ============================================
@@ -745,22 +389,24 @@ html.theme-transition body * {
     var(--idc-accent-primary)
   );
   box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.18),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.25),
+    0 1px 2px rgba(24, 27, 39, 0.12),
     0 4px 16px -6px var(--idc-glow);
   transition: filter 150ms ease, box-shadow 150ms ease, transform 150ms var(--ease-out-spring);
 }
 
 .btn-primary:hover {
   box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.24),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
+    0 4px 10px -2px rgba(24, 27, 39, 0.12),
     0 8px 24px -8px var(--idc-glow);
-  filter: brightness(1.06);
+  filter: brightness(1.05);
   transform: translateY(-1px);
 }
 
 .btn-primary:active {
   transform: translateY(0);
-  filter: brightness(0.97);
+  filter: brightness(0.96);
 }
 
 .btn-ghost {
@@ -809,7 +455,7 @@ html.theme-transition body * {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    color-mix(in srgb, var(--color-accent-primary) 35%, transparent) 50%,
+    color-mix(in srgb, var(--color-accent-primary) 22%, transparent) 50%,
     transparent 100%
   );
   background-size: 200% 100%;
@@ -956,7 +602,7 @@ input[type="range"].idc-range::-moz-range-thumb {
    Premium utilities — depth, glass, glow, motion
    ============================================ */
 
-/* Ambient background: subtle radial accent glows over the base surface */
+/* Ambient background: soft indigo washes over the base surface */
 .bg-ambient {
   background:
     radial-gradient(1100px 700px at 88% -12%, var(--idc-glow) 0%, transparent 55%),
@@ -966,17 +612,17 @@ input[type="range"].idc-range::-moz-range-thumb {
 
 /* Frosted glass — floating overlays */
 .glass {
-  background: color-mix(in srgb, var(--color-bg-secondary) 74%, transparent);
+  background: color-mix(in srgb, var(--color-bg-secondary) 80%, transparent);
   backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
-  box-shadow: var(--shadow-modal), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+  box-shadow: var(--shadow-modal), inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
 }
 
 .glass-strong {
-  background: color-mix(in srgb, var(--color-bg-secondary) 60%, transparent);
+  background: color-mix(in srgb, var(--color-bg-secondary) 70%, transparent);
   backdrop-filter: blur(28px) saturate(1.6);
   -webkit-backdrop-filter: blur(28px) saturate(1.6);
-  box-shadow: var(--shadow-modal), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-modal), inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
 }
 
 /* Elevation helpers */
@@ -997,8 +643,8 @@ input[type="range"].idc-range::-moz-range-thumb {
 }
 
 .glow-accent {
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--idc-accent-primary) 60%, transparent),
-    0 8px 32px -8px var(--idc-glow), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--idc-accent-primary) 40%, transparent),
+    0 8px 32px -8px var(--idc-glow), inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
 }
 
 .text-gradient-brand {
@@ -1018,7 +664,7 @@ input[type="range"].idc-range::-moz-range-thumb {
 }
 
 .surface-blur {
-  background: color-mix(in srgb, var(--color-bg-primary) 78%, transparent);
+  background: color-mix(in srgb, var(--color-bg-primary) 82%, transparent);
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
 }
@@ -1059,13 +705,13 @@ input[type="range"].idc-range::-moz-range-thumb {
 }
 
 /* ============================================
-   Markdown syntax tokens (dark syntax theme)
-   Mirrors the Monaco token palette in monaco-themes.ts
+   Markdown syntax tokens
+   Light-first syntax palette (GitHub-Light feel)
    ============================================ */
 
 pre .hljs-comment,
 pre .hljs-quote {
-  color: var(--color-text-muted);
+  color: oklch(0.55 0.012 270);
   font-style: italic;
 }
 
@@ -1074,7 +720,7 @@ pre .hljs-selector-tag,
 pre .hljs-selector-id,
 pre .hljs-selector-class,
 pre .hljs-literal {
-  color: var(--color-accent-primary);
+  color: oklch(0.46 0.18 277);
 }
 
 pre .hljs-string,
@@ -1082,27 +728,27 @@ pre .hljs-regexp,
 pre .hljs-addition,
 pre .hljs-attribute,
 pre .hljs-template-tag {
-  color: var(--color-accent-secondary);
+  color: oklch(0.42 0.16 45);
 }
 
 pre .hljs-title,
 pre .hljs-title.function_,
 pre .hljs-title.class_,
 pre .hljs-section {
-  color: var(--color-info);
+  color: oklch(0.45 0.18 245);
 }
 
 pre .hljs-number,
 pre .hljs-built_in,
 pre .hljs-attr,
 pre .hljs-symbol {
-  color: var(--color-warning);
+  color: oklch(0.5 0.15 35);
 }
 
 pre .hljs-type,
 pre .hljs-class .hljs-title,
 pre .hljs-name {
-  color: var(--color-accent-tertiary);
+  color: oklch(0.48 0.16 292);
 }
 
 pre .hljs-variable,
@@ -1124,11 +770,55 @@ pre .hljs-strong {
   font-weight: 600;
 }
 
+[data-theme="dark"] pre .hljs-comment,
+[data-theme="dark"] pre .hljs-quote {
+  color: var(--color-text-muted);
+}
+[data-theme="dark"] pre .hljs-keyword,
+[data-theme="dark"] pre .hljs-selector-tag,
+[data-theme="dark"] pre .hljs-selector-id,
+[data-theme="dark"] pre .hljs-selector-class,
+[data-theme="dark"] pre .hljs-literal {
+  color: var(--color-accent-primary);
+}
+[data-theme="dark"] pre .hljs-string,
+[data-theme="dark"] pre .hljs-regexp,
+[data-theme="dark"] pre .hljs-addition,
+[data-theme="dark"] pre .hljs-attribute,
+[data-theme="dark"] pre .hljs-template-tag {
+  color: var(--color-accent-secondary);
+}
+[data-theme="dark"] pre .hljs-title,
+[data-theme="dark"] pre .hljs-title.function_,
+[data-theme="dark"] pre .hljs-title.class_,
+[data-theme="dark"] pre .hljs-section {
+  color: var(--color-info);
+}
+[data-theme="dark"] pre .hljs-number,
+[data-theme="dark"] pre .hljs-built_in,
+[data-theme="dark"] pre .hljs-attr,
+[data-theme="dark"] pre .hljs-symbol {
+  color: var(--color-warning);
+}
+[data-theme="dark"] pre .hljs-type,
+[data-theme="dark"] pre .hljs-class .hljs-title,
+[data-theme="dark"] pre .hljs-name {
+  color: var(--color-accent-tertiary);
+}
+[data-theme="dark"] pre .hljs-variable,
+[data-theme="dark"] pre .hljs-template-variable,
+[data-theme="dark"] pre .hljs-params,
+[data-theme="dark"] pre .hljs-meta {
+  color: var(--color-text-secondary);
+}
+[data-theme="dark"] pre .hljs-deletion {
+  color: var(--color-error);
+}
+
 /* ============================================
-   Aurora ambient background
-   Animated accent-reactive mesh gradient drifting
-   behind translucent surfaces. Colors derive from
-   the --idc-glow tokens so it follows the accent.
+   Ambient background (light)
+   Soft indigo/violet mesh drifting behind
+   translucent surfaces. Fully light-safe.
    ============================================ */
 
 .aurora {
@@ -1151,31 +841,18 @@ pre .hljs-strong {
   background:
     radial-gradient(38% 32% at 72% 22%, var(--idc-glow) 0%, transparent 62%),
     radial-gradient(30% 34% at 18% 84%, var(--idc-glow-accent) 0%, transparent 62%),
-    radial-gradient(26% 30% at 92% 68%, color-mix(in srgb, var(--idc-accent-secondary) 18%, transparent) 0%, transparent 66%);
+    radial-gradient(26% 30% at 92% 68%, color-mix(in srgb, var(--idc-accent-secondary) 10%, transparent) 0%, transparent 66%);
   filter: blur(48px);
   animation: auroraDrift 16s ease-in-out infinite alternate;
 }
 
 .aurora::after {
   background:
-    radial-gradient(34% 30% at 30% 26%, color-mix(in srgb, var(--idc-accent-primary) 12%, transparent) 0%, transparent 62%),
+    radial-gradient(34% 30% at 30% 26%, color-mix(in srgb, var(--idc-accent-primary) 8%, transparent) 0%, transparent 62%),
     radial-gradient(30% 28% at 82% 92%, var(--idc-glow-accent) 0%, transparent 66%);
   filter: blur(72px);
-  opacity: 0.65;
+  opacity: 0.6;
   animation: auroraDrift 24s ease-in-out infinite alternate-reverse;
-}
-
-[data-time="night"] .aurora::after {
-  background:
-    radial-gradient(34% 30% at 30% 26%, color-mix(in srgb, #f59e0b 7%, transparent) 0%, transparent 62%),
-    radial-gradient(30% 28% at 82% 92%, var(--idc-glow-accent) 0%, transparent 66%);
-}
-
-[data-time="night"] .aurora::before {
-  background:
-    radial-gradient(38% 32% at 72% 22%, color-mix(in srgb, var(--idc-accent-secondary) 16%, transparent) 0%, transparent 62%),
-    radial-gradient(30% 34% at 18% 84%, color-mix(in srgb, #f59e0b 8%, transparent) 0%, transparent 62%),
-    radial-gradient(26% 30% at 92% 68%, var(--idc-glow) 0%, transparent 66%);
 }
 
 @keyframes auroraDrift {
