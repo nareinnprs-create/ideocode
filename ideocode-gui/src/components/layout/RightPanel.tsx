@@ -11,6 +11,7 @@ import { SearchPanel } from "../panels/SearchPanel";
 import { SessionHistory } from "../panels/SessionHistory";
 import { SettingsPanel } from "../panels/SettingsPanel";
 import { BrowserPanel } from "../panels/BrowserPanel";
+import { ComposerPanel } from "../panels/ComposerPanel";
 
 const BuildPanel = lazy(() => import("../panels/BuildPanel").then((m) => ({ default: m.BuildPanel })));
 const DebugPanel = lazy(() => import("../panels/DebugPanel").then((m) => ({ default: m.DebugPanel })));
@@ -30,6 +31,7 @@ const PANEL_TITLES: Record<string, string> = {
   memory: "Memory",
   issues: "Issues",
   browser: "Browser",
+  composer: "Composer",
 };
 
 export function RightPanel() {
@@ -95,6 +97,8 @@ function PanelContent({ panel }: { panel: string }) {
       return wrapped(<ProviderPanel />);
     case "sessions":
       return wrapped(<SessionHistory />);
+    case "composer":
+      return wrapped(<ComposerPanel />);
     case "build":
       return wrapped(<BuildPanel />);
     case "debug":

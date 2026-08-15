@@ -6,7 +6,7 @@ import { useAppStore } from "../../stores/appStore";
 import { useProviderStore } from "../../stores/providerStore";
 import { notify } from "../../stores/toastStore";
 
-type Tab = "appearance" | "chat" | "editor" | "about";
+type Tab = "appearance" | "chat" | "editor" | "providers" | "rules" | "about";
 
 const FONT_SIZES = [11, 12, 13, 14, 15, 16, 18, 20];
 const UI_FONT_SIZES = [11, 12, 13, 14, 15, 16, 18];
@@ -84,7 +84,7 @@ export function SettingsPanel() {
     <div className="flex flex-col h-full">
       {/* Tabs */}
       <div className="flex gap-px px-2 pt-2 border-b border-border-subtle bg-bg-tertiary">
-        {(["appearance", "chat", "editor", "about"] as const).map((t) => (
+        {(["appearance", "chat", "editor", "providers", "rules", "about"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -123,6 +123,10 @@ export function SettingsPanel() {
           <ChatTab settings={settings} onChange={handleChange} />
         ) : tab === "editor" ? (
           <EditorTab settings={settings} onChange={handleChange} />
+        ) : tab === "providers" ? (
+          <ProvidersTab settings={settings} onChange={handleChange} />
+        ) : tab === "rules" ? (
+          <RulesTab settings={settings} onChange={handleChange} />
         ) : (
           <AboutTab />
         )}
@@ -465,6 +469,67 @@ function ToggleRow({
         <div className="text-xs text-text-primary">{label}</div>
         <div className="text-[11px] text-text-muted mt-0.5">{description}</div>
       </div>
+    </div>
+  );
+}
+
+function ProvidersTab({
+  settings,
+  onChange,
+}: {
+  settings: AppSettings;
+  onChange: (p: Partial<AppSettings>) => void;
+}) {
+  const handleKeyChange = (provider: string, key: string) => {
+    const nextKeys = { ...(settings.api_keys || {}), [provider]: key };
+    onChange({ api_keys: nextKeys });
+  };
+
+  return (
+    <div className="p-4 space-y-5">
+      <Section label="API Keys">
+        <p className="text-[11px] text-text-muted mb-3">
+          Enter your API keys for the providers you wish to use. Keys are stored locally.
+        </p>
+        <div className="space-y-3">
+          {(["openai", "anthropic", "gemini"]).map((provider) => (
+            <div key={provider} className="flex flex-col gap-1">
+              <label className="text-xs text-text-primary capitalize">{provider}</label>
+              <input
+                type="password"
+                value={settings.api_keys?.[provider] || ""}
+                onChange={(e) => handleKeyChange(provider, e.target.value)}
+                placeholder={`sk-...`}
+                className="w-full bg-bg-primary border border-border-subtle rounded px-2 py-1.5 text-xs text-text-primary outline-none font-mono"
+              />
+            </div>
+          ))}
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+function RulesTab({
+  settings,
+  onChange,
+}: {
+  settings: AppSettings;
+  onChange: (p: Partial<AppSettings>) => void;
+}) {
+  return (
+    <div className="p-4 space-y-5 flex flex-col h-full">
+      <Section label="Custom Instructions">
+        <p className="text-[11px] text-text-muted mb-3">
+          These instructions will be appended to the system prompt for every chat session, helping you customize how IDEOCODE behaves.
+        </p>
+        <textarea
+          value={settings.custom_instructions || ""}
+          onChange={(e) => onChange({ custom_instructions: e.target.value })}
+          placeholder="e.g. Always use TypeScript and standard format. Keep answers concise."
+          className="w-full h-48 bg-bg-primary border border-border-subtle rounded px-2 py-2 text-xs text-text-primary outline-none resize-none font-sans"
+        />
+      </Section>
     </div>
   );
 }

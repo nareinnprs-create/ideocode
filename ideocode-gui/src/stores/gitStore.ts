@@ -3,6 +3,8 @@ import {
   gitStatus as tauriGitStatus,
   gitDiff as tauriGitDiff,
   gitCommit as tauriGitCommit,
+  gitAdd as tauriGitAdd,
+  gitUnstage as tauriGitUnstage,
   type GitStatus,
 } from "../lib/tauri-commands";
 import { notify } from "./toastStore";
@@ -15,6 +17,8 @@ interface GitState {
   loadStatus: (path: string) => Promise<void>;
   loadDiff: (path: string, file?: string) => Promise<void>;
   commit: (path: string, message: string) => Promise<void>;
+  stageFile: (path: string, file: string) => Promise<void>;
+  unstageFile: (path: string, file: string) => Promise<void>;
 }
 
 export const useGitStore = create<GitState>((set) => ({
@@ -58,6 +62,28 @@ export const useGitStore = create<GitState>((set) => ({
       set({ status, error: null });
     } catch (e) {
       set({ error: `Commit succeeded, but status refresh failed: ${e}` });
+    }
+  },
+
+  stageFile: async (path: string, file: string) => {
+    try {
+      await tauriGitAdd(path, file);
+      const status = await tauriGitStatus(path);
+      set({ status, error: null });
+    } catch (e) {
+      set({ error: `Git add failed: ${e}` });
+      notify("error", "Failed to stage file", `${e}`);
+    }
+  },
+
+  unstageFile: async (path: string, file: string) => {
+    try {
+      await tauriGitUnstage(path, file);
+      const status = await tauriGitStatus(path);
+      set({ status, error: null });
+    } catch (e) {
+      set({ error: `Git restore failed: ${e}` });
+      notify("error", "Failed to unstage file", `${e}`);
     }
   },
 }));

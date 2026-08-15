@@ -107,10 +107,10 @@ function SessionCard({ session }: { session: Session }) {
 
   const commitRename = async () => {
     const title = draft.trim();
-    setEditing(false);
     if (title && title !== session.title) {
       await renameSession(session.id, title);
     }
+    setEditing(false);
   };
 
   return (
@@ -132,13 +132,13 @@ function SessionCard({ session }: { session: Session }) {
                 }
               }}
               onBlur={commitRename}
-              className="w-full text-xs bg-bg-primary border border-accent-primary rounded px-1.5 py-0.5 text-text-primary outline-none"
+              className="w-full text-[13px] font-medium bg-bg-primary border border-accent-primary rounded px-1.5 py-0.5 text-text-primary outline-none"
             />
           ) : (
             <button
               onClick={() => loadSession(session.id)}
               title="Resume session"
-              className="text-xs text-text-primary truncate font-medium hover:text-accent-primary transition-fast block max-w-full"
+              className="text-[13px] text-text-primary truncate font-medium hover:text-accent-primary transition-fast block max-w-full"
             >
               {session.title || "Untitled Session"}
             </button>

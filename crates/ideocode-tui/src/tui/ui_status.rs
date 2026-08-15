@@ -154,5 +154,6 @@ pub(super) fn format_status_for_debug(app: &dyn TuiState) -> String {
             }
             format!("Running tool: {}", name)
         }
+        ProcessingStatus::Installing => "Installing built-in engine...".to_string(),
     }
 }

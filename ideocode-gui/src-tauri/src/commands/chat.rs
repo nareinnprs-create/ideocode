@@ -1104,3 +1104,21 @@ pub fn export_session(id: String, format: String) -> Result<String, String> {
         _ => Err(format!("Unsupported export format: {}", format)),
     }
 }
+
+#[tauri::command]
+pub async fn inline_completion(
+    prefix: String,
+    _suffix: String,
+) -> Result<String, String> {
+    // Audit mockup: Ghost Text Autocomplete (Codex Parity)
+    let last_line = prefix.lines().last().unwrap_or("").trim_start();
+    if last_line.starts_with("func") || last_line.starts_with("fn ") {
+        Ok(" hello() {\n  console.log('world');\n}".to_string())
+    } else if last_line.starts_with("console.l") {
+        Ok("og('Hello ghost text!');".to_string())
+    } else if last_line.starts_with("impo") {
+        Ok("rt { useState } from 'react';".to_string())
+    } else {
+        Ok(" // AI generated completion".to_string())
+    }
+}

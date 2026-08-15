@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useProviderStore } from "../../stores/providerStore";
 import { useAppStore } from "../../stores/appStore";
 import { getGatewayStatus, type GatewayStatus } from "../../lib/tauri-commands";
-import { Cpu, Check, ArrowLeft, RefreshCw, Eye, EyeOff, Zap } from "lucide-react";
+import { Cpu, Check, ArrowLeft, RefreshCw, Eye, EyeOff, Zap, Terminal } from "lucide-react";
+import { listen } from "@tauri-apps/api/event";
 
 export function ProviderPanel() {
   const { providers, status, loading, error, loadProviders, loadStatus, setActiveProvider } =
@@ -12,6 +13,13 @@ export function ProviderPanel() {
   const [showApiKey, setShowApiKey] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
   const [gateway, setGateway] = useState<GatewayStatus | null>(null);
+  const [logsOpen, setLogsOpen] = useState(false);
+  const [logs, setLogs] = useState<string[]>([]);
+  const logsEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (logsEndRef.current) logsEndRef.current.scrollIntoView();
+  }, [logs, logsOpen]);
   const loadingTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
   useEffect(() => {
@@ -43,9 +51,14 @@ export function ProviderPanel() {
     };
     void poll();
     const id = setInterval(poll, 10000);
+    const unlistenLog = listen<string>("baanzon://log_line", (e) => {
+      setLogs((prev) => [...prev, e.payload].slice(-50));
+    });
+    
     return () => {
       active = false;
       clearInterval(id);
+      unlistenLog.then(f => f());
     };
   }, []);
 
@@ -133,26 +146,47 @@ export function ProviderPanel() {
 
       {/* Built-in engine status */}
       {gateway && (
-        <div
-          className="px-3 py-2 border-b border-border-subtle flex items-center gap-2"
-          title={gateway.disabled ? "Baanzon Verso is disabled via IDEOCODE_DISABLE_BAANZON_GATEWAY" : gateway.base_url}
-        >
-          <Zap
-            size={14}
-            className={
-              gateway.online ? "text-success" : gateway.installing ? "text-warning" : "text-error"
-            }
-          />
-          <span className="text-xs font-medium text-text-primary flex-1">{gateway.engine}</span>
-          <span className="text-[11px] text-text-muted font-mono">
-            {gateway.online
-              ? "ONLINE"
-              : gateway.installing
-                ? "starting"
-                : gateway.disabled
-                  ? "disabled"
-                  : "offline"}
-          </span>
+        <div className="border-b border-border-subtle">
+          <div
+            className="px-3 py-2 flex items-center gap-2"
+            title={gateway.disabled ? "Baanzon Verso is disabled via IDEOCODE_DISABLE_BAANZON_GATEWAY" : gateway.base_url}
+          >
+            <Zap
+              size={14}
+              className={
+                gateway.online ? "text-success" : gateway.installing ? "text-warning" : "text-error"
+              }
+            />
+            <span className="text-xs font-medium text-text-primary flex-1">{gateway.engine}</span>
+            <span className="text-[11px] text-text-muted font-mono">
+              {gateway.online
+                ? "ONLINE"
+                : gateway.installing
+                  ? "starting"
+                  : gateway.disabled
+                    ? "disabled"
+                    : "offline"}
+            </span>
+            <button
+              onClick={() => setLogsOpen(!logsOpen)}
+              className="p-1 rounded hover:bg-bg-tertiary text-text-muted hover:text-text-primary transition-fast"
+              title="View Engine Logs"
+            >
+              <Terminal size={14} />
+            </button>
+          </div>
+          {logsOpen && (
+            <div className="bg-[#0D1117] px-3 py-2 border-t border-border-subtle max-h-32 overflow-y-auto text-left font-mono text-[10px] text-text-muted leading-relaxed">
+              {logs.length === 0 ? (
+                <div className="italic opacity-50">No logs yet...</div>
+              ) : (
+                logs.map((log, i) => (
+                  <div key={i} className="whitespace-pre-wrap">{log}</div>
+                ))
+              )}
+              <div ref={logsEndRef} />
+            </div>
+          )}
         </div>
       )}
 

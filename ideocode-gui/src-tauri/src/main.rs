@@ -64,14 +64,25 @@ fn main() {
 
     if let Err(e) = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
-        .setup(|_app| {
+        .setup(|app| {
+            use tauri::Emitter;
+            let app_handle_status = app.handle().clone();
+            ideocode_provider_baanzon::set_status_callback(move |status| {
+                let _ = app_handle_status.emit("baanzon://status_changed", status);
+            });
+            
+            let app_handle_log = app.handle().clone();
+            ideocode_provider_baanzon::set_log_callback(move |log_line| {
+                let _ = app_handle_log.emit("baanzon://log_line", log_line);
+            });
+
             tauri::async_runtime::spawn(async move {
                 let workspace = dirs::home_dir().unwrap_or_default().join(".IDEOCODE");
                 let config = ideocode_provider_baanzon::BaanzonConfig::new(workspace);
                 let _ = config.generate_env();
                 // Ensures the engine is installed/provisioned and hands ongoing
                 // recovery to the detached self-heal supervisor.
-                let _ = ideocode_provider_baanzon::BaanzonDaemon::start();
+                let _ = ideocode_provider_baanzon::bootstrap_engine();
             });
             Ok(())
         })
@@ -93,6 +104,7 @@ fn main() {
             commands::list_sessions,
             commands::delete_session,
             commands::export_session,
+            commands::inline_completion,
             commands::get_file_tree,
             commands::read_file,
             commands::write_file,
@@ -101,6 +113,8 @@ fn main() {
             commands::git_status,
             commands::git_diff,
             commands::git_commit,
+            commands::git_add,
+            commands::git_unstage,
             commands::git_branches,
             commands::git_checkout,
             commands::run_build,

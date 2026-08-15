@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+use std::collections::HashMap;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppSettings {
@@ -27,6 +28,10 @@ pub struct AppSettings {
     pub reasoning_effort: String,
     #[serde(default)]
     pub dev_mode: bool,
+    #[serde(default)]
+    pub custom_instructions: String,
+    #[serde(default)]
+    pub api_keys: HashMap<String, String>,
 }
 
 fn default_accent() -> String {
@@ -55,6 +60,8 @@ impl Default for AppSettings {
             ui_font_size: 13,
             reasoning_effort: default_reasoning_effort(),
             dev_mode: false,
+            custom_instructions: String::new(),
+            api_keys: HashMap::new(),
         }
     }
 }

@@ -46,7 +46,12 @@ impl App {
                 redraw_interval = super::run_shell::redraw_timer(redraw_period);
             }
 
-            self.status = ProcessingStatus::Sending;
+            let baanzon = ideocode_provider_baanzon::gateway_status_blocking();
+            if baanzon.installing {
+                self.status = ProcessingStatus::Installing;
+            } else {
+                self.status = ProcessingStatus::Sending;
+            }
             status_spinner_renderer.draw_full(self, terminal)?;
             super::run_shell::reset_status_spinner_interval(&mut status_spinner_interval, self);
             self.flush_pending_session_save();

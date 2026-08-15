@@ -10,10 +10,28 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicU16, Ordering};
 use std::time::{Duration, Instant};
+use std::sync::Mutex;
 
 use serde::{Deserialize, Serialize};
 
 use crate::config::BaanzonConfig;
+
+lazy_static::lazy_static! {
+    pub static ref STATUS_CALLBACK: Mutex<Option<Box<dyn Fn(crate::GatewayStatus) + Send + Sync + 'static>>> = Mutex::new(None);
+    pub static ref LOG_CALLBACK: Mutex<Option<Box<dyn Fn(String) + Send + Sync + 'static>>> = Mutex::new(None);
+}
+
+pub fn set_status_callback(cb: impl Fn(crate::GatewayStatus) + Send + Sync + 'static) {
+    if let Ok(mut lock) = STATUS_CALLBACK.lock() {
+        *lock = Some(Box::new(cb));
+    }
+}
+
+pub fn set_log_callback(cb: impl Fn(String) + Send + Sync + 'static) {
+    if let Ok(mut lock) = LOG_CALLBACK.lock() {
+        *lock = Some(Box::new(cb));
+    }
+}
 
 /// The engine listens on port 20128 of the local machine.
 pub const OMNIROUTE_PORT: u16 = 20128;
@@ -66,6 +84,12 @@ fn gateway_log_path() -> PathBuf {
 }
 
 fn log(message: &str) {
+    if let Ok(lock) = LOG_CALLBACK.lock() {
+        if let Some(cb) = lock.as_ref() {
+            cb(message.to_string());
+        }
+    }
+    
     let path = gateway_log_path();
     if let Some(parent) = path.parent() {
         let _ = std::fs::create_dir_all(parent);
@@ -600,7 +624,18 @@ pub fn spawn_supervisor() {
         .spawn(|| {
             let _ = ensure_with_budget(COLD_START_BUDGET);
             let mut recovery_started: Option<Instant> = None;
+            let mut previous_status = crate::gateway_status_blocking();
             loop {
+                let current_status = crate::gateway_status_blocking();
+                if current_status != previous_status {
+                    if let Ok(lock) = STATUS_CALLBACK.lock() {
+                        if let Some(cb) = lock.as_ref() {
+                            cb(current_status.clone());
+                        }
+                    }
+                    previous_status = current_status;
+                }
+                
                 std::thread::sleep(Duration::from_secs(10));
                 if gateway_healthy() {
                     if recovery_started.take().is_some() {
@@ -628,7 +663,7 @@ pub fn spawn_supervisor() {
         .ok();
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GatewayStatus {
     pub engine: String,
     pub online: bool,

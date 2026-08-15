@@ -13,6 +13,7 @@ import {
   Brain,
   AlertCircle,
   Globe,
+  LayoutTemplate,
 } from "lucide-react";
 import { Tooltip } from "../ui/Tooltip";
 
@@ -32,6 +33,7 @@ const TOP_ITEMS: SidebarItem[] = [
   { id: "memory", icon: Brain, label: "Memory" },
   { id: "issues", icon: AlertCircle, label: "Issues" },
   { id: "browser", icon: Globe, label: "Browser" },
+  { id: "composer", icon: LayoutTemplate, label: "Composer" },
   { id: "debug", icon: BugPlay, label: "Debug" },
   { id: "build", icon: Hammer, label: "Build" },
   { id: "providers", icon: Cpu, label: "Providers" },

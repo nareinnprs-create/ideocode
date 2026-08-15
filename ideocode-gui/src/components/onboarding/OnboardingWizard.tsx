@@ -10,6 +10,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { updateSettings, getGatewayStatus } from "../../lib/tauri-commands";
+import { listen } from "@tauri-apps/api/event";
 import type { AppSettings } from "../../lib/tauri-commands";
 
 type Step = "welcome" | "provider" | "provision" | "done";
@@ -49,6 +50,14 @@ export function OnboardingWizard({ onComplete }: Props) {
   } | null>(null);
   const [provisionError, setProvisionError] = useState<string | null>(null);
   const [provisionTimedOut, setProvisionTimedOut] = useState(false);
+  const [logs, setLogs] = useState<string[]>([]);
+  const logsEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (logsEndRef.current) {
+      logsEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [logs]);
 
   const provisionRef = useRef(false);
 
@@ -73,6 +82,8 @@ export function OnboardingWizard({ onComplete }: Props) {
         ui_font_size: 13,
         reasoning_effort: "medium",
         dev_mode: false,
+        custom_instructions: "",
+        api_keys: {},
       };
       updateSettings(settings)
         .then(() => {
@@ -131,8 +142,14 @@ export function OnboardingWizard({ onComplete }: Props) {
     };
 
     poll();
+    
+    const unlistenLog = listen<string>("baanzon://log_line", (e) => {
+      setLogs((prev) => [...prev, e.payload].slice(-50));
+    });
+
     return () => {
       cancelled = true;
+      unlistenLog.then(f => f());
     };
   }, [step]);
 
@@ -269,6 +286,15 @@ export function OnboardingWizard({ onComplete }: Props) {
               />
             </div>
 
+            {engine?.installing && logs.length > 0 && (
+              <div className="bg-[#0D1117] border border-border-subtle rounded-lg p-3 h-32 overflow-y-auto text-left font-mono text-[10px] text-text-muted leading-relaxed">
+                {logs.map((log, i) => (
+                  <div key={i} className="whitespace-pre-wrap">{log}</div>
+                ))}
+                <div ref={logsEndRef} />
+              </div>
+            )}
+            
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs">
                 <span className={`w-1.5 h-1.5 rounded-full ${engine?.online ? "bg-success" : "bg-accent-primary animate-pulse"}`} />

@@ -11,6 +11,7 @@ const STATUS_ICONS: Record<string, typeof Wrench> = {
   running: Loader2,
   completed: CheckCircle2,
   error: AlertCircle,
+  pending_approval: AlertCircle,
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -18,6 +19,7 @@ const STATUS_COLORS: Record<string, string> = {
   running: "text-info",
   completed: "text-success",
   error: "text-error",
+  pending_approval: "text-warning",
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -25,6 +27,7 @@ const STATUS_LABELS: Record<string, string> = {
   running: "running",
   completed: "done",
   error: "error",
+  pending_approval: "awaiting approval",
 };
 
 const TOOL_COLORS: Record<string, string> = {
@@ -124,6 +127,18 @@ export function ToolCallCard({ toolCall }: Props) {
               <pre className="text-xs font-mono text-text-secondary bg-bg-primary rounded p-2 overflow-x-auto max-h-40 overflow-y-auto">
                 {toolCall.output}
               </pre>
+            </div>
+          )}
+
+          {/* Pending Approval Controls */}
+          {status === "pending_approval" && (
+            <div className="px-3 py-2 border-t border-border-subtle flex items-center justify-end gap-2 bg-bg-secondary/50">
+              <button className="px-3 py-1.5 rounded-md text-xs font-medium text-text-secondary bg-bg-elevated border border-border-subtle hover:text-text-primary hover:bg-bg-hover transition-fast">
+                Reject
+              </button>
+              <button className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-accent-primary hover:brightness-110 transition-fast shadow-[inset_0_1px_0_0_rgba(255,255,255,0.18)]">
+                Approve
+              </button>
             </div>
           )}
         </div>

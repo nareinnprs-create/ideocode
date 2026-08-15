@@ -152,6 +152,18 @@ pub fn git_commit(path: String, message: String) -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
+pub fn git_add(path: String, file: String) -> Result<(), String> {
+    let cwd = PathBuf::from(&path).to_string_lossy().to_string();
+    run_git(&["add", &file], &cwd).map(|_| ())
+}
+
+#[tauri::command]
+pub fn git_unstage(path: String, file: String) -> Result<(), String> {
+    let cwd = PathBuf::from(&path).to_string_lossy().to_string();
+    run_git(&["restore", "--staged", &file], &cwd).map(|_| ())
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GitBranch {
     pub name: String,

@@ -182,6 +182,10 @@ export async function exportSession(id: string, format: string): Promise<string>
   return invoke<string>("export_session", { id, format });
 }
 
+export async function getInlineCompletion(prefix: string, suffix: string): Promise<string> {
+  return invoke<string>("inline_completion", { prefix, suffix });
+}
+
 // ============================================
 // File Commands
 // ============================================
@@ -235,6 +239,14 @@ export async function gitCommit(
   message: string,
 ): Promise<void> {
   return invoke<void>("git_commit", { path, message });
+}
+
+export async function gitAdd(path: string, file: string): Promise<void> {
+  return invoke<void>("git_add", { path, file });
+}
+
+export async function gitUnstage(path: string, file: string): Promise<void> {
+  return invoke<void>("git_unstage", { path, file });
 }
 
 export interface GitBranch {
@@ -314,6 +326,8 @@ export interface AppSettings {
   ui_font_size: number;
   reasoning_effort: string;
   dev_mode: boolean;
+  custom_instructions: string;
+  api_keys: Record<string, string>;
 }
 
 export async function getSettings(): Promise<AppSettings> {

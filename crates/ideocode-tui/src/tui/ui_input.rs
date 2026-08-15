@@ -962,6 +962,22 @@ pub(super) fn draw_status(frame: &mut Frame, app: &dyn TuiState, area: Rect, pen
                 push_queued_suffix(&mut spans, &queued_suffix);
                 Line::from(spans)
             }
+            ProcessingStatus::Installing => {
+                let anim_color = animated_tool_color(elapsed);
+                let half_width = 3;
+                let decorative = crate::perf::tui_policy().enable_decorative_animations;
+                let bar_speed = if decorative { 2.0 } else { ideocode_tui_style::theme::LIVENESS_INDICATOR_FPS / half_width as f32 };
+                let progress = elapsed * bar_speed % 1.0;
+                let filled_pos = ((progress * half_width as f32) as usize) % half_width;
+                let left_bar: String = (0..half_width).map(|i| if i == filled_pos { '●' } else { '·' }).collect();
+                let right_bar: String = (0..half_width).map(|i| if i == (half_width - 1 - filled_pos) { '●' } else { '·' }).collect();
+
+                Line::from(vec![
+                    Span::styled(left_bar, Style::default().fg(anim_color)),
+                    Span::styled(" Installing built-in engine... ", Style::default().fg(anim_color).bold()),
+                    Span::styled(right_bar, Style::default().fg(anim_color)),
+                ])
+            }
         }
     } else if let Some((total_in, total_out)) = app.total_session_tokens() {
         let total = total_in + total_out;

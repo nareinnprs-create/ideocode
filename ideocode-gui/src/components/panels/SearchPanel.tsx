@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, File, FileText, ArrowLeft } from "lucide-react";
-import { searchFiles, searchContents } from "../../lib/tauri-commands";
+import { searchFiles, searchContents, indexDirectory } from "../../lib/tauri-commands";
 import { useFileStore } from "../../stores/fileStore";
 import { useAppStore } from "../../stores/appStore";
 import type { SearchResult, CodeSearchResult } from "../../lib/tauri-commands";
 
-type SearchMode = "filename" | "content";
+type SearchMode = "filename" | "content" | "semantic";
 
 export function SearchPanel() {
   const rootPath = useFileStore((s) => s.rootPath);
@@ -18,6 +18,8 @@ export function SearchPanel() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [indexing, setIndexing] = useState(false);
+  const [indexStats, setIndexStats] = useState<{ files_indexed: number; total_files: number } | null>(null);
   const pathDebounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   // Keep the draft in sync when the workspace root changes elsewhere.
@@ -64,6 +66,19 @@ export function SearchPanel() {
     }
   };
 
+  const handleIndex = async () => {
+    setIndexing(true);
+    setError(null);
+    try {
+      const stats = await indexDirectory(rootPath || ".");
+      setIndexStats({ files_indexed: stats.files_indexed, total_files: stats.total_files });
+    } catch (e) {
+      setError(`Indexing failed: ${e}`);
+    } finally {
+      setIndexing(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -95,6 +110,16 @@ export function SearchPanel() {
             }`}
           >
             Content
+          </button>
+          <button
+            onClick={() => { setMode("semantic"); setResults([]); setSearched(false); }}
+            className={`px-2 py-1 text-[11px] rounded transition-fast ${
+              mode === "semantic"
+                ? "bg-accent-primary text-white"
+                : "text-text-muted hover:text-text-primary"
+            }`}
+          >
+            Semantic
           </button>
         </div>
       </div>
@@ -132,6 +157,27 @@ export function SearchPanel() {
       {error && (
         <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle">
           <div className="text-xs text-red-400">{error}</div>
+        </div>
+      )}
+
+      {/* Indexing Controls for Semantic */}
+      {mode === "semantic" && (
+        <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle flex flex-col gap-1">
+          <div className="flex justify-between items-center">
+            <span className="text-[11px] text-text-muted">Semantic Index</span>
+            <button
+              onClick={handleIndex}
+              disabled={indexing}
+              className="px-2 py-0.5 text-[10px] bg-accent-primary text-white rounded hover:bg-accent-secondary disabled:opacity-50"
+            >
+              {indexing ? "Indexing..." : "Reindex Workspace"}
+            </button>
+          </div>
+          {indexStats && (
+            <div className="text-[10px] text-text-muted">
+              Indexed {indexStats.files_indexed} / {indexStats.total_files} files
+            </div>
+          )}
         </div>
       )}
 

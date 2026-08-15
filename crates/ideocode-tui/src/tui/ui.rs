@@ -3695,6 +3695,7 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     crate::tui::ui_integration::render_theme_browser_overlay(frame, area);
     crate::tui::ui_integration::render_personality_overlay(frame, area);
     crate::tui::ui_integration::render_cinematic_overlay(frame, area);
+    crate::tui::ui_baanzon_status::render_baanzon_hud_overlay(frame, area);
 
     // ── END BATCH A ──────────────────────────────────────────────────
 

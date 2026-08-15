@@ -431,6 +431,8 @@ pub enum ProcessingStatus {
     WaitingForNetwork { listener: String },
     /// Executing a tool
     RunningTool(String),
+    /// Local engine is installing or provisioning
+    Installing,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]

@@ -12,11 +12,12 @@ import {
   Plus,
   ChevronDown,
   Loader2,
+  Mic,
 } from "lucide-react";
 import { useChatStore, type ComposerMode } from "../../stores/chatStore";
 import { useProviderStore } from "../../stores/providerStore";
 import { useFileStore } from "../../stores/fileStore";
-import { getSettings, updateSettings } from "../../lib/tauri-commands";
+import { getSettings, updateSettings, searchFiles } from "../../lib/tauri-commands";
 import { Tooltip } from "../ui/Tooltip";
 
 const MODES: { id: ComposerMode; label: string; icon: typeof Zap; hint: string }[] = [
@@ -59,12 +60,16 @@ function detectSlash(value: string, cursor: number): boolean {
   return /^\/\w*$/.test(before);
 }
 
+import { notify } from "../../stores/toastStore";
 export function Composer() {
   const [input, setInput] = useState("");
   const [menuOpen, setMenuOpen] = useState<"slash" | "mention" | null>(null);
   const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionCandidates, setMentionCandidates] = useState<string[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const [focused, setFocused] = useState(false);
+  const [tabs, setTabs] = useState([{ id: "tab-1", label: "Chat 1" }]);
+  const [activeTabId, setActiveTabId] = useState("tab-1");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selEndRef = useRef(0);
@@ -86,6 +91,7 @@ export function Composer() {
   const loadProviders = useProviderStore((s) => s.loadProviders);
   const openFiles = useFileStore((s) => s.openFiles);
   const activeFile = useFileStore((s) => s.activeFile);
+  const rootPath = useFileStore((s) => s.rootPath);
 
   useEffect(() => {
     loadProviders();
@@ -145,9 +151,28 @@ export function Composer() {
     }
   };
 
-  const mentionCandidates = openFiles
-    .filter((p) => p.toLowerCase().includes(mentionQuery.toLowerCase()))
-    .slice(0, 6);
+  useEffect(() => {
+    if (menuOpen === "mention" && rootPath) {
+      if (mentionQuery.length === 0) {
+        setMentionCandidates(openFiles.slice(0, 6));
+        return;
+      }
+      const delay = setTimeout(() => {
+        searchFiles(mentionQuery, rootPath)
+          .then((res) => {
+            const matches = res.map((r) => r.file).slice(0, 8);
+            setMentionCandidates(matches);
+          })
+          .catch(() => {
+            // fallback to open files if search fails
+            setMentionCandidates(
+              openFiles.filter((p) => p.toLowerCase().includes(mentionQuery.toLowerCase())).slice(0, 6)
+            );
+          });
+      }, 150);
+      return () => clearTimeout(delay);
+    }
+  }, [mentionQuery, menuOpen, rootPath, openFiles]);
 
   const insertMention = (path: string) => {
     const cursor = selEndRef.current || input.length;
@@ -260,7 +285,7 @@ export function Composer() {
       {menuOpen === "mention" && (
         <div className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default glass-strong overflow-hidden animate-scale-in">
           <div className="px-3 py-1.5 text-[11px] uppercase tracking-wider text-text-muted border-b border-border-subtle">
-            {mentionCandidates.length === 0 ? "No matching open files" : "Open files"}
+            {mentionCandidates.length === 0 ? "No matching files" : (mentionQuery ? "Codebase files" : "Open files")}
           </div>
           {mentionCandidates.map((path, i) => (
             <button
@@ -277,6 +302,34 @@ export function Composer() {
           ))}
         </div>
       )}
+
+      {/* Tab bar header */}
+      <div className="flex items-center gap-1 overflow-x-auto pb-2 scrollbar-none border-b border-border-subtle mb-2">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTabId(tab.id)}
+            className={`px-3 py-1 text-xs font-medium rounded-t-md border-b-2 transition-all ${
+              activeTabId === tab.id
+                ? "border-accent-primary text-text-primary bg-bg-secondary/50"
+                : "border-transparent text-text-muted hover:text-text-secondary hover:bg-bg-hover"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+        <button
+          onClick={() => {
+            const newId = `tab-${tabs.length + 1}`;
+            setTabs([...tabs, { id: newId, label: `Chat ${tabs.length + 1}` }]);
+            setActiveTabId(newId);
+          }}
+          className="ml-1 p-1 text-text-muted hover:text-text-primary rounded hover:bg-bg-hover"
+          title="New Chat Tab"
+        >
+          <Plus size={14} />
+        </button>
+      </div>
 
       {/* Mode + reasoning row (above composer, Cursor-style) */}
       <div className="flex items-center justify-between gap-2 pb-2">
@@ -340,6 +393,14 @@ export function Composer() {
               className="p-2 text-text-muted hover:text-text-primary transition-fast rounded-lg hover:bg-bg-hover shrink-0"
             >
               <Paperclip size={16} />
+            </button>
+          </Tooltip>
+          <Tooltip label="Voice Dictation (Coming soon)">
+            <button
+              className="p-2 text-text-muted hover:text-text-primary transition-fast rounded-lg hover:bg-bg-hover shrink-0"
+              onClick={() => notify("info", "Voice Dictation", "Coming soon via WebSpeech API")}
+            >
+              <Mic size={16} />
             </button>
           </Tooltip>
 

@@ -3,12 +3,13 @@ import Editor, { loader } from "@monaco-editor/react";
 import type { OnMount } from "@monaco-editor/react";
 import { useFileStore } from "../../stores/fileStore";
 import { useAppStore } from "../../stores/appStore";
-import { getSettings, updateSettings } from "../../lib/tauri-commands";
+import { getSettings, updateSettings, getInlineCompletion } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
 import { defineAllMonacoThemes, monacoThemeName } from "../../lib/monaco-themes";
 import { IconButton } from "../ui/IconButton";
 import { Tooltip } from "../ui/Tooltip";
 import { ChevronRight, Columns2, WrapText, Map, Save } from "lucide-react";
+import { CmdKOverlay } from "./CmdKOverlay";
 
 // Configure Monaco to use the bundled files (copied to public/monaco/vs by
 // scripts/copy-monaco.mjs so the editor works fully offline and matches the
@@ -74,6 +75,8 @@ export function CodeEditor() {
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [editorSettings, setEditorSettings] = useState<AppSettings | null>(null);
+  const [cmdKOpen, setCmdKOpen] = useState(false);
+  const [cmdKPos, setCmdKPos] = useState<{ top: number; left: number } | null>(null);
 
   useEffect(() => {
     getSettings().then(setEditorSettings).catch(() => {});
@@ -99,12 +102,63 @@ export function CodeEditor() {
     persistSetting({ word_wrap: next });
   };
 
-  const handleMount: OnMount = useCallback((editor) => {
+  const handleMount: OnMount = useCallback((editor, monaco) => {
     editorRef.current = editor;
+    
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyK, () => {
+      const position = editor.getPosition();
+      if (position) {
+        const coords = editor.getScrolledVisiblePosition(position);
+        if (coords) {
+          setCmdKPos({ top: coords.top, left: coords.left });
+        } else {
+          setCmdKPos({ top: 50, left: 200 });
+        }
+      }
+      setCmdKOpen(true);
+    });
   }, []);
 
   const handleBeforeMount = useCallback((monaco: typeof import("monaco-editor")) => {
     defineAllMonacoThemes(monaco);
+
+    // Codex Parity: Inline Ghost Text Provider
+    monaco.languages.registerInlineCompletionsProvider("*", {
+      provideInlineCompletions: async (model, position, context, token) => {
+        // Skip if not at end of line (simple heuristic for ghost text)
+        const lineContent = model.getLineContent(position.lineNumber);
+        if (position.column < lineContent.length + 1) {
+          return { items: [] };
+        }
+
+        const prefix = model.getValueInRange({
+          startLineNumber: 1,
+          startColumn: 1,
+          endLineNumber: position.lineNumber,
+          endColumn: position.column,
+        });
+
+        // Add a small artificial delay so we don't spam while typing
+        await new Promise(resolve => setTimeout(resolve, 300));
+        if (token.isCancellationRequested) return { items: [] };
+
+        try {
+          const completion = await getInlineCompletion(prefix, "");
+          if (completion && completion.length > 0) {
+            return {
+              items: [{
+                insertText: completion,
+                range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column)
+              }]
+            };
+          }
+        } catch (e) {
+          // ignore
+        }
+        return { items: [] };
+      },
+      freeInlineCompletions: () => {}
+    });
   }, []);
 
   const handleChange = useCallback(
@@ -177,7 +231,17 @@ export function CodeEditor() {
       </div>
 
       {/* Editor */}
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 relative">
+        <CmdKOverlay 
+          isOpen={cmdKOpen} 
+          onClose={() => setCmdKOpen(false)} 
+          position={cmdKPos} 
+          onSubmit={(prompt) => {
+            console.log("Cmd+K prompt:", prompt);
+            setCmdKOpen(false);
+            // TODO: implement ghost autocomplete / inline AI diffs
+          }} 
+        />
         <Editor
           value={fileContent ?? ""}
           language={language}

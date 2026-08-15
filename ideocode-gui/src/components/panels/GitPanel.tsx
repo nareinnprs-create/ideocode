@@ -13,7 +13,7 @@ import {
 
 export function GitPanel() {
   const { rootPath } = useFileStore();
-  const { status, diff, loading, error, loadStatus, commit, loadDiff } = useGitStore();
+  const { status, diff, loading, error, loadStatus, commit, loadDiff, stageFile, unstageFile } = useGitStore();
   const [commitMsg, setCommitMsg] = useState("");
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
@@ -86,6 +86,8 @@ export function GitPanel() {
             title="Staged"
             icon={<Plus size={12} className="text-success" />}
             files={status.staged}
+            actionIcon={<Minus size={12} />}
+            onActionClick={(path) => unstageFile(rootPath, path)}
             onFileClick={(path) => {
               setSelectedFile(path);
               loadDiff(rootPath, path);
@@ -98,6 +100,8 @@ export function GitPanel() {
             title="Modified"
             icon={<Minus size={12} className="text-warning" />}
             files={status.modified}
+            actionIcon={<Plus size={12} />}
+            onActionClick={(path) => stageFile(rootPath, path)}
             onFileClick={(path) => {
               setSelectedFile(path);
               loadDiff(rootPath, path);
@@ -110,6 +114,8 @@ export function GitPanel() {
             title="Untracked"
             icon={<AlertTriangle size={12} className="text-info" />}
             files={status.untracked}
+            actionIcon={<Plus size={12} />}
+            onActionClick={(path) => stageFile(rootPath, path)}
             onFileClick={(path) => {
               setSelectedFile(path);
               loadDiff(rootPath, path);
@@ -122,6 +128,8 @@ export function GitPanel() {
             title="Conflicts"
             icon={<AlertTriangle size={12} className="text-error" />}
             files={status.conflicted}
+            actionIcon={<Plus size={12} />}
+            onActionClick={(path) => stageFile(rootPath, path)}
             onFileClick={(path) => {
               setSelectedFile(path);
               loadDiff(rootPath, path);
@@ -166,11 +174,15 @@ function FileSection({
   title,
   icon,
   files,
+  actionIcon,
+  onActionClick,
   onFileClick,
 }: {
   title: string;
   icon: React.ReactNode;
   files: { path: string; status: string }[];
+  actionIcon?: React.ReactNode;
+  onActionClick?: (path: string) => void;
   onFileClick: (path: string) => void;
 }) {
   return (
@@ -183,13 +195,28 @@ function FileSection({
       {files.map((f) => (
         <div
           key={f.path}
-          onClick={() => onFileClick(f.path)}
-          className="flex items-center gap-2 px-3 py-0.5 text-xs text-text-secondary hover:bg-bg-elevated cursor-pointer"
+          className="group flex items-center justify-between px-3 py-0.5 text-xs hover:bg-bg-elevated cursor-pointer"
         >
-          <span className="font-mono text-[11px] text-text-muted w-4 text-center">
-            {f.status.trim() || "?"}
-          </span>
-          <span className="truncate">{f.path}</span>
+          <div
+            className="flex items-center gap-2 text-text-secondary flex-1 truncate"
+            onClick={() => onFileClick(f.path)}
+          >
+            <span className="font-mono text-[11px] text-text-muted w-4 text-center">
+              {f.status.trim() || "?"}
+            </span>
+            <span className="truncate">{f.path}</span>
+          </div>
+          {actionIcon && onActionClick && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onActionClick(f.path);
+              }}
+              className="p-1 rounded text-text-muted hover:text-text-primary hover:bg-bg-hover opacity-0 group-hover:opacity-100 transition-fast"
+            >
+              {actionIcon}
+            </button>
+          )}
         </div>
       ))}
     </div>

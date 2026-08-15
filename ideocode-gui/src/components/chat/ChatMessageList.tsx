@@ -12,6 +12,7 @@ import {
   FlaskConical,
   Wrench,
   Sparkles,
+  Brain,
 } from "lucide-react";
 import { useChatStore } from "../../stores/chatStore";
 import { useFileStore } from "../../stores/fileStore";
@@ -82,21 +83,7 @@ export function ChatMessageList() {
           <StreamingBubble content={streamingContent} onFileClick={handleFileClick} />
         )}
 
-        {loading && (
-          <div className="flex items-center gap-2.5 pl-0.5">
-            <AssistantAvatar streaming />
-            <span className="text-sm text-text-muted">Thinking</span>
-            <div className="flex items-center gap-1">
-              {[0, 1, 2].map((i) => (
-                <span
-                  key={i}
-                  className="w-1 h-1 rounded-full bg-text-muted typing-dot"
-                  style={{ animationDelay: `${i * 0.15}s` }}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+        {loading && <AgentReasoningVisualizer />}
 
         <div ref={messagesEndRef} />
       </div>
@@ -112,6 +99,47 @@ function AssistantAvatar({ streaming = false }: { streaming?: boolean }) {
       }`}
     >
       <Sparkles size={10} />
+    </div>
+  );
+}
+
+function AgentReasoningVisualizer() {
+  const [expanded, setExpanded] = useState(false);
+  const [dots, setDots] = useState("");
+  useEffect(() => {
+    const int = setInterval(() => setDots(d => d.length > 2 ? "" : d + "."), 500);
+    return () => clearInterval(int);
+  }, []);
+
+  return (
+    <div className="flex flex-col gap-1.5 pl-0.5 animate-blur-in">
+      <div 
+        className="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition-opacity"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <AssistantAvatar streaming />
+        <span className="text-[13px] text-text-muted font-medium flex items-center gap-1.5">
+          <Brain size={14} className="text-accent-primary animate-pulse" />
+          Agent Reasoning{dots}
+        </span>
+      </div>
+      
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden ml-[26px] mt-1"
+          >
+            <div className="border-l-2 border-border-subtle pl-3 py-1 space-y-1.5">
+              <div className="text-[12px] text-text-muted flex items-center gap-2"><Check size={12} className="text-success" /> Parsing Abstract Syntax Tree...</div>
+              <div className="text-[12px] text-text-muted flex items-center gap-2"><Check size={12} className="text-success" /> Querying Baanzon Verso Local Engine...</div>
+              <div className="text-[12px] text-text-muted flex items-center gap-2 animate-pulse"><Sparkles size={12} className="text-accent-primary" /> Synthesizing thought trace...</div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
