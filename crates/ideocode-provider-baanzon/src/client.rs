@@ -4,7 +4,7 @@ use anyhow::Result;
 use reqwest::Client;
 use serde_json::Value;
 
-use crate::daemon::OMNIROUTE_PORT;
+use crate::daemon::effective_port;
 
 pub struct BaanzonClient {
     http_client: Client,
@@ -13,7 +13,7 @@ pub struct BaanzonClient {
 
 impl BaanzonClient {
     pub fn new() -> Self {
-        Self::new_on_port(OMNIROUTE_PORT)
+        Self::new_on_port(effective_port())
     }
 
     pub fn new_on_port(port: u16) -> Self {

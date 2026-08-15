@@ -16,6 +16,7 @@ use anyhow::Result;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
+use std::sync::atomic::{AtomicU16, Ordering};
 use std::time::{Duration, Instant};
 
 /// The engine listens on port 20128 of the local machine.
@@ -24,6 +25,13 @@ pub const OMNIROUTE_PORT: u16 = 20128;
 pub const OMNIROUTE_BASE_URL: &str = "http://localhost:20128/v1";
 /// Backend install docs (never surfaced to the user).
 pub const OMNIROUTE_INSTALL_URL: &str = "https://github.com/diegosouzapw/OmniRoute";
+/// Additional localhost ports probed for an already-running OmniRoute engine.
+/// The default port is [`OMNIROUTE_PORT`]; these cover common non-default
+/// setups where a user launched OmniRoute on another port.
+const EXTRA_PROBE_PORTS: &[u16] = &[20129, 3000, 3001, 8080, 8000];
+/// Port remembered once an already-running local engine is discovered, so
+/// later health probes target a single port instead of rescanning.
+static REMEMBERED_PORT: AtomicU16 = AtomicU16::new(0);
 
 /// The vendored engine is installed under `<app-config>/baanzon-verso`.
 const GATEWAY_DIR_NAME: &str = "baanzon-verso";
@@ -46,17 +54,42 @@ const COLD_START_BUDGET: Duration = Duration::from_secs(30);
 pub async fn gateway_reachable() -> bool {
     tokio::time::timeout(
         Duration::from_millis(300),
-        tokio::net::TcpStream::connect(("localhost", OMNIROUTE_PORT)),
+        tokio::net::TcpStream::connect(("localhost", effective_port())),
     )
     .await
     .map(|result| result.is_ok())
     .unwrap_or(false)
 }
 
-/// Blocking HTTP probe against the engine's OpenAI-compatible API. Verifies it
-/// is actually the gateway (and not an unrelated process squatting on the port).
-fn gateway_healthy_sync() -> bool {
-    let Ok(mut stream) = std::net::TcpStream::connect(("127.0.0.1", OMNIROUTE_PORT)) else {
+/// An `OMNIROUTE_PORT` env override, when set and parseable.
+fn env_override_port() -> Option<u16> {
+    std::env::var("OMNIROUTE_PORT").ok()?.parse().ok()
+}
+
+/// The localhost ports probed for an already-running engine: the env override
+/// first (if any), then the default port and the common non-default ports.
+pub fn candidate_probe_ports() -> Vec<u16> {
+    let mut ports = Vec::with_capacity(EXTRA_PROBE_PORTS.len() + 2);
+    if let Some(port) = env_override_port() {
+        ports.push(port);
+    }
+    ports.push(OMNIROUTE_PORT);
+    ports.extend_from_slice(EXTRA_PROBE_PORTS);
+    ports.sort_unstable();
+    ports.dedup();
+    ports
+}
+
+/// Returns the base URL an engine running on `port` is served from.
+pub fn base_url_for_port(port: u16) -> String {
+    format!("http://localhost:{port}/v1")
+}
+
+/// Blocking HTTP probe against the engine's OpenAI-compatible API on a given
+/// port. Verifies it is actually the gateway (and not an unrelated process
+/// squatting on the port).
+pub fn probe_port(port: u16) -> bool {
+    let Ok(mut stream) = std::net::TcpStream::connect(("127.0.0.1", port)) else {
         return false;
     };
     let _ = stream.set_read_timeout(Some(Duration::from_secs(2)));
@@ -68,6 +101,48 @@ fn gateway_healthy_sync() -> bool {
     let mut buf = [0u8; 256];
     let n = stream.read(&mut buf).unwrap_or(0);
     is_engine_reply(&String::from_utf8_lossy(&buf[..n]))
+}
+
+/// Discovers an already-running OmniRoute engine on localhost by probing the
+/// candidate ports. When one answers, its port is remembered so subsequent
+/// probes target it directly (seamless adoption, no duplicate engine spawned).
+pub fn discover_engine() -> Option<u16> {
+    for port in candidate_probe_ports() {
+        if probe_port(port) {
+            REMEMBERED_PORT.store(port, Ordering::Relaxed);
+            if port != OMNIROUTE_PORT {
+                crate::logging::info(&format!(
+                    "Baanzon Verso connected to an existing OmniRoute engine on localhost:{port} ({})",
+                    base_url_for_port(port)
+                ));
+            }
+            return Some(port);
+        }
+    }
+    None
+}
+
+/// The port the engine should be reached on: an already-running local engine
+/// wins (adopted, not duplicated); otherwise the env override or the default.
+pub fn effective_port() -> u16 {
+    let remembered = REMEMBERED_PORT.load(Ordering::Relaxed);
+    if remembered != 0 {
+        if probe_port(remembered) {
+            return remembered;
+        }
+        REMEMBERED_PORT.store(0, Ordering::Relaxed);
+    }
+    if let Some(port) = discover_engine() {
+        return port;
+    }
+    env_override_port().unwrap_or(OMNIROUTE_PORT)
+}
+
+/// Blocking HTTP probe against the engine's OpenAI-compatible API on the
+/// effective port. Verifies it is actually the gateway (and not an unrelated
+/// process squatting on the port).
+fn gateway_healthy_sync() -> bool {
+    probe_port(effective_port())
 }
 
 /// Interprets the reply to the health probe. A running engine can legitimately
@@ -535,7 +610,8 @@ pub async fn ensure_gateway_with_budget(budget: Duration) -> Result<bool> {
         }
         if Instant::now() >= deadline {
             crate::logging::warn(&format!(
-                "The Baanzon Verso engine did not become reachable on {OMNIROUTE_BASE_URL} within {}s; recovery continues in the background",
+                "The Baanzon Verso engine did not become reachable on {} within {}s; recovery continues in the background",
+                base_url_for_port(effective_port()),
                 budget.as_secs()
             ));
             return Ok(false);
@@ -562,7 +638,8 @@ async fn ensure_global_gateway() -> Result<bool> {
                 }
             }
             crate::logging::warn(&format!(
-                "Started the Baanzon Verso engine, but it did not become reachable on {OMNIROUTE_BASE_URL} within 15s."
+                "Started the Baanzon Verso engine, but it did not become reachable on {} within 15s.",
+                base_url_for_port(effective_port())
             ));
             Ok(false)
         }
@@ -616,6 +693,19 @@ mod tests {
     fn base_url_and_port_agree() {
         assert!(OMNIROUTE_BASE_URL.contains("localhost:20128/v1"));
         assert_eq!(OMNIROUTE_PORT, 20128);
+    }
+
+    #[test]
+    fn candidate_ports_always_include_default_and_are_deduped() {
+        let ports = candidate_probe_ports();
+        assert!(ports.contains(&OMNIROUTE_PORT));
+        assert!(ports.windows(2).all(|w| w[0] < w[1]), "candidate ports must be sorted + deduped");
+    }
+
+    #[test]
+    fn base_url_for_port_format() {
+        assert_eq!(base_url_for_port(3000), "http://localhost:3000/v1");
+        assert_eq!(base_url_for_port(OMNIROUTE_PORT), OMNIROUTE_BASE_URL);
     }
 
     #[test]
