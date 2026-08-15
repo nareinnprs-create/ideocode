@@ -52,9 +52,14 @@ const COLD_START_BUDGET: Duration = Duration::from_secs(30);
 
 /// Returns true when the engine's TCP port accepts connections.
 pub async fn gateway_reachable() -> bool {
+    // Resolve the effective port off the async runtime (port discovery uses
+    // blocking TCP probes), then run only the fast connect check in async.
+    let port = tokio::task::spawn_blocking(effective_port)
+        .await
+        .unwrap_or(OMNIROUTE_PORT);
     tokio::time::timeout(
         Duration::from_millis(300),
-        tokio::net::TcpStream::connect(("localhost", effective_port())),
+        tokio::net::TcpStream::connect(("localhost", port)),
     )
     .await
     .map(|result| result.is_ok())
