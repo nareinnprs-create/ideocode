@@ -141,7 +141,7 @@ pub async fn export_video(
         width, height, fps, speed, font_family, font_size
     ));
 
-    let frames = app
+    let frames: Vec<(f64, Buffer)> = app
         .run_headless_replay(timeline, speed, width, height, fps)
         .await?;
 
@@ -207,7 +207,7 @@ pub async fn export_swarm_video(
         if let Some(centered) = centered_override {
             app.set_centered(centered);
         }
-        let frames = app
+        let frames: Vec<(f64, Buffer)> = app
             .run_headless_replay(&pane.timeline, speed, pane_width, pane_height, fps)
             .await?;
         rendered_panes.push(crate::replay::SwarmPaneFrames {

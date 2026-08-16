@@ -2031,8 +2031,8 @@ pub(super) fn handle_alt_key(app: &mut App, code: KeyCode) -> bool {
             crate::tui::ui_integration::toggle_cinematic();
             true
         }
-        // Alt+u: Baanzon Verso HUD
-        KeyCode::Char('u') => {
+        // Alt+b: Baanzon Verso HUD
+        KeyCode::Char('b') => {
             crate::tui::ui_baanzon_status::toggle_baanzon_hud();
             true
         }
