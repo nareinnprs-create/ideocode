@@ -124,7 +124,7 @@ export function CodeEditor() {
 
     // Codex Parity: Inline Ghost Text Provider
     monaco.languages.registerInlineCompletionsProvider("*", {
-      provideInlineCompletions: async (model, position, context, token) => {
+      provideInlineCompletions: async (model, position, _context, token) => {
         // Skip if not at end of line (simple heuristic for ghost text)
         const lineContent = model.getLineContent(position.lineNumber);
         if (position.column < lineContent.length + 1) {
@@ -157,7 +157,7 @@ export function CodeEditor() {
         }
         return { items: [] };
       },
-      freeInlineCompletions: () => {}
+      disposeInlineCompletions: () => {},
     });
   }, []);
 

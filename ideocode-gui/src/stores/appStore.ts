@@ -15,7 +15,8 @@ export type PanelId =
   | "settings"
   | "memory"
   | "issues"
-  | "browser";
+  | "browser"
+  | "composer";
 
 interface AppState {
   version: string;
