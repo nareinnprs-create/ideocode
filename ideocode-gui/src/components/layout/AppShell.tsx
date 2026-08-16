@@ -1,5 +1,4 @@
 import { useAppStore } from "../../stores/appStore";
-import { Aurora } from "./Aurora";
 import { TopBar } from "./TopBar";
 import { Sidebar } from "./Sidebar";
 import { EditorPane } from "./EditorPane";
@@ -7,6 +6,7 @@ import { RightPanel } from "./RightPanel";
 import { BottomPanelDock } from "./BottomPanelDock";
 import { StatusBar } from "./StatusBar";
 import { CommandPalette } from "../chat/CommandPalette";
+import { ComposerPane } from "../chat/ComposerPane";
 import { ToastHost } from "./ToastHost";
 import { ErrorBoundary } from "../ErrorBoundary";
 import { useKeyboard } from "../../hooks/useKeyboard";
@@ -18,7 +18,6 @@ export function AppShell() {
 
   return (
     <div className="relative isolate flex flex-col h-screen w-screen overflow-hidden bg-bg-primary">
-      <Aurora />
       <div className="relative z-10 flex flex-col flex-1 min-h-0">
         <TopBar />
         <div className="flex flex-1 min-h-0">
@@ -39,6 +38,7 @@ export function AppShell() {
           <StatusBar />
         </ErrorBoundary>
         <CommandPalette />
+        <ComposerPane />
         <ToastHost />
       </div>
     </div>

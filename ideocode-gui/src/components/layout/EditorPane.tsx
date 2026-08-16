@@ -5,6 +5,7 @@ import { CodeEditor } from "../editor/CodeEditor";
 import { TabBar } from "./TabBar";
 import { Composer } from "../chat/Composer";
 import { ChatMessageList } from "../chat/ChatMessageList";
+import { WelcomeScreen } from "../editor/WelcomeScreen";
 import { useDragResize } from "../../hooks/useDragResize";
 
 export function EditorPane() {
@@ -57,9 +58,11 @@ export function EditorPane() {
 
   if (!hasFileSelected) {
     return (
-      <main className="flex flex-col flex-1 min-w-0">
-        <ChatMessageList />
-        <Composer />
+      <main className="flex flex-1 min-w-0">
+        <div className="flex flex-col flex-1 min-w-0">
+          <WelcomeScreen />
+        </div>
+        {chatPanelOpen && chatColumn}
       </main>
     );
   }

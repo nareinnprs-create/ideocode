@@ -25,18 +25,11 @@ interface SidebarItem {
 }
 
 const TOP_ITEMS: SidebarItem[] = [
-  { id: "chat", icon: MessageSquare, label: "Chat" },
   { id: "files", icon: FolderTree, label: "Files" },
-  { id: "git", icon: GitBranch, label: "Git" },
   { id: "search", icon: Search, label: "Search" },
-  { id: "sessions", icon: History, label: "Sessions" },
-  { id: "memory", icon: Brain, label: "Memory" },
-  { id: "issues", icon: AlertCircle, label: "Issues" },
-  { id: "browser", icon: Globe, label: "Browser" },
-  { id: "composer", icon: LayoutTemplate, label: "Composer" },
-  { id: "debug", icon: BugPlay, label: "Debug" },
-  { id: "build", icon: Hammer, label: "Build" },
-  { id: "providers", icon: Cpu, label: "Providers" },
+  { id: "git", icon: GitBranch, label: "Source Control" },
+  { id: "debug", icon: BugPlay, label: "Run and Debug" },
+  { id: "providers", icon: Cpu, label: "Extensions" },
 ];
 
 const BOTTOM_ITEMS: SidebarItem[] = [
@@ -61,12 +54,12 @@ function SidebarButton({
       aria-pressed={active}
       className={`relative w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-150 ease-spring ${
         active
-          ? "text-accent-primary bg-accent-primary/12 glow-soft"
+          ? "text-text-primary bg-bg-hover"
           : "text-text-muted hover:text-text-primary hover:bg-bg-hover"
       }`}
     >
       {active && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-accent-primary shadow-[0_0_8px_var(--idc-glow)]" />
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-text-primary" />
       )}
       <Icon size={19} strokeWidth={active ? 2.2 : 1.8} />
     </button>

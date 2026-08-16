@@ -42,7 +42,7 @@ export function CmdKOverlay({ isOpen, onClose, position, onSubmit }: CmdKOverlay
     >
       <form
         onSubmit={handleSubmit}
-        className="flex items-center gap-2 p-1.5 rounded-lg border border-border-strong glass-strong shadow-raise w-[400px]"
+        className="flex items-center gap-2 p-1.5 rounded-lg border border-border-strong bg-bg-secondary shadow-modal w-[450px]"
       >
         <Sparkles size={16} className="text-accent-primary ml-1" />
         <input
@@ -51,7 +51,7 @@ export function CmdKOverlay({ isOpen, onClose, position, onSubmit }: CmdKOverlay
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Generate or edit code..."
-          className="flex-1 bg-transparent border-none outline-none text-[13px] text-text-primary placeholder:text-text-muted"
+          className="flex-1 bg-transparent border-none outline-none text-sm font-sans text-text-primary placeholder:text-text-muted"
           onKeyDown={(e) => {
             if (e.key === "Escape") {
               e.preventDefault();

@@ -53,6 +53,9 @@ interface AppState {
   toggleCommandPalette: () => void;
   setCommandPaletteOpen: (open: boolean) => void;
 
+  composerOpen: boolean;
+  setComposerOpen: (open: boolean) => void;
+
   editorSplit: boolean;
   toggleEditorSplit: () => void;
 
@@ -109,6 +112,9 @@ export const useAppStore = create<AppState>((set) => ({
   toggleCommandPalette: () =>
     set((s) => ({ commandPaletteOpen: !s.commandPaletteOpen })),
   setCommandPaletteOpen: (open) => set({ commandPaletteOpen: open }),
+
+  composerOpen: false,
+  setComposerOpen: (open) => set({ composerOpen: open }),
 
   editorSplit: false,
   toggleEditorSplit: () => set((s) => ({ editorSplit: !s.editorSplit })),

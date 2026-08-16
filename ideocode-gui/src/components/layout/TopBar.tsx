@@ -59,7 +59,7 @@ export function TopBar() {
   return (
     <header
       data-tauri-drag-region
-      className="flex items-center h-11 px-3 gap-3 bg-bg-primary/80 border-b border-border-subtle select-none shrink-0 surface-blur"
+      className="flex items-center h-9 px-2 gap-3 bg-bg-primary border-b border-border-subtle select-none shrink-0"
     >
       {/* Brand / project */}
       <div className="flex items-center gap-2 min-w-0" data-tauri-drag-region>
@@ -69,7 +69,7 @@ export function TopBar() {
         >
           <Sparkles size={10} />
         </span>
-        <span className="text-[13px] font-semibold text-text-primary tracking-tight shrink-0">
+        <span className="text-[12px] font-medium text-text-primary tracking-tight shrink-0">
           IDEOCODE
         </span>
         <span className="text-text-muted opacity-50">/</span>
@@ -80,9 +80,9 @@ export function TopBar() {
       <div className="flex-1 flex justify-center min-w-0">
         <button
           onClick={() => setCommandPaletteOpen(true)}
-          className="group flex items-center gap-2 h-7 px-3 rounded-lg border border-border-subtle bg-bg-secondary shadow-[0_1px_2px_rgba(24,27,39,0.04)] text-text-muted hover:border-accent-primary/40 hover:text-text-secondary hover:shadow-glow-soft transition-all duration-150 w-full max-w-md focus-visible:outline-2 focus-visible:outline-accent-secondary"
+          className="group flex items-center gap-2 h-6 px-3 rounded-md border border-border-subtle bg-bg-primary text-text-muted hover:border-accent-primary/40 hover:text-text-secondary transition-all w-full max-w-sm focus-visible:outline-2 focus-visible:outline-accent-secondary"
         >
-          <Search size={13} className="transition-colors duration-150 group-hover:text-accent-primary" />
+          <Search size={12} className="transition-colors group-hover:text-accent-primary" />
           <span className="text-xs flex-1 text-left truncate">Search commands, files, actions…</span>
           <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded-md bg-bg-tertiary text-[10px] font-mono text-text-muted border border-border-subtle">
             ⌘K

@@ -10,6 +10,7 @@ export function useKeyboard() {
     toggleRightPanel,
     toggleBottomPanel,
     setBottomPanelOpen,
+    setComposerOpen,
   } = useAppStore();
 
   useEffect(() => {
@@ -60,11 +61,19 @@ export function useKeyboard() {
         void useFileStore.getState().saveFile();
       }
 
+      // Cmd+I — Toggle Composer
+      if (mod && e.key === "i") {
+        e.preventDefault();
+        const state = useAppStore.getState();
+        state.setComposerOpen(!state.composerOpen);
+      }
+
       // Esc — Close overlays and panels
       if (e.key === "Escape") {
         const state = useAppStore.getState();
         state.setCommandPaletteOpen(false);
         state.setRightPanelOpen(false);
+        state.setComposerOpen(false);
         setBottomPanelOpen(false);
       }
     };
@@ -77,5 +86,6 @@ export function useKeyboard() {
     toggleRightPanel,
     toggleBottomPanel,
     setBottomPanelOpen,
+    setComposerOpen,
   ]);
 }
