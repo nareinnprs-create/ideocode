@@ -88,6 +88,8 @@ ideocode-tui-usage-overlay = { path = "../ideocode-tui-usage-overlay" }
 ideocode-terminal-image = { path = "../ideocode-terminal-image" }
 ideocode-productivity-core = { path = "../ideocode-productivity-core" }
 ideocode-tui-workspace = { path = "../ideocode-tui-workspace" }
+ideocode-provider-baanzon = { version = "0.1.0", path = "../ideocode-provider-baanzon" }
+lazy_static = "1.5.0"
 
 [features]
 default = ["pdf", "embeddings", "bedrock"]

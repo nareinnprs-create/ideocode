@@ -1366,6 +1366,9 @@ impl crate::tui::TuiState for App {
                     ProcessingStatus::RunningTool(name) => {
                         ("running".to_string(), Some(format!("tool: {}", name)))
                     }
+                    ProcessingStatus::Installing => {
+                        ("installing".to_string(), Some("installing built-in engine".to_string()))
+                    }
                 };
                 let detail = subagent_status.clone().or(detail);
                 let has_activity = status != "ready" || detail.is_some();

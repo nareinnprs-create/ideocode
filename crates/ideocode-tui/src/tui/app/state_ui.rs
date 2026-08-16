@@ -2109,6 +2109,7 @@ pub(super) fn handle_info_command(app: &mut App, trimmed: &str) -> bool {
                 ProcessingStatus::WaitingForNetwork { listener } =>
                     format!("waiting for network ({})", listener),
                 ProcessingStatus::RunningTool(name) => format!("running tool ({})", name),
+                ProcessingStatus::Installing => "installing".to_string(),
             }
         ));
         if let Some((input, output)) = total_tokens {

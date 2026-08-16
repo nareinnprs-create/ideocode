@@ -511,6 +511,7 @@ impl App {
                             ProcessingStatus::Streaming => "running".to_string(),
                             ProcessingStatus::WaitingForNetwork { .. } => "waiting_network".to_string(),
                             ProcessingStatus::RunningTool(_) => "running".to_string(),
+                            ProcessingStatus::Installing => "installing".to_string(),
                         },
                         detail: self.subagent_status.clone(),
                         task_label: None,
