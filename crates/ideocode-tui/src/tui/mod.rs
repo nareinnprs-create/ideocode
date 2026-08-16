@@ -2257,6 +2257,5 @@ mod tests {
         assert!(flags.contains(KeyboardEnhancementFlags::REPORT_EVENT_TYPES));
         assert!(!flags.contains(KeyboardEnhancementFlags::REPORT_ALL_KEYS_AS_ESCAPE_CODES));
     }
-}
-p u b   m o d   u i _ b a a n z o n _ s t a t u s ;  
- 
+} 
+ pub mod ui_baanzon_status;
