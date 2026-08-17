@@ -74,6 +74,8 @@ export function Composer() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selEndRef = useRef(0);
   const persistSelection = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
 
   const loading = useChatStore((s) => s.loading);
   const streaming = useChatStore((s) => s.streaming);
@@ -122,8 +124,61 @@ export function Composer() {
   useEffect(() => {
     return () => {
       if (persistSelection.current) clearTimeout(persistSelection.current);
+      if (recognitionRef.current && isRecording) {
+        recognitionRef.current.stop();
+      }
     };
+  }, [isRecording]);
+
+  useEffect(() => {
+    // @ts-ignore
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition && !recognitionRef.current) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      
+      recognition.onresult = (event: any) => {
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          }
+        }
+        if (finalTranscript) {
+          setInput(prev => prev + (prev ? " " : "") + finalTranscript);
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        setIsRecording(false);
+        notify("error", "Dictation error", event.error);
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
   }, []);
+
+  const toggleRecording = () => {
+    if (!recognitionRef.current) {
+      notify("error", "Voice Dictation", "Speech Recognition API not supported in this browser");
+      return;
+    }
+    if (isRecording) {
+      recognitionRef.current.stop();
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsRecording(true);
+      } catch (e) {
+        notify("error", "Voice Dictation", String(e));
+      }
+    }
+  };
 
   const handleSend = async () => {
     if (!input.trim() || loading || streaming) return;
@@ -355,25 +410,51 @@ export function Composer() {
           ))}
         </div>
 
-        <div className="hidden sm:flex items-center gap-1" role="group" aria-label="Reasoning effort">
-          {REASONING_LEVELS.map(({ id, label, hint }) => (
-            <Tooltip key={id} label={`Reasoning: ${hint}`}>
-              <button
-                onClick={() => {
-                  setReasoningEffort(id);
-                  persistPatch({ reasoning_effort: id });
-                }}
-                aria-pressed={reasoningEffort === id}
-                className={`px-1.5 py-0.5 rounded text-[11px] font-medium transition-all duration-150 ${
-                  reasoningEffort === id
-                    ? "text-text-primary"
-                    : "text-text-muted hover:text-text-secondary"
-                }`}
-              >
-                {label}
-              </button>
-            </Tooltip>
-          ))}
+        <div className="flex items-center gap-3">
+          <select
+            value={model}
+            onChange={(e) => {
+              const newModel = e.target.value;
+              setModel(newModel);
+              persistPatch({ active_model: newModel });
+              const p = providers.find(prov => prov.models.some(m => m.id === newModel));
+              if (p) {
+                useProviderStore.getState().setActiveProvider(p.id, newModel);
+              }
+            }}
+            className="bg-transparent text-text-muted hover:text-text-primary text-[11px] outline-none cursor-pointer border border-transparent hover:border-border-subtle rounded px-1 py-0.5 transition-fast max-w-[130px] truncate appearance-none"
+            title="Select AI Model"
+          >
+            <option value="auto">Auto (Default)</option>
+            {providers.map(p => (
+              <optgroup key={p.id} label={p.name}>
+                {p.models.map(m => (
+                  <option key={m.id} value={m.id}>{m.name}</option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+
+          <div className="hidden sm:flex items-center gap-1" role="group" aria-label="Reasoning effort">
+            {REASONING_LEVELS.map(({ id, label, hint }) => (
+              <Tooltip key={id} label={`Reasoning: ${hint}`}>
+                <button
+                  onClick={() => {
+                    setReasoningEffort(id);
+                    persistPatch({ reasoning_effort: id });
+                  }}
+                  aria-pressed={reasoningEffort === id}
+                  className={`px-1.5 py-0.5 rounded text-[11px] font-medium transition-all duration-150 ${
+                    reasoningEffort === id
+                      ? "text-text-primary"
+                      : "text-text-muted hover:text-text-secondary"
+                  }`}
+                >
+                  {label}
+                </button>
+              </Tooltip>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -395,10 +476,14 @@ export function Composer() {
               <Paperclip size={16} />
             </button>
           </Tooltip>
-          <Tooltip label="Voice Dictation (Coming soon)">
+          <Tooltip label={isRecording ? "Stop dictation" : "Start Voice Dictation"}>
             <button
-              className="p-2 text-text-muted hover:text-text-primary transition-fast rounded-lg hover:bg-bg-hover shrink-0"
-              onClick={() => notify("info", "Voice Dictation", "Coming soon via WebSpeech API")}
+              className={`p-2 transition-fast rounded-lg shrink-0 ${
+                isRecording 
+                  ? "text-error bg-error/10 hover:bg-error/20 animate-pulse" 
+                  : "text-text-muted hover:text-text-primary hover:bg-bg-hover"
+              }`}
+              onClick={toggleRecording}
             >
               <Mic size={16} />
             </button>

@@ -78,6 +78,22 @@ pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
         ));
     }
 
+    // Pomodoro Timer
+    if let Some(remaining) = crate::tui::ui_integration::pomodoro_remaining() {
+        line1_spans.push(sep.clone());
+        let minutes = remaining.as_secs() / 60;
+        let seconds = remaining.as_secs() % 60;
+        let color = if remaining.as_secs() < 60 {
+            neon_yellow()
+        } else {
+            ideocode_tui_style::color::rgb(255, 80, 80) // Tomato red
+        };
+        line1_spans.push(Span::styled(
+            format!("🍅 {:02}:{:02}", minutes, seconds),
+            Style::default().fg(color).add_modifier(Modifier::BOLD),
+        ));
+    }
+
     // Right-align: version
     let version_text = "v0.60.0";
     let used_width: usize = line1_spans.iter().map(|s| s.content.chars().count()).sum();
@@ -152,11 +168,19 @@ pub fn draw_status_bar(frame: &mut Frame, app: &dyn TuiState, area: Rect) {
     }
 
     // Right-align: keyboard shortcut hints
-    let hints = "Ctrl+/ help │ Alt+8 palette │ Alt+X sidebar";
+    let ctx = if is_processing {
+        crate::tui::ui_quick_actions::ActionContext::Processing
+    } else {
+        crate::tui::ui_quick_actions::ActionContext::Idle
+    };
+    let actions = crate::tui::ui_quick_actions::get_quick_actions(&ctx);
+    let mut hints_spans = crate::tui::ui_quick_actions::get_quick_actions_spans(&actions);
+
     let used_width: usize = line2_spans.iter().map(|s| s.content.chars().count()).sum();
-    let padding = w.saturating_sub(used_width + hints.len());
+    let hints_width: usize = hints_spans.iter().map(|s| s.content.chars().count()).sum();
+    let padding = w.saturating_sub(used_width + hints_width);
     line2_spans.push(Span::styled(" ".repeat(padding), Style::default()));
-    line2_spans.push(Span::styled(hints, Style::default().fg(dim_color())));
+    line2_spans.append(&mut hints_spans);
 
     let line2 = Line::from(line2_spans);
 

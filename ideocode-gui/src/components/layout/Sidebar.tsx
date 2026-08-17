@@ -4,16 +4,11 @@ import {
   FolderTree,
   GitBranch,
   Search,
-  Hammer,
   Terminal,
-  Cpu,
   History,
   BugPlay,
   Settings,
-  Brain,
-  AlertCircle,
-  Globe,
-  LayoutTemplate,
+  Cpu,
 } from "lucide-react";
 import { Tooltip } from "../ui/Tooltip";
 
@@ -30,6 +25,7 @@ const TOP_ITEMS: SidebarItem[] = [
   { id: "git", icon: GitBranch, label: "Source Control" },
   { id: "debug", icon: BugPlay, label: "Run and Debug" },
   { id: "providers", icon: Cpu, label: "Extensions" },
+  { id: "sessions", icon: History, label: "Sessions" },
 ];
 
 const BOTTOM_ITEMS: SidebarItem[] = [

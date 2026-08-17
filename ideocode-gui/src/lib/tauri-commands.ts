@@ -128,6 +128,18 @@ export async function streamChat(
   });
 }
 
+export async function streamInlineEdit(
+  filePath: string,
+  content: string,
+  prompt: string,
+): Promise<Message> {
+  return invoke<Message>("stream_inline_edit", {
+    filePath,
+    content,
+    prompt,
+  });
+}
+
 export async function interruptStream(): Promise<boolean> {
   return invoke<boolean>("interrupt_stream");
 }
@@ -328,6 +340,7 @@ export interface AppSettings {
   dev_mode: boolean;
   custom_instructions: string;
   api_keys: Record<string, string>;
+  mcp_servers: Record<string, string>;
 }
 
 export async function getSettings(): Promise<AppSettings> {
@@ -391,6 +404,10 @@ export interface IndexProgress {
 
 export async function searchContents(path: string, query: string): Promise<CodeSearchResult[]> {
   return invoke<CodeSearchResult[]>("search_contents", { path, query });
+}
+
+export async function searchSemantic(path: string, query: string): Promise<CodeSearchResult[]> {
+  return invoke<CodeSearchResult[]>("search_semantic", { path, query });
 }
 
 export async function indexDirectory(path: string): Promise<IndexProgress> {

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, File, FileText, ArrowLeft } from "lucide-react";
-import { searchFiles, searchContents, indexDirectory } from "../../lib/tauri-commands";
+import { searchFiles, searchContents, searchSemantic, indexDirectory } from "../../lib/tauri-commands";
 import { useFileStore } from "../../stores/fileStore";
 import { useAppStore } from "../../stores/appStore";
 import type { SearchResult, CodeSearchResult } from "../../lib/tauri-commands";
@@ -54,8 +54,11 @@ export function SearchPanel() {
       if (mode === "filename") {
         const r = await searchFiles(query, rootPath || ".");
         setResults(r);
-      } else {
+      } else if (mode === "content") {
         const r = await searchContents(rootPath || ".", query);
+        setResults(r);
+      } else if (mode === "semantic") {
+        const r = await searchSemantic(rootPath || ".", query);
         setResults(r);
       }
     } catch (e) {

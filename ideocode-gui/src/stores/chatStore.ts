@@ -137,7 +137,39 @@ export const useChatStore = create<ChatState>((set) => ({
     try {
       await ensureStreamListeners();
       const fs = useFileStore.getState();
-      const ctx = buildFileContext(content, fs.activeFile, fs.activeFile ? fs.contents[fs.activeFile] : undefined);
+      
+      const mentions = new Set<string>();
+      const mentionRegex = /@([^\s]+)/g;
+      let match;
+      while ((match = mentionRegex.exec(content)) !== null) {
+        mentions.add(match[1]);
+      }
+
+      const mentionedFiles: {path: string, content: string}[] = [];
+      if (mentions.size > 0) {
+        const { readFile, fileExists } = await import("../lib/tauri-commands");
+        const rootPath = fs.rootPath;
+        for (const m of mentions) {
+          if (m === fs.activeFile) continue;
+          let fileContent = fs.contents[m];
+          if (fileContent === undefined) {
+            try {
+              const isAbsolute = m.startsWith("/") || /^[a-zA-Z]:\\/.test(m);
+              const fullPath = isAbsolute ? m : (rootPath ? `${rootPath}/${m}` : m);
+              if (await fileExists(fullPath)) {
+                fileContent = await readFile(fullPath);
+              }
+            } catch {
+              continue;
+            }
+          }
+          if (fileContent !== undefined) {
+            mentionedFiles.push({ path: m, content: fileContent });
+          }
+        }
+      }
+
+      const ctx = buildFileContext(content, fs.activeFile, fs.activeFile ? fs.contents[fs.activeFile] : undefined, mentionedFiles);
       const userMsg = await tauriStream(ctx?.payload ?? content, { model, mode, reasoningEffort });
       const displayMsg = ctx ? { ...userMsg, content: ctx.strip(userMsg.content) } : userMsg;
       set((s) => ({

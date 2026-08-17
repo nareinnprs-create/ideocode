@@ -1,15 +1,16 @@
 import { useEffect, useRef, useCallback, useState } from "react";
-import Editor, { loader } from "@monaco-editor/react";
+import Editor, { DiffEditor, loader } from "@monaco-editor/react";
 import type { OnMount } from "@monaco-editor/react";
 import { useFileStore } from "../../stores/fileStore";
 import { useAppStore } from "../../stores/appStore";
-import { getSettings, updateSettings, getInlineCompletion } from "../../lib/tauri-commands";
+import { getSettings, updateSettings, getInlineCompletion, streamInlineEdit } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
 import { defineAllMonacoThemes, monacoThemeName } from "../../lib/monaco-themes";
 import { IconButton } from "../ui/IconButton";
 import { Tooltip } from "../ui/Tooltip";
-import { ChevronRight, Columns2, WrapText, Map, Save } from "lucide-react";
+import { ChevronRight, Columns2, WrapText, Map, Save, Loader2 } from "lucide-react";
 import { CmdKOverlay } from "./CmdKOverlay";
+import { listen } from "@tauri-apps/api/event";
 
 // Configure Monaco to use the bundled files (copied to public/monaco/vs by
 // scripts/copy-monaco.mjs so the editor works fully offline and matches the
@@ -77,6 +78,13 @@ export function CodeEditor() {
   const [editorSettings, setEditorSettings] = useState<AppSettings | null>(null);
   const [cmdKOpen, setCmdKOpen] = useState(false);
   const [cmdKPos, setCmdKPos] = useState<{ top: number; left: number } | null>(null);
+  const [inlineAI, setInlineAI] = useState<{
+    active: boolean;
+    loading: boolean;
+    original: string;
+    modified: string;
+    error: string | null;
+  } | null>(null);
 
   useEffect(() => {
     getSettings().then(setEditorSettings).catch(() => {});
@@ -236,43 +244,112 @@ export function CodeEditor() {
           isOpen={cmdKOpen} 
           onClose={() => setCmdKOpen(false)} 
           position={cmdKPos} 
-          onSubmit={(prompt) => {
-            console.log("Cmd+K prompt:", prompt);
+          onSubmit={async (prompt) => {
             setCmdKOpen(false);
-            // TODO: implement ghost autocomplete / inline AI diffs
+            if (!activeFile || !fileContent) return;
+            setInlineAI({
+              active: true,
+              loading: true,
+              original: fileContent,
+              modified: "",
+              error: null,
+            });
+            try {
+              const unlisten = await listen<any>("chat://delta", (e) => {
+                if (e.payload.id.startsWith("inline-")) {
+                  setInlineAI(s => s ? { ...s, modified: s.modified + e.payload.content } : s);
+                }
+              });
+              const promise = streamInlineEdit(activeFile, fileContent, prompt);
+              const res = await promise;
+              unlisten();
+              setInlineAI(s => s ? { ...s, loading: false, modified: res.content } : s);
+            } catch (e) {
+              setInlineAI(s => s ? { ...s, loading: false, error: String(e) } : s);
+            }
           }} 
         />
-        <Editor
-          value={fileContent ?? ""}
-          language={language}
-          theme={monacoThemeName(theme)}
-          beforeMount={handleBeforeMount}
-          onMount={handleMount}
-          onChange={handleChange}
-          options={{
-            readOnly: false,
-            minimap: { enabled: editorSettings?.minimap ?? false },
-            fontSize: editorSettings?.font_size ?? 13,
-            fontFamily: editorSettings?.font_family ?? "'JetBrains Mono', 'Fira Code', monospace",
-            fontLigatures: true,
-            lineNumbers: "on",
-            renderWhitespace: "selection",
-            scrollBeyondLastLine: false,
-            automaticLayout: true,
-            smoothScrolling: true,
-            cursorBlinking: "smooth",
-            cursorSmoothCaretAnimation: "on",
-            padding: { top: 8 },
-            tabSize: editorSettings?.tab_size ?? 2,
-            wordWrap: (editorSettings?.word_wrap ? "on" : "off") as "on" | "off",
-            quickSuggestions: true,
-            suggestOnTriggerCharacters: true,
-            parameterHints: { enabled: true },
-            snippetSuggestions: "inline",
-            links: true,
-            bracketPairColorization: { enabled: true },
-          }}
-        />
+        {inlineAI?.active ? (
+          <div className="absolute inset-0 z-10 flex flex-col bg-bg-primary">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-border-subtle bg-bg-secondary/60">
+              <div className="text-xs text-text-primary font-medium">
+                {inlineAI.loading ? (
+                  <span className="flex items-center gap-2"><Loader2 size={12} className="animate-spin" /> Generating changes...</span>
+                ) : inlineAI.error ? (
+                  <span className="text-error">Error: {inlineAI.error}</span>
+                ) : (
+                  <span>Review inline changes</span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setInlineAI(null)}
+                  className="px-3 py-1 rounded bg-bg-elevated hover:bg-bg-tertiary text-text-primary text-xs transition-fast border border-border-subtle"
+                >
+                  Reject
+                </button>
+                <button
+                  disabled={inlineAI.loading}
+                  onClick={() => {
+                    setContent(activeFile, inlineAI.modified);
+                    setInlineAI(null);
+                  }}
+                  className="px-3 py-1 rounded bg-accent-primary hover:bg-accent-hover text-white text-xs font-medium transition-fast disabled:opacity-50"
+                >
+                  Accept
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 min-h-0">
+              <DiffEditor
+                original={inlineAI.original}
+                modified={inlineAI.modified}
+                language={language}
+                theme={monacoThemeName(theme)}
+                options={{
+                  readOnly: true,
+                  renderSideBySide: true,
+                  minimap: { enabled: false },
+                  fontSize: editorSettings?.font_size ?? 13,
+                  fontFamily: editorSettings?.font_family ?? "'JetBrains Mono', 'Fira Code', monospace",
+                  wordWrap: "off",
+                }}
+              />
+            </div>
+          </div>
+        ) : (
+          <Editor
+            value={fileContent ?? ""}
+            language={language}
+            theme={monacoThemeName(theme)}
+            beforeMount={handleBeforeMount}
+            onMount={handleMount}
+            onChange={handleChange}
+            options={{
+              readOnly: false,
+              minimap: { enabled: editorSettings?.minimap ?? false },
+              fontSize: editorSettings?.font_size ?? 13,
+              fontFamily: editorSettings?.font_family ?? "'JetBrains Mono', 'Fira Code', monospace",
+              fontLigatures: true,
+              lineNumbers: "on",
+              renderWhitespace: "selection",
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+              smoothScrolling: true,
+              cursorBlinking: "smooth",
+              cursorSmoothCaretAnimation: "on",
+              padding: { top: 8 },
+              tabSize: editorSettings?.tab_size ?? 2,
+              wordWrap: (editorSettings?.word_wrap ? "on" : "off") as "on" | "off",
+              quickSuggestions: true,
+              suggestOnTriggerCharacters: true,
+              parameterHints: { enabled: true },
+              snippetSuggestions: "inline",
+              links: true,
+              bracketPairColorization: { enabled: true },
+            }}
+          />
+        )}
       </div>
     </div>
   );

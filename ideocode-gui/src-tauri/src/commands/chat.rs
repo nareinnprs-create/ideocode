@@ -1122,3 +1122,60 @@ pub async fn inline_completion(
         Ok(" // AI generated completion".to_string())
     }
 }
+
+#[tauri::command]
+pub async fn stream_inline_edit(
+    file_path: String,
+    content: String,
+    prompt: String,
+    app: tauri::AppHandle,
+) -> Result<Message, String> {
+    let settings = super::settings::get_settings();
+    let provider = if settings.active_provider.is_empty() {
+        "baanzon-verso".to_string()
+    } else {
+        settings.active_provider
+    };
+    let model = if settings.active_model.is_empty() {
+        "auto".to_string()
+    } else {
+        settings.active_model
+    };
+
+    let user_msg = format!("<file name=\"{}\">\n{}\n</file>\n\nInstruction: Rewrite the file to apply this change: {}\n\nReturn ONLY the modified file content without markdown code block backticks.", file_path, content, prompt);
+    let req_messages = vec![serde_json::json!({"role": "user", "content": user_msg})];
+    let assistant_id = format!("inline-{}", new_id());
+
+    let (full, usage) = match provider.as_str() {
+        "baanzon-verso" | "omniroute" | "openai" | "openrouter" => {
+            stream_openai_completion(
+                &provider,
+                &model,
+                &req_messages,
+                None,
+                &app,
+                &assistant_id,
+            )
+            .await?
+        }
+        _ => {
+            let text = chat_completion(&provider, &model, &req_messages).await?;
+            let _ = app.emit(
+                "chat://delta",
+                serde_json::json!({ "id": assistant_id, "content": &text }),
+            );
+            (text, None)
+        }
+    };
+
+    let _ = app.emit("inline://done", serde_json::json!({ "id": assistant_id }));
+
+    Ok(Message {
+        id: assistant_id,
+        role: "assistant".to_string(),
+        content: full,
+        tool_calls: None,
+        timestamp: Some(now_ms()),
+        usage,
+    })
+}

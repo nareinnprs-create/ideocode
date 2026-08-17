@@ -32,6 +32,8 @@ pub struct AppSettings {
     pub custom_instructions: String,
     #[serde(default)]
     pub api_keys: HashMap<String, String>,
+    #[serde(default)]
+    pub mcp_servers: HashMap<String, String>,
 }
 
 fn default_accent() -> String {
@@ -62,6 +64,7 @@ impl Default for AppSettings {
             dev_mode: false,
             custom_instructions: String::new(),
             api_keys: HashMap::new(),
+            mcp_servers: HashMap::new(),
         }
     }
 }

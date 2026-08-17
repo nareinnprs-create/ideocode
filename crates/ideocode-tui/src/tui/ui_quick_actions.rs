@@ -115,9 +115,8 @@ pub fn render_quick_actions_bar(actions: &[QuickAction], selected: usize) -> Lin
     Line::from(spans)
 }
 
-/// Render compact quick actions (single line).
-pub fn render_quick_actions_compact(actions: &[QuickAction]) -> Line<'static> {
-    let spans: Vec<Span> = actions
+pub fn get_quick_actions_spans(actions: &[QuickAction]) -> Vec<Span<'static>> {
+    actions
         .iter()
         .take(5)
         .flat_map(|action| {
@@ -127,14 +126,17 @@ pub fn render_quick_actions_compact(actions: &[QuickAction]) -> Line<'static> {
                     Style::default().fg(neon_cyan()),
                 ),
                 Span::styled(
-                    format!("{} ", action.label),
+                    format!("{}  ", action.label),
                     Style::default().fg(dim_color()),
                 ),
             ]
         })
-        .collect();
+        .collect()
+}
 
-    Line::from(spans)
+/// Render compact quick actions (single line).
+pub fn render_quick_actions_compact(actions: &[QuickAction]) -> Line<'static> {
+    Line::from(get_quick_actions_spans(actions))
 }
 
 #[cfg(test)]

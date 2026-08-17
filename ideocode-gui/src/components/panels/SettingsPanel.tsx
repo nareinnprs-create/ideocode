@@ -6,7 +6,7 @@ import { useAppStore } from "../../stores/appStore";
 import { useProviderStore } from "../../stores/providerStore";
 import { notify } from "../../stores/toastStore";
 
-type Tab = "appearance" | "chat" | "editor" | "providers" | "rules" | "about";
+type Tab = "appearance" | "chat" | "editor" | "providers" | "mcp" | "rules" | "about";
 
 const FONT_SIZES = [11, 12, 13, 14, 15, 16, 18, 20];
 const UI_FONT_SIZES = [11, 12, 13, 14, 15, 16, 18];
@@ -84,7 +84,7 @@ export function SettingsPanel() {
     <div className="flex flex-col h-full">
       {/* Tabs */}
       <div className="flex gap-px px-2 pt-2 border-b border-border-subtle bg-bg-tertiary">
-        {(["appearance", "chat", "editor", "providers", "rules", "about"] as const).map((t) => (
+        {(["appearance", "chat", "editor", "providers", "mcp", "rules", "about"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}

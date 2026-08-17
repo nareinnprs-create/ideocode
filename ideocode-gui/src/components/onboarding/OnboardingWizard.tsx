@@ -84,6 +84,7 @@ export function OnboardingWizard({ onComplete }: Props) {
         dev_mode: false,
         custom_instructions: "",
         api_keys: {},
+        mcp_servers: {},
       };
       updateSettings(settings)
         .then(() => {

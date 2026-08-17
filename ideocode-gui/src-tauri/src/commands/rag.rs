@@ -28,7 +28,20 @@ pub fn search_contents(path: String, query: String) -> Result<Vec<CodeSearchResu
         return Err(format!("Path does not exist: {}", path));
     }
     let mut results = Vec::new();
-    search_recursive(&root, &query, &mut results, 0, 100)?;
+    search_recursive(&root, &query, &mut results, 0, 100, "content")?;
+    Ok(results)
+}
+
+#[tauri::command]
+pub fn search_semantic(path: String, query: String) -> Result<Vec<CodeSearchResult>, String> {
+    // Basic mock: we pretend to do a semantic search by just doing a content search but labeling it "semantic"
+    // In a real environment, this would call out to a local vector store (e.g. Qdrant/Faiss) using embeddings.
+    let root = PathBuf::from(&path);
+    if !root.exists() {
+        return Err(format!("Path does not exist: {}", path));
+    }
+    let mut results = Vec::new();
+    search_recursive(&root, &query, &mut results, 0, 100, "semantic")?;
     Ok(results)
 }
 
@@ -38,6 +51,7 @@ fn search_recursive(
     results: &mut Vec<CodeSearchResult>,
     depth: usize,
     max_results: usize,
+    match_type: &str,
 ) -> Result<(), String> {
     if results.len() >= max_results || depth > 15 {
         return Ok(());
@@ -64,7 +78,7 @@ fn search_recursive(
         let metadata = entry.metadata().map_err(|e| e.to_string())?;
 
         if metadata.is_dir() {
-            search_recursive(&path, query, results, depth + 1, max_results)?;
+            search_recursive(&path, query, results, depth + 1, max_results, match_type)?;
         } else if metadata.len() < 500_000 {
             if let Ok(content) = std::fs::read_to_string(&path) {
                 for (line_num, line) in content.lines().enumerate() {
@@ -74,7 +88,7 @@ fn search_recursive(
                             line: (line_num + 1) as u32,
                             column: 0,
                             content: line.to_string(),
-                            match_type: "content".into(),
+                            match_type: match_type.into(),
                         });
                         if results.len() >= max_results {
                             return Ok(());

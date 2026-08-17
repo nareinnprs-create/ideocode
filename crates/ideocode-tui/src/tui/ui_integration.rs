@@ -547,9 +547,39 @@ pub fn render_session_timer(frame: &mut Frame, area: Rect, app: &dyn TuiState) {
     frame.render_widget(Paragraph::new(line), area);
 }
 
+thread_local! {
+    static POMODORO_END: std::cell::RefCell<Option<std::time::Instant>> = const { std::cell::RefCell::new(None) };
+}
+
+pub fn toggle_pomodoro() {
+    POMODORO_END.with(|s| {
+        let mut end = s.borrow_mut();
+        if end.is_some() {
+            *end = None; // Turn off
+        } else {
+            *end = Some(std::time::Instant::now() + std::time::Duration::from_secs(25 * 60));
+        }
+    });
+}
+
+pub fn pomodoro_remaining() -> Option<std::time::Duration> {
+    POMODORO_END.with(|s| {
+        if let Some(end) = *s.borrow() {
+            let now = std::time::Instant::now();
+            if end > now {
+                Some(end.duration_since(now))
+            } else {
+                Some(std::time::Duration::from_secs(0)) // Finished
+            }
+        } else {
+            None
+        }
+    })
+}
+
 /// Render pomodoro if active
 pub fn render_pomodoro(_frame: &mut Frame, _area: Rect) {
-    // Pomodoro managed via thread-local when user starts one
+    // Deprecated: Now managed and rendered as part of the bottom status bar
 }
 
 /// Render network indicator from real connection state

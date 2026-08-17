@@ -19,20 +19,35 @@ function detectLanguage(filename: string): string {
 
 interface DiffViewerProps {
   file: string;
-  diff: string;
+  diff?: string;
+  originalContent?: string;
+  modifiedContent?: string;
   height?: number | string;
   sideBySide?: boolean;
 }
 
-export function DiffViewer({ file, diff, height = 224, sideBySide = true }: DiffViewerProps) {
+export function DiffViewer({ file, diff, originalContent, modifiedContent, height = 224, sideBySide = true }: DiffViewerProps) {
   const theme = useAppStore((s) => s.theme);
-  const parsed = parseUnifiedDiff(diff);
+  
+  let original = originalContent || "";
+  let modified = modifiedContent || "";
+  let isParseable = true;
+
+  if (diff) {
+    const parsed = parseUnifiedDiff(diff);
+    if (parsed) {
+      original = parsed.original;
+      modified = parsed.modified;
+    } else {
+      isParseable = false;
+    }
+  }
 
   const handleBeforeMount = (monaco: typeof import("monaco-editor")) => {
     defineAllMonacoThemes(monaco);
   };
 
-  if (!parsed) {
+  if (!isParseable) {
     return (
       <pre className="px-3 py-2 text-[11px] font-mono text-text-secondary max-h-48 overflow-y-auto whitespace-pre-wrap">
         {diff ? "Binary or unparseable diff" : "No diff available"}
@@ -43,8 +58,8 @@ export function DiffViewer({ file, diff, height = 224, sideBySide = true }: Diff
   return (
     <div style={{ height }}>
       <DiffEditor
-        original={parsed.original}
-        modified={parsed.modified}
+        original={original}
+        modified={modified}
         language={detectLanguage(file)}
         theme={monacoThemeName(theme)}
         beforeMount={handleBeforeMount}

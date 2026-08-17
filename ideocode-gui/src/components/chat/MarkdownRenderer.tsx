@@ -2,7 +2,10 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { lazy, Suspense, useState } from "react";
-import { Copy, Check, FileCode2 } from "lucide-react";
+import { Copy, Check, FileCode2, Play } from "lucide-react";
+import { useFileStore } from "../../stores/fileStore";
+import { useEditStore } from "../../stores/editStore";
+import { notify } from "../../stores/toastStore";
 
 const MermaidDiagram = lazy(() =>
   import("./MermaidDiagram").then((m) => ({ default: m.MermaidDiagram })),
@@ -148,6 +151,9 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
 
 function CodeBlock({ children, lang }: { children: React.ReactNode; lang: string | null }) {
   const [copied, setCopied] = useState(false);
+  const activeFile = useFileStore(s => s.activeFile);
+  const contents = useFileStore(s => s.contents);
+  const stageEdit = useEditStore(s => s.stageEdit);
 
   const handleCopy = () => {
     const text = extractText(children);
@@ -157,17 +163,37 @@ function CodeBlock({ children, lang }: { children: React.ReactNode; lang: string
     }).catch(() => {});
   };
 
+  const handleApply = () => {
+    if (!activeFile) {
+      notify("error", "No active file", "Please open a file to apply the edit.");
+      return;
+    }
+    const text = extractText(children);
+    stageEdit(activeFile, contents[activeFile] || "", text);
+    notify("success", "Edit staged", `Staged edit for ${activeFile.split(/[/\\]/).pop()}`);
+  };
+
   return (
     <div className="group/cb my-2 rounded-lg overflow-hidden border border-border-subtle">
       <div className="flex items-center justify-between px-3 py-1.5 bg-bg-tertiary/60 border-b border-border-subtle">
         <span className="text-[11px] text-text-muted font-mono">{lang || "code"}</span>
-        <button
-          onClick={handleCopy}
-          className="flex items-center gap-1.5 p-1 rounded-md text-text-muted hover:text-text-primary hover:bg-bg-hover opacity-60 group-hover/cb:opacity-100 focus-visible:opacity-100 transition-fast"
-        >
-          {copied ? <Check size={12} /> : <Copy size={12} />}
-          <span className="text-[11px]">{copied ? "Copied" : "Copy"}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleApply}
+            className="flex items-center gap-1.5 p-1 rounded-md text-accent-primary hover:bg-accent-primary/10 opacity-60 group-hover/cb:opacity-100 focus-visible:opacity-100 transition-fast"
+            title="Stage edit for active file"
+          >
+            <Play size={12} />
+            <span className="text-[11px] font-medium">Apply</span>
+          </button>
+          <button
+            onClick={handleCopy}
+            className="flex items-center gap-1.5 p-1 rounded-md text-text-muted hover:text-text-primary hover:bg-bg-hover opacity-60 group-hover/cb:opacity-100 focus-visible:opacity-100 transition-fast"
+          >
+            {copied ? <Check size={12} /> : <Copy size={12} />}
+            <span className="text-[11px]">{copied ? "Copied" : "Copy"}</span>
+          </button>
+        </div>
       </div>
       <pre className="bg-bg-secondary p-3 overflow-x-auto text-[13px] leading-relaxed font-mono">
         {children}

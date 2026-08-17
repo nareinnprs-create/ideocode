@@ -92,6 +92,7 @@ fn main() {
             log_error,
             commands::send_message,
             commands::stream_chat,
+            commands::stream_inline_edit,
             commands::interrupt_stream,
             commands::save_partial_message,
             commands::compact_session,
@@ -132,6 +133,7 @@ fn main() {
             commands::delete_memory,
             // RAG / Code Search
             commands::search_contents,
+            commands::search_semantic,
             commands::index_directory,
             // Issues
             commands::list_issues,

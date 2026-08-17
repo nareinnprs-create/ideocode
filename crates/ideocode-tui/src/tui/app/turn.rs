@@ -49,9 +49,62 @@ impl App {
             let baanzon = ideocode_provider_baanzon::gateway_status_blocking();
             if baanzon.installing {
                 self.status = ProcessingStatus::Installing;
-            } else {
-                self.status = ProcessingStatus::Sending;
+                status_spinner_renderer.draw_full(self, terminal)?;
+                super::run_shell::reset_status_spinner_interval(&mut status_spinner_interval, self);
+                
+                // Wait for installation to complete while maintaining responsive UI
+                loop {
+                    tokio::select! {
+                        biased;
+                        event = event_stream.next() => {
+                            match event {
+                                Some(Ok(Event::Key(key))) => {
+                                    self.update_copy_badge_key_event(key);
+                                    if matches!(key.kind, KeyEventKind::Press | KeyEventKind::Repeat) {
+                                        let scroll_only = super::input::is_scroll_only_key(self, key.code, key.modifiers);
+                                        let _ = self.handle_key_press_event(key);
+                                        if self.cancel_requested {
+                                            self.cancel_requested = false;
+                                            self.push_display_message(DisplayMessage::system("Interrupted."));
+                                            return Ok(());
+                                        }
+                                        if !scroll_only {
+                                            status_spinner_renderer.draw_full(self, terminal)?;
+                                            super::run_shell::reset_status_spinner_interval(&mut status_spinner_interval, self);
+                                        }
+                                    }
+                                }
+                                Some(Ok(Event::Resize(_, _))) => {
+                                    if self.should_redraw_after_resize() {
+                                        status_spinner_renderer.draw_full(self, terminal)?;
+                                        super::run_shell::reset_status_spinner_interval(&mut status_spinner_interval, self);
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                        _ = status_spinner_interval.tick(), if status_spinner_renderer.spinner_only_available(self) => {
+                            if !status_spinner_renderer.draw_status_spinner_only(self, terminal)? {
+                                status_spinner_renderer.draw_full(self, terminal)?;
+                                super::run_shell::reset_status_spinner_interval(&mut status_spinner_interval, self);
+                            }
+                        }
+                        _ = redraw_interval.tick() => {
+                            let _ = self.flush_pending_resize_redraw();
+                            status_spinner_renderer.draw_full(self, terminal)?;
+                            super::run_shell::reset_status_spinner_interval(&mut status_spinner_interval, self);
+                        }
+                        _ = tokio::time::sleep(std::time::Duration::from_millis(500)) => {
+                            let current_baanzon = ideocode_provider_baanzon::gateway_status_blocking();
+                            if !current_baanzon.installing {
+                                break;
+                            }
+                        }
+                    }
+                }
             }
+
+            self.status = ProcessingStatus::Sending;
             status_spinner_renderer.draw_full(self, terminal)?;
             super::run_shell::reset_status_spinner_interval(&mut status_spinner_interval, self);
             self.flush_pending_session_save();

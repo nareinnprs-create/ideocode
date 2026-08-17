@@ -3606,11 +3606,8 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     crate::tui::ui_integration::render_profiler_panel(frame, area, app);
     crate::tui::ui_integration::render_provider_panel(frame, area);
 
-    // ── BATCH 1: Standalone module wiring ─────────────────────────────
-
-    // Quick actions bar (bottom)
-    crate::tui::ui_integration::render_quick_actions(frame, area, app);
-
+    // Quick actions are now integrated into the bottom status bar
+    
     // Scroll position indicator
     crate::tui::ui_integration::render_scroll_position(frame, area, app);
 
