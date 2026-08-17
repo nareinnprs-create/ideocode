@@ -59,7 +59,7 @@ export function TopBar() {
   return (
     <header
       data-tauri-drag-region
-      className="flex items-center h-9 px-2 gap-3 bg-bg-primary border-b border-border-subtle select-none shrink-0"
+      className="flex items-center h-9 px-2 gap-3 bg-transparent border-b border-white/5 select-none shrink-0 z-20"
     >
       {/* Brand / project */}
       <div className="flex items-center gap-2 min-w-0" data-tauri-drag-region>
@@ -80,7 +80,7 @@ export function TopBar() {
       <div className="flex-1 flex justify-center min-w-0">
         <button
           onClick={() => setCommandPaletteOpen(true)}
-          className="group flex items-center gap-2 h-6 px-3 rounded-md border border-border-subtle bg-bg-primary text-text-muted hover:border-accent-primary/40 hover:text-text-secondary transition-all w-full max-w-sm focus-visible:outline-2 focus-visible:outline-accent-secondary"
+          className="group flex items-center gap-2 h-6 px-3 rounded-md border border-white/5 bg-white/5 text-text-muted hover:border-accent-primary/40 hover:text-text-secondary transition-all w-full max-w-sm focus-visible:outline-2 focus-visible:outline-accent-secondary"
         >
           <Search size={12} className="transition-colors group-hover:text-accent-primary" />
           <span className="text-xs flex-1 text-left truncate">Search commands, files, actions…</span>

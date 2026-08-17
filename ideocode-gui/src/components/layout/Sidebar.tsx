@@ -48,16 +48,16 @@ function SidebarButton({
       onClick={onClick}
       aria-label={label}
       aria-pressed={active}
-      className={`relative w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-150 ease-spring ${
+      className={`relative w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-150 ease-spring ${
         active
-          ? "text-text-primary bg-bg-hover"
-          : "text-text-muted hover:text-text-primary hover:bg-bg-hover"
+          ? "text-text-primary bg-white/5"
+          : "text-text-muted hover:text-text-primary hover:bg-white/5"
       }`}
     >
       {active && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-text-primary" />
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-3 rounded-r-full bg-accent-primary" />
       )}
-      <Icon size={19} strokeWidth={active ? 2.2 : 1.8} />
+      <Icon size={16} strokeWidth={active ? 2 : 1.75} />
     </button>
   );
 }
@@ -104,22 +104,28 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="flex flex-col w-[52px] bg-bg-secondary/80 border-r border-border-subtle py-2 items-center justify-between shrink-0 surface-blur">
-      <nav className="flex flex-col gap-1 items-center" aria-label="Primary">
-        {TOP_ITEMS.map(({ id, icon, label, shortcut }) => (
-          <Tooltip key={id} label={`${label}${shortcut ? ` (${shortcut})` : ""}`} position="right">
+    <div className="w-[50px] shrink-0 flex flex-col items-center py-2 bg-transparent border-r border-border-subtle z-20">
+      <div className="flex-1 flex flex-col items-center gap-2">
+        <SidebarButton
+          icon={MessageSquare}
+          label="Chat (Cmd+L)"
+          active={chatPanelOpen}
+          onClick={() => handleClick("chat")}
+        />
+        {TOP_ITEMS.map((item) => (
+          <Tooltip key={item.id} label={item.label} position="right">
             <SidebarButton
-              icon={icon}
-              label={label}
-              active={isActive(id)}
-              onClick={() => handleClick(id)}
+              icon={item.icon}
+              label={item.label}
+              active={isActive(item.id)}
+              onClick={() => handleClick(item.id)}
             />
           </Tooltip>
         ))}
-      </nav>
+      </div>
 
-      <nav className="flex flex-col gap-1 items-center" aria-label="Utility">
-        <Tooltip label="Terminal" position="right">
+      <div className="flex flex-col items-center gap-2 pb-2">
+        <Tooltip label="Terminal (Cmd+`)" position="right">
           <SidebarButton
             icon={Terminal}
             label="Terminal"
@@ -127,17 +133,17 @@ export function Sidebar() {
             onClick={() => handleClick("terminal")}
           />
         </Tooltip>
-        {BOTTOM_ITEMS.map(({ id, icon, label }) => (
-          <Tooltip key={id} label={label} position="right">
+        {BOTTOM_ITEMS.map((item) => (
+          <Tooltip key={item.id} label={item.label} position="right">
             <SidebarButton
-              icon={icon}
-              label={label}
-              active={isActive(id)}
-              onClick={() => handleClick(id)}
+              icon={item.icon}
+              label={item.label}
+              active={isActive(item.id)}
+              onClick={() => handleClick(item.id)}
             />
           </Tooltip>
         ))}
-      </nav>
-    </aside>
+      </div>
+    </div>
   );
 }

@@ -110,7 +110,7 @@ export function CommandPalette() {
 
       <div className="relative w-full max-w-xl glass-strong rounded-xl overflow-hidden animate-float-in">
         {/* Input */}
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-border-subtle hairline-top">
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 hairline-top">
           <Search size={16} className="text-text-muted shrink-0" />
           <input
             ref={inputRef}
@@ -132,7 +132,7 @@ export function CommandPalette() {
 
         {/* Quick actions (ZCode-style) */}
         {!query.trim() && (
-          <div className="flex items-center gap-1.5 px-3 py-2.5 border-b border-border-subtle bg-bg-secondary/40">
+          <div className="flex items-center gap-1.5 px-3 py-2.5 border-b border-white/5 bg-transparent">
             {QUICK_ACTIONS.map((a) => (
               <button
                 key={a.label}
@@ -140,7 +140,7 @@ export function CommandPalette() {
                   a.run();
                   setCommandPaletteOpen(false);
                 }}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border-subtle bg-bg-secondary text-xs font-medium text-text-secondary hover:border-accent-primary/40 hover:text-accent-primary hover:bg-bg-hover transition-all duration-150"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/5 bg-transparent text-xs font-medium text-text-secondary hover:border-accent-primary/40 hover:text-accent-primary hover:bg-white/5 transition-all duration-150"
               >
                 <a.icon size={13} />
                 {a.label}
