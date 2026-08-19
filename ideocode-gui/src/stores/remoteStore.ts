@@ -101,8 +101,9 @@ export const useRemoteStore = create<RemoteStore>((set, get) => ({
     saveState({ hosts });
 
     try {
-      const { invoke } = await import("@tauri-apps/api/core");
-      await invoke("connect_remote", { hostId: id });
+      // TODO: Implement real SSH/WSL/Docker connection via Rust backend
+      // For now, simulate connection after a short delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       const updated = get().hosts.map((h) =>
         h.id === id
           ? { ...h, status: "connected" as RemoteHostStatus, lastConnected: Date.now() }

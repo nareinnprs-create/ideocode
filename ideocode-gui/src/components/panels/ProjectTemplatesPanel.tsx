@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { LayoutTemplate, Plus, Trash2, Play, Search, FolderOpen, Code2 } from "lucide-react";
+import { LayoutTemplate, Plus, Trash2, Play, Search, FolderOpen, Code2, Check } from "lucide-react";
+import { writeFile, loadWorkspacePath } from "../../lib/tauri-commands";
 
 interface ProjectTemplate {
   id: string;
@@ -91,10 +92,18 @@ export function ProjectTemplatesPanel() {
     setTemplates(next); saveTemplates(next.filter((t) => !BUILT_IN_TEMPLATES.some((b) => b.id === t.id)));
   };
 
+  const [appliedId, setAppliedId] = useState<string | null>(null);
+
   const useTemplate = async (template: ProjectTemplate) => {
     try {
-      const { invoke } = await import("@tauri-apps/api/core");
-      await invoke("create_from_template", { template: { name: template.name, language: template.language, files: template.files } });
+      const workspace = await loadWorkspacePath();
+      if (!workspace) return;
+      for (const file of template.files) {
+        const fullPath = `${workspace}/${file.path}`;
+        await writeFile(fullPath, file.content);
+      }
+      setAppliedId(template.id);
+      setTimeout(() => setAppliedId(null), 2000);
     } catch {}
   };
 
@@ -151,8 +160,9 @@ export function ProjectTemplatesPanel() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-fast">
-                  <button onClick={() => useTemplate(t)} className="flex items-center gap-1 px-2 py-1 text-[10px] rounded bg-accent-primary text-white hover:bg-accent-hover transition-fast">
-                    <Play size={10} /> Use
+                  <button onClick={() => useTemplate(t)} disabled={appliedId === t.id}
+                    className="flex items-center gap-1 px-2 py-1 text-[10px] rounded bg-accent-primary text-white hover:bg-accent-hover disabled:opacity-70 transition-fast">
+                    {appliedId === t.id ? <><Check size={10} /> Applied</> : <><Play size={10} /> Use</>}
                   </button>
                   {!BUILT_IN_TEMPLATES.some((b) => b.id === t.id) && (
                     <button onClick={() => remove(t.id)} className="p-1 text-text-muted hover:text-red-400 transition-fast">
