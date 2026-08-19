@@ -78,6 +78,20 @@ fn settings_path() -> PathBuf {
         .unwrap_or_default()
 }
 
+/// Load settings from disk (non-Tauri-callable helper for internal use).
+pub fn load_settings() -> Result<AppSettings, String> {
+    let path = settings_path();
+    if path.exists() {
+        std::fs::read_to_string(&path)
+            .ok()
+            .and_then(|s| serde_json::from_str(&s).ok())
+            .map(Ok)
+            .unwrap_or_else(|| Ok(AppSettings::default()))
+    } else {
+        Ok(AppSettings::default())
+    }
+}
+
 #[tauri::command]
 pub fn get_settings() -> AppSettings {
     let path = settings_path();

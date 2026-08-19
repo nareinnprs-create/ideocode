@@ -62,14 +62,15 @@ function detectLanguage(filename: string): string {
   return EXT_TO_LANG[ext] ?? "plaintext";
 }
 
-export function CodeEditor() {
+export function CodeEditor({ file: overrideFile }: { file?: string } = {}) {
   const activeFile = useFileStore((s) => s.activeFile);
+  const currentFile = overrideFile ?? activeFile;
   const fileContent = useFileStore((s) =>
-    s.activeFile ? s.contents[s.activeFile] : null,
+    currentFile ? s.contents[currentFile] : null,
   );
   const setContent = useFileStore((s) => s.setContent);
   const saveFile = useFileStore((s) => s.saveFile);
-  const dirty = useFileStore((s) => (s.activeFile ? s.dirty[s.activeFile] : false));
+  const dirty = useFileStore((s) => (currentFile ? s.dirty[currentFile] : false));
   const theme = useAppStore((s) => s.theme);
   const editorSplit = useAppStore((s) => s.editorSplit);
   const toggleEditorSplit = useAppStore((s) => s.toggleEditorSplit);
@@ -171,8 +172,8 @@ export function CodeEditor() {
 
   const handleChange = useCallback(
     (value: string | undefined) => {
-      if (!activeFile) return;
-      setContent(activeFile, value ?? "");
+      if (!currentFile) return;
+      setContent(currentFile, value ?? "");
       if (editorSettings?.auto_save) {
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(() => {
@@ -180,16 +181,16 @@ export function CodeEditor() {
         }, 800);
       }
     },
-    [activeFile, editorSettings?.auto_save, setContent, saveFile],
+    [currentFile, editorSettings?.auto_save, setContent, saveFile],
   );
 
-  if (!activeFile) {
+  if (!currentFile) {
     return null;
   }
 
-  const filename = activeFile.split(/[/\\]/).pop() ?? "untitled";
+  const filename = currentFile.split(/[/\\]/).pop() ?? "untitled";
   const language = detectLanguage(filename);
-  const segments = activeFile.split(/[/\\]/).filter(Boolean);
+  const segments = currentFile.split(/[/\\]/).filter(Boolean);
 
   return (
     <div className="flex flex-col h-full">
@@ -246,7 +247,7 @@ export function CodeEditor() {
           position={cmdKPos} 
           onSubmit={async (prompt) => {
             setCmdKOpen(false);
-            if (!activeFile || !fileContent) return;
+            if (!currentFile || !fileContent) return;
             setInlineAI({
               active: true,
               loading: true,
@@ -260,7 +261,7 @@ export function CodeEditor() {
                   setInlineAI(s => s ? { ...s, modified: s.modified + e.payload.content } : s);
                 }
               });
-              const promise = streamInlineEdit(activeFile, fileContent, prompt);
+              const promise = streamInlineEdit(currentFile, fileContent, prompt);
               const res = await promise;
               unlisten();
               setInlineAI(s => s ? { ...s, loading: false, modified: res.content } : s);
@@ -291,7 +292,7 @@ export function CodeEditor() {
                 <button
                   disabled={inlineAI.loading}
                   onClick={() => {
-                    setContent(activeFile, inlineAI.modified);
+                    setContent(currentFile!, inlineAI.modified);
                     setInlineAI(null);
                   }}
                   className="px-3 py-1 rounded bg-accent-primary hover:bg-accent-hover text-white text-xs font-medium transition-fast disabled:opacity-50"

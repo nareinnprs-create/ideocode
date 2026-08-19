@@ -1,5 +1,5 @@
 import { lazy, Suspense, useRef } from "react";
-import { Terminal, Hammer, BugPlay, Brain, AlertCircle, X } from "lucide-react";
+import { Terminal, Hammer, BugPlay, Brain, AlertCircle, X, FileOutput, GitCompare, Clock } from "lucide-react";
 import { useAppStore, type PanelId } from "../../stores/appStore";
 import { useDragResize } from "../../hooks/useDragResize";
 
@@ -18,13 +18,25 @@ const MemoryPanel = lazy(() =>
 const IssuePanel = lazy(() =>
   import("../panels/IssuePanel").then((m) => ({ default: m.IssuePanel })),
 );
+const OutputPanel = lazy(() =>
+  import("../panels/OutputPanel").then((m) => ({ default: m.OutputPanel })),
+);
+const DiffPanel = lazy(() =>
+  import("../panels/DiffPanel").then((m) => ({ default: m.DiffPanel })),
+);
+const TimelinePanel = lazy(() =>
+  import("../panels/TimelinePanel").then((m) => ({ default: m.TimelinePanel })),
+);
 
 const BOTTOM_TABS: { id: PanelId; label: string; icon: typeof Terminal }[] = [
   { id: "terminal", label: "Terminal", icon: Terminal },
+  { id: "output", label: "Output", icon: FileOutput },
   { id: "build", label: "Build", icon: Hammer },
   { id: "debug", label: "Debug", icon: BugPlay },
+  { id: "diff", label: "Diff", icon: GitCompare },
   { id: "memory", label: "Memory", icon: Brain },
   { id: "issues", label: "Issues", icon: AlertCircle },
+  { id: "timeline", label: "Timeline", icon: Clock },
 ];
 
 function PanelLoader({ panel }: { panel: PanelId }) {
@@ -39,6 +51,12 @@ function PanelLoader({ panel }: { panel: PanelId }) {
       return <MemoryPanel />;
     case "issues":
       return <IssuePanel />;
+    case "output":
+      return <OutputPanel />;
+    case "diff":
+      return <DiffPanel />;
+    case "timeline":
+      return <TimelinePanel />;
     default:
       return null;
   }

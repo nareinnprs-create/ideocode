@@ -1,31 +1,99 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useMemoryStore } from "../../stores/memoryStore";
 import { useAppStore } from "../../stores/appStore";
-import { Brain, Search, Plus, Trash2, ArrowLeft, BookOpen } from "lucide-react";
+import { type MemoryEntry } from "../../lib/tauri-commands";
+import { ContextMenu, type ContextMenuItem } from "../ui/ContextMenu";
+import { Brain, Search, Plus, Trash2, ArrowLeft, BookOpen, Pencil, Copy, ArrowUpDown } from "lucide-react";
+
+type SortMode = "newest" | "oldest" | "alpha";
+
+const CATEGORIES = ["All", "General", "Fact", "Preference", "Entity", "Correction"] as const;
+type CategoryFilter = (typeof CATEGORIES)[number];
+
+function entryCategoryFilter(entry: MemoryEntry, filter: CategoryFilter): boolean {
+  if (filter === "All") return true;
+  return entry.category.toLowerCase() === filter.toLowerCase();
+}
+
+function sortEntries(entries: MemoryEntry[], mode: SortMode): MemoryEntry[] {
+  const copy = [...entries];
+  switch (mode) {
+    case "newest":
+      return copy.sort((a, b) => b.created_at - a.created_at);
+    case "oldest":
+      return copy.sort((a, b) => a.created_at - b.created_at);
+    case "alpha":
+      return copy.sort((a, b) => a.content.localeCompare(b.content));
+  }
+}
 
 export function MemoryPanel() {
-  const { entries, loading, error, searchQuery, loadMemories, searchMemories, storeMemory, deleteMemory, setSearchQuery } =
-    useMemoryStore();
+  const {
+    entries,
+    loading,
+    error,
+    searchQuery,
+    loadMemories,
+    searchMemories,
+    storeMemory,
+    deleteMemory,
+    setSearchQuery,
+  } = useMemoryStore();
   const setRightPanelOpen = useAppStore((s) => s.setRightPanelOpen);
+
   const [input, setInput] = useState("");
   const [tags, setTags] = useState("");
   const [category, setCategory] = useState("general");
   const [showAdd, setShowAdd] = useState(false);
 
+  const [activeFilter, setActiveFilter] = useState<CategoryFilter>("All");
+  const [sortMode, setSortMode] = useState<SortMode>("newest");
+  const [showSortMenu, setShowSortMenu] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState("");
+  const editRef = useRef<HTMLTextAreaElement>(null);
+
   useEffect(() => {
     loadMemories();
-  }, []);
+  }, [loadMemories]);
 
-  const handleSearch = (q: string) => {
-    setSearchQuery(q);
-    if (q.trim()) {
-      searchMemories(q);
-    } else {
-      loadMemories();
+  useEffect(() => {
+    if (editingId && editRef.current) {
+      editRef.current.focus();
+      editRef.current.selectionStart = editRef.current.value.length;
     }
-  };
+  }, [editingId]);
 
-  const handleAdd = async () => {
+  useEffect(() => {
+    if (!showSortMenu) return;
+    const handleClick = (e: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
+        setShowSortMenu(false);
+      }
+    };
+    window.addEventListener("pointerdown", handleClick);
+    return () => window.removeEventListener("pointerdown", handleClick);
+  }, [showSortMenu]);
+
+  const filtered = useMemo(() => {
+    return sortEntries(entries.filter((e) => entryCategoryFilter(e, activeFilter)), sortMode);
+  }, [entries, activeFilter, sortMode]);
+
+  const handleSearch = useCallback(
+    (q: string) => {
+      setSearchQuery(q);
+      if (q.trim()) {
+        searchMemories(q);
+      } else {
+        loadMemories();
+      }
+    },
+    [setSearchQuery, searchMemories, loadMemories],
+  );
+
+  const handleAdd = useCallback(async () => {
     if (!input.trim()) return;
     const tagList = tags
       .split(",")
@@ -35,6 +103,76 @@ export function MemoryPanel() {
     setInput("");
     setTags("");
     setShowAdd(false);
+  }, [input, tags, category, storeMemory]);
+
+  const startEdit = useCallback((entry: MemoryEntry) => {
+    setEditingId(entry.id);
+    setEditContent(entry.content);
+  }, []);
+
+  const commitEdit = useCallback(
+    async (entry: MemoryEntry) => {
+      const trimmed = editContent.trim();
+      if (trimmed && trimmed !== entry.content) {
+        await deleteMemory(entry.id);
+        await storeMemory(trimmed, entry.tags, entry.category);
+      }
+      setEditingId(null);
+      setEditContent("");
+    },
+    [editContent, deleteMemory, storeMemory],
+  );
+
+  const cancelEdit = useCallback(() => {
+    setEditingId(null);
+    setEditContent("");
+  }, []);
+
+  const handleEditKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>, entry: MemoryEntry) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        commitEdit(entry);
+      } else if (e.key === "Escape") {
+        cancelEdit();
+      }
+    },
+    [commitEdit, cancelEdit],
+  );
+
+  const copyContent = useCallback((content: string) => {
+    navigator.clipboard.writeText(content).catch(() => {});
+  }, []);
+
+  const buildContextMenuItems = useCallback(
+    (entry: MemoryEntry): ContextMenuItem[] => [
+      {
+        id: "edit",
+        label: "Edit",
+        icon: <Pencil size={12} />,
+        onSelect: () => startEdit(entry),
+      },
+      {
+        id: "copy",
+        label: "Copy",
+        icon: <Copy size={12} />,
+        onSelect: () => copyContent(entry.content),
+      },
+      {
+        id: "delete",
+        label: "Delete",
+        icon: <Trash2 size={12} />,
+        danger: true,
+        onSelect: () => deleteMemory(entry.id),
+      },
+    ],
+    [startEdit, copyContent, deleteMemory],
+  );
+
+  const SORT_LABELS: Record<SortMode, string> = {
+    newest: "Newest first",
+    oldest: "Oldest first",
+    alpha: "Alphabetical",
   };
 
   return (
@@ -125,53 +263,125 @@ export function MemoryPanel() {
         </div>
       )}
 
+      {/* Category filter chips */}
+      {!loading && !error && entries.length > 0 && (
+        <div className="px-3 pb-2 flex items-center gap-1.5 overflow-x-auto">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveFilter(cat)}
+              className={[
+                "shrink-0 px-2.5 py-1 text-[11px] rounded-full border transition-fast",
+                activeFilter === cat
+                  ? "bg-accent-primary/15 border-accent-primary text-accent-primary"
+                  : "bg-bg-tertiary border-border-subtle text-text-muted hover:text-text-primary hover:border-border-default",
+              ].join(" ")}
+            >
+              {cat}
+            </button>
+          ))}
+          <div className="relative ml-auto shrink-0" ref={sortRef}>
+            <button
+              onClick={() => setShowSortMenu(!showSortMenu)}
+              className="flex items-center gap-1 px-2 py-1 text-[11px] rounded border border-border-subtle bg-bg-tertiary text-text-muted hover:text-text-primary hover:border-border-default transition-fast"
+            >
+              <ArrowUpDown size={11} />
+              {SORT_LABELS[sortMode]}
+            </button>
+            {showSortMenu && (
+              <div className="absolute right-0 top-full mt-1 z-50 min-w-36 py-1 rounded-lg border border-border-default bg-bg-elevated shadow-pop">
+                {(["newest", "oldest", "alpha"] as SortMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => {
+                      setSortMode(mode);
+                      setShowSortMenu(false);
+                    }}
+                    className={[
+                      "w-full text-left px-3 py-1.5 text-xs transition-colors",
+                      sortMode === mode
+                        ? "text-accent-primary bg-accent-primary/10"
+                        : "text-text-secondary hover:text-text-primary hover:bg-bg-hover",
+                    ].join(" ")}
+                  >
+                    {SORT_LABELS[mode]}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Empty */}
-      {!loading && !error && entries.length === 0 && (
+      {!loading && !error && filtered.length === 0 && (
         <div className="flex flex-col items-center justify-center py-8 text-text-muted">
           <BookOpen size={24} className="mb-2 opacity-50" />
-          <div className="text-xs">No memories yet</div>
-          <div className="text-[11px] mt-1">Click Add to store your first memory</div>
+          <div className="text-xs">
+            {entries.length === 0 ? "No memories yet" : "No matching memories"}
+          </div>
+          <div className="text-[11px] mt-1">
+            {entries.length === 0 ? "Click Add to store your first memory" : "Try a different filter or search query"}
+          </div>
         </div>
       )}
 
       {/* Memory list */}
       <div className="flex-1 overflow-y-auto py-1">
-        {entries.map((entry) => (
-          <div
-            key={entry.id}
-            className="px-3 py-2 border-b border-border-subtle last:border-none hover:bg-bg-elevated transition-fast group"
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex-1 min-w-0">
-                <div className="text-xs text-text-primary break-words whitespace-pre-wrap">
-                  {entry.content}
-                </div>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-bg-tertiary text-text-muted uppercase">
-                    {entry.category}
-                  </span>
-                  {entry.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[11px] px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                <div className="text-[11px] text-text-muted mt-1">
-                  {new Date(entry.created_at * 1000).toLocaleDateString()}
+        {filtered.map((entry) => {
+          const isEditing = editingId === entry.id;
+          return (
+            <ContextMenu key={entry.id} items={buildContextMenuItems(entry)}>
+              <div className="px-3 py-2 border-b border-border-subtle last:border-none hover:bg-bg-elevated transition-fast group">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    {isEditing ? (
+                      <textarea
+                        ref={editRef}
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        onBlur={() => commitEdit(entry)}
+                        onKeyDown={(e) => handleEditKeyDown(e, entry)}
+                        className="w-full p-1.5 text-xs bg-bg-tertiary border border-accent-primary rounded text-text-primary resize-none focus:outline-none"
+                        rows={3}
+                      />
+                    ) : (
+                      <div
+                        className="text-xs text-text-primary break-words whitespace-pre-wrap cursor-pointer hover:bg-accent-primary/5 rounded px-0.5 -mx-0.5"
+                        onClick={() => startEdit(entry)}
+                        title="Click to edit"
+                      >
+                        {entry.content}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[11px] px-1.5 py-0.5 rounded bg-bg-tertiary text-text-muted uppercase">
+                        {entry.category}
+                      </span>
+                      {entry.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[11px] px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="text-[11px] text-text-muted mt-1">
+                      {new Date(entry.created_at * 1000).toLocaleDateString()}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => deleteMemory(entry.id)}
+                    className="p-1 text-text-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-fast"
+                  >
+                    <Trash2 size={12} />
+                  </button>
                 </div>
               </div>
-              <button
-                onClick={() => deleteMemory(entry.id)}
-                className="p-1 text-text-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-fast"
-              >
-                <Trash2 size={12} />
-              </button>
-            </div>
-          </div>
-        ))}
+            </ContextMenu>
+          );
+        })}
       </div>
     </div>
   );

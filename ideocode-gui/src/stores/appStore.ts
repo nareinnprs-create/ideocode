@@ -16,7 +16,31 @@ export type PanelId =
   | "memory"
   | "issues"
   | "browser"
-  | "composer";
+  | "composer"
+  | "goal"
+  | "wiki"
+  | "automations"
+  | "plugins"
+  | "skills"
+  | "commands"
+  | "mcp"
+  | "hooks"
+  | "usage-stats"
+  | "subagents"
+  | "bot-channel"
+  | "remote-dev"
+  | "remote-control"
+  | "shortcuts"
+  | "safety"
+  | "idle-tasks"
+  | "timeline"
+  | "output"
+  | "diff"
+  | "edit-review"
+  | "task-management"
+  | "git-graph"
+  | "snippets"
+  | "templates";
 
 interface AppState {
   version: string;
@@ -56,8 +80,13 @@ interface AppState {
   composerOpen: boolean;
   setComposerOpen: (open: boolean) => void;
 
+  fileQuickOpenOpen: boolean;
+  setFileQuickOpenOpen: (open: boolean) => void;
+
   editorSplit: boolean;
   toggleEditorSplit: () => void;
+  splitFile: string | null;
+  setSplitFile: (f: string | null) => void;
 
   chatPanelOpen: boolean;
   setChatPanelOpen: (open: boolean) => void;
@@ -116,8 +145,13 @@ export const useAppStore = create<AppState>((set) => ({
   composerOpen: false,
   setComposerOpen: (open) => set({ composerOpen: open }),
 
+  fileQuickOpenOpen: false,
+  setFileQuickOpenOpen: (open) => set({ fileQuickOpenOpen: open }),
+
   editorSplit: false,
   toggleEditorSplit: () => set((s) => ({ editorSplit: !s.editorSplit })),
+  splitFile: null,
+  setSplitFile: (f) => set({ splitFile: f }),
 
   chatPanelOpen: true,
   setChatPanelOpen: (open) => set({ chatPanelOpen: open }),

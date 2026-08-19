@@ -5,8 +5,14 @@ import type { AppSettings } from "../../lib/tauri-commands";
 import { useAppStore } from "../../stores/appStore";
 import { useProviderStore } from "../../stores/providerStore";
 import { notify } from "../../stores/toastStore";
+import { THEMES, type Theme } from "../../lib/theme-registry";
 
-type Tab = "appearance" | "chat" | "editor" | "providers" | "mcp" | "rules" | "about";
+function persistThemeScheme(scheme: string) {
+  localStorage.setItem("ideocode.scheme", scheme);
+  document.documentElement.setAttribute("data-scheme", scheme);
+}
+
+type Tab = "appearance" | "chat" | "editor" | "providers" | "mcp" | "rules" | "terminal" | "shortcuts" | "privacy" | "about";
 
 const FONT_SIZES = [11, 12, 13, 14, 15, 16, 18, 20];
 const UI_FONT_SIZES = [11, 12, 13, 14, 15, 16, 18];
@@ -84,7 +90,7 @@ export function SettingsPanel() {
     <div className="flex flex-col h-full">
       {/* Tabs */}
       <div className="flex gap-px px-2 pt-2 border-b border-border-subtle bg-bg-tertiary">
-        {(["appearance", "chat", "editor", "providers", "mcp", "rules", "about"] as const).map((t) => (
+        {(["appearance", "chat", "editor", "providers", "terminal", "shortcuts", "mcp", "rules", "privacy", "about"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -125,8 +131,16 @@ export function SettingsPanel() {
           <EditorTab settings={settings} onChange={handleChange} />
         ) : tab === "providers" ? (
           <ProvidersTab settings={settings} onChange={handleChange} />
+        ) : tab === "terminal" ? (
+          <TerminalTab settings={settings} onChange={handleChange} />
+        ) : tab === "shortcuts" ? (
+          <ShortcutsTab />
+        ) : tab === "privacy" ? (
+          <PrivacyTab settings={settings} onChange={handleChange} />
         ) : tab === "rules" ? (
           <RulesTab settings={settings} onChange={handleChange} />
+        ) : tab === "mcp" ? (
+          <MCPTab />
         ) : (
           <AboutTab />
         )}
@@ -142,6 +156,8 @@ function AppearanceTab({
   settings: AppSettings;
   onChange: (p: Partial<AppSettings>) => void;
 }) {
+  const currentTheme = useAppStore((s) => s.theme);
+  const setTheme = useAppStore((s) => s.setTheme);
   const [scheme, setScheme] = useState<"light" | "system" | "dark">(() => {
     try {
       const stored = localStorage.getItem("ideocode.scheme");
@@ -152,33 +168,26 @@ function AppearanceTab({
   });
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (scheme === "dark") {
-      root.dataset.theme = "dark";
-    } else if (scheme === "light") {
-      root.dataset.theme = "light";
-    } else {
-      delete root.dataset.theme;
-    }
-    try {
-      localStorage.setItem("ideocode.scheme", scheme);
-    } catch {
-      /* storage unavailable */
-    }
+    persistThemeScheme(scheme);
   }, [scheme]);
+
+  const handleThemeSelect = (themeId: Theme) => {
+    setTheme(themeId);
+    onChange({ theme: themeId });
+  };
+
+  const tierGroups = ["Default", "Classic", "Cyberpunk", "Minimal"] as const;
 
   return (
     <div className="p-4 space-y-5">
-      {/* Appearance */}
-      <Section label="Appearance">
+      {/* Color Scheme */}
+      <Section label="Color Scheme">
         <div className="flex gap-1.5">
-          {(
-            [
-              { id: "light" as const, label: "Light", hint: "Always light" },
-              { id: "system" as const, label: "System", hint: "Follow OS (light by default)" },
-              { id: "dark" as const, label: "Dark", hint: "Force dark" },
-            ]
-          ).map((m) => (
+          {([
+            { id: "light" as const, label: "Light", hint: "Always light" },
+            { id: "system" as const, label: "System", hint: "Follow OS (light by default)" },
+            { id: "dark" as const, label: "Dark", hint: "Force dark" },
+          ]).map((m) => (
             <button
               key={m.id}
               onClick={() => setScheme(m.id)}
@@ -194,8 +203,45 @@ function AppearanceTab({
             </button>
           ))}
         </div>
-        <div className="text-[11px] text-text-muted mt-1.5">
-          Light is the default; System follows your OS appearance.
+      </Section>
+
+      {/* Theme Picker */}
+      <Section label="Theme">
+        <div className="space-y-4">
+          {tierGroups.map((tier) => {
+            const themesInTier = THEMES.filter((t) => t.tier === tier);
+            if (themesInTier.length === 0) return null;
+            return (
+              <div key={tier}>
+                <div className="text-[10px] text-text-muted uppercase tracking-wider mb-2 font-medium">{tier}</div>
+                <div className="grid grid-cols-2 gap-2">
+                  {themesInTier.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => handleThemeSelect(t.id)}
+                      className={`flex items-center gap-3 p-2.5 rounded-lg border transition-all text-left
+                        ${currentTheme === t.id
+                          ? "border-accent-primary bg-accent-primary/10 ring-1 ring-accent-primary/30"
+                          : "border-border-subtle hover:border-text-muted hover:bg-bg-hover"
+                        }`}
+                    >
+                      <div className="flex flex-col gap-0.5 shrink-0">
+                        <div className="w-5 h-5 rounded-md border border-white/10" style={{ background: t.bg }} />
+                        <div className="w-5 h-5 rounded-md border border-white/10" style={{ background: t.bgSecondary }} />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-xs font-medium text-text-primary truncate">{t.label}</div>
+                        <div className="text-[10px] text-text-muted truncate">{t.description}</div>
+                      </div>
+                      <div className="ml-auto shrink-0">
+                        <div className="w-3 h-3 rounded-full" style={{ background: t.accent }} />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </Section>
 
@@ -530,6 +576,165 @@ function RulesTab({
           className="w-full h-48 bg-bg-primary border border-border-subtle rounded px-2 py-2 text-xs text-text-primary outline-none resize-none font-sans"
         />
       </Section>
+    </div>
+  );
+}
+
+function TerminalTab({
+  settings,
+  onChange,
+}: {
+  settings: AppSettings;
+  onChange: (p: Partial<AppSettings>) => void;
+}) {
+  return (
+    <div className="p-4 space-y-5">
+      <Section label="Shell">
+        <select
+          value={settings.terminal_shell || "default"}
+          onChange={(e) => onChange({ terminal_shell: e.target.value })}
+          className="w-full bg-bg-primary border border-border-subtle rounded px-2 py-1.5 text-xs text-text-primary outline-none"
+        >
+          <option value="default">System Default</option>
+          <option value="bash">Bash</option>
+          <option value="zsh">Zsh</option>
+          <option value="powershell">PowerShell</option>
+          <option value="cmd">Command Prompt</option>
+        </select>
+        <p className="text-[11px] text-text-muted mt-1">
+          Shell used for the integrated terminal.
+        </p>
+      </Section>
+
+      <Section label="Font Size">
+        <div className="flex gap-1.5 flex-wrap">
+          {[11, 12, 13, 14, 15, 16].map((s) => (
+            <button
+              key={s}
+              onClick={() => onChange({ terminal_font_size: s })}
+              className={`px-2.5 py-1 text-xs rounded transition-fast border
+                ${(settings.terminal_font_size ?? 13) === s
+                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
+                  : "border-border-subtle text-text-muted hover:border-text-muted"
+                }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </Section>
+
+      <Section label="Cursor Style">
+        <div className="flex gap-1.5">
+          {(["block", "bar", "underline"] as const).map((style) => (
+            <button
+              key={style}
+              onClick={() => onChange({ terminal_cursor_style: style })}
+              className={`px-2.5 py-1 text-xs rounded transition-fast border capitalize
+                ${(settings.terminal_cursor_style ?? "bar") === style
+                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
+                  : "border-border-subtle text-text-muted hover:border-text-muted"
+                }`}
+            >
+              {style}
+            </button>
+          ))}
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+function ShortcutsTab() {
+  return (
+    <div className="p-4 space-y-4">
+      <Section label="Keyboard Shortcuts">
+        <p className="text-[11px] text-text-muted mb-3">
+          Current keyboard shortcuts. Edit them from the Keyboard Shortcuts panel.
+        </p>
+        <div className="space-y-2">
+          {[
+            { keys: "Ctrl+K", action: "Open Command Palette" },
+            { keys: "Ctrl+B", action: "Toggle Sidebar" },
+            { keys: "Ctrl+\\", action: "Toggle Right Panel" },
+            { keys: "Ctrl+J", action: "Toggle Bottom Panel" },
+            { keys: "Ctrl+`", action: "Open Terminal" },
+            { keys: "Ctrl+N", action: "New Chat" },
+            { keys: "Ctrl+S", action: "Save File" },
+            { keys: "Ctrl+P", action: "Quick Open File" },
+            { keys: "Ctrl+I", action: "Toggle Composer" },
+            { keys: "Escape", action: "Close Overlays" },
+          ].map(({ keys, action }) => (
+            <div key={keys} className="flex items-center justify-between py-1.5 border-b border-border-subtle last:border-0">
+              <span className="text-xs text-text-secondary">{action}</span>
+              <kbd className="px-2 py-0.5 rounded bg-bg-tertiary text-[11px] font-mono text-text-muted border border-border-subtle">
+                {keys}
+              </kbd>
+            </div>
+          ))}
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+function PrivacyTab({
+  settings,
+  onChange,
+}: {
+  settings: AppSettings;
+  onChange: (p: Partial<AppSettings>) => void;
+}) {
+  return (
+    <div className="p-4 space-y-5">
+      <Section label="Data Privacy">
+        <div className="space-y-3">
+          <ToggleRow
+            label="Local Mode"
+            description="Keep all processing local — never send data to external APIs"
+            checked={settings.privacy_local ?? false}
+            onChange={(v) => onChange({ privacy_local: v })}
+          />
+          <ToggleRow
+            label="Anonymous Telemetry"
+            description="Help improve IDEOCODE by sending anonymous usage data"
+            checked={settings.privacy_telemetry ?? true}
+            onChange={(v) => onChange({ privacy_telemetry: v })}
+          />
+          <ToggleRow
+            label="Mask File Contents"
+            description="Never include file contents in error reports or telemetry"
+            checked={settings.privacy_mask_files ?? true}
+            onChange={(v) => onChange({ privacy_mask_files: v })}
+          />
+        </div>
+        <p className="text-[11px] text-text-muted mt-3">
+          All chat messages are processed locally through the IDEOCODE engine. 
+          API keys are stored locally and never shared.
+        </p>
+      </Section>
+    </div>
+  );
+}
+
+function MCPTab() {
+  return (
+    <div className="space-y-4">
+      <div>
+        <h4 className="text-xs font-medium text-text-primary mb-2">MCP Server Configuration</h4>
+        <p className="text-[11px] text-text-muted mb-3">
+          Model Context Protocol servers extend IDEOCODE with external tools and data sources.
+        </p>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between p-2 rounded bg-bg-elevated border border-border-subtle">
+            <div>
+              <div className="text-xs text-text-primary">MCP Integration</div>
+              <div className="text-[10px] text-text-muted">Requires MCP backend server</div>
+            </div>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-warning/10 text-warning">Not Available</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

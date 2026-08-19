@@ -17,10 +17,28 @@ import {
   Globe,
   Search,
   Save,
+  LayoutTemplate,
+  Target,
+  BookOpen,
+  Zap,
+  Puzzle,
+  GraduationCap,
+  Network,
+  Anchor,
+  BarChart3,
+  Users,
+  MessageCircle,
+  Wifi,
+  Monitor,
+  Keyboard,
+  Shield,
+  Timer,
+  Clock,
 } from "lucide-react";
 import { useAppStore } from "../stores/appStore";
 import { useChatStore } from "../stores/chatStore";
 import { useFileStore } from "../stores/fileStore";
+import { useGitStore } from "../stores/gitStore";
 import { notify } from "../stores/toastStore";
 
 export type CommandIcon = typeof Search;
@@ -59,6 +77,24 @@ const PANELS: { id: string; label: string; icon: CommandIcon }[] = [
   { id: "debug", label: "Debug", icon: BugPlay },
   { id: "build", label: "Build", icon: Hammer },
   { id: "settings", label: "Settings", icon: Settings },
+  { id: "composer", label: "Composer", icon: LayoutTemplate },
+  { id: "goal", label: "Goal Mode", icon: Target },
+  { id: "wiki", label: "Wiki", icon: BookOpen },
+  { id: "automations", label: "Automations", icon: Zap },
+  { id: "plugins", label: "Plugins", icon: Puzzle },
+  { id: "skills", label: "Skills", icon: GraduationCap },
+  { id: "commands", label: "Commands", icon: Terminal },
+  { id: "mcp", label: "MCP Servers", icon: Network },
+  { id: "hooks", label: "Hooks", icon: Anchor },
+  { id: "usage-stats", label: "Usage Stats", icon: BarChart3 },
+  { id: "subagents", label: "Subagents", icon: Users },
+  { id: "bot-channel", label: "Bot Channel", icon: MessageCircle },
+  { id: "remote-dev", label: "Remote Dev", icon: Wifi },
+  { id: "remote-control", label: "Remote Control", icon: Monitor },
+  { id: "shortcuts", label: "Keyboard Shortcuts", icon: Keyboard },
+  { id: "safety", label: "Safety", icon: Shield },
+  { id: "idle-tasks", label: "Idle Tasks", icon: Timer },
+  { id: "timeline", label: "Timeline", icon: Clock },
 ];
 
 export const COMMANDS: CommandAction[] = [
@@ -167,6 +203,33 @@ export const COMMANDS: CommandAction[] = [
     icon: Palette,
     keywords: ["theme", "color", "dark", "light", "accent", "appearance"],
     run: () => openPanel("settings"),
+  },
+  {
+    id: "run-build",
+    label: "Run Build",
+    category: "Actions",
+    icon: Hammer,
+    shortcut: "Ctrl+Shift+B",
+    keywords: ["build", "compile", "cargo", "check"],
+    run: () => {
+      const rootPath = useFileStore.getState().rootPath;
+      if (!rootPath) {
+        notify("error", "No workspace", "Open a workspace first");
+        return;
+      }
+      openPanel("build");
+    },
+  },
+  {
+    id: "git-refresh",
+    label: "Refresh Git Status",
+    category: "Actions",
+    icon: RefreshCw,
+    keywords: ["git", "status", "refresh"],
+    run: () => {
+      const rootPath = useFileStore.getState().rootPath;
+      if (rootPath) useGitStore.getState().loadStatus(rootPath);
+    },
   },
 ];
 

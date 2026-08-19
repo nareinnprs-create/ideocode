@@ -19,6 +19,17 @@
   --color-text-secondary: var(--idc-text-secondary);
   --color-text-muted: var(--idc-text-muted);
 
+  /* ZCode-specific mapping */
+  --color-window-bg: var(--idc-bg-secondary);
+  --color-window-border: rgba(255, 255, 255, 0.08);
+  --color-window-shadow: rgba(0, 0, 0, 0.4);
+  --color-background-alt: var(--idc-bg-primary);
+  --color-surface-hover: rgba(255, 255, 255, 0.06);
+  --color-selected: rgba(255, 255, 255, 0.12);
+  --color-foreground: var(--idc-text-primary);
+  --color-foreground-subtle: var(--idc-text-secondary);
+  --color-foreground-subtlest: var(--idc-text-muted);
+
   --color-accent-primary: var(--idc-accent-primary);
   --color-accent-secondary: var(--idc-accent-secondary);
   --color-accent-tertiary: var(--idc-accent-tertiary);
@@ -485,6 +496,40 @@ html.theme-transition body * {
 /* Typing indicator dots */
 .typing-dot {
   animation: bounceDot 1.2s ease-in-out infinite;
+}
+
+/* Tab active indicator */
+.tab-active-indicator {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background: var(--color-accent-primary);
+  border-radius: 1px;
+  transition: left 200ms cubic-bezier(0.16, 1, 0.3, 1), width 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Context menu backdrop */
+.context-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+}
+
+/* Collapsible content animation */
+.collapsible-content {
+  overflow: hidden;
+}
+
+/* Search input focus ring */
+.search-input-focus {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent-primary) 20%, transparent);
+}
+
+/* Panel resize handle pulse on drag */
+.resize-handle-x:active,
+.resize-handle-y:active {
+  background: var(--color-accent-primary) !important;
+  opacity: 0.6 !important;
 }
 
 /* ============================================

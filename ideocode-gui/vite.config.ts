@@ -14,6 +14,7 @@ export default defineConfig(async () => ({
   },
   clearScreen: false,
   build: {
+    chunkSizeWarningLimit: 700,
     rollupOptions: {
       output: {
         manualChunks(id: string) {
@@ -38,6 +39,18 @@ export default defineConfig(async () => ({
             if (id.includes("/framer-motion/")) {
               return "motion";
             }
+            if (id.includes("/mermaid/")) {
+              return "mermaid";
+            }
+            if (id.includes("/katex/")) {
+              return "katex";
+            }
+            if (id.includes("cytoscape")) {
+              return "cytoscape";
+            }
+            if (id.includes("/xterm/")) {
+              return "terminal";
+            }
           }
         },
       },
@@ -56,6 +69,10 @@ export default defineConfig(async () => ({
       : undefined,
     watch: {
       ignored: ["**/src-tauri/**"],
+    },
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp",
     },
   },
 }));

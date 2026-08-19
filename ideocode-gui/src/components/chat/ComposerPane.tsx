@@ -5,6 +5,7 @@ import { Composer } from "./Composer";
 import { useEditStore } from "../../stores/editStore";
 import { DiffViewer } from "../editor/DiffViewer";
 import { IconButton } from "../ui/IconButton";
+import { SideConversationTabs } from "./SideConversationTabs";
 
 export function ComposerPane() {
   const { composerOpen, setComposerOpen } = useAppStore();
@@ -54,8 +55,11 @@ export function ComposerPane() {
       </div>
       
       <div className="flex-1 flex overflow-hidden">
-        <div className={`${hasEdits ? "w-[350px] border-r border-white/5 flex flex-col" : "w-full flex flex-col"} transition-all duration-300 p-4`}>
-          <Composer />
+        <div className={`${hasEdits ? "w-[350px] border-r border-white/5 flex flex-col" : "w-full flex flex-col"} transition-all duration-300`}>
+          <SideConversationTabs />
+          <div className="flex-1 p-4">
+            <Composer />
+          </div>
         </div>
 
         {hasEdits && (

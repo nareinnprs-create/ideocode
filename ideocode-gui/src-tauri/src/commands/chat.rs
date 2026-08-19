@@ -226,6 +226,19 @@ async fn extract_openai_completion(resp: reqwest::Response) -> Result<String, St
     Ok(content.to_string())
 }
 
+/// Resolve an API key for a provider: first check env vars, then fall back to
+/// the keys persisted in settings.json.
+fn resolve_api_key(provider_env: &str) -> Option<String> {
+    if let Ok(k) = std::env::var(provider_env) {
+        if !k.is_empty() {
+            return Some(k);
+        }
+    }
+    crate::commands::settings::load_settings()
+        .ok()
+        .and_then(|s| s.api_keys.get(provider_env).cloned())
+}
+
 /// Sends a chat completion request to the active provider. `messages` already
 /// includes the system prompt and the full conversation history.
 async fn chat_completion(
@@ -279,9 +292,8 @@ async fn chat_completion(
             extract_openai_completion(resp).await
         }
         "openai" => {
-            let key = std::env::var("OPENAI_API_KEY").map_err(|_| {
-                "OPENAI_API_KEY is not set. Set it in your environment to use OpenAI.".to_string()
-            })?;
+            let key = resolve_api_key("OPENAI_API_KEY")
+                .ok_or_else(|| "OPENAI_API_KEY is not set. Set it in environment or Settings → Providers.".to_string())?;
             let body = serde_json::json!({ "model": model, "messages": messages });
             let resp = client
                 .post("https://api.openai.com/v1/chat/completions")
@@ -293,10 +305,8 @@ async fn chat_completion(
             extract_openai_completion(resp).await
         }
         "anthropic" => {
-            let key = std::env::var("ANTHROPIC_API_KEY").map_err(|_| {
-                "ANTHROPIC_API_KEY is not set. Set it in your environment to use Anthropic."
-                    .to_string()
-            })?;
+            let key = resolve_api_key("ANTHROPIC_API_KEY")
+                .ok_or_else(|| "ANTHROPIC_API_KEY is not set. Set it in environment or Settings → Providers.".to_string())?;
             let anthropic_messages: Vec<serde_json::Value> = messages
                 .iter()
                 .filter_map(|m| {
@@ -340,9 +350,8 @@ async fn chat_completion(
             Ok(content.to_string())
         }
         "gemini" => {
-            let key = std::env::var("GOOGLE_API_KEY").map_err(|_| {
-                "GOOGLE_API_KEY is not set. Set it in your environment to use Gemini.".to_string()
-            })?;
+            let key = resolve_api_key("GOOGLE_API_KEY")
+                .ok_or_else(|| "GOOGLE_API_KEY is not set. Set it in environment or Settings → Providers.".to_string())?;
             let contents: Vec<serde_json::Value> = messages
                 .iter()
                 .filter_map(|m| {
@@ -383,10 +392,8 @@ async fn chat_completion(
             Ok(content.to_string())
         }
         "openrouter" => {
-            let key = std::env::var("OPENROUTER_API_KEY").map_err(|_| {
-                "OPENROUTER_API_KEY is not set. Set it in your environment to use OpenRouter."
-                    .to_string()
-            })?;
+            let key = resolve_api_key("OPENROUTER_API_KEY")
+                .ok_or_else(|| "OPENROUTER_API_KEY is not set. Set it in environment or Settings → Providers.".to_string())?;
             let body = serde_json::json!({ "model": model, "messages": messages });
             let resp = client
                 .post("https://openrouter.ai/api/v1/chat/completions")
@@ -485,15 +492,12 @@ async fn stream_openai_completion(
 
     let mut req = client.post(&url).json(&body);
     if provider == "openai" {
-        let key = std::env::var("OPENAI_API_KEY").map_err(|_| {
-            "OPENAI_API_KEY is not set. Set it in your environment to use OpenAI.".to_string()
-        })?;
+        let key = resolve_api_key("OPENAI_API_KEY")
+            .ok_or_else(|| "OPENAI_API_KEY is not set. Set it in environment or Settings → Providers.".to_string())?;
         req = req.bearer_auth(&key);
     } else if provider == "openrouter" {
-        let key = std::env::var("OPENROUTER_API_KEY").map_err(|_| {
-            "OPENROUTER_API_KEY is not set. Set it in your environment to use OpenRouter."
-                .to_string()
-        })?;
+        let key = resolve_api_key("OPENROUTER_API_KEY")
+            .ok_or_else(|| "OPENROUTER_API_KEY is not set. Set it in environment or Settings → Providers.".to_string())?;
         req = req.bearer_auth(&key);
     }
 
@@ -1505,19 +1509,66 @@ pub fn export_session(id: String, format: String) -> Result<String, String> {
 #[tauri::command]
 pub async fn inline_completion(
     prefix: String,
-    _suffix: String,
+    suffix: String,
 ) -> Result<String, String> {
-    // Audit mockup: Ghost Text Autocomplete (Codex Parity)
-    let last_line = prefix.lines().last().unwrap_or("").trim_start();
-    if last_line.starts_with("func") || last_line.starts_with("fn ") {
-        Ok(" hello() {\n  console.log('world');\n}".to_string())
-    } else if last_line.starts_with("console.l") {
-        Ok("og('Hello ghost text!');".to_string())
-    } else if last_line.starts_with("impo") {
-        Ok("rt { useState } from 'react';".to_string())
-    } else {
-        Ok(" // AI generated completion".to_string())
+    // Don't complete if the cursor is mid-line with non-whitespace after it
+    if let Some(last_line) = prefix.lines().last() {
+        let trimmed = last_line.trim_end();
+        if !trimmed.is_empty() && !trimmed.ends_with('{') && !trimmed.ends_with('(')
+            && !trimmed.ends_with(':') && !trimmed.ends_with(',')
+            && !trimmed.ends_with('=') && !trimmed.ends_with('>')
+            && !trimmed.ends_with('[')
+        {
+            // Check if there's non-whitespace content right after cursor in suffix
+            let suffix_start = suffix.chars().next();
+            if suffix_start.map_or(false, |c| !c.is_whitespace() && c != '\n') {
+                return Ok(String::new());
+            }
+        }
     }
+
+    let settings = super::settings::get_settings();
+    let provider = if settings.active_provider.is_empty() {
+        "baanzon-verso".to_string()
+    } else {
+        settings.active_provider
+    };
+    let model = if settings.active_model.is_empty() {
+        "auto".to_string()
+    } else {
+        settings.active_model
+    };
+
+    let prompt = format!(
+        "Complete the code at the cursor position. Return ONLY the completion text, \
+         no explanation, no markdown, no code fences.\n\n\
+         Code before cursor:\n```\n{prefix}\n```\n\n\
+         Code after cursor:\n```\n{suffix}\n```"
+    );
+    let messages = vec![serde_json::json!({ "role": "user", "content": prompt })];
+
+    let text = chat_completion(&provider, &model, &messages).await?;
+
+    // Strip markdown code fences if the model wraps the response
+    let text = text.trim();
+    let text = text
+        .strip_prefix("```")
+        .unwrap_or(text)
+        .strip_suffix("```")
+        .unwrap_or(text)
+        .trim();
+    // Strip common language prefixes
+    let text = text
+        .strip_prefix("rust\n")
+        .or_else(|| text.strip_prefix("python\n"))
+        .or_else(|| text.strip_prefix("javascript\n"))
+        .or_else(|| text.strip_prefix("typescript\n"))
+        .or_else(|| text.strip_prefix("json\n"))
+        .or_else(|| text.strip_prefix("html\n"))
+        .or_else(|| text.strip_prefix("css\n"))
+        .unwrap_or(text);
+
+    Ok(text.to_string())
 }
 
 #[tauri::command]

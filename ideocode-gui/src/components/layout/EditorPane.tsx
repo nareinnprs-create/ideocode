@@ -10,6 +10,7 @@ import { useDragResize } from "../../hooks/useDragResize";
 
 export function EditorPane() {
   const editorSplit = useAppStore((s) => s.editorSplit);
+  const splitFile = useAppStore((s) => s.splitFile);
   const chatPanelOpen = useAppStore((s) => s.chatPanelOpen);
   const chatPanelWidth = useAppStore((s) => s.chatPanelWidth);
   const setChatPanelWidth = useAppStore((s) => s.setChatPanelWidth);
@@ -31,7 +32,7 @@ export function EditorPane() {
       </div>
       <div className="w-px bg-border-subtle shrink-0" />
       <div className="flex-1 min-h-0 min-w-0">
-        <CodeEditor />
+        <CodeEditor file={splitFile ?? activeFile ?? undefined} />
       </div>
     </div>
   ) : (
@@ -42,7 +43,7 @@ export function EditorPane() {
 
   const chatColumn = (
     <div
-      className="flex flex-col min-w-0 bg-bg-primary border-l border-border-subtle relative"
+      className="flex flex-col min-w-0 bg-transparent border-l border-white/5 relative z-10"
       style={{ width: chatPanelWidth }}
     >
       <div

@@ -21,6 +21,16 @@ import { useFileStore } from "./fileStore";
 import { buildFileContext } from "../lib/context";
 
 export type ComposerMode = "normal" | "plan" | "agent";
+export type ExecutionMode = "confirm" | "auto-edit" | "plan" | "full-access";
+export type ThoughtLevel = "low" | "high" | "max";
+
+export interface MessageBranch {
+  id: string;
+  messages: Message[];
+  parentId: string | null;
+  label: string;
+  created: number;
+}
 
 interface ChatState {
   messages: Message[];
@@ -32,21 +42,29 @@ interface ChatState {
   sessions: Session[];
   model: string;
   mode: ComposerMode;
+  executionMode: ExecutionMode;
+  thoughtLevel: ThoughtLevel;
   reasoningEffort: string;
+  branches: MessageBranch[];
+  activeBranchId: string | null;
   setModel: (model: string) => void;
   setMode: (mode: ComposerMode) => void;
+  setExecutionMode: (mode: ExecutionMode) => void;
+  setThoughtLevel: (level: ThoughtLevel) => void;
   setReasoningEffort: (effort: string) => void;
   sendMessage: (content: string) => Promise<void>;
   interrupt: () => Promise<void>;
   compact: () => Promise<void>;
   loadMessages: () => Promise<void>;
   clearMessages: () => Promise<void>;
-  regenerate: () => Promise<void>;
+  regenerate: (model?: string) => Promise<void>;
   editLast: (content: string) => Promise<void>;
   loadSessions: () => Promise<void>;
   loadSession: (id: string) => Promise<void>;
   renameSession: (id: string, title: string) => Promise<void>;
   deleteSession: (id: string) => Promise<void>;
+  switchBranch: (branchId: string) => void;
+  createBranch: () => void;
 }
 
 async function refreshSessions() {
@@ -119,9 +137,15 @@ export const useChatStore = create<ChatState>((set) => ({
   sessions: [],
   model: "auto",
   mode: "normal",
+  executionMode: "confirm",
+  thoughtLevel: "high",
   reasoningEffort: "medium",
+  branches: [],
+  activeBranchId: null,
   setModel: (model) => set({ model }),
   setMode: (mode) => set({ mode }),
+  setExecutionMode: (executionMode) => set({ executionMode }),
+  setThoughtLevel: (thoughtLevel) => set({ thoughtLevel }),
   setReasoningEffort: (effort) => set({ reasoningEffort: effort }),
 
   sendMessage: async (content: string) => {
@@ -264,7 +288,7 @@ export const useChatStore = create<ChatState>((set) => ({
     }
   },
 
-  regenerate: async () => {
+  regenerate: async (_model?: string) => {
     const { messages } = useChatStore.getState();
     const lastIdx = messages.map((m) => m.role).lastIndexOf("assistant");
     if (lastIdx === -1) {
@@ -356,5 +380,25 @@ export const useChatStore = create<ChatState>((set) => ({
       set({ error: `Failed to delete session: ${e}` });
       notify("error", "Failed to delete session", `${e}`);
     }
+  },
+
+  switchBranch: (branchId: string) => {
+    const { branches } = useChatStore.getState();
+    const branch = branches.find((b) => b.id === branchId);
+    if (branch) {
+      set({ messages: branch.messages, activeBranchId: branchId });
+    }
+  },
+
+  createBranch: () => {
+    const { messages, branches, activeBranchId } = useChatStore.getState();
+    const branch: MessageBranch = {
+      id: `branch-${Date.now()}`,
+      messages: [...messages],
+      parentId: activeBranchId,
+      label: `Branch ${branches.length + 1}`,
+      created: Date.now(),
+    };
+    set({ branches: [...branches, branch], activeBranchId: branch.id });
   },
 }));

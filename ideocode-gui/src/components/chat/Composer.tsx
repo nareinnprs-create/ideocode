@@ -17,19 +17,18 @@ import {
 import { useChatStore, type ComposerMode } from "../../stores/chatStore";
 import { useProviderStore } from "../../stores/providerStore";
 import { useFileStore } from "../../stores/fileStore";
+import { useGoalStore } from "../../stores/goalStore";
 import { getSettings, updateSettings, searchFiles } from "../../lib/tauri-commands";
 import { Tooltip } from "../ui/Tooltip";
+import { ExecutionModePicker } from "./ExecutionModePicker";
+import { ThoughtLevelPicker } from "./ThoughtLevelPicker";
+import { CommandAutocomplete } from "./CommandAutocomplete";
+import { GoalCommandHandler } from "./GoalCommandHandler";
 
 const MODES: { id: ComposerMode; label: string; icon: typeof Zap; hint: string }[] = [
   { id: "normal", label: "Ask", icon: Zap, hint: "Ask a question" },
   { id: "plan", label: "Plan", icon: ListChecks, hint: "Plan before changing code" },
   { id: "agent", label: "Agent", icon: Bot, hint: "Autonomous multi-step agent" },
-];
-
-const REASONING_LEVELS = [
-  { id: "low", label: "Low", hint: "Faster, less thorough reasoning" },
-  { id: "medium", label: "Med", hint: "Balanced reasoning depth" },
-  { id: "high", label: "High", hint: "Slower, deeper reasoning" },
 ];
 
 const SLASH_COMMANDS = [
@@ -70,6 +69,7 @@ export function Composer() {
   const [focused, setFocused] = useState(false);
   const [tabs, setTabs] = useState([{ id: "tab-1", label: "Chat 1" }]);
   const [activeTabId, setActiveTabId] = useState("tab-1");
+  const [tabInputs, setTabInputs] = useState<Map<string, string>>(new Map([["tab-1", ""]]));
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selEndRef = useRef(0);
@@ -87,13 +87,13 @@ export function Composer() {
   const setModel = useChatStore((s) => s.setModel);
   const mode = useChatStore((s) => s.mode);
   const setMode = useChatStore((s) => s.setMode);
-  const reasoningEffort = useChatStore((s) => s.reasoningEffort);
   const setReasoningEffort = useChatStore((s) => s.setReasoningEffort);
   const providers = useProviderStore((s) => s.providers);
   const loadProviders = useProviderStore((s) => s.loadProviders);
   const openFiles = useFileStore((s) => s.openFiles);
   const activeFile = useFileStore((s) => s.activeFile);
   const rootPath = useFileStore((s) => s.rootPath);
+  const goalStore = useGoalStore();
 
   useEffect(() => {
     loadProviders();
@@ -131,7 +131,7 @@ export function Composer() {
   }, [isRecording]);
 
   useEffect(() => {
-    // @ts-ignore
+    // @ts-expect-error — webkitSpeechRecognition is a non-standard API
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition && !recognitionRef.current) {
       const recognition = new SpeechRecognition();
@@ -312,28 +312,78 @@ export function Composer() {
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = Array.from(e.clipboardData.items);
+    const imageItems = items.filter((item) => item.type.startsWith("image/"));
+    if (imageItems.length === 0) return;
+    e.preventDefault();
+    for (const item of imageItems) {
+      const blob = item.getAsFile();
+      if (!blob) continue;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = String(reader.result ?? "");
+        const placeholder = `[Pasting image: ${blob.name || "clipboard"}...]`;
+        setInput((prev) => prev + placeholder);
+        const block = `\n\n<image: ${blob.name || "clipboard.png"}>\n${dataUrl}\n`;
+        setInput((prev) => prev.replace(placeholder, block));
+      };
+      reader.readAsDataURL(blob);
+    }
+  };
+
   const activeFileName = activeFile ? activeFile.split(/[/\\]/).pop() : null;
 
   return (
     <div className="px-3 pb-3 pt-2 shrink-0 relative z-20">
       {/* Slash command palette */}
       {menuOpen === "slash" && (
-        <div className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default glass-strong overflow-hidden animate-scale-in">
-          {SLASH_COMMANDS.map((cmd, i) => (
-            <button
-              key={cmd.id}
-              onClick={() => runSlash(cmd.id)}
-              onMouseEnter={() => setActiveIdx(i)}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-fast ${
-                i === activeIdx ? "bg-accent-primary/10" : ""
-              }`}
-            >
-              <cmd.icon size={14} className="text-accent-primary shrink-0" />
-              <span className="text-[13px] text-text-primary">{cmd.label}</span>
-              <span className="text-xs text-text-muted flex-1 text-right truncate">{cmd.hint}</span>
-            </button>
-          ))}
-        </div>
+        <CommandAutocomplete
+          input={input}
+          onSelect={(cmd, args) => {
+            setInput("");
+            setMenuOpen(null);
+            if (cmd === "goal" && args) {
+              goalStore.setGoal(args);
+            } else if (cmd === "compact") {
+              void compact();
+            } else if (cmd === "clear") {
+              void clearMessages();
+            } else {
+              runSlash(cmd);
+            }
+            textareaRef.current?.focus();
+          }}
+          onClose={() => setMenuOpen(null)}
+        />
+      )}
+
+      {menuOpen === "slash" && input.startsWith("/goal") && (
+        <GoalCommandHandler
+          input={input}
+          onCommand={(action, args) => {
+            setInput("");
+            setMenuOpen(null);
+            switch (action) {
+              case "set":
+                if (args) goalStore.setGoal(args);
+                break;
+              case "pause":
+                goalStore.pauseGoal();
+                break;
+              case "resume":
+                goalStore.startGoal();
+                break;
+              case "clear":
+                goalStore.clearGoal();
+                break;
+              case "replace":
+                if (args) goalStore.setGoal(args);
+                break;
+            }
+            textareaRef.current?.focus();
+          }}
+        />
       )}
 
       {/* @ mention palette */}
@@ -363,7 +413,15 @@ export function Composer() {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTabId(tab.id)}
+            onClick={() => {
+              setTabInputs((prev) => {
+                const next = new Map(prev);
+                next.set(activeTabId, input);
+                return next;
+              });
+              setInput(tabInputs.get(tab.id) ?? "");
+              setActiveTabId(tab.id);
+            }}
             className={`px-3 py-1 text-xs font-medium rounded-t-md border-b-2 transition-all ${
               activeTabId === tab.id
                 ? "border-accent-primary text-text-primary bg-bg-secondary/50"
@@ -375,9 +433,15 @@ export function Composer() {
         ))}
         <button
           onClick={() => {
+            setTabInputs((prev) => {
+              const next = new Map(prev);
+              next.set(activeTabId, input);
+              return next;
+            });
             const newId = `tab-${tabs.length + 1}`;
             setTabs([...tabs, { id: newId, label: `Chat ${tabs.length + 1}` }]);
             setActiveTabId(newId);
+            setInput("");
           }}
           className="ml-1 p-1 text-text-muted hover:text-text-primary rounded hover:bg-bg-hover"
           title="New Chat Tab"
@@ -408,6 +472,8 @@ export function Composer() {
               </button>
             </Tooltip>
           ))}
+          <span className="w-px h-4 bg-border-subtle mx-1" />
+          <ExecutionModePicker />
         </div>
 
         <div className="flex items-center gap-3">
@@ -435,25 +501,8 @@ export function Composer() {
             ))}
           </select>
 
-          <div className="hidden sm:flex items-center gap-1" role="group" aria-label="Reasoning effort">
-            {REASONING_LEVELS.map(({ id, label, hint }) => (
-              <Tooltip key={id} label={`Reasoning: ${hint}`}>
-                <button
-                  onClick={() => {
-                    setReasoningEffort(id);
-                    persistPatch({ reasoning_effort: id });
-                  }}
-                  aria-pressed={reasoningEffort === id}
-                  className={`px-1.5 py-0.5 rounded text-[11px] font-medium transition-all duration-150 ${
-                    reasoningEffort === id
-                      ? "text-text-primary"
-                      : "text-text-muted hover:text-text-secondary"
-                  }`}
-                >
-                  {label}
-                </button>
-              </Tooltip>
-            ))}
+          <div className="hidden sm:flex items-center">
+            <ThoughtLevelPicker />
           </div>
         </div>
       </div>
@@ -524,6 +573,7 @@ export function Composer() {
             value={input}
             onChange={(e) => handleChange(e.target.value)}
             onKeyDown={handleKeyDown}
+            onPaste={handlePaste}
             onKeyUp={(e) => {
               selEndRef.current = e.currentTarget.selectionEnd ?? e.currentTarget.value.length;
               const value = e.currentTarget.value;
@@ -594,8 +644,13 @@ export function Composer() {
             <select
               value={model}
               onChange={(e) => {
-                setModel(e.target.value);
-                persistPatch({ active_model: e.target.value });
+                const newModel = e.target.value;
+                setModel(newModel);
+                persistPatch({ active_model: newModel });
+                const p = providers.find(prov => prov.models.some(m => m.id === newModel));
+                if (p) {
+                  useProviderStore.getState().setActiveProvider(p.id, newModel);
+                }
               }}
               aria-label="Select model"
               className="appearance-none bg-transparent border border-transparent rounded-md pl-2 pr-6 py-0.5 text-[11px] font-medium text-text-secondary outline-none hover:border-border-subtle hover:bg-bg-hover focus:border-accent-primary cursor-pointer max-w-44 min-w-0"

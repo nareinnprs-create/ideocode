@@ -13,6 +13,7 @@ import {
   Wrench,
   Sparkles,
   Brain,
+  GitBranch,
 } from "lucide-react";
 import { useChatStore } from "../../stores/chatStore";
 import { useFileStore } from "../../stores/fileStore";
@@ -21,6 +22,9 @@ import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ToolCallCard } from "./ToolCallCard";
 import { Checklist } from "./Checklist";
 import { Kbd } from "../ui/Kbd";
+import { ForkButton } from "./ForkButton";
+import { EditHistoryButton } from "./EditHistoryButton";
+import type { Message } from "../../lib/tauri-commands";
 
 export function ChatMessageList() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -30,6 +34,9 @@ export function ChatMessageList() {
   const streamingContent = useChatStore((s) => s.streamingContent);
   const error = useChatStore((s) => s.error);
   const clearMessages = useChatStore((s) => s.clearMessages);
+  const branches = useChatStore((s) => s.branches);
+  const activeBranchId = useChatStore((s) => s.activeBranchId);
+  const switchBranch = useChatStore((s) => s.switchBranch);
   const openFile = useFileStore((s) => s.openFile);
 
   const handleFileClick = (path: string) => {
@@ -74,6 +81,8 @@ export function ChatMessageList() {
                 isLast={i === messages.length - 1}
                 isGroupStart={i === 0 || messages[i - 1]?.role !== "assistant"}
                 onFileClick={handleFileClick}
+                messageIndex={i}
+                allMessages={messages}
               />
             </motion.div>
           ))}
@@ -84,6 +93,28 @@ export function ChatMessageList() {
         )}
 
         {loading && <AgentReasoningVisualizer />}
+
+        {branches.length > 0 && (
+          <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-bg-secondary/60 border border-border-subtle">
+            <GitBranch size={12} className="text-text-muted" />
+            <span className="text-[11px] text-text-muted">Branches:</span>
+            <button
+              onClick={() => switchBranch("")}
+              className={`text-[11px] px-1.5 py-0.5 rounded transition-fast ${!activeBranchId ? "bg-accent-primary/10 text-accent-primary" : "text-text-muted hover:text-text-secondary"}`}
+            >
+              Main
+            </button>
+            {branches.map((b) => (
+              <button
+                key={b.id}
+                onClick={() => switchBranch(b.id)}
+                className={`text-[11px] px-1.5 py-0.5 rounded transition-fast ${activeBranchId === b.id ? "bg-accent-primary/10 text-accent-primary" : "text-text-muted hover:text-text-secondary"}`}
+              >
+                {b.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div ref={messagesEndRef} />
       </div>
@@ -106,10 +137,21 @@ function AssistantAvatar({ streaming = false }: { streaming?: boolean }) {
 function AgentReasoningVisualizer() {
   const [expanded, setExpanded] = useState(false);
   const [dots, setDots] = useState("");
+  const streamingContent = useChatStore((s) => s.streamingContent);
+  const streaming = useChatStore((s) => s.streaming);
+  const loading = useChatStore((s) => s.loading);
+
   useEffect(() => {
+    if (!loading && !streaming) return;
     const int = setInterval(() => setDots(d => d.length > 2 ? "" : d + "."), 500);
     return () => clearInterval(int);
-  }, []);
+  }, [loading, streaming]);
+
+  const steps: { label: string; status: "done" | "active" | "pending" }[] = [
+    { label: "Analyzing request", status: loading && !streaming ? "active" : streaming ? "done" : "pending" },
+    { label: "Processing context", status: streaming && !streamingContent ? "active" : streamingContent ? "done" : "pending" },
+    { label: "Generating response", status: streaming && !!streamingContent ? "active" : "pending" },
+  ];
 
   return (
     <div className="flex flex-col gap-1.5 pl-0.5 animate-blur-in">
@@ -133,9 +175,14 @@ function AgentReasoningVisualizer() {
             className="overflow-hidden ml-[26px] mt-1"
           >
             <div className="border-l-2 border-border-subtle pl-3 py-1 space-y-1.5">
-              <div className="text-[12px] text-text-muted flex items-center gap-2"><Check size={12} className="text-success" /> Parsing Abstract Syntax Tree...</div>
-              <div className="text-[12px] text-text-muted flex items-center gap-2"><Check size={12} className="text-success" /> Querying Baanzon Verso Local Engine...</div>
-              <div className="text-[12px] text-text-muted flex items-center gap-2 animate-pulse"><Sparkles size={12} className="text-accent-primary" /> Synthesizing thought trace...</div>
+              {steps.map((step) => (
+                <div key={step.label} className="text-[12px] text-text-muted flex items-center gap-2">
+                  {step.status === "done" && <Check size={12} className="text-success" />}
+                  {step.status === "active" && <Sparkles size={12} className="text-accent-primary animate-pulse" />}
+                  {step.status === "pending" && <span className="w-3 h-3 rounded-full border border-border-subtle" />}
+                  <span className={step.status === "active" ? "text-text-primary" : ""}>{step.label}{step.status === "active" ? dots : ""}</span>
+                </div>
+              ))}
             </div>
           </motion.div>
         )}
@@ -253,23 +300,22 @@ function MessageBubble({
   isLast,
   isGroupStart,
   onFileClick,
+  messageIndex,
+  allMessages,
 }: {
-  message: {
-    id: string;
-    role: "user" | "assistant" | "system";
-    content: string;
-    tool_calls?: { id: string; name: string; input: string; output?: string; status?: string }[];
-    timestamp?: number;
-    usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
-  };
+  message: Message;
   isLast: boolean;
   isGroupStart: boolean;
   onFileClick: (path: string) => void;
+  messageIndex: number;
+  allMessages: Message[];
 }) {
   const isUser = message.role === "user";
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(message.content);
+  const [showRegenerateMenu, setShowRegenerateMenu] = useState(false);
   const regenerate = useChatStore((s) => s.regenerate);
+  const createBranch = useChatStore((s) => s.createBranch);
   const editLast = useChatStore((s) => s.editLast);
   const time = message.timestamp
     ? new Date(message.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
@@ -336,6 +382,7 @@ function MessageBubble({
           <button onClick={copy} title="Copy" className="msg-action">
             <Copy size={12} />
           </button>
+          <EditHistoryButton messageId={message.id} role="user" />
           {isLast && (
             <button onClick={() => setEditing(true)} title="Edit message" className="msg-action">
               <Pencil size={12} />
@@ -392,10 +439,48 @@ function MessageBubble({
         <button onClick={copy} title="Copy" className="msg-action">
           <Copy size={12} />
         </button>
+        <ForkButton messageId={message.id} messageIndex={messageIndex} messages={allMessages} />
+        <EditHistoryButton messageId={message.id} role="assistant" />
         {isLast && (
-          <button onClick={() => void regenerate()} title="Regenerate" className="msg-action">
-            <RefreshCw size={12} />
-          </button>
+          <>
+            <button onClick={() => { createBranch(); }} title="Create branch" className="msg-action">
+              <GitBranch size={12} />
+            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowRegenerateMenu(!showRegenerateMenu)}
+                title="Regenerate"
+                className="msg-action"
+              >
+                <RefreshCw size={12} />
+              </button>
+              {showRegenerateMenu && (
+                <div className="absolute bottom-full right-0 mb-1 z-50 min-w-[120px] py-1 rounded-lg border border-border-subtle bg-bg-secondary shadow-xl animate-fade-in">
+                  <button
+                    onClick={() => { void regenerate(); setShowRegenerateMenu(false); }}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-text-secondary hover:bg-accent-primary/10 hover:text-accent-primary transition-fast"
+                  >
+                    <RefreshCw size={11} />
+                    Same model
+                  </button>
+                  <button
+                    onClick={() => { void regenerate("openai/gpt-4o"); setShowRegenerateMenu(false); }}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-text-secondary hover:bg-accent-primary/10 hover:text-accent-primary transition-fast"
+                  >
+                    <Sparkles size={11} />
+                    GPT-4o
+                  </button>
+                  <button
+                    onClick={() => { void regenerate("anthropic/claude-sonnet-4-20250514"); setShowRegenerateMenu(false); }}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-text-secondary hover:bg-accent-primary/10 hover:text-accent-primary transition-fast"
+                  >
+                    <Sparkles size={11} />
+                    Claude Sonnet
+                  </button>
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

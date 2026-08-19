@@ -200,7 +200,6 @@ function SessionCard({ session }: { session: Session }) {
               a.click();
               URL.revokeObjectURL(url);
             } catch (err) {
-              console.error("Export failed:", err);
               notify("error", "Export failed", `${err}`);
             }
           }}

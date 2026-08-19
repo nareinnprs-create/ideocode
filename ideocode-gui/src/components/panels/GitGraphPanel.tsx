@@ -1,0 +1,194 @@
+import { useEffect, useState } from "react";
+import { useGitStore } from "../../stores/gitStore";
+import { useFileStore } from "../../stores/fileStore";
+import { GitBranch, RefreshCw, ChevronDown, ChevronRight } from "lucide-react";
+
+interface GitCommitNode {
+  hash: string;
+  shortHash: string;
+  message: string;
+  author: string;
+  date: string;
+  branchColor: string;
+  parents: string[];
+  tags?: string[];
+}
+
+const BRANCH_COLORS = [
+  "#6366f1",
+  "#f59e0b",
+  "#10b981",
+  "#ec4899",
+  "#06b6d4",
+  "#8b5cf6",
+  "#f97316",
+  "#14b8a6",
+];
+
+export function GitGraphPanel() {
+  const { branches, loadStatus, loadBranches } = useGitStore();
+  const { rootPath } = useFileStore();
+  const [commits, setCommits] = useState<GitCommitNode[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [expandedCommit, setExpandedCommit] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (rootPath) {
+      loadStatus(rootPath);
+      loadBranches(rootPath);
+    }
+  }, [rootPath]);
+
+  useEffect(() => {
+    if (rootPath) loadGraph();
+  }, [rootPath]);
+
+  const loadGraph = async () => {
+    if (!rootPath) return;
+    setLoading(true);
+    try {
+      const { invoke } = await import("@tauri-apps/api/core");
+      const result = await invoke<{ hash: string; message: string; author: string; date: string; parents: string[]; tags: string[] }[]>("git_log_graph", { path: rootPath, maxCount: 50 });
+      const colorMap = new Map<string, string>();
+      let colorIdx = 0;
+      const graph: GitCommitNode[] = result.map((c) => {
+        const branch = c.tags?.[0] ?? "main";
+        if (!colorMap.has(branch)) {
+          colorMap.set(branch, BRANCH_COLORS[colorIdx % BRANCH_COLORS.length]);
+          colorIdx++;
+        }
+        return {
+          hash: c.hash,
+          shortHash: c.hash.substring(0, 7),
+          message: c.message,
+          author: c.author,
+          date: formatDate(c.date),
+          branchColor: colorMap.get(branch) ?? BRANCH_COLORS[0],
+          parents: c.parents,
+          tags: c.tags,
+        };
+      });
+      setCommits(graph);
+    } catch {
+      setCommits([]);
+    }
+    setLoading(false);
+  };
+
+  const formatDate = (d: string) => {
+    try {
+      const dt = new Date(d);
+      return dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    } catch {
+      return d;
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between h-10 px-3 border-b border-border-subtle">
+        <span className="text-xs font-medium text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+          <GitBranch size={13} /> Git Graph
+        </span>
+        <button
+          onClick={loadGraph}
+          disabled={loading}
+          className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
+          title="Refresh graph"
+        >
+          <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+        </button>
+      </div>
+
+      {!rootPath ? (
+        <div className="px-3 py-4 text-text-muted text-xs text-center">
+          Open a project to view git graph
+        </div>
+      ) : loading && commits.length === 0 ? (
+        <div className="px-3 py-4 text-text-muted text-xs text-center">
+          Loading git history...
+        </div>
+      ) : commits.length === 0 ? (
+        <div className="px-3 py-4 text-text-muted text-xs text-center">
+          No commits found
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto">
+          {commits.map((commit) => {
+            const isExpanded = expandedCommit === commit.hash;
+            return (
+              <div key={commit.hash} className="group">
+                <div
+                  className="flex items-start gap-2 px-3 py-2 hover:bg-bg-elevated transition-fast cursor-pointer border-b border-border-subtle/50"
+                  onClick={() => setExpandedCommit(isExpanded ? null : commit.hash)}
+                >
+                  <div className="flex flex-col items-center shrink-0 pt-0.5">
+                    <div
+                      className="w-3 h-3 rounded-full border-2 border-bg-primary"
+                      style={{ backgroundColor: commit.branchColor }}
+                    />
+                    {isExpanded && (
+                      <div
+                        className="w-0.5 h-full min-h-[16px]"
+                        style={{ backgroundColor: commit.branchColor + "40" }}
+                      />
+                    )}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono text-text-muted">
+                        {commit.shortHash}
+                      </span>
+                      {commit.tags?.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent-primary/20 text-accent-primary"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="text-xs text-text-primary truncate mt-0.5">
+                      {commit.message}
+                    </div>
+                    <div className="flex items-center gap-3 mt-1 text-[11px] text-text-muted">
+                      <span>{commit.author}</span>
+                      <span>{commit.date}</span>
+                    </div>
+                  </div>
+
+                  <div className="shrink-0 pt-1 text-text-muted opacity-0 group-hover:opacity-100 transition-fast">
+                    {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                  </div>
+                </div>
+
+                {isExpanded && (
+                  <div className="ml-8 mb-2 px-3 py-2 bg-bg-surface rounded border border-border-subtle">
+                    <div className="text-[11px] text-text-muted space-y-1">
+                      <div><span className="text-text-secondary">Commit:</span> {commit.hash}</div>
+                      <div><span className="text-text-secondary">Parents:</span> {commit.parents.length > 0 ? commit.parents.map((p) => p.substring(0, 7)).join(", ") : "none"}</div>
+                      <div><span className="text-text-secondary">Author:</span> {commit.author}</div>
+                      <div><span className="text-text-secondary">Date:</span> {commit.date}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {branches.length > 0 && (
+        <div className="px-3 py-2 border-t border-border-subtle text-[11px] text-text-muted">
+          {branches.filter((b) => b.current).map((b) => (
+            <span key={b.name} className="flex items-center gap-1">
+              <GitBranch size={11} className="text-accent-primary" />
+              {b.name}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
