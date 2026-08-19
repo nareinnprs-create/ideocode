@@ -18,6 +18,7 @@ import {
 } from "../lib/tauri-commands";
 import { notify } from "./toastStore";
 import { useFileStore } from "./fileStore";
+import { useAchievementStore } from "./achievementStore";
 import { buildFileContext } from "../lib/context";
 
 export type ComposerMode = "normal" | "plan" | "agent";
@@ -203,6 +204,7 @@ export const useChatStore = create<ChatState>((set) => ({
         streamingContent: "",
         error: null,
       }));
+      useAchievementStore.getState().increment('chatMessages');
     } catch (e) {
       set({
         loading: false,

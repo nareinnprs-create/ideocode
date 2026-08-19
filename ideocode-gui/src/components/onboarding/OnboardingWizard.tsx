@@ -1,367 +1,138 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  ChevronRight,
-  ChevronLeft,
-  Check,
-  Sparkles,
-  Server,
-  Wifi,
-  AlertTriangle,
-  RefreshCw,
-} from "lucide-react";
-import { updateSettings, getGatewayStatus } from "../../lib/tauri-commands";
-import { listen } from "@tauri-apps/api/event";
-import type { AppSettings } from "../../lib/tauri-commands";
+import { useState } from 'react';
+import { useAppStore } from '../../stores/appStore';
+import { useProviderStore } from '../../stores/providerStore';
+import { useFileStore } from '../../stores/fileStore';
+import { useAchievementStore } from '../../stores/achievementStore';
+import type { Provider } from '../../lib/tauri-commands';
 
-type Step = "welcome" | "provider" | "provision" | "done";
-
-const PROVIDERS = [
-  { id: "baanzon-verso", label: "Baanzon Verso", models: "Built-in AI (auto routing)" },
-  { id: "openai", label: "OpenAI", models: "GPT-4o, GPT-4o-mini" },
-  { id: "anthropic", label: "Anthropic", models: "Claude 3.5 Sonnet, Haiku" },
-  { id: "google", label: "Google Gemini", models: "Gemini 2.5 Pro, Flash" },
-  { id: "openrouter", label: "OpenRouter", models: "100+ models" },
+const STEPS = [
+  {
+    title: 'Welcome to IDEOCODE',
+    description: 'The AI-native IDE. Let\'s get you set up in 30 seconds.',
+    icon: '🚀',
+  },
+  {
+    title: 'Choose a Theme',
+    description: 'Pick your visual style.',
+    icon: '🎨',
+  },
+  {
+    title: 'Configure Provider',
+    description: 'Connect an AI provider (or use the built-in Baanzon Verso engine).',
+    icon: '🔌',
+  },
+  {
+    title: 'Open a Workspace',
+    description: 'Select a folder to start coding.',
+    icon: '📁',
+  },
 ];
 
-const DEFAULT_MODEL_BY_PROVIDER: Record<string, string> = {
-  "baanzon-verso": "auto",
-  openai: "gpt-4o",
-  anthropic: "claude-3-5-sonnet",
-  google: "gemini-2.5-pro",
-  openrouter: "anthropic/claude-sonnet-4-6",
-};
+const THEMES = [
+  { id: 'midnight', name: 'Midnight', color: '#7C3AED' },
+  { id: 'aurora', name: 'Aurora', color: '#06B6D4' },
+  { id: 'forest', name: 'Forest', color: '#22C55E' },
+  { id: 'ember', name: 'Ember', color: '#EF4444' },
+  { id: 'light', name: 'Light', color: '#3B82F6' },
+];
 
-const PROVISION_TIMEOUT_MS = 45_000;
-
-interface Props {
-  onComplete: () => void;
-}
-
-export function OnboardingWizard({ onComplete }: Props) {
-  const [step, setStep] = useState<Step>("welcome");
-  const [provider, setProvider] = useState("baanzon-verso");
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [engine, setEngine] = useState<{
-    online: boolean;
-    installing: boolean;
-    port: number;
-    engine: string;
-  } | null>(null);
-  const [provisionError, setProvisionError] = useState<string | null>(null);
-  const [provisionTimedOut, setProvisionTimedOut] = useState(false);
-  const [logs, setLogs] = useState<string[]>([]);
-  const logsEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (logsEndRef.current) {
-      logsEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [logs]);
-
-  const provisionRef = useRef(false);
+export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
+  const [step, setStep] = useState(0);
+  const { setTheme } = useAppStore();
+  const { pickWorkspace } = useFileStore();
+  const { providers } = useProviderStore();
+  const achievementStore = useAchievementStore();
 
   const next = () => {
-    if (step === "welcome") setStep("provider");
-    else if (step === "provider") {
-      setSaving(true);
-      setSaveError(null);
-      const settings: AppSettings = {
-        theme: "ideo_light",
-        active_provider: provider,
-        active_model: DEFAULT_MODEL_BY_PROVIDER[provider] ?? "auto",
-        font_size: 13,
-        font_family: "JetBrains Mono",
-        tab_size: 2,
-        word_wrap: false,
-        minimap: false,
-        auto_save: true,
-        language: "en",
-        mode: "normal",
-        accent_color: "#6366F1",
-        ui_font_size: 13,
-        reasoning_effort: "medium",
-        dev_mode: false,
-        custom_instructions: "",
-        api_keys: {},
-        mcp_servers: {},
-      };
-      updateSettings(settings)
-        .then(() => {
-          setSaving(false);
-          if (provider === "baanzon-verso") {
-            setStep("provision");
-          } else {
-            setStep("done");
-          }
-        })
-        .catch((e) => {
-          setSaving(false);
-          setSaveError(`Failed to save settings: ${e}`);
-        });
+    if (step < STEPS.length - 1) {
+      setStep(step + 1);
+    } else {
+      onComplete();
     }
   };
 
-  useEffect(() => {
-    if (step !== "provision") {
-      provisionRef.current = false;
-      return;
-    }
-    provisionRef.current = true;
-    setProvisionError(null);
-    setProvisionTimedOut(false);
-    setEngine(null);
-
-    let cancelled = false;
-    const startedAt = Date.now();
-
-    const poll = async () => {
-      if (!provisionRef.current || cancelled) return;
-      try {
-        const status = await getGatewayStatus();
-        if (cancelled) return;
-        setEngine({
-          online: status.online,
-          installing: status.installing,
-          port: status.port,
-          engine: status.engine,
-        });
-        if (status.online) {
-          setTimeout(() => {
-            if (!cancelled && provisionRef.current) setStep("done");
-          }, 600);
-          return;
-        }
-      } catch (e) {
-        if (!cancelled) setProvisionError(`Engine status unavailable: ${e}`);
-      }
-      if (Date.now() - startedAt > PROVISION_TIMEOUT_MS) {
-        if (!cancelled) setProvisionTimedOut(true);
-        return;
-      }
-      setTimeout(poll, 800);
-    };
-
-    poll();
-    
-    const unlistenLog = listen<string>("baanzon://log_line", (e) => {
-      setLogs((prev) => [...prev, e.payload].slice(-50));
-    });
-
-    return () => {
-      cancelled = true;
-      unlistenLog.then(f => f());
-    };
-  }, [step]);
-
-  const prev = () => {
-    if (step === "provider") setStep("welcome");
-    else if (step === "provision") {
-      provisionRef.current = false;
-      setStep("provider");
-    }
-  };
-
-  const progress =
-    step === "welcome" ? 25 :
-    step === "provider" ? 60 :
-    step === "provision" ? 85 :
-    100;
+  const skip = () => onComplete();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg-primary">
-      <div className="w-full max-w-lg mx-4">
-        {/* Progress bar */}
-        <div className="h-1 bg-bg-tertiary rounded-full mb-8 overflow-hidden">
-          <div
-            className="h-full bg-accent-primary transition-all duration-500 rounded-full"
-            style={{ width: `${progress}%` }}
-          />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+      <div className="w-full max-w-lg bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl shadow-2xl p-8">
+        <div className="text-center mb-6">
+          <div className="text-5xl mb-4">{STEPS[step].icon}</div>
+          <h2 className="text-2xl font-bold text-[var(--text-primary)]">{STEPS[step].title}</h2>
+          <p className="text-[var(--text-secondary)] mt-2">{STEPS[step].description}</p>
         </div>
 
-        {step === "welcome" && (
-          <div className="text-center space-y-6 animate-fade-in">
-            <div className="text-3xl font-semibold text-text-primary">IDEOCODE</div>
-            <p className="text-text-secondary text-sm max-w-md mx-auto">
-              Welcome to the multi-model AI coding assistant.
-              Let's get you set up in under a minute.
-            </p>
-            <div className="flex items-center justify-center gap-3 text-text-muted text-xs">
-              <Sparkles size={16} className="text-accent-primary" />
-              <span>Offline-first · Multi-provider · Keyboard-first</span>
-            </div>
-            <button
-              onClick={next}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-accent-primary text-white text-sm font-medium hover:bg-accent-hover transition-fast"
-            >
-              Get Started <ChevronRight size={16} />
-            </button>
-          </div>
-        )}
-
-        {step === "provider" && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="text-center">
-              <h2 className="text-lg font-semibold text-text-primary">Select AI Provider</h2>
-              <p className="text-text-muted text-xs mt-1">Choose your primary AI provider</p>
-            </div>
-            <div className="space-y-2">
-              {PROVIDERS.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => setProvider(p.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border transition-all text-left
-                    ${provider === p.id
-                      ? "border-accent-primary bg-accent-primary/5"
-                      : "border-border-subtle hover:border-text-muted"
-                    }`}
-                >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold
-                    ${provider === p.id ? "bg-accent-primary text-white" : "bg-bg-elevated text-text-muted"}`}>
-                    {p.label[0]}
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-xs font-medium text-text-primary">{p.label}</div>
-                    <div className="text-[11px] text-text-muted">{p.models}</div>
-                  </div>
-                  {provider === p.id && <Check size={16} className="text-accent-primary" />}
-                </button>
-              ))}
-            </div>
-            {saveError && (
-              <div className="p-2 rounded bg-error/10 border border-error/30">
-                <div className="text-xs text-error">{saveError}</div>
-              </div>
-            )}
-            <div className="flex justify-between">
-              <button onClick={prev} className="flex items-center gap-1 text-xs text-text-muted hover:text-text-primary transition-fast">
-                <ChevronLeft size={14} /> Back
-              </button>
+        {step === 1 && (
+          <div className="grid grid-cols-5 gap-3 mb-6">
+            {THEMES.map((t) => (
               <button
-                onClick={next}
-                disabled={saving}
-                className="flex items-center gap-1 px-4 py-1.5 rounded-lg bg-accent-primary text-white text-xs font-medium hover:bg-accent-hover transition-fast disabled:opacity-50"
-              >
-                {saving ? "Saving..." : "Continue"}
-                <ChevronRight size={14} />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {step === "provision" && (
-          <div className="space-y-6 animate-blur-in">
-            <div className="text-center">
-              <div className="mx-auto w-16 h-16 rounded-full bg-accent-primary/10 border border-accent-primary/30 flex items-center justify-center mb-4">
-                {engine?.online ? (
-                  <Check size={28} className="text-success" />
-                ) : (
-                  <Server size={28} className="text-accent-primary" />
-                )}
-              </div>
-              <h2 className="text-lg font-semibold text-text-primary">
-                Provisioning Baanzon Verso
-              </h2>
-              <p className="text-text-muted text-xs mt-1 max-w-sm mx-auto">
-                {engine?.online
-                  ? "Your AI engine is ready. Setting things up..."
-                  : engine?.installing
-                    ? "Installing the Baanzon Verso engine on your machine..."
-                    : "Starting the Baanzon Verso engine (invisible, automatic)..."
-                  }
-              </p>
-            </div>
-
-            <div className="h-1 bg-bg-tertiary rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${
-                  engine?.online ? "bg-success" : "shimmer"
-                }`}
-                style={{
-                  width: engine?.online
-                    ? "100%"
-                    : engine?.installing
-                      ? "55%"
-                      : "75%",
+                key={t.id}
+                onClick={() => {
+                  setTheme(t.id as any);
+                  achievementStore.unlock('theme-change');
                 }}
-              />
-            </div>
-
-            {engine?.installing && logs.length > 0 && (
-              <div className="bg-[#0D1117] border border-border-subtle rounded-lg p-3 h-32 overflow-y-auto text-left font-mono text-[10px] text-text-muted leading-relaxed">
-                {logs.map((log, i) => (
-                  <div key={i} className="whitespace-pre-wrap">{log}</div>
-                ))}
-                <div ref={logsEndRef} />
-              </div>
-            )}
-            
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs">
-                <span className={`w-1.5 h-1.5 rounded-full ${engine?.online ? "bg-success" : "bg-accent-primary animate-pulse"}`} />
-                <span className="text-text-secondary">
-                  {engine?.engine || "baanzon-verso"}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-text-muted">
-                <Wifi size={12} className={engine?.online ? "text-success" : ""} />
-                <span>
-                  {engine?.online
-                    ? `Engine online at http://localhost:${engine.port}`
-                    : "Local engine endpoint"}
-                </span>
-              </div>
-            </div>
-
-            {(provisionError || provisionTimedOut) && (
-              <div className="flex items-start gap-2 p-3 rounded-lg bg-warning/10 border border-warning/30">
-                <AlertTriangle size={14} className="text-warning shrink-0 mt-0.5" />
-                <p className="text-xs text-text-secondary leading-relaxed">
-                  {provisionTimedOut
-                    ? "The engine is taking longer than expected to come online. You can continue anyway and it will keep starting in the background."
-                    : provisionError}
-                </p>
-              </div>
-            )}
-
-            <div className="flex justify-between">
-              <button
-                onClick={prev}
-                className="flex items-center gap-1 text-xs text-text-muted hover:text-text-primary transition-fast"
+                className="flex flex-col items-center gap-1 p-3 rounded-lg border border-[var(--border)] hover:border-[var(--accent)] transition-colors"
               >
-                <ChevronLeft size={14} /> Back
+                <div className="w-8 h-8 rounded-full" style={{ backgroundColor: t.color }} />
+                <span className="text-xs text-[var(--text-secondary)]">{t.name}</span>
               </button>
-              {(provisionError || provisionTimedOut) && (
-                <button
-                  onClick={() => setStep("done")}
-                  className="flex items-center gap-1 px-4 py-1.5 rounded-lg bg-accent-primary text-white text-xs font-medium hover:bg-accent-hover transition-fast"
-                >
-                  Continue anyway <RefreshCw size={12} />
-                </button>
-              )}
-            </div>
+            ))}
           </div>
         )}
 
-        {step === "done" && (
-          <div className="text-center space-y-6 animate-fade-in">
-            <div className="w-16 h-16 rounded-full bg-success/20 flex items-center justify-center mx-auto">
-              <Check size={32} className="text-success" />
+        {step === 2 && (
+          <div className="space-y-2 mb-6">
+            <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
+              ✅ Baanzon Verso (built-in) is available — no setup needed
             </div>
-            <div>
-              <h2 className="text-lg font-semibold text-text-primary">You're All Set!</h2>
-              <p className="text-text-muted text-xs mt-1 max-w-sm mx-auto">
-                {PROVIDERS.find(p => p.id === provider)?.label} provider
-              </p>
-            </div>
+            {providers
+              .filter((p: Provider) => p.id !== 'baanzon-verso')
+              .map((p: Provider) => (
+                <div key={p.id} className="p-3 rounded-lg border border-[var(--border)] text-sm text-[var(--text-secondary)]">
+                  {p.name} — {p.is_configured ? '✅ Configured' : '⚠️ Needs API key'}
+                </div>
+              ))}
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="mb-6">
             <button
-              onClick={onComplete}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-accent-primary text-white text-sm font-medium hover:bg-accent-hover transition-fast"
+              onClick={async () => {
+                await pickWorkspace();
+                achievementStore.unlock('workspace-open');
+              }}
+              className="w-full p-4 rounded-lg border-2 border-dashed border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
             >
-              Start Using IDEOCODE <ChevronRight size={16} />
+              📂 Click to choose a folder
             </button>
           </div>
         )}
+
+        <div className="flex items-center justify-between mt-6">
+          <button
+            onClick={skip}
+            className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+          >
+            Skip
+          </button>
+          <div className="flex gap-2">
+            {STEPS.map((_, i) => (
+              <div
+                key={i}
+                className={`w-2 h-2 rounded-full ${
+                  i === step ? 'bg-[var(--accent)]' : 'bg-[var(--border)]'
+                }`}
+              />
+            ))}
+          </div>
+          <button
+            onClick={next}
+            className="px-4 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 text-sm font-medium"
+          >
+            {step === STEPS.length - 1 ? 'Get Started' : 'Next'}
+          </button>
+        </div>
       </div>
     </div>
   );

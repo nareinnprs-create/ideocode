@@ -84,6 +84,7 @@
   --animate-shimmer: shimmer 1.6s linear infinite;
   --animate-bounce-dot: bounceDot 1.2s ease-in-out infinite;
   --animate-slide-in-right: slideInRight 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-slide-in: slideIn 300ms cubic-bezier(0.16, 1, 0.3, 1);
   --animate-mission-control: missionControl 320ms cubic-bezier(0.16, 1, 0.3, 1);
   --animate-float-in: floatIn 320ms cubic-bezier(0.16, 1, 0.3, 1);
   --animate-pop-in: popIn 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -124,6 +125,11 @@
   @keyframes slideInRight {
     0% { transform: translateX(12px); opacity: 0; }
     100% { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes slideIn {
+    0% { transform: translateY(-12px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
   }
 
   @keyframes missionControl {

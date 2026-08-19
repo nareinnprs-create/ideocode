@@ -3,8 +3,23 @@ import { AppShell } from "./components/layout/AppShell";
 import { OnboardingWizard } from "./components/onboarding/OnboardingWizard";
 import { useAppStore } from "./stores/appStore";
 import { useFileStore } from "./stores/fileStore";
+import { useAchievementStore } from "./stores/achievementStore";
 import { isFirstLaunch, getVersion, getSettings } from "./lib/tauri-commands";
 import { initTauriEventBridge } from "./lib/tauri-events";
+
+function AchievementToast() {
+  const showNotification = useAchievementStore((s) => s.showNotification);
+  if (!showNotification) return null;
+  return (
+    <div className="fixed top-4 right-4 z-50 bg-[var(--accent)] text-white px-4 py-3 rounded-lg shadow-lg animate-slide-in flex items-center gap-2">
+      <span className="text-xl">🏆</span>
+      <div>
+        <div className="font-bold text-sm">Achievement Unlocked!</div>
+        <div className="text-xs opacity-90">{showNotification}</div>
+      </div>
+    </div>
+  );
+}
 
 function App() {
   const setVersion = useAppStore((s) => s.setVersion);
@@ -53,7 +68,12 @@ function App() {
     return <OnboardingWizard onComplete={() => setOnboarding(false)} />;
   }
 
-  return <AppShell />;
+  return (
+    <>
+      <AppShell />
+      <AchievementToast />
+    </>
+  );
 }
 
 export default App;
