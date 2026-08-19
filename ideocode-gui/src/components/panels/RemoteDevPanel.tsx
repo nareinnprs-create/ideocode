@@ -1,36 +1,45 @@
 import { useState } from "react";
-import { AlertTriangle, Monitor, Plus, Trash2, Globe } from "lucide-react";
+import { Monitor, Plus, Trash2, Globe } from "lucide-react";
 import { useAppStore } from "../../stores/appStore";
-
-interface RemoteHost { id: string; name: string; host: string; port: number; user: string; connected: boolean; }
-
-const STORAGE_KEY = "idc-remote";
-function loadHosts(): RemoteHost[] { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch { return []; } }
-function saveHosts(items: RemoteHost[]) { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
+import { useRemoteStore, type RemoteHostType } from "../../stores/remoteStore";
 
 export function RemoteDevPanel() {
   const setRightPanelOpen = useAppStore((s) => s.setRightPanelOpen);
-  const [hosts, setHosts] = useState<RemoteHost[]>(loadHosts);
+  const hosts = useRemoteStore((s) => s.hosts);
+  const addHost = useRemoteStore((s) => s.add);
+  const removeHost = useRemoteStore((s) => s.remove);
+  const connect = useRemoteStore((s) => s.connect);
+  const disconnect = useRemoteStore((s) => s.disconnect);
   const [showAdd, setShowAdd] = useState(false);
   const [name, setName] = useState("");
   const [host, setHost] = useState("");
   const [port, setPort] = useState("22");
   const [user, setUser] = useState("root");
+  const [hostType, setHostType] = useState<RemoteHostType>("ssh");
 
   const handleAdd = () => {
     if (!name.trim() || !host.trim()) return;
-    const next = [...hosts, { id: `host-${Date.now()}`, name, host, port: parseInt(port) || 22, user, connected: false }];
-    setHosts(next); saveHosts(next); setName(""); setHost(""); setShowAdd(false);
+    addHost({
+      name,
+      host,
+      port: parseInt(port) || 22,
+      user,
+      type: hostType,
+      config: {},
+    });
+    setName("");
+    setHost("");
+    setShowAdd(false);
   };
 
-  const toggleConnect = (id: string) => {
-    const next = hosts.map((h) => h.id === id ? { ...h, connected: !h.connected } : h);
-    setHosts(next); saveHosts(next);
-  };
-
-  const remove = (id: string) => {
-    const next = hosts.filter((h) => h.id !== id);
-    setHosts(next); saveHosts(next);
+  const statusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      connected: "bg-success/10 text-success",
+      connecting: "bg-warning/10 text-warning",
+      error: "bg-error/10 text-error",
+      disconnected: "bg-bg-tertiary text-text-muted",
+    };
+    return colors[status] ?? "bg-bg-tertiary text-text-muted";
   };
 
   return (
@@ -47,6 +56,12 @@ export function RemoteDevPanel() {
         <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle space-y-1.5">
           <input type="text" placeholder="Connection name" value={name} onChange={(e) => setName(e.target.value)}
             className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary" />
+          <select value={hostType} onChange={(e) => setHostType(e.target.value as RemoteHostType)}
+            className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary">
+            <option value="ssh">SSH</option>
+            <option value="wsl">WSL</option>
+            <option value="docker">Docker</option>
+          </select>
           <input type="text" placeholder="Host address" value={host} onChange={(e) => setHost(e.target.value)}
             className="w-full p-1.5 text-xs font-mono bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary" />
           <div className="flex gap-1.5">
@@ -59,12 +74,6 @@ export function RemoteDevPanel() {
             className="w-full px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast">Add Host</button>
         </div>
       )}
-      <div className="mx-3 mt-2 p-2 rounded bg-warning/5 border border-warning/20">
-        <div className="flex items-center gap-2">
-          <AlertTriangle size={12} className="text-warning shrink-0" />
-          <span className="text-[11px] text-warning">This feature requires a backend server. Currently showing UI only.</span>
-        </div>
-      </div>
       <div className="flex-1 overflow-y-auto">
         {hosts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-text-muted">
@@ -74,16 +83,25 @@ export function RemoteDevPanel() {
         ) : hosts.map((h) => (
           <div key={h.id} className="px-3 py-2 border-b border-border-subtle hover:bg-bg-elevated transition-fast group">
             <div className="flex items-center gap-2">
-              <Globe size={14} className={h.connected ? "text-success" : "text-text-muted"} />
+              <Globe size={14} className={h.status === "connected" ? "text-success" : "text-text-muted"} />
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-medium text-text-primary">{h.name}</div>
                 <div className="text-[11px] text-text-muted font-mono truncate">{h.user}@{h.host}:{h.port}</div>
+                <div className="text-[10px] text-text-muted mt-0.5">{h.type}</div>
               </div>
-              <button onClick={() => toggleConnect(h.id)}
-                className={`text-[10px] px-2 py-1 rounded transition-fast ${h.connected ? "bg-success/10 text-success" : "bg-bg-tertiary text-text-muted hover:text-text-primary"}`}>
-                {h.connected ? "Connected" : "Connect"}
-              </button>
-              <button onClick={() => remove(h.id)} className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
+              <span className={`text-[10px] px-1.5 py-0.5 rounded ${statusColor(h.status)}`}>{h.status}</span>
+              {h.status === "connected" ? (
+                <button onClick={() => disconnect(h.id)}
+                  className="text-[10px] px-2 py-1 rounded bg-success/10 text-success hover:bg-success/20 transition-fast">
+                  Disconnect
+                </button>
+              ) : (
+                <button onClick={() => connect(h.id)} disabled={h.status === "connecting"}
+                  className="text-[10px] px-2 py-1 rounded bg-bg-tertiary text-text-muted hover:text-text-primary disabled:opacity-50 transition-fast">
+                  {h.status === "connecting" ? "Connecting..." : "Connect"}
+                </button>
+              )}
+              <button onClick={() => removeHost(h.id)} className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
                 <Trash2 size={11} />
               </button>
             </div>

@@ -1,157 +1,118 @@
-import { useState, useEffect } from "react";
-import { Anchor, Plus, Trash2, RefreshCw, ToggleLeft, ToggleRight, AlertCircle } from "lucide-react";
+import { useState } from "react";
+import { Anchor, Plus, Trash2, ToggleLeft, ToggleRight } from "lucide-react";
+import { useAppStore } from "../../stores/appStore";
+import { useHookStore, type HookEvent } from "../../stores/hookStore";
 
-const HOOK_EVENTS = [
-  "pre_prompt",
-  "post_prompt",
-  "pre_tool_call",
-  "post_tool_call",
-  "pre_file_edit",
-  "post_file_edit",
-  "on_error",
+const HOOK_EVENTS: HookEvent[] = [
+  "SessionStart",
+  "UserPromptSubmit",
+  "PreToolUse",
+  "PermissionRequest",
+  "PostToolUse",
+  "PostToolUseFailure",
+  "Stop",
 ];
 
-const EVENT_LABELS: Record<string, string> = {
-  pre_prompt: "Before Prompt",
-  post_prompt: "After Prompt",
-  pre_tool_call: "Before Tool Call",
-  post_tool_call: "After Tool Call",
-  pre_file_edit: "Before File Edit",
-  post_file_edit: "After File Edit",
-  on_error: "On Error",
+const EVENT_LABELS: Record<HookEvent, string> = {
+  SessionStart: "Session Start",
+  UserPromptSubmit: "Prompt Submit",
+  PreToolUse: "Before Tool Use",
+  PermissionRequest: "Permission Request",
+  PostToolUse: "After Tool Use",
+  PostToolUseFailure: "Tool Use Failure",
+  Stop: "Stop",
 };
 
-interface Hook {
-  id: string;
-  event: string;
-  command: string;
-  description: string;
-  enabled: boolean;
-}
+const EVENT_COLORS: Record<HookEvent, string> = {
+  SessionStart: "bg-blue-500/20 text-blue-400",
+  UserPromptSubmit: "bg-green-500/20 text-green-400",
+  PreToolUse: "bg-amber-500/20 text-amber-400",
+  PermissionRequest: "bg-orange-500/20 text-orange-400",
+  PostToolUse: "bg-purple-500/20 text-purple-400",
+  PostToolUseFailure: "bg-red-500/20 text-red-400",
+  Stop: "bg-gray-500/20 text-gray-400",
+};
 
 export function HooksPanel() {
-  const [hooks, setHooks] = useState<Hook[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [showCreate, setShowCreate] = useState(false);
-  const [newHook, setNewHook] = useState({ event: "pre_prompt", command: "", description: "" });
-  const [error, setError] = useState<string | null>(null);
+  const setRightPanelOpen = useAppStore((s) => s.setRightPanelOpen);
+  const hooks = useHookStore((s) => s.hooks);
+  const addHook = useHookStore((s) => s.add);
+  const toggleHook = useHookStore((s) => s.toggle);
+  const removeHook = useHookStore((s) => s.remove);
+  const [showAdd, setShowAdd] = useState(false);
+  const [event, setEvent] = useState<HookEvent>("PreToolUse");
+  const [command, setCommand] = useState("");
+  const [name, setName] = useState("");
 
-  useEffect(() => { loadHooks(); }, []);
-
-  const loadHooks = async () => {
-    setLoading(true);
-    try {
-      const { invoke } = await import("@tauri-apps/api/core");
-      const result = await invoke<Hook[]>("list_hooks");
-      setHooks(result);
-    } catch { setHooks([]); }
-    setLoading(false);
-  };
-
-  const createHook = async () => {
-    if (!newHook.command) return;
-    try {
-      const { invoke } = await import("@tauri-apps/api/core");
-      const hook = await invoke<Hook>("create_hook", { ...newHook });
-      setHooks((prev) => [...prev, hook]);
-      setNewHook({ event: "pre_prompt", command: "", description: "" });
-      setShowCreate(false);
-    } catch (e) { setError(`Failed: ${e}`); }
-  };
-
-  const toggleHook = async (id: string, enabled: boolean) => {
-    try {
-      const { invoke } = await import("@tauri-apps/api/core");
-      await invoke("toggle_hook", { id, enabled });
-      setHooks((prev) => prev.map((h) => (h.id === id ? { ...h, enabled } : h)));
-    } catch (e) { setError(`Failed: ${e}`); }
-  };
-
-  const deleteHook = async (id: string) => {
-    try {
-      const { invoke } = await import("@tauri-apps/api/core");
-      await invoke("delete_hook", { id });
-      setHooks((prev) => prev.filter((h) => h.id !== id));
-    } catch (e) { setError(`Failed: ${e}`); }
-  };
-
-  const eventColor = (event: string) => {
-    const colors: Record<string, string> = {
-      pre_prompt: "bg-blue-500/20 text-blue-400",
-      post_prompt: "bg-green-500/20 text-green-400",
-      pre_tool_call: "bg-amber-500/20 text-amber-400",
-      post_tool_call: "bg-purple-500/20 text-purple-400",
-      pre_file_edit: "bg-cyan-500/20 text-cyan-400",
-      post_file_edit: "bg-teal-500/20 text-teal-400",
-      on_error: "bg-red-500/20 text-red-400",
-    };
-    return colors[event] ?? "bg-bg-surface text-text-muted";
+  const handleAdd = () => {
+    if (!command.trim()) return;
+    addHook({
+      name: name || `${EVENT_LABELS[event]} hook`,
+      event,
+      matcher: { type: "wildcard", patterns: ["*"] },
+      command,
+      enabled: true,
+      async: true,
+      timeout: 30,
+    });
+    setCommand("");
+    setName("");
+    setShowAdd(false);
   };
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between h-10 px-3 border-b border-border-subtle">
-        <span className="text-xs font-medium text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
-          <Anchor size={13} /> Hooks
-        </span>
-        <div className="flex items-center gap-1">
-          <button onClick={() => setShowCreate(!showCreate)} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
-            <Plus size={14} />
-          </button>
-          <button onClick={loadHooks} disabled={loading} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
-            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-          </button>
-        </div>
+      <div className="px-1 pt-1 flex items-center justify-between">
+        <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
+          <Anchor size={14} /> Hooks
+        </button>
+        <button onClick={() => setShowAdd(!showAdd)} className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
+          <Plus size={14} /> Add
+        </button>
       </div>
-
-      {error && (
-        <div className="mx-3 mt-2 p-2 rounded bg-error/10 border border-error/30 flex items-center gap-2">
-          <AlertCircle size={12} className="text-error shrink-0" />
-          <div className="text-xs text-error flex-1">{error}</div>
-          <button onClick={() => setError(null)} className="text-error">×</button>
-        </div>
-      )}
-
-      {showCreate && (
-        <div className="mx-3 mt-2 p-3 rounded border border-border-subtle bg-bg-surface space-y-2">
-          <select value={newHook.event} onChange={(e) => setNewHook({ ...newHook, event: e.target.value })} className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle outline-none focus:border-accent-primary">
-            {HOOK_EVENTS.map((e) => <option key={e} value={e}>{EVENT_LABELS[e]}</option>)}
+      {showAdd && (
+        <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle space-y-1.5">
+          <select value={event} onChange={(e) => setEvent(e.target.value as HookEvent)}
+            className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary">
+            {HOOK_EVENTS.map((ev) => <option key={ev} value={ev}>{EVENT_LABELS[ev]}</option>)}
           </select>
-          <input value={newHook.command} onChange={(e) => setNewHook({ ...newHook, command: e.target.value })} placeholder="Shell command or script" className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
-          <input value={newHook.description} onChange={(e) => setNewHook({ ...newHook, description: e.target.value })} placeholder="Description (optional)" className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
-          <div className="flex justify-end gap-1">
-            <button onClick={() => setShowCreate(false)} className="px-2 py-1 text-[11px] rounded bg-bg-elevated text-text-secondary">Cancel</button>
-            <button onClick={createHook} disabled={!newHook.command} className="px-2 py-1 text-[11px] rounded bg-accent-primary text-white disabled:opacity-50">Create</button>
-          </div>
+          <input type="text" placeholder="Hook name (optional)" value={name} onChange={(e) => setName(e.target.value)}
+            className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary" />
+          <input type="text" placeholder="Shell command or script" value={command} onChange={(e) => setCommand(e.target.value)}
+            className="w-full p-1.5 text-xs font-mono bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary" />
+          <button onClick={handleAdd} disabled={!command.trim()}
+            className="w-full px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast">Create Hook</button>
         </div>
       )}
-
-      <div className="flex-1 overflow-y-auto py-1">
+      <div className="flex-1 overflow-y-auto">
         {hooks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-2 text-text-muted">
-            <Anchor size={24} className="opacity-30" />
+          <div className="flex flex-col items-center justify-center py-12 text-text-muted">
+            <Anchor size={24} className="mb-2 opacity-50" />
             <div className="text-xs">No hooks configured</div>
-            <button onClick={() => setShowCreate(true)} className="text-[11px] text-accent-primary hover:underline">Create one</button>
           </div>
-        ) : (
-          hooks.map((hook) => (
-            <div key={hook.id} className="flex items-center gap-2 px-3 py-2 hover:bg-bg-elevated transition-fast border-b border-border-subtle/50">
-              <button onClick={() => toggleHook(hook.id, !hook.enabled)} className={`shrink-0 transition-fast ${hook.enabled ? "text-green-400" : "text-text-muted"}`}>
-                {hook.enabled ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+        ) : hooks.map((h) => (
+          <div key={h.id} className="px-3 py-2 border-b border-border-subtle hover:bg-bg-elevated transition-fast group">
+            <div className="flex items-center gap-2">
+              <button onClick={() => toggleHook(h.id)} className="shrink-0">
+                {h.enabled ? <ToggleRight size={16} className="text-success" /> : <ToggleLeft size={16} className="text-text-muted" />}
               </button>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${eventColor(hook.event)}`}>{EVENT_LABELS[hook.event]}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded ${EVENT_COLORS[h.event]}`}>{EVENT_LABELS[h.event]}</span>
+                  <span className="text-xs font-medium text-text-primary">{h.name}</span>
                 </div>
-                <div className="text-[10px] text-text-muted font-mono truncate mt-0.5">{hook.command}</div>
-                {hook.description && <div className="text-[10px] text-text-secondary mt-0.5">{hook.description}</div>}
+                <div className="text-[11px] text-text-muted font-mono truncate mt-0.5">{h.command}</div>
+                <div className="text-[10px] text-text-muted mt-0.5">
+                  {h.async ? "async" : "sync"} · {h.timeout}s timeout
+                  {h.matcher.patterns.length > 0 && ` · patterns: ${h.matcher.patterns.join(", ")}`}
+                </div>
               </div>
-              <button onClick={() => deleteHook(hook.id)} className="p-1 text-text-muted hover:text-red-400 transition-fast shrink-0">
-                <Trash2 size={12} />
+              <button onClick={() => removeHook(h.id)} className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
+                <Trash2 size={11} />
               </button>
             </div>
-          ))
-        )}
+          </div>
+        ))}
       </div>
     </div>
   );
