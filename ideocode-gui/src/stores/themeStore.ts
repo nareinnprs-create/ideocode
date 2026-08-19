@@ -82,11 +82,20 @@ interface ThemeState {
   getActiveTheme: () => ThemeDefinition;
 }
 
-export const useThemeStore = create<ThemeState>()(
+export type ThemeStore = ThemeState & { init: () => void };
+
+export const useThemeStore = create<ThemeStore>()(
   persist(
     (set, get) => ({
       themes: BUILTIN_THEMES,
       activeThemeId: 'midnight',
+
+      init: () => {
+        const state = get();
+        const all = [...BUILTIN_THEMES, ...state.themes];
+        const theme = all.find((t) => t.id === state.activeThemeId) || BUILTIN_THEMES[0];
+        applyThemeColors(theme.colors);
+      },
 
       setTheme: (id) => {
         set({ activeThemeId: id });
@@ -144,8 +153,37 @@ export const useThemeStore = create<ThemeState>()(
   )
 );
 
+function isColorDark(hex: string): boolean {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+}
+
 function applyThemeColors(c: ThemeColors) {
   const el = document.documentElement;
+  // Set --idc-* variables that globals.css @theme block maps to Tailwind
+  el.style.setProperty('--idc-bg-primary', c.bgPrimary);
+  el.style.setProperty('--idc-bg-secondary', c.bgSecondary);
+  el.style.setProperty('--idc-bg-tertiary', c.bgTertiary);
+  el.style.setProperty('--idc-bg-elevated', c.bgSecondary);
+  el.style.setProperty('--idc-bg-hover', `${c.bgTertiary}`);
+  el.style.setProperty('--idc-bg-overlay', `${c.bgPrimary}cc`);
+  el.style.setProperty('--idc-text-primary', c.textPrimary);
+  el.style.setProperty('--idc-text-secondary', c.textSecondary);
+  el.style.setProperty('--idc-text-muted', c.textMuted);
+  el.style.setProperty('--idc-border-subtle', c.border);
+  el.style.setProperty('--idc-border-default', c.border);
+  el.style.setProperty('--idc-accent-primary', c.accent);
+  el.style.setProperty('--idc-accent-hover', c.accentHover);
+  el.style.setProperty('--idc-success', c.success);
+  el.style.setProperty('--idc-warning', c.warning);
+  el.style.setProperty('--idc-error', c.error);
+  el.style.setProperty('--idc-info', c.info);
+  el.style.setProperty('--idc-glow', `${c.accent}33`);
+  el.style.setProperty('--idc-glow-accent', `${c.accent}4d`);
+  // Also set legacy non-prefixed vars for any code still using them
   el.style.setProperty('--bg-primary', c.bgPrimary);
   el.style.setProperty('--bg-secondary', c.bgSecondary);
   el.style.setProperty('--bg-tertiary', c.bgTertiary);
@@ -159,8 +197,7 @@ function applyThemeColors(c: ThemeColors) {
   el.style.setProperty('--warning', c.warning);
   el.style.setProperty('--error', c.error);
   el.style.setProperty('--info', c.info);
-  el.style.setProperty('--idc-accent-primary', c.accent);
-  el.style.setProperty('--idc-accent-hover', c.accentHover);
-  el.style.setProperty('--idc-glow', `${c.accent}33`);
-  el.style.setProperty('--idc-glow-accent', `${c.accent}4d`);
+  // Set data-theme attribute for CSS selectors
+  const isDark = isColorDark(c.bgPrimary);
+  el.setAttribute('data-theme', isDark ? 'dark' : 'light');
 }

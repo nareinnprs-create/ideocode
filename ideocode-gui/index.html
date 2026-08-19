@@ -2,14 +2,33 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0a0a0f" />
+    <meta name="theme-color" content="#0D0B14" />
     <meta name="color-scheme" content="dark" />
     <title>IDEOCODE</title>
+    <style>
+      body { margin: 0; background: #0D0B14; color: #E8E4F0; font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+      #splash { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 16px; }
+      #splash .logo { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #7C3AED, #3B82F6); display: flex; align-items: center; justify-content: center; animation: pulse 2s ease-in-out infinite; }
+      #splash .logo svg { width: 28px; height: 28px; fill: white; }
+      #splash .title { font-size: 18px; font-weight: 600; letter-spacing: 0.05em; }
+      #splash .bar { width: 120px; height: 2px; background: #1E1A2E; border-radius: 1px; overflow: hidden; }
+      #splash .bar::after { content: ''; display: block; width: 40%; height: 100%; background: linear-gradient(90deg, #7C3AED, #3B82F6); border-radius: 1px; animation: slide 1.2s ease-in-out infinite; }
+      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+      @keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
+    </style>
   </head>
-  <body class="bg-bg-primary text-text-primary font-sans">
-    <div id="root"></div>
+  <body>
+    <div id="root">
+      <div id="splash">
+        <div class="logo">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="title">IDEOCODE</div>
+        <div class="bar"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
       window.addEventListener("error", function (e) {

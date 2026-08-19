@@ -4,6 +4,7 @@ import { OnboardingWizard } from "./components/onboarding/OnboardingWizard";
 import { useAppStore } from "./stores/appStore";
 import { useFileStore } from "./stores/fileStore";
 import { useAchievementStore } from "./stores/achievementStore";
+import { useThemeStore } from "./stores/themeStore";
 import { isFirstLaunch, getVersion, getSettings } from "./lib/tauri-commands";
 import { initTauriEventBridge } from "./lib/tauri-events";
 
@@ -31,6 +32,7 @@ function App() {
 
   useEffect(() => {
     initTauriEventBridge();
+    useThemeStore.getState().init();
     getVersion().then(setVersion).catch(() => setVersion("0.64.1"));
     getSettings()
       .then((s) => {
@@ -58,8 +60,16 @@ function App() {
 
   if (onboarding === null) {
     return (
-      <div className="flex items-center justify-center h-screen bg-bg-primary">
-        <div className="text-text-muted text-sm animate-pulse">Loading...</div>
+      <div className="flex flex-col items-center justify-center h-screen bg-[#0D0B14] gap-4">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#7C3AED] to-[#3B82F6] flex items-center justify-center animate-pulse">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div className="text-[#E8E4F0] text-base font-semibold tracking-wide">IDEOCODE</div>
+        <div className="w-24 h-0.5 bg-[#1E1A2E] rounded overflow-hidden">
+          <div className="w-2/5 h-full bg-gradient-to-r from-[#7C3AED] to-[#3B82F6] rounded animate-[slide_1.2s_ease-in-out_infinite]" />
+        </div>
       </div>
     );
   }
