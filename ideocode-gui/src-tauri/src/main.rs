@@ -127,6 +127,8 @@ fn main() {
             commands::git_push,
             commands::run_build,
             commands::run_cargo_check,
+            commands::run_command,
+            commands::run_npm,
             commands::list_providers,
             commands::get_provider_status,
             commands::gateway_status,

@@ -346,6 +346,14 @@ export async function runCargoCheck(path: string): Promise<BuildOutput> {
   return invoke<BuildOutput>("run_cargo_check", { path });
 }
 
+export async function runCommand(command: string, cwd: string): Promise<BuildOutput> {
+  return invoke<BuildOutput>("run_command", { command, cwd });
+}
+
+export async function runNpm(command: string, cwd: string): Promise<BuildOutput> {
+  return invoke<BuildOutput>("run_npm", { command, cwd });
+}
+
 // ============================================
 // Settings Commands
 // ============================================
