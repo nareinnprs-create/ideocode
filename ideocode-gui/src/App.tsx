@@ -4,6 +4,7 @@ import { OnboardingWizard } from "./components/onboarding/OnboardingWizard";
 import { useAppStore } from "./stores/appStore";
 import { useFileStore } from "./stores/fileStore";
 import { isFirstLaunch, getVersion, getSettings } from "./lib/tauri-commands";
+import { initTauriEventBridge } from "./lib/tauri-events";
 
 function App() {
   const setVersion = useAppStore((s) => s.setVersion);
@@ -14,6 +15,7 @@ function App() {
   const [onboarding, setOnboarding] = useState<boolean | null>(null);
 
   useEffect(() => {
+    initTauriEventBridge();
     getVersion().then(setVersion).catch(() => setVersion("0.64.1"));
     getSettings()
       .then((s) => {
@@ -21,7 +23,7 @@ function App() {
         useAppStore.getState().setUiFontSize(s.ui_font_size ?? 13);
       })
       .catch(() => {});
-    useFileStore.getState().loadTree();
+    useFileStore.getState().loadSavedWorkspace();
     isFirstLaunch()
       .then((first) => setOnboarding(first))
       .catch(() => setOnboarding(false));

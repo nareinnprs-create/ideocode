@@ -3,10 +3,14 @@ import {
   getFileTree,
   readFile,
   writeFile,
+  openWorkspace as tauriOpenWorkspace,
+  saveWorkspacePath as tauriSaveWorkspace,
+  loadWorkspacePath as tauriLoadWorkspace,
   type FileNode,
 } from "../lib/tauri-commands";
 import { notify } from "./toastStore";
 import { closeTab, openTab } from "../lib/tabs";
+import { confirmSafetyRule } from "../lib/safety";
 
 interface FileState {
   rootPath: string;
@@ -25,6 +29,9 @@ interface FileState {
   closeFile: (path: string) => void;
   setContent: (path: string, content: string) => void;
   saveFile: (path?: string, opts?: { silent?: boolean }) => Promise<void>;
+  deleteFile: (path: string) => Promise<void>;
+  pickWorkspace: () => Promise<void>;
+  loadSavedWorkspace: () => Promise<void>;
 }
 
 export const useFileStore = create<FileState>((set, get) => ({
@@ -111,6 +118,55 @@ export const useFileStore = create<FileState>((set, get) => ({
       contents: { ...s.contents, [path]: content },
       dirty: { ...s.dirty, [path]: true },
     })),
+
+  deleteFile: async (path: string) => {
+    if (!await confirmSafetyRule("file-delete")) return;
+    try {
+      const { openFiles, activeFile, contents, dirty } = get();
+      const next = closeTab({ openFiles, activeFile }, path);
+      const nextContents = { ...contents };
+      const nextDirty = { ...dirty };
+      delete nextContents[path];
+      delete nextDirty[path];
+      set({
+        openFiles: next.openFiles,
+        activeFile: next.activeFile,
+        contents: nextContents,
+        dirty: nextDirty,
+      });
+      notify("success", "File closed", path.split(/[/\\]/).pop());
+    } catch (e) {
+      set({ error: `Failed to delete file: ${e}` });
+      notify("error", "Failed to delete file", `${e}`);
+    }
+  },
+
+  pickWorkspace: async () => {
+    try {
+      const path = await tauriOpenWorkspace();
+      set({ rootPath: path });
+      await tauriSaveWorkspace(path);
+      await get().loadTree();
+      notify("success", "Workspace opened", path.split(/[/\\]/).pop());
+    } catch (e) {
+      if (e !== "No folder selected") {
+        set({ error: `Failed to open workspace: ${e}` });
+        notify("error", "Failed to open workspace", `${e}`);
+      }
+    }
+  },
+
+  loadSavedWorkspace: async () => {
+    try {
+      const saved = await tauriLoadWorkspace();
+      if (saved) {
+        set({ rootPath: saved });
+        await get().loadTree();
+      }
+    } catch {
+      // No saved workspace — start fresh
+    }
+  },
 
   saveFile: async (path, opts) => {
     const { activeFile, contents } = get();

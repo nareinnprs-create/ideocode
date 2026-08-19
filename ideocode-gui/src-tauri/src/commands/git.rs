@@ -244,3 +244,25 @@ pub fn git_checkout(path: String, branch: String) -> Result<(), String> {
         }
     }
 }
+
+/// Stashes all uncommitted changes.
+#[tauri::command]
+pub fn git_stash(path: String) -> Result<String, String> {
+    let cwd = PathBuf::from(&path).to_string_lossy().to_string();
+    let output = run_git(&["stash", "push", "-m", "IDEOCODE GUI stash"], &cwd)?;
+    Ok(output.trim().to_string())
+}
+
+/// Pulls from the remote tracking branch.
+#[tauri::command]
+pub fn git_pull(path: String) -> Result<String, String> {
+    let cwd = PathBuf::from(&path).to_string_lossy().to_string();
+    run_git(&["pull"], &cwd)
+}
+
+/// Pushes to the remote tracking branch.
+#[tauri::command]
+pub fn git_push(path: String) -> Result<String, String> {
+    let cwd = PathBuf::from(&path).to_string_lossy().to_string();
+    run_git(&["push"], &cwd)
+}

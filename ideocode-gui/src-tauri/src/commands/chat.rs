@@ -124,6 +124,68 @@ const SYSTEM_PROMPT: &str = "You are IDEOCODE, an expert software engineering as
 built into the IDEOCODE desktop IDE. You help users write, debug, review, and understand code. \
 Be concise, practical, and precise. When relevant, include runnable code snippets.";
 
+const AGENT_TOOLS: &str = r#"[
+  {
+    "type": "function",
+    "function": {
+      "name": "bash",
+      "description": "Execute a shell command and return its output.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "command": { "type": "string", "description": "The shell command to execute" }
+        },
+        "required": ["command"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "read_file",
+      "description": "Read the contents of a file.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string", "description": "Absolute path to the file" }
+        },
+        "required": ["path"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "write_file",
+      "description": "Write content to a file, creating it if it doesn't exist.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string", "description": "Absolute path to the file" },
+          "content": { "type": "string", "description": "The content to write" }
+        },
+        "required": ["path", "content"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "edit_file",
+      "description": "Edit a file by replacing exact text. The old_text must match exactly.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string", "description": "Absolute path to the file" },
+          "old_text": { "type": "string", "description": "Exact text to find and replace" },
+          "new_text": { "type": "string", "description": "Replacement text" }
+        },
+        "required": ["path", "old_text", "new_text"]
+      }
+    }
+  }
+]"#;
+
 fn http_client() -> &'static reqwest::Client {
     static CLIENT: std::sync::OnceLock<reqwest::Client> = std::sync::OnceLock::new();
     CLIENT.get_or_init(|| {
@@ -339,6 +401,21 @@ async fn chat_completion(
     }
 }
 
+/// Agent tool call parsed from streaming response.
+#[derive(Debug, Clone)]
+struct ParsedToolCall {
+    id: String,
+    name: String,
+    arguments: String,
+}
+
+/// Result of a streamed completion.
+struct StreamResult {
+    content: String,
+    usage: Option<Usage>,
+    tool_calls: Vec<ParsedToolCall>,
+}
+
 /// Streams an OpenAI-compatible chat completion, emitting `chat://delta`
 /// events as chunks arrive. Gracefully handles engines that ignore `stream`
 /// and return a plain JSON body.
@@ -347,13 +424,13 @@ async fn stream_openai_completion(
     model: &str,
     messages: &[serde_json::Value],
     reasoning_effort: Option<&str>,
+    tools: Option<&serde_json::Value>,
     app: &tauri::AppHandle,
     assistant_id: &str,
-) -> Result<(String, Option<Usage>), String> {
+) -> Result<StreamResult, String> {
     let client = http_client();
 
     if provider == "baanzon-verso" || provider == "omniroute" {
-        // The built-in engine cold-starts on first launch, so wait for it.
         let (ready, disabled) = tokio::task::spawn_blocking(|| {
             let status = ideocode_provider_baanzon::bootstrap_engine();
             (status.online, status.disabled)
@@ -394,14 +471,15 @@ async fn stream_openai_completion(
         "temperature": 0.7,
     });
     if matches!(provider, "openai" | "openrouter") {
-        // Ask OpenAI-compatible endpoints to include the usage block in the
-        // final streamed chunk so we can surface token counts in the UI.
         body_obj["stream_options"] = serde_json::json!({ "include_usage": true });
         if provider == "openai" {
             if let Some(effort) = reasoning_effort.filter(|e| !e.is_empty()) {
                 body_obj["reasoning_effort"] = serde_json::json!(effort);
             }
         }
+    }
+    if let Some(t) = tools {
+        body_obj["tools"] = t.clone();
     }
     let body = body_obj;
 
@@ -435,6 +513,10 @@ async fn stream_openai_completion(
     let mut buf = String::new();
     let mut full = String::new();
     let mut usage: Option<Usage> = None;
+    // Tool call accumulator: index -> (id, name, arguments)
+    let mut tool_calls: std::collections::HashMap<u32, (String, String, String)> =
+        std::collections::HashMap::new();
+
     loop {
         match resp.chunk().await {
             Ok(Some(chunk)) => {
@@ -442,7 +524,14 @@ async fn stream_openai_completion(
                 while let Some(idx) = buf.find("\n\n") {
                     let event = buf[..idx].to_string();
                     buf = buf[idx + 2..].to_string();
-                    emit_sse_event(&event, &mut full, &mut usage, app, assistant_id);
+                    emit_sse_event_with_tools(
+                        &event,
+                        &mut full,
+                        &mut usage,
+                        &mut tool_calls,
+                        app,
+                        assistant_id,
+                    );
                 }
             }
             Ok(None) => break,
@@ -450,11 +539,18 @@ async fn stream_openai_completion(
         }
     }
     if !buf.is_empty() {
-        emit_sse_event(&buf, &mut full, &mut usage, app, assistant_id);
+        emit_sse_event_with_tools(
+            &buf,
+            &mut full,
+            &mut usage,
+            &mut tool_calls,
+            app,
+            assistant_id,
+        );
     }
 
     // Graceful fallback: the engine may have returned a plain OpenAI JSON body.
-    if full.is_empty() {
+    if full.is_empty() && tool_calls.is_empty() {
         let v: serde_json::Value =
             serde_json::from_str(&buf).map_err(|e| format!("Invalid stream response: {e}"))?;
         full = v
@@ -470,20 +566,34 @@ async fn stream_openai_completion(
         }
     }
 
-    if full.is_empty() {
-        Err("Empty response from engine".to_string())
-    } else {
-        Ok((full, usage))
-    }
+    let parsed_tool_calls: Vec<ParsedToolCall> = tool_calls
+        .into_iter()
+        .filter_map(|(_, (id, name, args))| {
+            if name.is_empty() {
+                return None;
+            }
+            Some(ParsedToolCall {
+                id,
+                name,
+                arguments: args,
+            })
+        })
+        .collect();
+
+    Ok(StreamResult {
+        content: full,
+        usage,
+        tool_calls: parsed_tool_calls,
+    })
 }
 
 /// Parses a single SSE event and emits any content delta found in it. Also
-/// captures the `usage` block included in the final chunk of a streamed
-/// OpenAI-compatible response.
-fn emit_sse_event(
+/// captures tool calls and the `usage` block included in the final chunk.
+fn emit_sse_event_with_tools(
     event: &str,
     full: &mut String,
     usage: &mut Option<Usage>,
+    tool_calls: &mut std::collections::HashMap<u32, (String, String, String)>,
     app: &tauri::AppHandle,
     assistant_id: &str,
 ) {
@@ -518,6 +628,69 @@ fn emit_sse_event(
                 serde_json::json!({ "id": assistant_id, "content": d }),
             );
         }
+        // Parse tool calls from streaming delta
+        if let Some(arr) = v.pointer("/choices/0/delta/tool_calls").and_then(|a| a.as_array()) {
+            for tc in arr {
+                let idx = tc.get("index").and_then(|i| i.as_u64()).unwrap_or(0) as u32;
+                let entry = tool_calls.entry(idx).or_insert_with(|| {
+                    (
+                        tc.pointer("/id")
+                            .and_then(|s| s.as_str())
+                            .unwrap_or("")
+                            .to_string(),
+                        String::new(),
+                        String::new(),
+                    )
+                });
+                // Update id if present
+                if let Some(id) = tc.pointer("/id").and_then(|s| s.as_str()) {
+                    if !id.is_empty() {
+                        entry.0 = id.to_string();
+                    }
+                }
+                // Update function name if present
+                if let Some(name) = tc
+                    .pointer("/function/name")
+                    .and_then(|s| s.as_str())
+                {
+                    if !name.is_empty() {
+                        entry.1 = name.to_string();
+                    }
+                }
+                // Append arguments delta
+                if let Some(args) = tc
+                    .pointer("/function/arguments")
+                    .and_then(|s| s.as_str())
+                {
+                    entry.2.push_str(args);
+                }
+            }
+        }
+        // Also handle non-streaming tool_calls in message response
+        if let Some(arr) = v
+            .pointer("/choices/0/message/tool_calls")
+            .and_then(|a| a.as_array())
+        {
+            for (i, tc) in arr.iter().enumerate() {
+                let idx = i as u32;
+                let id = tc
+                    .pointer("/id")
+                    .and_then(|s| s.as_str())
+                    .unwrap_or("")
+                    .to_string();
+                let name = tc
+                    .pointer("/function/name")
+                    .and_then(|s| s.as_str())
+                    .unwrap_or("")
+                    .to_string();
+                let args = tc
+                    .pointer("/function/arguments")
+                    .and_then(|s| s.as_str())
+                    .unwrap_or("")
+                    .to_string();
+                tool_calls.insert(idx, (id, name, args));
+            }
+        }
     }
 }
 
@@ -534,8 +707,10 @@ fn build_completion_request(history: &[Message], mode: Option<&str>) -> Vec<serd
         }
         Some("agent") => {
             system_prompt.push_str(
-                "\nYou are in AGENT MODE: act as an autonomous coding agent. Break the task into \
-                 steps and produce complete, ready-to-apply code and instructions.",
+                "\nYou are in AGENT MODE: act as an autonomous coding agent. You have access to \
+                 tools: bash (execute shell commands), read_file, write_file, edit_file. \
+                 Use tool_calls to perform actions. When the task is complete and no more \
+                 tools are needed, respond with a summary of what you did.",
             );
         }
         _ => {}
@@ -544,9 +719,142 @@ fn build_completion_request(history: &[Message], mode: Option<&str>) -> Vec<serd
     let mut req_messages: Vec<serde_json::Value> = Vec::with_capacity(history.len() + 1);
     req_messages.push(serde_json::json!({ "role": "system", "content": system_prompt }));
     for m in history {
-        req_messages.push(serde_json::json!({ "role": m.role, "content": m.content }));
+        let mut msg = serde_json::json!({ "role": m.role, "content": m.content });
+        if let Some(ref tc) = m.tool_calls {
+            if !tc.is_empty() {
+                let calls: Vec<serde_json::Value> = tc
+                    .iter()
+                    .map(|c| {
+                        serde_json::json!({
+                            "id": c.id,
+                            "type": "function",
+                            "function": {
+                                "name": c.name,
+                                "arguments": c.input,
+                            }
+                        })
+                    })
+                    .collect();
+                msg["tool_calls"] = serde_json::json!(calls);
+            }
+        }
+        req_messages.push(msg);
     }
     req_messages
+}
+
+/// Returns tools JSON array when in agent mode, or None for normal/plan modes.
+fn tools_for_mode(mode: Option<&str>) -> Option<serde_json::Value> {
+    if mode == Some("agent") {
+        serde_json::from_str(AGENT_TOOLS).ok()
+    } else {
+        None
+    }
+}
+
+/// Executes a single agent tool call and returns the output string.
+fn execute_tool(name: &str, args: &str) -> String {
+    let parsed: serde_json::Value = match serde_json::from_str(args) {
+        Ok(v) => v,
+        Err(e) => return format!("Error parsing tool arguments: {e}"),
+    };
+
+    match name {
+        "bash" => {
+            let cmd = parsed["command"].as_str().unwrap_or("");
+            if cmd.is_empty() {
+                return "Error: empty command".to_string();
+            }
+            let output = if cfg!(target_os = "windows") {
+                std::process::Command::new("cmd")
+                    .args(["/C", cmd])
+                    .output()
+            } else {
+                std::process::Command::new("sh")
+                    .arg("-c")
+                    .arg(cmd)
+                    .output()
+            };
+            match output {
+                Ok(output) => {
+                    let stdout = String::from_utf8_lossy(&output.stdout);
+                    let stderr = String::from_utf8_lossy(&output.stderr);
+                    let mut result = String::new();
+                    if !stdout.is_empty() {
+                        result.push_str(&stdout);
+                    }
+                    if !stderr.is_empty() {
+                        if !result.is_empty() {
+                            result.push_str("\n--- stderr ---\n");
+                        }
+                        result.push_str(&stderr);
+                    }
+                    if result.len() > 8000 {
+                        result.truncate(8000);
+                        result.push_str("\n... (truncated)");
+                    }
+                    if result.is_empty() {
+                        format!("Command exited with status: {}", output.status)
+                    } else {
+                        result
+                    }
+                }
+                Err(e) => format!("Failed to execute command: {e}"),
+            }
+        }
+        "read_file" => {
+            let path = parsed["path"].as_str().unwrap_or("");
+            match std::fs::read_to_string(path) {
+                Ok(content) => {
+                    if content.len() > 16000 {
+                        let mut truncated = content[..16000].to_string();
+                        truncated.push_str("\n... (truncated at 16KB)");
+                        truncated
+                    } else {
+                        content
+                    }
+                }
+                Err(e) => format!("Error reading file: {e}"),
+            }
+        }
+        "write_file" => {
+            let path = parsed["path"].as_str().unwrap_or("");
+            let content = parsed["content"].as_str().unwrap_or("");
+            if path.is_empty() {
+                return "Error: empty path".to_string();
+            }
+            match std::fs::write(path, content) {
+                Ok(()) => format!("File written: {path}"),
+                Err(e) => format!("Error writing file: {e}"),
+            }
+        }
+        "edit_file" => {
+            let path = parsed["path"].as_str().unwrap_or("");
+            let old_text = parsed["old_text"].as_str().unwrap_or("");
+            let new_text = parsed["new_text"].as_str().unwrap_or("");
+            if path.is_empty() {
+                return "Error: empty path".to_string();
+            }
+            if old_text.is_empty() {
+                return "Error: old_text is empty".to_string();
+            }
+            match std::fs::read_to_string(path) {
+                Ok(content) => {
+                    if !content.contains(old_text) {
+                        format!("Error: old_text not found in {path}")
+                    } else {
+                        let updated = content.replacen(old_text, new_text, 1);
+                        match std::fs::write(path, updated) {
+                            Ok(()) => format!("File edited: {path}"),
+                            Err(e) => format!("Error writing edited file: {e}"),
+                        }
+                    }
+                }
+                Err(e) => format!("Error reading file for edit: {e}"),
+            }
+        }
+        other => format!("Unknown tool: {other}"),
+    }
 }
 
 /// Runs a completion against the active provider for the given history and
@@ -583,7 +891,8 @@ async fn run_completion(
 }
 
 /// Runs a completion, streaming `chat://delta` events to the frontend as text
-/// arrives, and returns the produced assistant message.
+/// arrives, and returns the produced assistant message. In agent mode, executes
+/// tool calls in a loop until the model produces a final text response.
 async fn run_streaming_completion(
     history: &[Message],
     model_override: Option<String>,
@@ -606,37 +915,125 @@ async fn run_streaming_completion(
         settings.active_model
     };
 
-    let req_messages = build_completion_request(history, mode);
-    let (full, usage) = match provider.as_str() {
-        "baanzon-verso" | "omniroute" | "openai" | "openrouter" => {
-            stream_openai_completion(
-                &provider,
-                &model,
-                &req_messages,
-                reasoning_effort,
-                app,
-                assistant_id,
-            )
-            .await?
-        }
-        _ => {
-            let text = chat_completion(&provider, &model, &req_messages).await?;
-            let _ = app.emit(
-                "chat://delta",
-                serde_json::json!({ "id": assistant_id, "content": text }),
-            );
-            (text, None)
-        }
-    };
+    let is_agent = mode == Some("agent");
+    let tools = tools_for_mode(mode);
+    let mut conversation: Vec<serde_json::Value> = build_completion_request(history, mode);
 
-    Ok(Message {
-        id: assistant_id.to_string(),
-        role: "assistant".into(),
-        content: full,
-        tool_calls: None,
-        timestamp: Some(now_ms()),
-        usage,
-    })
+    let max_tool_rounds = 20;
+    let mut round = 0;
+
+    loop {
+        let req_messages = conversation.clone();
+        let stream_result = match provider.as_str() {
+            "baanzon-verso" | "omniroute" | "openai" | "openrouter" => {
+                stream_openai_completion(
+                    &provider,
+                    &model,
+                    &req_messages,
+                    reasoning_effort,
+                    tools.as_ref(),
+                    app,
+                    assistant_id,
+                )
+                .await?
+            }
+            _ => {
+                let text = chat_completion(&provider, &model, &req_messages).await?;
+                let _ = app.emit(
+                    "chat://delta",
+                    serde_json::json!({ "id": assistant_id, "content": text }),
+                );
+                StreamResult {
+                    content: text,
+                    usage: None,
+                    tool_calls: Vec::new(),
+                }
+            }
+        };
+
+        // No tool calls — we have a final text response.
+        if stream_result.tool_calls.is_empty() || !is_agent {
+            return Ok(Message {
+                id: assistant_id.to_string(),
+                role: "assistant".into(),
+                content: stream_result.content,
+                tool_calls: None,
+                timestamp: Some(now_ms()),
+                usage: stream_result.usage,
+            });
+        }
+
+        // Emit tool call info to frontend
+        let tool_names: Vec<String> = stream_result
+            .tool_calls
+            .iter()
+            .map(|tc| tc.name.clone())
+            .collect();
+        let _ = app.emit(
+            "chat://tool",
+            serde_json::json!({
+                "assistant_id": assistant_id,
+                "tools": tool_names,
+            }),
+        );
+
+        // Build assistant message with tool_calls and push to conversation
+        let tc_json: Vec<serde_json::Value> = stream_result
+            .tool_calls
+            .iter()
+            .map(|tc| {
+                serde_json::json!({
+                    "id": tc.id,
+                    "type": "function",
+                    "function": {
+                        "name": tc.name,
+                        "arguments": tc.arguments,
+                    }
+                })
+            })
+            .collect();
+        conversation.push(serde_json::json!({
+            "role": "assistant",
+            "content": stream_result.content,
+            "tool_calls": tc_json,
+        }));
+
+        // Execute each tool and add results to conversation
+        for tc in &stream_result.tool_calls {
+            let output = execute_tool(&tc.name, &tc.arguments);
+
+            let _ = app.emit(
+                "chat://tool_result",
+                serde_json::json!({
+                    "assistant_id": assistant_id,
+                    "tool_id": tc.id,
+                    "tool_name": tc.name,
+                    "output": truncate(&output),
+                }),
+            );
+
+            conversation.push(serde_json::json!({
+                "role": "tool",
+                "tool_call_id": tc.id,
+                "content": output,
+            }));
+        }
+
+        round += 1;
+        if round >= max_tool_rounds {
+            return Ok(Message {
+                id: assistant_id.to_string(),
+                role: "assistant".into(),
+                content: format!(
+                    "[Agent reached maximum tool rounds ({max_tool_rounds}). \
+                     Summarizing progress so far.]"
+                ),
+                tool_calls: None,
+                timestamp: Some(now_ms()),
+                usage: None,
+            });
+        }
+    }
 }
 
 #[tauri::command]
@@ -1146,12 +1543,13 @@ pub async fn stream_inline_edit(
     let req_messages = vec![serde_json::json!({"role": "user", "content": user_msg})];
     let assistant_id = format!("inline-{}", new_id());
 
-    let (full, usage) = match provider.as_str() {
+    let StreamResult { content: full, usage, .. } = match provider.as_str() {
         "baanzon-verso" | "omniroute" | "openai" | "openrouter" => {
             stream_openai_completion(
                 &provider,
                 &model,
                 &req_messages,
+                None,
                 None,
                 &app,
                 &assistant_id,
@@ -1164,7 +1562,7 @@ pub async fn stream_inline_edit(
                 "chat://delta",
                 serde_json::json!({ "id": assistant_id, "content": &text }),
             );
-            (text, None)
+            StreamResult { content: text, usage: None, tool_calls: Vec::new() }
         }
     };
 

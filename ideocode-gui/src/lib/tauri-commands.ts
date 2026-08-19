@@ -232,6 +232,22 @@ export async function searchFiles(
 }
 
 // ============================================
+// Workspace Commands
+// ============================================
+
+export async function openWorkspace(): Promise<string> {
+  return invoke<string>("open_workspace");
+}
+
+export async function saveWorkspacePath(path: string): Promise<void> {
+  return invoke<void>("save_workspace_path", { path });
+}
+
+export async function loadWorkspacePath(): Promise<string | null> {
+  return invoke<string | null>("load_workspace_path");
+}
+
+// ============================================
 // Git Commands
 // ============================================
 
@@ -276,6 +292,18 @@ export async function gitCheckout(
   branch: string,
 ): Promise<void> {
   return invoke<void>("git_checkout", { path, branch });
+}
+
+export async function gitStash(path: string): Promise<void> {
+  return invoke<void>("git_stash", { path });
+}
+
+export async function gitPull(path: string): Promise<void> {
+  return invoke<void>("git_pull", { path });
+}
+
+export async function gitPush(path: string): Promise<void> {
+  return invoke<void>("git_push", { path });
 }
 
 // ============================================
@@ -341,6 +369,13 @@ export interface AppSettings {
   custom_instructions: string;
   api_keys: Record<string, string>;
   mcp_servers: Record<string, string>;
+  terminal_shell?: string;
+  terminal_font_size?: number;
+  terminal_cursor_style?: string;
+  privacy_local?: boolean;
+  privacy_telemetry?: boolean;
+  privacy_mask_files?: boolean;
+  workspace_path?: string;
 }
 
 export async function getSettings(): Promise<AppSettings> {
@@ -479,4 +514,85 @@ export async function clearBrowserContext(): Promise<void> {
 
 export async function getBrowserContextText(): Promise<string> {
   return invoke<string>("get_browser_context_text");
+}
+
+// ============================================
+// Goal Commands
+// ============================================
+
+export async function setGoal(goal: string): Promise<void> {
+  return invoke<void>("set_goal", { goal });
+}
+
+export async function pauseGoal(): Promise<void> {
+  return invoke<void>("pause_goal");
+}
+
+export async function resumeGoal(): Promise<void> {
+  return invoke<void>("resume_goal");
+}
+
+export async function clearGoal(): Promise<void> {
+  return invoke<void>("clear_goal");
+}
+
+// ============================================
+// Wiki Generation
+// ============================================
+
+export async function generateWiki(path: string, language?: string): Promise<string> {
+  return invoke<string>("generate_wiki", { path, language: language ?? null });
+}
+
+// ============================================
+// Git Graph
+// ============================================
+
+export interface GitCommit {
+  hash: string;
+  message: string;
+  author: string;
+  date: number;
+  parents: string[];
+  branch?: string;
+}
+
+export async function gitGraph(path: string, maxCount?: number): Promise<GitCommit[]> {
+  return invoke<GitCommit[]>("git_graph", { path, max_count: maxCount ?? 100 });
+}
+
+// ============================================
+// Remote Development
+// ============================================
+
+export async function sshConnect(host: string, port: number, user: string, keyPath?: string): Promise<boolean> {
+  return invoke<boolean>("ssh_connect", { host, port, user, key_path: keyPath ?? null });
+}
+
+export async function sshDisconnect(host: string): Promise<void> {
+  return invoke<void>("ssh_disconnect", { host });
+}
+
+export async function sshExec(host: string, command: string): Promise<string> {
+  return invoke<string>("ssh_exec", { host, command });
+}
+
+// ============================================
+// Browser Automation
+// ============================================
+
+export async function browserNavigate(url: string): Promise<void> {
+  return invoke<void>("browser_navigate", { url });
+}
+
+export async function browserScreenshot(): Promise<string> {
+  return invoke<string>("browser_screenshot");
+}
+
+export async function browserClick(selector: string): Promise<void> {
+  return invoke<void>("browser_click", { selector });
+}
+
+export async function browserType(selector: string, text: string): Promise<void> {
+  return invoke<void>("browser_type", { selector, text });
 }

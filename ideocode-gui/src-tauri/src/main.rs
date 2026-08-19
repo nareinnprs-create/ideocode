@@ -64,6 +64,7 @@ fn main() {
 
     if let Err(e) = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
             use tauri::Emitter;
             let app_handle_status = app.handle().clone();
@@ -111,6 +112,9 @@ fn main() {
             commands::write_file,
             commands::file_exists,
             commands::search_files,
+            commands::open_workspace,
+            commands::save_workspace_path,
+            commands::load_workspace_path,
             commands::git_status,
             commands::git_diff,
             commands::git_commit,
@@ -118,6 +122,9 @@ fn main() {
             commands::git_unstage,
             commands::git_branches,
             commands::git_checkout,
+            commands::git_stash,
+            commands::git_pull,
+            commands::git_push,
             commands::run_build,
             commands::run_cargo_check,
             commands::list_providers,

@@ -5,6 +5,52 @@
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
+/// Opens a native folder picker dialog and returns the selected path.
+#[tauri::command]
+pub fn open_workspace(app: tauri::AppHandle) -> Result<String, String> {
+    use tauri_plugin_dialog::DialogExt;
+    let (tx, rx) = std::sync::mpsc::channel();
+    app.dialog()
+        .file()
+        .set_title("Open Workspace")
+        .pick_folder(move |path| {
+            let _ = tx.send(path);
+        });
+    let path = rx
+        .recv()
+        .map_err(|e| format!("Dialog channel error: {}", e))?
+        .ok_or_else(|| "No folder selected".to_string())?;
+    let path_str = path.to_string();
+    if path_str.is_empty() {
+        return Err("No folder selected".to_string());
+    }
+    Ok(path_str)
+}
+
+/// Remembers the last-opened workspace path for auto-reload on next launch.
+#[tauri::command]
+pub fn save_workspace_path(path: String) -> Result<(), String> {
+    let ws_path = dirs::home_dir()
+        .map(|h| h.join(".IDEOCODE").join("workspace-path.txt"))
+        .unwrap_or_else(|| PathBuf::from(".IDEOCODE/workspace-path.txt"));
+    if let Some(dir) = ws_path.parent() {
+        std::fs::create_dir_all(dir).map_err(|e| format!("Failed to create dir: {}", e))?;
+    }
+    std::fs::write(&ws_path, &path).map_err(|e| format!("Failed to save workspace path: {}", e))
+}
+
+/// Loads the previously-saved workspace path, if any.
+#[tauri::command]
+pub fn load_workspace_path() -> Option<String> {
+    let ws_path = dirs::home_dir()
+        .map(|h| h.join(".IDEOCODE").join("workspace-path.txt"))
+        .unwrap_or_else(|| PathBuf::from(".IDEOCODE/workspace-path.txt"));
+    std::fs::read_to_string(&ws_path)
+        .ok()
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty() && std::path::Path::new(s).exists())
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileNode {
     pub name: String,
