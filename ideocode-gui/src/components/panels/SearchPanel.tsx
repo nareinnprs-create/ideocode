@@ -201,8 +201,10 @@ export function SearchPanel() {
         )}
 
         {searched && !loading && results.length === 0 && !error && (
-          <div className="p-4 text-center text-text-muted text-xs">
-            No results found
+          <div className="flex flex-col items-center justify-center py-12 text-text-muted">
+            <Search size={24} className="mb-2 opacity-40" />
+            <div className="text-xs">No results found</div>
+            <div className="text-[10px] text-text-muted mt-1">Try a different search term or mode</div>
           </div>
         )}
 

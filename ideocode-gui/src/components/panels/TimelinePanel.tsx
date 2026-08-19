@@ -111,8 +111,10 @@ export function TimelinePanel() {
         <div className="relative">
           <div className="absolute left-[11px] top-0 bottom-0 w-px bg-border-subtle" />
           {entries.length === 0 && (
-            <div className="text-[11px] text-text-muted py-4 text-center">
-              No events yet
+            <div className="flex flex-col items-center justify-center py-12 text-text-muted">
+              <Clock size={24} className="mb-2 opacity-40" />
+              <div className="text-xs">No events yet</div>
+              <div className="text-[10px] text-text-muted mt-1">Activity will appear here as you work</div>
             </div>
           )}
           {entries.map((entry) => {

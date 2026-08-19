@@ -76,10 +76,10 @@ export function SessionHistory() {
       {/* Session list */}
       <div className="flex-1 overflow-y-auto">
         {filtered.length === 0 ? (
-          <div className="p-4 text-center text-text-muted text-xs">
-            {search
-              ? "No sessions match your search"
-              : "No sessions yet. Start a chat!"}
+          <div className="flex flex-col items-center justify-center py-12 text-text-muted">
+            <MessageSquare size={24} className="mb-2 opacity-40" />
+            <div className="text-xs">{search ? "No sessions match your search" : "No sessions yet"}</div>
+            {!search && <div className="text-[10px] text-text-muted mt-1">Start a chat to create your first session</div>}
           </div>
         ) : (
           filtered.map((session) => (

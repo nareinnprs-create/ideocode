@@ -50,7 +50,11 @@ export function TaskManagementPanel() {
 
       <div className="flex-1 overflow-y-auto">
         {tasks.length === 0 && (
-          <div className="p-4 text-center text-[var(--text-muted)] text-xs">No tasks yet</div>
+          <div className="flex flex-col items-center justify-center py-12 text-text-muted">
+            <div className="w-6 h-6 mb-2 opacity-40 flex items-center justify-center text-lg">⚡</div>
+            <div className="text-xs">No background tasks</div>
+            <div className="text-[10px] text-text-muted mt-1">Create a task to run commands in the background</div>
+          </div>
         )}
         {tasks.map(task => (
           <div key={task.id} className="border-b border-[var(--border)]">
