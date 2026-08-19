@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { Users, Trash2, ChevronRight, Loader2, RefreshCw } from "lucide-react";
+import { useState } from "react";
+import { Users, Trash2, ChevronRight, Loader2, AlertCircle } from "lucide-react";
 import { useAppStore } from "../../stores/appStore";
+import { streamChat } from "../../lib/tauri-commands";
 import { EmptyState } from "../ui/EmptyState";
 
 interface Subagent {
@@ -9,6 +10,7 @@ interface Subagent {
   status: "idle" | "running" | "completed" | "failed";
   task: string;
   result?: string;
+  error?: string;
   createdAt: number;
 }
 
@@ -20,58 +22,27 @@ function saveSubagents(items: Subagent[]) { localStorage.setItem(STORAGE_KEY, JS
 
 const STATUS_COLORS = { idle: "text-text-muted", running: "text-accent-primary", completed: "text-success", failed: "text-error" };
 
-const FAKE_RESULTS = [
-  "Task completed successfully. Processed 42 items.",
-  "Done. Analyzed 17 files and generated a summary.",
-  "Finished. Scanned 38 modules, 0 issues found.",
-  "Complete. Optimized 23 queries with 15% improvement.",
-  "Task finished. Updated 12 dependencies to latest versions.",
-];
-
 export function SubagentsPanel() {
   const setRightPanelOpen = useAppStore((s) => s.setRightPanelOpen);
   const [agents, setAgents] = useState<Subagent[]>(loadSubagents);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [taskInput, setTaskInput] = useState("");
   const [nameInput, setNameInput] = useState("");
-  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const [runningIds, setRunningIds] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    agents.forEach((a) => {
-      if (a.status === "running" && !timersRef.current.has(a.id)) {
-        const delay = 3000 + Math.random() * 5000;
-        const timer = setTimeout(() => {
-          const shouldFail = Math.random() < 0.15;
-          setAgents((prev) => {
-            const next = prev.map((ag) =>
-              ag.id === a.id
-                ? {
-                    ...ag,
-                    status: shouldFail ? "failed" as const : "completed" as const,
-                    result: shouldFail
-                      ? "Agent encountered an unrecoverable error during execution."
-                      : FAKE_RESULTS[Math.floor(Math.random() * FAKE_RESULTS.length)],
-                  }
-                : ag
-            );
-            saveSubagents(next);
-            return next;
-          });
-          timersRef.current.delete(a.id);
-        }, delay);
-        timersRef.current.set(a.id, timer);
-      }
+  const updateAgent = (id: string, updates: Partial<Subagent>) => {
+    setAgents((prev) => {
+      const next = prev.map((a) => (a.id === id ? { ...a, ...updates } : a));
+      saveSubagents(next);
+      return next;
     });
-  }, [agents]);
+  };
 
-  useEffect(() => {
-    return () => { timersRef.current.forEach((t) => clearTimeout(t)); };
-  }, []);
-
-  const handleSpawn = () => {
-    if (!taskInput.trim()) return;
+  const handleSpawn = async () => {
+    if (!taskInput.trim() || runningIds.size > 0) return;
+    const id = `sub-${Date.now()}`;
     const agent: Subagent = {
-      id: `sub-${Date.now()}`,
+      id,
       name: nameInput.trim() || `Agent ${agents.length + 1}`,
       status: "running",
       task: taskInput,
@@ -82,25 +53,65 @@ export function SubagentsPanel() {
     saveSubagents(next);
     setTaskInput("");
     setNameInput("");
+    setRunningIds((prev) => new Set(prev).add(id));
+
+    try {
+      const message = await streamChat(agent.task, { mode: "agent" });
+      updateAgent(id, {
+        status: "completed",
+        result: message.content || "Agent completed.",
+      });
+    } catch (e) {
+      updateAgent(id, {
+        status: "failed",
+        error: String(e),
+      });
+    } finally {
+      setRunningIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
   };
 
   const remove = (id: string) => {
-    const timer = timersRef.current.get(id);
-    if (timer) { clearTimeout(timer); timersRef.current.delete(id); }
     const next = agents.filter((a) => a.id !== id);
     setAgents(next);
     saveSubagents(next);
-  };
-
-  const retry = (id: string) => {
-    setAgents((prev) => {
-      const next = prev.map((a) =>
-        a.id === id ? { ...a, status: "running" as const, result: undefined } : a
-      );
-      saveSubagents(next);
+    setRunningIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
       return next;
     });
   };
+
+  const retry = async (id: string) => {
+    const agent = agents.find((a) => a.id === id);
+    if (!agent || runningIds.size > 0) return;
+    updateAgent(id, { status: "running", result: undefined, error: undefined });
+    setRunningIds((prev) => new Set(prev).add(id));
+    try {
+      const message = await streamChat(agent.task, { mode: "agent" });
+      updateAgent(id, {
+        status: "completed",
+        result: message.content || "Agent completed.",
+      });
+    } catch (e) {
+      updateAgent(id, {
+        status: "failed",
+        error: String(e),
+      });
+    } finally {
+      setRunningIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  };
+
+  const isRunning = runningIds.size > 0;
 
   return (
     <div className="flex flex-col h-full">
@@ -114,9 +125,9 @@ export function SubagentsPanel() {
           className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary" />
         <textarea placeholder="What should the subagent do?" value={taskInput} onChange={(e) => setTaskInput(e.target.value)} rows={2}
           className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary resize-none" />
-        <button onClick={handleSpawn} disabled={!taskInput.trim()}
+        <button onClick={handleSpawn} disabled={!taskInput.trim() || isRunning}
           className="w-full px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast">
-          Spawn Subagent
+          {isRunning ? "Running..." : "Spawn Subagent"}
         </button>
       </div>
       <div className="flex-1 overflow-y-auto">
@@ -145,6 +156,12 @@ export function SubagentsPanel() {
                 <div className="px-6 pb-2 text-[11px] text-text-secondary">
                   <div className="mb-1 font-medium">Task:</div>
                   <div className="whitespace-pre-wrap bg-bg-tertiary p-2 rounded">{a.task}</div>
+                  {a.error && (
+                    <div className="mt-2 flex items-start gap-1.5">
+                      <AlertCircle size={11} className="text-error shrink-0 mt-0.5" />
+                      <div className="whitespace-pre-wrap text-error">{a.error}</div>
+                    </div>
+                  )}
                   {a.result && (<>
                     <div className="mt-2 mb-1 font-medium">Result:</div>
                     <div className="whitespace-pre-wrap bg-bg-tertiary p-2 rounded">{a.result}</div>
@@ -152,7 +169,7 @@ export function SubagentsPanel() {
                   {a.status === "failed" && (
                     <button onClick={() => retry(a.id)}
                       className="mt-2 flex items-center gap-1 px-2 py-1 text-[11px] text-accent-primary hover:bg-bg-elevated rounded transition-fast">
-                      <RefreshCw size={10} /> Retry
+                      Retry
                     </button>
                   )}
                 </div>
