@@ -30,6 +30,7 @@ import {
   Layers,
   FileCode2,
   LayoutTemplate,
+  Palette,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -41,6 +42,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: "memory", label: "Memory", icon: Brain, panel: "memory" },
   { id: "snippets", label: "Snippets", icon: FileCode2, panel: "snippets" },
   { id: "templates", label: "Templates", icon: LayoutTemplate, panel: "templates" },
+  { id: "themes", label: "Themes", icon: Palette, panel: "themes" },
   { id: "automations", label: "Automations", icon: Zap, panel: "automations" },
   { id: "subagents", label: "Subagents", icon: Users, panel: "subagents" },
   { id: "commands", label: "Commands", icon: Terminal, panel: "commands" },

@@ -40,7 +40,8 @@ export type PanelId =
   | "task-management"
   | "git-graph"
   | "snippets"
-  | "templates";
+  | "templates"
+  | "themes";
 
 interface AppState {
   version: string;
