@@ -1,130 +1,93 @@
-import { create } from "zustand";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import {
+  createTask as tauriCreateTask,
+  startTask as tauriStartTask,
+  cancelTask as tauriCancelTask,
+  listTasks as tauriListTasks,
+  deleteTask as tauriDeleteTask,
+  clearFinishedTasks as tauriClearFinished,
+} from '../lib/tauri-commands';
 
-export type TaskPriority = "low" | "medium" | "high";
-export type TaskItemStatus = "todo" | "in_progress" | "done";
+export type TaskStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
 
-export interface TaskItem {
-  id: string;
-  title: string;
-  description: string;
-  status: TaskItemStatus;
-  priority: TaskPriority;
-  group: string;
-  createdAt: number;
-  updatedAt: number;
-  archived: boolean;
-}
-
-export interface TaskGroup {
+export interface BackgroundTask {
   id: string;
   name: string;
-  color: string;
+  command: string;
+  cwd: string;
+  status: TaskStatus;
+  progress: number;
+  output: string;
+  created_at: number;
+  started_at: number | null;
+  finished_at: number | null;
+  exit_code: number | null;
 }
-
-export type SortField = "created" | "updated";
-export type ViewMode = "grouped" | "workspace" | "timeline";
 
 interface TaskState {
-  tasks: TaskItem[];
-  groups: TaskGroup[];
-  searchQuery: string;
-  sortField: SortField;
-  viewMode: ViewMode;
-  showArchived: boolean;
-  selectedTaskId: string | null;
-  expandedTaskId: string | null;
-  setSearchQuery: (q: string) => void;
-  setSortField: (f: SortField) => void;
-  setViewMode: (m: ViewMode) => void;
-  setShowArchived: (show: boolean) => void;
-  setSelectedTaskId: (id: string | null) => void;
-  setExpandedTaskId: (id: string | null) => void;
-  addTask: (task: Omit<TaskItem, "id" | "createdAt" | "updatedAt" | "archived">) => void;
-  updateTask: (id: string, updates: Partial<TaskItem>) => void;
-  removeTask: (id: string) => void;
-  addGroup: (group: Omit<TaskGroup, "id">) => string;
-  removeGroup: (id: string) => void;
+  tasks: BackgroundTask[];
+  create: (name: string, command: string, cwd: string) => Promise<BackgroundTask>;
+  start: (id: string) => Promise<void>;
+  cancel: (id: string) => Promise<void>;
+  remove: (id: string) => Promise<void>;
+  clearFinished: () => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
-const GROUP_COLORS = [
-  "#6366F1",
-  "#EC4899",
-  "#F59E0B",
-  "#10B981",
-  "#3B82F6",
-  "#8B5CF6",
-  "#EF4444",
-  "#14B8A6",
-];
-
-let taskCounter = 0;
-let groupCounter = 0;
-
-function makeTaskId() {
-  taskCounter += 1;
-  return `task-${Date.now()}-${taskCounter}`;
+function toTask(raw: any): BackgroundTask {
+  return { ...raw, status: raw.status as TaskStatus };
 }
 
-function makeGroupId() {
-  groupCounter += 1;
-  return `group-${Date.now()}-${groupCounter}`;
-}
+export const useTaskStore = create<TaskState>()(
+  persist(
+    (set) => ({
+      tasks: [],
 
-export const useTaskStore = create<TaskState>((set, get) => ({
-  tasks: [],
-  groups: [],
-  searchQuery: "",
-  sortField: "updated",
-  viewMode: "grouped",
-  showArchived: false,
-  selectedTaskId: null,
-  expandedTaskId: null,
+      create: async (name, command, cwd) => {
+        const raw = await tauriCreateTask(name, command, cwd);
+        const task = toTask(raw);
+        set((s) => ({ tasks: [...s.tasks, task] }));
+        return task;
+      },
 
-  setSearchQuery: (searchQuery) => set({ searchQuery }),
-  setSortField: (sortField) => set({ sortField }),
-  setViewMode: (viewMode) => set({ viewMode }),
-  setShowArchived: (showArchived) => set({ showArchived }),
-  setSelectedTaskId: (selectedTaskId) => set({ selectedTaskId }),
-  setExpandedTaskId: (expandedTaskId) => set({ expandedTaskId }),
+      start: async (id) => {
+        const raw = await tauriStartTask(id);
+        const task = toTask(raw);
+        set((s) => ({
+          tasks: s.tasks.map((t) => (t.id === id ? task : t)),
+        }));
+      },
 
-  addTask: (task) => {
-    const now = Date.now();
-    const newTask: TaskItem = {
-      ...task,
-      id: makeTaskId(),
-      createdAt: now,
-      updatedAt: now,
-      archived: false,
-    };
-    set((s) => ({ tasks: [...s.tasks, newTask] }));
-  },
+      cancel: async (id) => {
+        const raw = await tauriCancelTask(id);
+        const task = toTask(raw);
+        set((s) => ({
+          tasks: s.tasks.map((t) => (t.id === id ? task : t)),
+        }));
+      },
 
-  updateTask: (id, updates) => {
-    set((s) => ({
-      tasks: s.tasks.map((t) =>
-        t.id === id ? { ...t, ...updates, updatedAt: Date.now() } : t,
-      ),
-    }));
-  },
+      remove: async (id) => {
+        await tauriDeleteTask(id);
+        set((s) => ({
+          tasks: s.tasks.filter((t) => t.id !== id),
+        }));
+      },
 
-  removeTask: (id) => {
-    set((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) }));
-  },
+      clearFinished: async () => {
+        await tauriClearFinished();
+        set((s) => ({
+          tasks: s.tasks.filter(
+            (t) => t.status === 'pending' || t.status === 'running'
+          ),
+        }));
+      },
 
-  addGroup: (group) => {
-    const id = makeGroupId();
-    const color =
-      GROUP_COLORS[get().groups.length % GROUP_COLORS.length];
-    set((s) => ({ groups: [...s.groups, { ...group, id, color }] }));
-    return id;
-  },
-
-  removeGroup: (id) => {
-    set((s) => ({
-      groups: s.groups.filter((g) => g.id !== id),
-      tasks: s.tasks.map((t) =>
-        t.group === id ? { ...t, group: "" } : t,
-      ),
-    }));
-  },
-}));
+      refresh: async () => {
+        const raws = await tauriListTasks();
+        set({ tasks: raws.map(toTask) });
+      },
+    }),
+    { name: 'ideocode-tasks', partialize: (s) => ({ tasks: s.tasks }) }
+  )
+);

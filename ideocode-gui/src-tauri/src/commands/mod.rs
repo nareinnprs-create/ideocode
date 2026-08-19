@@ -11,6 +11,7 @@ mod memory;
 mod providers;
 mod rag;
 mod settings;
+mod tasks;
 mod tools;
 
 pub use browser::*;
@@ -22,6 +23,7 @@ pub use memory::*;
 pub use providers::*;
 pub use rag::*;
 pub use settings::*;
+pub use tasks::*;
 pub use tools::*;
 
 /// Returns a path-safe copy of an identifier used to build file names, so

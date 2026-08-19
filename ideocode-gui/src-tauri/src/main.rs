@@ -144,6 +144,14 @@ fn main() {
             commands::search_contents,
             commands::search_semantic,
             commands::index_directory,
+            // Background Tasks
+            commands::create_task,
+            commands::start_task,
+            commands::cancel_task,
+            commands::update_task_progress,
+            commands::list_tasks,
+            commands::delete_task,
+            commands::clear_finished_tasks,
             // Issues
             commands::list_issues,
             commands::search_issues,

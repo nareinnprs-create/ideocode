@@ -355,6 +355,52 @@ export async function runNpm(command: string, cwd: string): Promise<BuildOutput>
 }
 
 // ============================================
+// Background Task Commands
+// ============================================
+
+export interface BackgroundTaskInfo {
+  id: string;
+  name: string;
+  command: string;
+  cwd: string;
+  status: string;
+  progress: number;
+  output: string;
+  created_at: number;
+  started_at: number | null;
+  finished_at: number | null;
+  exit_code: number | null;
+}
+
+export async function createTask(name: string, command: string, cwd: string): Promise<BackgroundTaskInfo> {
+  return invoke<BackgroundTaskInfo>("create_task", { name, command, cwd });
+}
+
+export async function startTask(id: string): Promise<BackgroundTaskInfo> {
+  return invoke<BackgroundTaskInfo>("start_task", { id });
+}
+
+export async function cancelTask(id: string): Promise<BackgroundTaskInfo> {
+  return invoke<BackgroundTaskInfo>("cancel_task", { id });
+}
+
+export async function updateTaskProgress(id: string, progress: number): Promise<BackgroundTaskInfo> {
+  return invoke<BackgroundTaskInfo>("update_task_progress", { id, progress });
+}
+
+export async function listTasks(): Promise<BackgroundTaskInfo[]> {
+  return invoke<BackgroundTaskInfo[]>("list_tasks");
+}
+
+export async function deleteTask(id: string): Promise<void> {
+  return invoke<void>("delete_task", { id });
+}
+
+export async function clearFinishedTasks(): Promise<void> {
+  return invoke<void>("clear_finished_tasks");
+}
+
+// ============================================
 // Settings Commands
 // ============================================
 
