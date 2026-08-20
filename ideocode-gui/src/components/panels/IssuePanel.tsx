@@ -162,8 +162,8 @@ export function IssuePanel() {
       {error && (
         <div className="mx-3 my-2 p-2 rounded bg-bg-elevated border border-border-subtle">
           <div className="flex items-start gap-2">
-            <AlertCircle size={14} className="text-red-400 mt-0.5 shrink-0" />
-            <div className="text-xs text-red-400">{error}</div>
+            <AlertCircle size={14} className="text-error mt-0.5 shrink-0" />
+            <div className="text-xs text-error">{error}</div>
           </div>
         </div>
       )}

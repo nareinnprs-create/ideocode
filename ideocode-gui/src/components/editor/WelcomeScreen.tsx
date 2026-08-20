@@ -130,7 +130,7 @@ export function WelcomeScreen() {
         )}
 
         {/* Keyboard shortcuts cheat sheet */}
-        <div className="mt-8 flex items-center gap-4 text-[10px] text-text-muted/60">
+        <div className="mt-8 flex items-center gap-4 text-[10px] text-text-muted">
           <span>{mod}+N New Task</span>
           <span>{mod}+K Search</span>
           <span>{mod}+P Files</span>

@@ -204,7 +204,7 @@ export function ProviderPanel() {
             />
             <button
               onClick={() => setShowApiKey(!showApiKey)}
-              className="absolute right-1 top-1/2 -translate-y-1/2 p-0.5 text-text-muted hover:text-text-primary"
+              className="absolute right-1 top-1/2 -translate-y-1/2 p-0.5 text-text-muted hover:text-text-primary transition-fast"
             >
               {showApiKey ? <EyeOff size={12} /> : <Eye size={12} />}
             </button>

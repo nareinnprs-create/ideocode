@@ -51,7 +51,7 @@ export function ExecutionModePicker() {
           </button>
         </Tooltip>
       ))}
-      <span className="text-[10px] text-text-muted/60 ml-1">
+      <span className="text-[10px] text-text-muted ml-1">
         <kbd className="px-1 py-0.5 rounded bg-bg-elevated/50 border border-border-subtle text-[9px]">Shift</kbd>
         +
         <kbd className="px-1 py-0.5 rounded bg-bg-elevated/50 border border-border-subtle text-[9px]">Tab</kbd>

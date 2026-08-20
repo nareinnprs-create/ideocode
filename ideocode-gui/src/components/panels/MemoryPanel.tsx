@@ -259,7 +259,7 @@ export function MemoryPanel() {
       {/* Error */}
       {error && (
         <div className="mx-3 my-2 p-2 rounded bg-bg-elevated border border-border-subtle">
-          <div className="text-xs text-red-400">{error}</div>
+          <div className="text-xs text-error">{error}</div>
         </div>
       )}
 
@@ -373,7 +373,7 @@ export function MemoryPanel() {
                   </div>
                   <button
                     onClick={() => deleteMemory(entry.id)}
-                    className="p-1 text-text-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-fast"
+                    className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast"
                   >
                     <Trash2 size={12} />
                   </button>

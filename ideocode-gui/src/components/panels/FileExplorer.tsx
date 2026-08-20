@@ -39,8 +39,8 @@ type GitFileStatus = {
 
 const GIT_STATUS_COLORS: Record<string, string> = {
   M: "text-amber-400",
-  A: "text-green-400",
-  D: "text-red-400",
+  A: "text-success",
+  D: "text-error",
   R: "text-purple-400",
   C: "text-cyan-400",
   "?": "text-gray-400",
@@ -256,7 +256,7 @@ function TreeNode({
   const gitColor = gitLetter && GIT_STATUS_COLORS[gitLetter]
     ? GIT_STATUS_COLORS[gitLetter]
     : gitInfo?.staged
-      ? "text-green-400"
+      ? "text-success"
       : "";
 
   const handleClick = () => {

@@ -77,7 +77,7 @@ export function ComposerPanel() {
           <p className="text-[12px] text-text-muted text-center">
             No open files to review.
           </p>
-          <p className="text-[11px] text-text-muted/60 text-center">
+          <p className="text-[11px] text-text-muted text-center">
             Open files or ask the assistant to generate edits.
           </p>
         </div>
@@ -169,7 +169,7 @@ export function ComposerPanel() {
                   {lineCount} {lineCount === 1 ? "line" : "lines"}
                 </span>
                 {ext && (
-                  <span className="shrink-0 uppercase font-medium text-text-muted/60">
+                  <span className="shrink-0 uppercase font-medium text-text-muted">
                     {ext}
                   </span>
                 )}

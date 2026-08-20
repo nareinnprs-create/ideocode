@@ -159,7 +159,7 @@ export function SearchPanel() {
       {/* Error */}
       {error && (
         <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle">
-          <div className="text-xs text-red-400">{error}</div>
+          <div className="text-xs text-error">{error}</div>
         </div>
       )}
 

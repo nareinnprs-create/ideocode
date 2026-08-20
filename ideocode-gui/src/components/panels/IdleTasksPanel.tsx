@@ -27,7 +27,7 @@ export function IdleTasksPanel() {
 
   const statusColor = (status: string) => {
     const colors: Record<string, string> = {
-      queued: "bg-blue-500/10 text-blue-400",
+      queued: "bg-info/10 text-info",
       running: "bg-success/10 text-success",
       paused: "bg-warning/10 text-warning",
       completed: "bg-bg-tertiary text-text-muted",

@@ -91,7 +91,7 @@ export function BrowserPanel() {
           </button>
           <button
             onClick={handleClear}
-            className="p-1.5 text-text-muted hover:text-red-400 transition-fast rounded hover:bg-bg-elevated"
+            className="p-1.5 text-text-muted hover:text-error transition-fast rounded hover:bg-bg-elevated"
             title="Clear"
           >
             <Trash2 size={14} />
@@ -132,7 +132,7 @@ export function BrowserPanel() {
       {/* Error */}
       {error && (
         <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle">
-          <div className="text-xs text-red-400">{error}</div>
+          <div className="text-xs text-error">{error}</div>
         </div>
       )}
 

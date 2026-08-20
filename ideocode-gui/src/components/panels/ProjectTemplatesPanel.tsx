@@ -131,8 +131,8 @@ export function ProjectTemplatesPanel() {
           <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
           <input value={lang} onChange={(e) => setLang(e.target.value)} placeholder="Language" className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
           <div className="flex justify-end gap-1">
-            <button onClick={() => setShowAdd(false)} className="px-2 py-1 text-[11px] rounded bg-bg-elevated text-text-secondary">Cancel</button>
-            <button onClick={handleAdd} disabled={!name.trim()} className="px-2 py-1 text-[11px] rounded bg-accent-primary text-white disabled:opacity-50">Create</button>
+            <button onClick={() => setShowAdd(false)} className="px-2 py-1 text-[11px] rounded bg-bg-elevated text-text-secondary transition-fast hover:bg-bg-hover">Cancel</button>
+            <button onClick={handleAdd} disabled={!name.trim()} className="px-2 py-1 text-[11px] rounded bg-accent-primary text-white disabled:opacity-50 transition-fast hover:bg-accent-hover">Create</button>
           </div>
         </div>
       )}
@@ -165,7 +165,7 @@ export function ProjectTemplatesPanel() {
                     {appliedId === t.id ? <><Check size={10} /> Applied</> : <><Play size={10} /> Use</>}
                   </button>
                   {!BUILT_IN_TEMPLATES.some((b) => b.id === t.id) && (
-                    <button onClick={() => remove(t.id)} className="p-1 text-text-muted hover:text-red-400 transition-fast">
+                    <button onClick={() => remove(t.id)} className="p-1 text-text-muted hover:text-error transition-fast">
                       <Trash2 size={12} />
                     </button>
                   )}

@@ -62,7 +62,7 @@ export function CmdKOverlay({ isOpen, onClose, position, onSubmit }: CmdKOverlay
         <button
           type="submit"
           disabled={!prompt.trim() || loading}
-          className="w-6 h-6 rounded-md bg-accent-primary/20 text-accent-primary hover:bg-accent-primary/30 flex items-center justify-center shrink-0 disabled:opacity-50"
+          className="w-6 h-6 rounded-md bg-accent-primary/20 text-accent-primary hover:bg-accent-primary/30 flex items-center justify-center shrink-0 disabled:opacity-50 transition-fast"
         >
           {loading ? <Loader2 size={12} className="animate-spin" /> : <CornerDownLeft size={12} />}
         </button>

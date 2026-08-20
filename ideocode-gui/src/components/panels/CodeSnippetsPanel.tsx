@@ -109,8 +109,8 @@ export function CodeSnippetsPanel() {
           </div>
           <textarea value={code} onChange={(e) => setCode(e.target.value)} placeholder="Paste your code..." rows={6} className="w-full bg-bg-primary text-text-primary text-xs font-mono px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary resize-y" />
           <div className="flex justify-end gap-1">
-            <button onClick={resetForm} className="px-2 py-1 text-[11px] rounded bg-bg-elevated text-text-secondary">Cancel</button>
-            <button onClick={editingId ? handleUpdate : handleAdd} disabled={!name.trim() || !code.trim()} className="px-2 py-1 text-[11px] rounded bg-accent-primary text-white disabled:opacity-50">{editingId ? "Update" : "Save"}</button>
+            <button onClick={resetForm} className="px-2 py-1 text-[11px] rounded bg-bg-elevated text-text-secondary transition-fast hover:bg-bg-hover">Cancel</button>
+            <button onClick={editingId ? handleUpdate : handleAdd} disabled={!name.trim() || !code.trim()} className="px-2 py-1 text-[11px] rounded bg-accent-primary text-white disabled:opacity-50 transition-fast hover:bg-accent-hover">{editingId ? "Update" : "Save"}</button>
           </div>
         </div>
       )}
@@ -140,7 +140,7 @@ export function CodeSnippetsPanel() {
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-fast">
                   <button onClick={() => copyCode(s.code)} className="p-1 text-text-muted hover:text-accent-primary transition-fast" title="Copy"><Copy size={12} /></button>
                   <button onClick={() => startEdit(s)} className="p-1 text-text-muted hover:text-text-primary transition-fast" title="Edit"><Edit3 size={12} /></button>
-                  <button onClick={() => remove(s.id)} className="p-1 text-text-muted hover:text-red-400 transition-fast" title="Delete"><Trash2 size={12} /></button>
+                  <button onClick={() => remove(s.id)} className="p-1 text-text-muted hover:text-error transition-fast" title="Delete"><Trash2 size={12} /></button>
                 </div>
               </div>
             </div>

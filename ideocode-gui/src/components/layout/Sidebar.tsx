@@ -350,7 +350,7 @@ export function Sidebar() {
                             {doneTasks.map((task) => (
                               <li
                                 key={task.id}
-                                className="flex items-center gap-2 py-1 pl-6 pr-1 text-foreground-subtle/60"
+                                className="flex items-center gap-2 py-1 pl-6 pr-1 text-text-muted"
                               >
                                 <CheckCircle2 size={13} className="text-success/60 shrink-0" />
                                 <p className="min-w-0 flex-1 truncate text-[13px] line-through">{task.title}</p>
@@ -365,7 +365,7 @@ export function Sidebar() {
                       <div className="py-8 text-center">
                         <ListTodo size={24} className="mx-auto mb-2 text-text-muted/40" />
                         <p className="text-[11px] text-text-muted">No tasks yet</p>
-                        <p className="text-[10px] text-text-muted/60 mt-0.5">Set a goal or add tasks manually</p>
+                        <p className="text-[10px] text-text-muted mt-0.5">Set a goal or add tasks manually</p>
                       </div>
                     )}
                   </div>

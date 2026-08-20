@@ -33,9 +33,9 @@ function MiniDiff({ edit }: { edit: FileEdit }) {
             key={`o-${i}`}
             className={`px-2 py-0.5 whitespace-pre overflow-hidden text-ellipsis ${
               l.type === "removed"
-                ? "bg-red-500/15 text-red-400"
+                ? "bg-error/15 text-error"
                 : l.type === "added"
-                  ? "bg-green-500/15 text-green-400"
+                  ? "bg-success/15 text-success"
                   : "text-text-muted"
             }`}
           >
@@ -49,9 +49,9 @@ function MiniDiff({ edit }: { edit: FileEdit }) {
             key={`m-${i}`}
             className={`px-2 py-0.5 whitespace-pre overflow-hidden text-ellipsis ${
               l.type === "added"
-                ? "bg-green-500/15 text-green-400"
+                ? "bg-success/15 text-success"
                 : l.type === "removed"
-                  ? "bg-red-500/15 text-red-400"
+                  ? "bg-error/15 text-error"
                   : "text-text-muted"
             }`}
           >
@@ -94,23 +94,23 @@ function EditCard({ edit }: { edit: FileEdit }) {
           <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={() => acceptEdit(edit.id)}
-              className="flex items-center gap-1 px-2 py-0.5 rounded bg-green-500/15 text-green-400 hover:bg-green-500/25 text-[11px]"
+              className="flex items-center gap-1 px-2 py-0.5 rounded bg-success/15 text-success hover:bg-success/25 text-[11px]"
             >
               <Check className="w-3 h-3" /> Accept
             </button>
             <button
               onClick={() => rejectEdit(edit.id)}
-              className="flex items-center gap-1 px-2 py-0.5 rounded bg-red-500/15 text-red-400 hover:bg-red-500/25 text-[11px]"
+              className="flex items-center gap-1 px-2 py-0.5 rounded bg-error/15 text-error hover:bg-error/25 text-[11px]"
             >
               <X className="w-3 h-3" /> Reject
             </button>
           </div>
         )}
         {edit.status === "accepted" && (
-          <span className="text-[10px] text-green-400 shrink-0">Applied</span>
+          <span className="text-[10px] text-success shrink-0">Applied</span>
         )}
         {edit.status === "rejected" && (
-          <span className="text-[10px] text-red-400 shrink-0">Rejected</span>
+          <span className="text-[10px] text-error shrink-0">Rejected</span>
         )}
       </div>
       {expanded && (
@@ -146,13 +146,13 @@ export function EditReviewPanel() {
           <>
             <button
               onClick={acceptAll}
-              className="flex items-center gap-1 px-2 py-0.5 rounded bg-green-500/15 text-green-400 hover:bg-green-500/25 text-[11px]"
+              className="flex items-center gap-1 px-2 py-0.5 rounded bg-success/15 text-success hover:bg-success/25 text-[11px]"
             >
               <Check className="w-3 h-3" /> Accept All
             </button>
             <button
               onClick={rejectAll}
-              className="flex items-center gap-1 px-2 py-0.5 rounded bg-red-500/15 text-red-400 hover:bg-red-500/25 text-[11px]"
+              className="flex items-center gap-1 px-2 py-0.5 rounded bg-error/15 text-error hover:bg-error/25 text-[11px]"
             >
               <X className="w-3 h-3" /> Reject All
             </button>

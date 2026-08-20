@@ -467,7 +467,7 @@ function AboutTab() {
       <div className="text-text-muted text-xs">
         <p>Version {version}</p>
         <p className="mt-2">Multi-model AI coding assistant</p>
-        <p className="mt-4 text-text-muted/60">
+        <p className="mt-4 text-text-muted">
           Built with Tauri 2.x + React 19 + TypeScript
         </p>
       </div>

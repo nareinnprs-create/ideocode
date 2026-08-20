@@ -24,12 +24,12 @@ const EVENT_LABELS: Record<HookEvent, string> = {
 };
 
 const EVENT_COLORS: Record<HookEvent, string> = {
-  SessionStart: "bg-blue-500/20 text-blue-400",
-  UserPromptSubmit: "bg-green-500/20 text-green-400",
+  SessionStart: "bg-info/20 text-info",
+  UserPromptSubmit: "bg-success/20 text-success",
   PreToolUse: "bg-amber-500/20 text-amber-400",
   PermissionRequest: "bg-orange-500/20 text-orange-400",
   PostToolUse: "bg-purple-500/20 text-purple-400",
-  PostToolUseFailure: "bg-red-500/20 text-red-400",
+  PostToolUseFailure: "bg-error/20 text-error",
   Stop: "bg-gray-500/20 text-gray-400",
 };
 
