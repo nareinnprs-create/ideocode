@@ -1,8 +1,11 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Search, X, FileCode2 } from "lucide-react";
 import { useAppStore } from "../../stores/appStore";
 import { useFileStore } from "../../stores/fileStore";
 import { fuzzySearch } from "../../lib/fuzzy";
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 interface FileResult {
   path: string;
@@ -35,6 +38,55 @@ export function FileQuickOpen() {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusables = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+        (el) => el.offsetParent !== null
+      );
+      if (focusables.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey) {
+        if (active === first || !dialog.contains(active)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (active === last || !dialog.contains(active)) {
+        e.preventDefault();
+        first.focus();
+      }
+    },
+    [setOpen]
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+    if (dialog) {
+      const target = dialog.querySelector<HTMLElement>(FOCUSABLE);
+      (target ?? dialog).focus();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      previousFocusRef.current?.focus?.();
+    };
+  }, [open, handleKeyDown]);
 
   const allFiles = useMemo(() => flattenTree(tree), [tree]);
 
@@ -96,13 +148,43 @@ export function FileQuickOpen() {
 
   if (!open) return null;
 
+  const handleKeyDownInput = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIdx((i) => Math.min(i + 1, Math.max(results.length - 1, 0)));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIdx((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setSelectedIdx(0);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      setSelectedIdx(Math.max(results.length - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const file = results[selectedIdx];
+      if (file) {
+        void openFile(file.path);
+        setOpen(false);
+      }
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[12vh]">
       <div
         className="absolute inset-0 bg-bg-overlay/40 backdrop-blur-[2px] animate-fade-in"
         onClick={() => setOpen(false)}
+        aria-hidden="true"
       />
-      <div className="relative w-full max-w-lg glass-strong rounded-xl overflow-hidden animate-float-in">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Quick Open File"
+        className="relative w-full max-w-lg glass-strong rounded-xl overflow-hidden animate-float-in"
+      >
         <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 hairline-top">
           <Search size={16} className="text-text-muted shrink-0" />
           <input
@@ -110,9 +192,10 @@ export function FileQuickOpen() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onKeyDown={handleKeyDownInput}
             placeholder="Search files by name…"
             className="flex-1 bg-transparent text-text-primary text-sm outline-none placeholder:text-text-muted"
+            aria-label="Search files"
           />
           <button
             onClick={() => setOpen(false)}

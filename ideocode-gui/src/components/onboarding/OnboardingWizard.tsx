@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAppStore } from '../../stores/appStore';
 import { useProviderStore } from '../../stores/providerStore';
 import { useFileStore } from '../../stores/fileStore';
 import { useAchievementStore } from '../../stores/achievementStore';
 import type { Provider } from '../../lib/tauri-commands';
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 const STEPS = [
   {
@@ -42,8 +45,65 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
   const { pickWorkspace } = useFileStore();
   const { providers } = useProviderStore();
   const achievementStore = useAchievementStore();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onComplete();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusables = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+        (el) => el.offsetParent !== null
+      );
+      if (focusables.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey) {
+        if (active === first || !dialog.contains(active)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (active === last || !dialog.contains(active)) {
+        e.preventDefault();
+        first.focus();
+      }
+    },
+    [onComplete]
+  );
+
+  useEffect(() => {
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+    if (dialog) {
+      const target = dialog.querySelector<HTMLElement>(FOCUSABLE);
+      (target ?? dialog).focus();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      previousFocusRef.current?.focus?.();
+    };
+  }, [handleKeyDown]);
 
   const next = () => {
+    if (step === 1) {
+      // Step 1: Require theme selection (already handled by click)
+    }
+    if (step === 2) {
+      // Step 2: Just informational, can proceed
+    }
+    if (step === 3) {
+      // Step 3: Will check if workspace was picked after click
+    }
     if (step < STEPS.length - 1) {
       setStep(step + 1);
     } else {
@@ -55,11 +115,20 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl shadow-2xl p-8">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="IDEOCODE Setup Wizard"
+        className="w-full max-w-lg bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl shadow-2xl p-8"
+      >
         <div className="text-center mb-6">
           <div className="text-5xl mb-4">{STEPS[step].icon}</div>
           <h2 className="text-2xl font-bold text-[var(--text-primary)]">{STEPS[step].title}</h2>
           <p className="text-[var(--text-secondary)] mt-2">{STEPS[step].description}</p>
+          <div className="mt-2">
+            <span className="sr-only">Step {step + 1} of {STEPS.length}</span>
+          </div>
         </div>
 
         {step === 1 && (

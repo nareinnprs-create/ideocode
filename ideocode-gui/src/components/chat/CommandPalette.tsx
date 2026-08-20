@@ -1,8 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useAppStore } from "../../stores/appStore";
 import { COMMANDS, getCommandsByCategory, type CommandAction } from "../../lib/commands";
 import { fuzzySearch } from "../../lib/fuzzy";
 import { Search, X, Plus, FolderOpen, Wand2 } from "lucide-react";
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 interface RankedCommand extends CommandAction {
   score: number;
@@ -36,6 +39,55 @@ export function CommandPalette() {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setCommandPaletteOpen(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusables = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+        (el) => el.offsetParent !== null
+      );
+      if (focusables.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey) {
+        if (active === first || !dialog.contains(active)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (active === last || !dialog.contains(active)) {
+        e.preventDefault();
+        first.focus();
+      }
+    },
+    [setCommandPaletteOpen]
+  );
+
+  useEffect(() => {
+    if (!commandPaletteOpen) return;
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+    if (dialog) {
+      const target = dialog.querySelector<HTMLElement>(FOCUSABLE);
+      (target ?? dialog).focus();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      previousFocusRef.current?.focus?.();
+    };
+  }, [commandPaletteOpen, handleKeyDown]);
 
   const rankCommands = (): RankedCommand[] => {
     const q = query.trim();
@@ -72,7 +124,7 @@ export function CommandPalette() {
     el?.scrollIntoView({ block: "nearest" });
   }, [selectedIdx]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDownInput = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setSelectedIdx((i) => Math.min(i + 1, Math.max(visibleCount - 1, 0)));
@@ -89,8 +141,6 @@ export function CommandPalette() {
       e.preventDefault();
       const cmd = results[selectedIdx];
       if (cmd) executeCommand(cmd);
-    } else if (e.key === "Escape") {
-      setCommandPaletteOpen(false);
     }
   };
 
@@ -106,9 +156,16 @@ export function CommandPalette() {
       <div
         className="absolute inset-0 bg-bg-overlay/40 backdrop-blur-[2px] animate-fade-in"
         onClick={() => setCommandPaletteOpen(false)}
+        aria-hidden="true"
       />
 
-      <div className="relative w-full max-w-xl glass-strong rounded-xl overflow-hidden animate-float-in">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Command Palette"
+        className="relative w-full max-w-xl glass-strong rounded-xl overflow-hidden animate-float-in"
+      >
         {/* Input */}
         <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 hairline-top">
           <Search size={16} className="text-text-muted shrink-0" />
@@ -117,9 +174,10 @@ export function CommandPalette() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onKeyDown={handleKeyDownInput}
             placeholder="Search commands…"
             className="flex-1 bg-transparent text-text-primary text-sm outline-none placeholder:text-text-muted"
+            aria-label="Search commands"
           />
           <button
             onClick={() => setCommandPaletteOpen(false)}

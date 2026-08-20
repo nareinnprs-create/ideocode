@@ -12,7 +12,11 @@ function AchievementToast() {
   const showNotification = useAchievementStore((s) => s.showNotification);
   if (!showNotification) return null;
   return (
-    <div className="fixed top-4 right-4 z-50 bg-[var(--accent)] text-white px-4 py-3 rounded-lg shadow-lg animate-slide-in flex items-center gap-2">
+    <div 
+      role="alert"
+      aria-live="assertive"
+      className="fixed top-4 right-4 z-50 bg-[var(--accent)] text-white px-4 py-3 rounded-lg shadow-lg animate-slide-in flex items-center gap-2"
+    >
       <span className="text-xl">🏆</span>
       <div>
         <div className="font-bold text-sm">Achievement Unlocked!</div>

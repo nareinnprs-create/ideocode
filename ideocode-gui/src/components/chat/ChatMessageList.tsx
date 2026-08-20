@@ -60,7 +60,11 @@ export function ChatMessageList() {
         </button>
 
         {error && (
-          <div className="px-3 py-2 rounded-lg bg-error/10 border border-error/30 text-error text-xs animate-blur-in">
+          <div 
+            role="alert"
+            aria-live="assertive"
+            className="px-3 py-2 rounded-lg bg-error/10 border border-error/30 text-error text-xs animate-blur-in"
+          >
             {error}
           </div>
         )}
@@ -89,7 +93,9 @@ export function ChatMessageList() {
         </AnimatePresence>
 
         {streaming && streamingContent && (
-          <StreamingBubble content={streamingContent} onFileClick={handleFileClick} />
+          <div role="log" aria-live="polite" aria-label="AI response streaming">
+            <StreamingBubble content={streamingContent} onFileClick={handleFileClick} />
+          </div>
         )}
 
         {loading && <AgentReasoningVisualizer />}

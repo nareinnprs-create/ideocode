@@ -139,7 +139,13 @@ export function StatusBar() {
           ) : (
             <span className={`w-1.5 h-1.5 rounded-full status-dot ${engineState.dot} ${engineState.pulse ? "animate-pulse-glow" : ""}`} />
           )}
-          <span className={engineState.text}>{busy ? `Thinking${thinkingDots}` : engineState.label}</span>
+          <span 
+            className={engineState.text}
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {busy ? `Thinking${thinkingDots}` : engineState.label}
+          </span>
         </span>
       </div>
 

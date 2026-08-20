@@ -42,7 +42,7 @@ export function TabBar() {
   };
 
   return (
-    <div className="flex items-center h-9 bg-bg-secondary border-b border-border-subtle overflow-x-auto scroll-thin shrink-0">
+    <div className="flex items-center h-9 bg-bg-secondary border-b border-border-subtle overflow-x-auto scroll-thin shrink-0" role="tablist" aria-label="Open files">
       <div className="flex h-full items-stretch">
         {openFiles.map((path) => {
           const isActive = path === activeFile;
@@ -80,7 +80,9 @@ export function TabBar() {
                 <span
                   className="w-1.5 h-1.5 rounded-full bg-warning shrink-0"
                   title="Unsaved changes"
-                />
+                >
+                  <span className="sr-only">Unsaved changes</span>
+                </span>
               ) : (
                 <button
                   title={`Close ${name}`}

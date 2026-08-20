@@ -181,7 +181,7 @@
   --idc-bg-overlay: oklch(0.965 0.003 265);
   --idc-text-primary: oklch(0.205 0.012 270);
   --idc-text-secondary: oklch(0.42 0.012 270);
-  --idc-text-muted: oklch(0.56 0.01 270);
+  --idc-text-muted: oklch(0.50 0.01 270);
   --idc-accent-primary: oklch(0.54 0.21 277);
   --idc-accent-secondary: oklch(0.52 0.24 292);
   --idc-accent-tertiary: oklch(0.62 0.16 277);
@@ -207,7 +207,7 @@
   --idc-bg-overlay: rgba(10, 10, 15, 0.75);
   --idc-text-primary: #f4f4f5;
   --idc-text-secondary: #a1a1aa;
-  --idc-text-muted: #52525b;
+  --idc-text-muted: #71717a;
   --idc-accent-primary: #6366f1;
   --idc-accent-secondary: #8b5cf6;
   --idc-accent-tertiary: #a855f7;
@@ -234,7 +234,7 @@
     --idc-bg-overlay: rgba(10, 10, 15, 0.75);
     --idc-text-primary: #f4f4f5;
     --idc-text-secondary: #a1a1aa;
-    --idc-text-muted: #52525b;
+    --idc-text-muted: #71717a;
     --idc-accent-primary: #6366f1;
     --idc-accent-secondary: #8b5cf6;
     --idc-accent-tertiary: #a855f7;

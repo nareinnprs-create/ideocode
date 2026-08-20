@@ -444,7 +444,7 @@ export function Composer() {
             setInput("");
           }}
           className="ml-1 p-1 text-text-muted hover:text-text-primary rounded hover:bg-bg-hover"
-          title="New Chat Tab"
+          aria-label="New Chat Tab"
         >
           <Plus size={14} />
         </button>
@@ -489,7 +489,7 @@ export function Composer() {
               }
             }}
             className="bg-transparent text-text-muted hover:text-text-primary text-[11px] outline-none cursor-pointer border border-transparent hover:border-border-subtle rounded px-1 py-0.5 transition-fast max-w-[130px] truncate appearance-none"
-            title="Select AI Model"
+            aria-label="Select AI Model"
           >
             <option value="auto">Auto (Default)</option>
             {providers.map(p => (
@@ -521,6 +521,7 @@ export function Composer() {
             <button
               onClick={() => fileInputRef.current?.click()}
               className="p-2 text-text-muted hover:text-text-primary transition-fast rounded-lg hover:bg-bg-hover shrink-0"
+              aria-label="Attach file"
             >
               <Paperclip size={16} />
             </button>
@@ -533,6 +534,7 @@ export function Composer() {
                   : "text-text-muted hover:text-text-primary hover:bg-bg-hover"
               }`}
               onClick={toggleRecording}
+              aria-label={isRecording ? "Stop dictation" : "Start voice dictation"}
             >
               <Mic size={16} />
             </button>
@@ -598,6 +600,7 @@ export function Composer() {
             onBlur={() => setFocused(false)}
             placeholder="Ask IDEOCODE to build, edit, or explain…"
             rows={1}
+            aria-label="Chat message"
             className="flex-1 bg-transparent text-text-primary placeholder:text-text-muted resize-none outline-none text-sm leading-relaxed max-h-32 py-1.5 px-0.5"
           />
 
@@ -606,6 +609,7 @@ export function Composer() {
               <button
                 onClick={() => void interrupt()}
                 title="Stop generating"
+                aria-label="Stop generating"
                 className="w-8 h-8 rounded-lg transition-fast bg-error/15 text-error hover:bg-error/25 flex items-center justify-center shrink-0 shadow-[0_0_0_1px_rgba(239,68,68,0.25)]"
               >
                 <Square size={13} className="fill-current" />
@@ -617,6 +621,7 @@ export function Composer() {
                 onClick={() => void handleSend()}
                 disabled={!input.trim() || loading}
                 title="Send message"
+                aria-label="Send message"
                 className="w-8 h-8 rounded-md accent-gradient-bg text-white disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center shrink-0 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.18),0_4px_14px_-4px_var(--idc-glow)] transition-all duration-150 ease-spring hover:brightness-110 hover:-translate-y-px active:translate-y-0"
               >
                 {loading ? (

@@ -1,11 +1,14 @@
 import { useAppStore } from "../../stores/appStore";
 import { Sparkles, X, Minimize2, Maximize2, Check, FileEdit } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Composer } from "./Composer";
 import { useEditStore } from "../../stores/editStore";
 import { DiffViewer } from "../editor/DiffViewer";
 import { IconButton } from "../ui/IconButton";
 import { SideConversationTabs } from "./SideConversationTabs";
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function ComposerPane() {
   const { composerOpen, setComposerOpen } = useAppStore();
@@ -17,6 +20,55 @@ export function ComposerPane() {
   const rejectAll = useEditStore((s) => s.rejectAll);
   
   const [selectedEditId, setSelectedEditId] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setComposerOpen(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusables = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+        (el) => el.offsetParent !== null
+      );
+      if (focusables.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey) {
+        if (active === first || !dialog.contains(active)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (active === last || !dialog.contains(active)) {
+        e.preventDefault();
+        first.focus();
+      }
+    },
+    [setComposerOpen]
+  );
+
+  useEffect(() => {
+    if (!composerOpen) return;
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+    if (dialog) {
+      const target = dialog.querySelector<HTMLElement>(FOCUSABLE);
+      (target ?? dialog).focus();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      previousFocusRef.current?.focus?.();
+    };
+  }, [composerOpen, handleKeyDown]);
 
   if (!composerOpen) return null;
 
@@ -26,6 +78,10 @@ export function ComposerPane() {
 
   return (
     <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Composer"
       className={`absolute z-40 bg-bg-primary/95 backdrop-blur-3xl border border-white/5 rounded-2xl shadow-modal flex flex-col overflow-hidden transition-all duration-300 ease-spring ${
         fullscreen
           ? "inset-4"
@@ -42,12 +98,14 @@ export function ComposerPane() {
           <button
             onClick={() => setFullscreen(!fullscreen)}
             className="p-1 rounded-md text-text-muted hover:bg-bg-hover hover:text-text-primary transition-colors"
+            aria-label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
           >
             {fullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
           </button>
           <button
             onClick={() => setComposerOpen(false)}
             className="p-1 rounded-md text-text-muted hover:bg-bg-hover hover:text-error transition-colors"
+            aria-label="Close composer"
           >
             <X size={14} />
           </button>
@@ -71,10 +129,10 @@ export function ComposerPane() {
               </span>
               {pendingCount > 0 && (
                 <div className="flex items-center gap-2">
-                  <button onClick={rejectAll} className="text-[11px] px-2 py-1 rounded border border-border-subtle hover:bg-bg-hover text-text-secondary transition-colors">
+                  <button onClick={rejectAll} className="text-[11px] px-2 py-1 rounded border border-border-subtle hover:bg-bg-hover text-text-secondary transition-colors" aria-label="Reject all changes">
                     Reject All
                   </button>
-                  <button onClick={acceptAll} className="text-[11px] px-2 py-1 rounded bg-accent-primary text-white hover:bg-accent-hover transition-colors font-medium flex items-center gap-1">
+                  <button onClick={acceptAll} className="text-[11px] px-2 py-1 rounded bg-accent-primary text-white hover:bg-accent-hover transition-colors font-medium flex items-center gap-1" aria-label="Accept all changes">
                     <Check size={12} /> Accept All ({pendingCount})
                   </button>
                 </div>

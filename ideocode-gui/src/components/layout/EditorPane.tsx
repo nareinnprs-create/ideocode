@@ -59,7 +59,7 @@ export function EditorPane() {
 
   if (!hasFileSelected) {
     return (
-      <main className="flex flex-1 min-w-0">
+      <main id="main-content" className="flex flex-1 min-w-0">
         <div className="flex flex-col flex-1 min-w-0">
           <WelcomeScreen />
         </div>
@@ -69,7 +69,7 @@ export function EditorPane() {
   }
 
   return (
-    <main className="flex flex-1 min-w-0">
+    <main id="main-content" className="flex flex-1 min-w-0">
       <div className="flex flex-col flex-1 min-w-0">
         <TabBar />
         {editors}

@@ -81,7 +81,7 @@ export function Sidebar() {
   };
 
   return (
-    <section className="relative flex-col shrink-0 overflow-hidden transition-[width,opacity,transform] duration-300 ease-out hidden md:block bg-transparent w-56 md:w-60 lg:w-64 opacity-100 border-r border-window-border z-20">
+    <nav aria-label="Main navigation" className="relative flex-col shrink-0 overflow-hidden transition-[width,opacity,transform] duration-300 ease-out hidden md:block bg-transparent w-56 md:w-60 lg:w-64 opacity-100 border-r border-window-border z-20">
       <div className="flex h-full min-h-0 flex-col w-56 md:w-60 lg:w-64 transition-transform duration-300 ease-out translate-x-0">
         <div data-tauri-drag-region className="h-12 shrink-0 cursor-move" />
 
@@ -180,7 +180,13 @@ export function Sidebar() {
         <div className="flex min-h-0 flex-1 flex-col gap-2 pt-2">
           <div className="flex items-center justify-between gap-2 pl-[18px] pr-3">
             <h3 className="min-w-0 text-[13px] font-semibold text-foreground-subtlest">Tasks</h3>
-            <span className="text-[10px] text-text-muted font-mono">{pendingTasks.length}</span>
+            <span 
+              className="text-[10px] text-text-muted font-mono"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {pendingTasks.length}
+            </span>
           </div>
 
           <div className="relative flex min-h-0 flex-1">
