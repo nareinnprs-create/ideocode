@@ -277,6 +277,6 @@ export function Sidebar() {
           </div>
         </div>
       </div>
-    </section>
+    </nav>
   );
 }

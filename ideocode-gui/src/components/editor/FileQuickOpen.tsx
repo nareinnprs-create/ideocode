@@ -121,31 +121,6 @@ export function FileQuickOpen() {
     el?.scrollIntoView({ block: "nearest" });
   }, [selectedIdx]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setSelectedIdx((i) => Math.min(i + 1, Math.max(results.length - 1, 0)));
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedIdx((i) => Math.max(i - 1, 0));
-    } else if (e.key === "Home") {
-      e.preventDefault();
-      setSelectedIdx(0);
-    } else if (e.key === "End") {
-      e.preventDefault();
-      setSelectedIdx(Math.max(results.length - 1, 0));
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      const file = results[selectedIdx];
-      if (file) {
-        void openFile(file.path);
-        setOpen(false);
-      }
-    } else if (e.key === "Escape") {
-      setOpen(false);
-    }
-  };
-
   if (!open) return null;
 
   const handleKeyDownInput = (e: React.KeyboardEvent) => {
