@@ -48,10 +48,10 @@ export function ThemeMarketplacePanel() {
   const allThemes = themes;
 
   return (
-    <div className="flex flex-col h-full text-[var(--text-primary)]">
-      <div className="flex border-b border-[var(--border)]">
+    <div className="flex flex-col h-full text-text-primary">
+      <div className="flex border-b border-border-default">
         {(['browse', 'create', 'import'] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} className={`flex-1 py-2 text-xs font-medium capitalize ${tab === t ? 'border-b-2 border-[var(--accent)] text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>{t}</button>
+          <button key={t} onClick={() => setTab(t)} className={`flex-1 py-2 text-xs font-medium capitalize transition-fast ${tab === t ? 'border-b-2 border-accent-primary text-accent-primary' : 'text-text-muted hover:text-text-secondary'}`}>{t}</button>
         ))}
       </div>
 
@@ -59,13 +59,13 @@ export function ThemeMarketplacePanel() {
         {tab === 'browse' && (
           <div className="space-y-2">
             {allThemes.map(theme => (
-              <div key={theme.id} className={`p-3 rounded-lg border ${activeThemeId === theme.id ? 'border-[var(--accent)] bg-[var(--accent)]/5' : 'border-[var(--border)]'} cursor-pointer hover:border-[var(--accent)]/50 transition-colors`} onClick={() => { setTheme(theme.id); achievementStore.unlock('theme-change'); }}>
+              <div key={theme.id} className={`p-3 rounded-lg border ${activeThemeId === theme.id ? 'border-accent-primary bg-accent-primary/5' : 'border-border-subtle'} cursor-pointer hover:border-accent-primary/50 transition-fast`} onClick={() => { setTheme(theme.id); achievementStore.unlock('theme-change'); }}>
                 <div className="flex items-center justify-between mb-2">
                   <div>
                     <div className="text-sm font-medium">{theme.name}</div>
-                    <div className="text-[10px] text-[var(--text-muted)]">{theme.author} · {theme.description}</div>
+                    <div className="text-[10px] text-text-muted">{theme.author} · {theme.description}</div>
                   </div>
-                  {activeThemeId === theme.id && <span className="text-[10px] text-[var(--accent)]">Active</span>}
+                  {activeThemeId === theme.id && <span className="text-[10px] text-accent-primary font-medium">Active</span>}
                 </div>
                 <div className="flex gap-1 h-4 rounded overflow-hidden">
                   {[theme.colors.bgPrimary, theme.colors.bgSecondary, theme.colors.accent, theme.colors.success, theme.colors.error, theme.colors.warning].map((c, i) => (
@@ -74,8 +74,8 @@ export function ThemeMarketplacePanel() {
                 </div>
                 {!theme.isBuiltin && (
                   <div className="flex gap-1 mt-2">
-                    <button onClick={(e) => { e.stopPropagation(); handleExportFile(theme.id); }} className="text-[10px] px-2 py-0.5 rounded border border-[var(--border)] text-[var(--text-muted)]">Export</button>
-                    <button onClick={(e) => { e.stopPropagation(); deleteTheme(theme.id); }} className="text-[10px] px-2 py-0.5 rounded border border-red-500/30 text-red-400">Delete</button>
+                    <button onClick={(e) => { e.stopPropagation(); handleExportFile(theme.id); }} className="text-[10px] px-2 py-0.5 rounded border border-border-subtle text-text-muted hover:bg-bg-hover transition-fast">Export</button>
+                    <button onClick={(e) => { e.stopPropagation(); deleteTheme(theme.id); }} className="text-[10px] px-2 py-0.5 rounded border border-error/30 text-error hover:bg-error/10 transition-fast">Delete</button>
                   </div>
                 )}
               </div>
@@ -85,12 +85,12 @@ export function ThemeMarketplacePanel() {
 
         {tab === 'create' && (
           <div className="space-y-3">
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="Theme name" className="w-full px-2 py-1.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border)] rounded" />
-            <input value={author} onChange={e => setAuthor(e.target.value)} placeholder="Author (optional)" className="w-full px-2 py-1.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border)] rounded" />
-            <input value={desc} onChange={e => setDesc(e.target.value)} placeholder="Description" className="w-full px-2 py-1.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border)] rounded" />
+            <input value={name} onChange={e => setName(e.target.value)} placeholder="Theme name" className="w-full px-2 py-1.5 text-xs bg-bg-secondary border border-border-subtle rounded text-text-primary placeholder:text-text-muted" />
+            <input value={author} onChange={e => setAuthor(e.target.value)} placeholder="Author (optional)" className="w-full px-2 py-1.5 text-xs bg-bg-secondary border border-border-subtle rounded text-text-primary placeholder:text-text-muted" />
+            <input value={desc} onChange={e => setDesc(e.target.value)} placeholder="Description" className="w-full px-2 py-1.5 text-xs bg-bg-secondary border border-border-subtle rounded text-text-primary placeholder:text-text-muted" />
             <div className="grid grid-cols-2 gap-2">
               {(Object.keys(colors) as (keyof ThemeColors)[]).map(key => (
-                <label key={key} className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
+                <label key={key} className="flex items-center gap-2 text-xs text-text-secondary">
                   <input type="color" value={colors[key]} onChange={e => setColors({ ...colors, [key]: e.target.value })} className="w-6 h-6 rounded cursor-pointer border-0" />
                   <span className="truncate">{key}</span>
                 </label>
@@ -101,15 +101,15 @@ export function ThemeMarketplacePanel() {
                 <div key={i} className="flex-1" style={{ backgroundColor: c }} />
               ))}
             </div>
-            <button onClick={handleCreate} className="w-full py-2 text-xs bg-[var(--accent)] text-white rounded font-medium">Create Theme</button>
+            <button onClick={handleCreate} className="w-full py-2 text-xs bg-accent-primary text-white rounded font-medium transition-fast hover:bg-accent-hover">Create Theme</button>
           </div>
         )}
 
         {tab === 'import' && (
           <div className="space-y-3">
-            <textarea value={importText} onChange={e => setImportText(e.target.value)} placeholder="Paste theme JSON here..." className="w-full h-40 px-2 py-1.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border)] rounded resize-none font-mono" />
-            <button onClick={handleImport} className="w-full py-2 text-xs bg-[var(--accent)] text-white rounded font-medium">Import Theme</button>
-            <div className="text-center text-[10px] text-[var(--text-muted)]">or</div>
+            <textarea value={importText} onChange={e => setImportText(e.target.value)} placeholder="Paste theme JSON here..." className="w-full h-40 px-2 py-1.5 text-xs bg-bg-secondary border border-border-subtle rounded resize-none font-mono text-text-primary placeholder:text-text-muted" />
+            <button onClick={handleImport} className="w-full py-2 text-xs bg-accent-primary text-white rounded font-medium transition-fast hover:bg-accent-hover">Import Theme</button>
+            <div className="text-center text-[10px] text-text-muted">or</div>
             <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={e => {
               const file = e.target.files?.[0];
               if (!file) return;
@@ -117,7 +117,7 @@ export function ThemeMarketplacePanel() {
               reader.onload = () => { setImportText(reader.result as string); };
               reader.readAsText(file);
             }} />
-            <button onClick={() => fileRef.current?.click()} className="w-full py-2 text-xs border border-[var(--border)] text-[var(--text-secondary)] rounded">Load from file</button>
+            <button onClick={() => fileRef.current?.click()} className="w-full py-2 text-xs border border-border-subtle text-text-secondary rounded transition-fast hover:bg-bg-hover hover:border-border-default">Load from file</button>
           </div>
         )}
       </div>

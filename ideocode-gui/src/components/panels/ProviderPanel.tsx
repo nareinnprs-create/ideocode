@@ -101,7 +101,7 @@ export function ProviderPanel() {
 
       {loading && timedOut && (
         <div className="mx-3 my-2 p-2 rounded bg-bg-elevated border border-border-subtle">
-          <div className="text-xs text-yellow-400 mb-1">Loading is taking longer than expected.</div>
+          <div className="text-xs text-warning mb-1">Loading is taking longer than expected.</div>
           <button
             onClick={() => { setTimedOut(false); loadProviders(); loadStatus(); }}
             className="text-xs text-accent-primary hover:underline"
@@ -114,7 +114,7 @@ export function ProviderPanel() {
       {/* Error */}
       {error && (
         <div className="mx-3 my-2 p-2 rounded bg-bg-elevated border border-border-subtle">
-          <div className="text-xs text-red-400 mb-1">{error}</div>
+          <div className="text-xs text-error mb-1">{error}</div>
           <button
             onClick={() => { loadProviders(); loadStatus(); }}
             className="text-xs text-accent-primary hover:underline"
@@ -176,7 +176,7 @@ export function ProviderPanel() {
             </button>
           </div>
           {logsOpen && (
-            <div className="bg-[#0D1117] px-3 py-2 border-t border-border-subtle max-h-32 overflow-y-auto text-left font-mono text-[10px] text-text-muted leading-relaxed">
+            <div className="bg-bg-primary px-3 py-2 border-t border-border-subtle max-h-32 overflow-y-auto text-left font-mono text-[10px] text-text-muted leading-relaxed">
               {logs.length === 0 ? (
                 <div className="italic opacity-50">No logs yet...</div>
               ) : (

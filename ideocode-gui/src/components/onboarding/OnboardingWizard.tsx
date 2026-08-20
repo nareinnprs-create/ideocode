@@ -95,15 +95,6 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
   }, [handleKeyDown]);
 
   const next = () => {
-    if (step === 1) {
-      // Step 1: Require theme selection (already handled by click)
-    }
-    if (step === 2) {
-      // Step 2: Just informational, can proceed
-    }
-    if (step === 3) {
-      // Step 3: Will check if workspace was picked after click
-    }
     if (step < STEPS.length - 1) {
       setStep(step + 1);
     } else {
@@ -120,12 +111,12 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
         role="dialog"
         aria-modal="true"
         aria-label="IDEOCODE Setup Wizard"
-        className="w-full max-w-lg bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl shadow-2xl p-8"
+        className="w-full max-w-lg bg-bg-primary border border-border-default rounded-xl shadow-2xl p-8"
       >
         <div className="text-center mb-6">
           <div className="text-5xl mb-4">{STEPS[step].icon}</div>
-          <h2 className="text-2xl font-bold text-[var(--text-primary)]">{STEPS[step].title}</h2>
-          <p className="text-[var(--text-secondary)] mt-2">{STEPS[step].description}</p>
+          <h2 className="text-2xl font-bold text-text-primary">{STEPS[step].title}</h2>
+          <p className="text-text-secondary mt-2">{STEPS[step].description}</p>
           <div className="mt-2">
             <span className="sr-only">Step {step + 1} of {STEPS.length}</span>
           </div>
@@ -140,10 +131,10 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
                   setTheme(t.id as any);
                   achievementStore.unlock('theme-change');
                 }}
-                className="flex flex-col items-center gap-1 p-3 rounded-lg border border-[var(--border)] hover:border-[var(--accent)] transition-colors"
+                className="flex flex-col items-center gap-1 p-3 rounded-lg border border-border-subtle hover:border-accent-primary transition-fast"
               >
                 <div className="w-8 h-8 rounded-full" style={{ backgroundColor: t.color }} />
-                <span className="text-xs text-[var(--text-secondary)]">{t.name}</span>
+                <span className="text-xs text-text-secondary">{t.name}</span>
               </button>
             ))}
           </div>
@@ -151,13 +142,13 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
 
         {step === 2 && (
           <div className="space-y-2 mb-6">
-            <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
+            <div className="p-3 rounded-lg bg-success/10 border border-success/20 text-success text-sm">
               ✅ Baanzon Verso (built-in) is available — no setup needed
             </div>
             {providers
               .filter((p: Provider) => p.id !== 'baanzon-verso')
               .map((p: Provider) => (
-                <div key={p.id} className="p-3 rounded-lg border border-[var(--border)] text-sm text-[var(--text-secondary)]">
+                <div key={p.id} className="p-3 rounded-lg border border-border-subtle text-sm text-text-secondary">
                   {p.name} — {p.is_configured ? '✅ Configured' : '⚠️ Needs API key'}
                 </div>
               ))}
@@ -171,7 +162,7 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
                 await pickWorkspace();
                 achievementStore.unlock('workspace-open');
               }}
-              className="w-full p-4 rounded-lg border-2 border-dashed border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              className="w-full p-4 rounded-lg border-2 border-dashed border-border-subtle hover:border-accent-primary text-text-secondary hover:text-text-primary transition-fast"
             >
               📂 Click to choose a folder
             </button>
@@ -181,7 +172,7 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
         <div className="flex items-center justify-between mt-6">
           <button
             onClick={skip}
-            className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+            className="text-sm text-text-secondary hover:text-text-primary transition-fast"
           >
             Skip
           </button>
@@ -189,15 +180,15 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
             {STEPS.map((_, i) => (
               <div
                 key={i}
-                className={`w-2 h-2 rounded-full ${
-                  i === step ? 'bg-[var(--accent)]' : 'bg-[var(--border)]'
+                className={`w-2 h-2 rounded-full transition-fast ${
+                  i === step ? 'bg-accent-primary' : 'bg-border-subtle'
                 }`}
               />
             ))}
           </div>
           <button
             onClick={next}
-            className="px-4 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 text-sm font-medium"
+            className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-hover text-sm font-medium transition-fast"
           >
             {step === STEPS.length - 1 ? 'Get Started' : 'Next'}
           </button>

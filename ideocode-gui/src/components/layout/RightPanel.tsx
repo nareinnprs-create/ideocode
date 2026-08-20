@@ -99,7 +99,7 @@ export function RightPanel() {
 
   return (
     <aside
-      className="flex border-l border-white/5 bg-transparent flex-col relative animate-slide-in-right z-10"
+      className="flex border-l border-border-default bg-transparent flex-col relative animate-slide-in-right z-10"
       style={{ width: rightPanelWidth }}
     >
       {/* Drag handle on the left edge */}
@@ -110,7 +110,7 @@ export function RightPanel() {
         className="absolute left-0 top-0 bottom-0 w-[3px] -ml-[1px] cursor-col-resize touch-none z-10 resize-handle-x"
       />
       {/* Header */}
-      <div className="flex items-center justify-between h-10 pl-3 pr-2 border-b border-white/5">
+      <div className="flex items-center justify-between h-10 pl-3 pr-2 border-b border-border-default">
         <span className="text-[13px] font-medium text-text-primary">
           {title}
         </span>

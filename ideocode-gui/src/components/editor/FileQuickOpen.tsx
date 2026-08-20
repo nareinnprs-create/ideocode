@@ -160,7 +160,7 @@ export function FileQuickOpen() {
         aria-label="Quick Open File"
         className="relative w-full max-w-lg glass-strong rounded-xl overflow-hidden animate-float-in"
       >
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 hairline-top">
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-border-default hairline-top">
           <Search size={16} className="text-text-muted shrink-0" />
           <input
             ref={inputRef}

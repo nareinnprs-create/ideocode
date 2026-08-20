@@ -82,13 +82,13 @@ export function ComposerPane() {
       role="dialog"
       aria-modal="true"
       aria-label="Composer"
-      className={`absolute z-40 bg-bg-primary/95 backdrop-blur-3xl border border-white/5 rounded-2xl shadow-modal flex flex-col overflow-hidden transition-all duration-300 ease-spring ${
+      className={`absolute z-40 bg-bg-primary/95 backdrop-blur-3xl border border-border-default rounded-2xl shadow-modal flex flex-col overflow-hidden transition-all duration-300 ease-spring ${
         fullscreen
           ? "inset-4"
           : "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[650px]"
       }`}
     >
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-transparent select-none" data-tauri-drag-region>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border-default bg-transparent select-none" data-tauri-drag-region>
         <div className="flex items-center gap-2">
           <Sparkles size={16} className="text-accent-primary" />
           <span className="font-semibold text-text-primary text-sm">Composer</span>
@@ -113,7 +113,7 @@ export function ComposerPane() {
       </div>
       
       <div className="flex-1 flex overflow-hidden">
-        <div className={`${hasEdits ? "w-[350px] border-r border-white/5 flex flex-col" : "w-full flex flex-col"} transition-all duration-300`}>
+        <div className={`${hasEdits ? "w-[350px] border-r border-border-default flex flex-col" : "w-full flex flex-col"} transition-all duration-300`}>
           <SideConversationTabs />
           <div className="flex-1 p-4">
             <Composer />
@@ -122,7 +122,7 @@ export function ComposerPane() {
 
         {hasEdits && (
           <div className="flex-1 flex flex-col bg-transparent">
-            <div className="p-3 border-b border-white/5 bg-transparent flex items-center justify-between">
+            <div className="p-3 border-b border-border-default bg-transparent flex items-center justify-between">
               <span className="text-[13px] font-medium text-text-primary flex items-center gap-2">
                 <FileEdit size={14} className="text-accent-primary" />
                 Workspace Edits
@@ -140,13 +140,13 @@ export function ComposerPane() {
             </div>
 
             <div className="flex flex-1 overflow-hidden">
-              <div className="w-[200px] border-r border-white/5 overflow-y-auto p-2 space-y-1">
+              <div className="w-[200px] border-r border-border-default overflow-y-auto p-2 space-y-1">
                 {edits.map((edit) => (
                   <button
                     key={edit.id}
                     onClick={() => setSelectedEditId(edit.id)}
                     className={`w-full flex flex-col text-left p-2 rounded-md transition-colors border ${
-                      selectedEdit?.id === edit.id ? "bg-white/10 border-white/5" : "border-transparent hover:bg-white/5"
+                      selectedEdit?.id === edit.id ? "bg-bg-elevated border-border-subtle" : "border-transparent hover:bg-bg-hover"
                     }`}
                   >
                     <div className="flex items-center justify-between">

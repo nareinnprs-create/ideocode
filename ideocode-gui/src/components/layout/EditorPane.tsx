@@ -43,7 +43,7 @@ export function EditorPane() {
 
   const chatColumn = (
     <div
-      className="flex flex-col min-w-0 bg-transparent border-l border-white/5 relative z-10"
+      className="flex flex-col min-w-0 bg-transparent border-l border-border-default relative z-10"
       style={{ width: chatPanelWidth }}
     >
       <div

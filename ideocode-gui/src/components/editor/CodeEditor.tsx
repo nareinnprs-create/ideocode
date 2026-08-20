@@ -272,7 +272,7 @@ export function CodeEditor({ file: overrideFile }: { file?: string } = {}) {
         />
         {inlineAI?.active ? (
           <div className="absolute inset-0 z-10 flex flex-col bg-bg-primary/50 backdrop-blur-md">
-            <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 bg-transparent">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-border-default bg-transparent">
               <div className="text-xs text-text-primary font-medium">
                 {inlineAI.loading ? (
                   <span className="flex items-center gap-2"><Loader2 size={12} className="animate-spin" /> Generating changes...</span>
@@ -285,7 +285,7 @@ export function CodeEditor({ file: overrideFile }: { file?: string } = {}) {
               <div className="flex gap-2">
                 <button
                   onClick={() => setInlineAI(null)}
-                  className="px-3 py-1 rounded bg-white/5 hover:bg-white/10 text-text-primary text-xs transition-fast border border-white/5"
+                  className="px-3 py-1 rounded bg-bg-elevated hover:bg-bg-hover text-text-primary text-xs transition-fast border border-border-subtle"
                 >
                   Reject
                 </button>

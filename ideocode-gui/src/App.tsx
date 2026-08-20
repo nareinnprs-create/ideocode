@@ -15,7 +15,7 @@ function AchievementToast() {
     <div 
       role="alert"
       aria-live="assertive"
-      className="fixed top-4 right-4 z-50 bg-[var(--accent)] text-white px-4 py-3 rounded-lg shadow-lg animate-slide-in flex items-center gap-2"
+      className="fixed top-4 right-4 z-50 bg-accent-primary text-white px-4 py-3 rounded-lg shadow-lg animate-slide-in flex items-center gap-2"
     >
       <span className="text-xl">🏆</span>
       <div>
