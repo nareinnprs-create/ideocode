@@ -88,9 +88,10 @@ members = [
     "crates/ideocode-tui-workspace",
     "crates/ideocode-desktop",
     "crates/ideocode-render-core", "crates/ideocode-provider-baanzon",
+    "ideocode-gui/src-tauri",
 ]
 
-exclude = ["ideocode-gui"]
+exclude = []
 
 [lib]
 name = "ideocode"

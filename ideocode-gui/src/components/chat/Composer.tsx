@@ -488,7 +488,7 @@ export function Composer() {
                 useProviderStore.getState().setActiveProvider(p.id, newModel);
               }
             }}
-            className="bg-transparent text-text-muted hover:text-text-primary text-[11px] outline-none cursor-pointer border border-transparent hover:border-border-subtle rounded px-1 py-0.5 transition-fast max-w-[130px] truncate appearance-none"
+            className="model-select bg-transparent text-text-muted hover:text-text-primary text-[11px] outline-none cursor-pointer border border-transparent hover:border-border-subtle rounded px-1 py-0.5 transition-fast max-w-[130px] truncate appearance-none"
             aria-label="Select AI Model"
           >
             <option value="auto">Auto (Default)</option>
@@ -658,7 +658,7 @@ export function Composer() {
                 }
               }}
               aria-label="Select model"
-              className="appearance-none bg-transparent border border-transparent rounded-md pl-2 pr-6 py-0.5 text-[11px] font-medium text-text-secondary outline-none hover:border-border-subtle hover:bg-bg-hover focus:border-accent-primary cursor-pointer max-w-44 min-w-0"
+              className="model-select appearance-none bg-transparent border border-transparent rounded-md pl-2 pr-6 py-0.5 text-[11px] font-medium text-text-secondary outline-none hover:border-border-subtle hover:bg-bg-hover focus:border-accent-primary cursor-pointer max-w-44 min-w-0"
             >
               {model === "auto" && <option value="auto">auto</option>}
               {providers

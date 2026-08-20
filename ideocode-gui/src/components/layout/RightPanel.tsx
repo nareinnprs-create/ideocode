@@ -120,7 +120,7 @@ export function RightPanel() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden panel-enter">
         <Suspense fallback={<div className="p-4 text-center text-text-muted text-xs animate-pulse">Loading...</div>}>
           <PanelContent panel={rightPanel} />
         </Suspense>

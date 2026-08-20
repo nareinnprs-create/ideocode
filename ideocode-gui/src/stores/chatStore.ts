@@ -13,6 +13,8 @@ import {
   interruptStream as tauriInterrupt,
   savePartialMessage,
   compactSession as tauriCompact,
+  readFile,
+  fileExists,
   type Message,
   type Session,
 } from "../lib/tauri-commands";
@@ -172,7 +174,6 @@ export const useChatStore = create<ChatState>((set) => ({
 
       const mentionedFiles: {path: string, content: string}[] = [];
       if (mentions.size > 0) {
-        const { readFile, fileExists } = await import("../lib/tauri-commands");
         const rootPath = fs.rootPath;
         for (const m of mentions) {
           if (m === fs.activeFile) continue;

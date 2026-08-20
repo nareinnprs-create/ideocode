@@ -6,7 +6,6 @@ edition = "2021"
 description = "IDEOCODE Desktop GUI — Tauri 2.x + React"
 publish = false
 
-[workspace]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
@@ -27,11 +26,6 @@ ideocode-provider-baanzon = { path = "../../crates/ideocode-provider-baanzon" }
 [package.metadata.cargo-machete]
 ignored = ["anyhow", "tokio"]
 
-[profile.release]
-lto = "fat"
-codegen-units = 1
-strip = "symbols"
-opt-level = 3
 
 [[bin]]
 name = "ideocode-gui"

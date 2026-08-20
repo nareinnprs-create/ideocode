@@ -81,8 +81,8 @@ export function Sidebar() {
   };
 
   return (
-    <nav aria-label="Main navigation" className="relative flex-col shrink-0 overflow-hidden transition-[width,opacity,transform] duration-300 ease-out hidden md:block bg-transparent w-56 md:w-60 lg:w-64 opacity-100 border-r border-window-border z-20">
-      <div className="flex h-full min-h-0 flex-col w-56 md:w-60 lg:w-64 transition-transform duration-300 ease-out translate-x-0">
+    <nav aria-label="Main navigation" className="relative flex-col shrink-0 overflow-hidden transition-all duration-300 ease-spring hidden md:block bg-bg-secondary/40 border-r border-border-default z-20 w-56 md:w-60 lg:w-64">
+      <div className="flex h-full min-h-0 flex-col w-56 md:w-60 lg:w-64 transition-all duration-300 ease-spring">
         <div data-tauri-drag-region className="h-12 shrink-0 cursor-move" />
 
         <div className="flex flex-col gap-1 px-2 py-3">
@@ -144,9 +144,13 @@ export function Sidebar() {
                     if (!rightPanelOpen) setRightPanelOpen(true);
                     setRightPanel(item.panel);
                   }}
-                  className={`relative flex items-center gap-2 w-full px-2 py-1 rounded-md text-[12px] transition-colors ${activePanel === item.panel ? "bg-bg-elevated text-accent-primary" : "text-text-secondary hover:text-text-primary hover:bg-surface-hover"}`}
+                  className={`relative flex items-center gap-2 w-full px-2.5 py-1.5 rounded-lg text-[12px] transition-all duration-150 ${
+                    activePanel === item.panel
+                      ? "bg-accent-primary/10 text-accent-primary font-medium shadow-[inset_0_0_0_1px_var(--idc-glow)]"
+                      : "text-text-secondary hover:text-text-primary hover:bg-bg-hover hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]"
+                  }`}
                 >
-                  {activePanel === item.panel && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-r bg-accent-primary" />}
+                  {activePanel === item.panel && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r bg-accent-primary" />}
                   <item.icon size={13} className="shrink-0" />
                   <span className="truncate">{item.label}</span>
                 </button>
@@ -156,9 +160,13 @@ export function Sidebar() {
                   if (!rightPanelOpen) setRightPanelOpen(true);
                   setRightPanel("git");
                 }}
-                className={`relative flex items-center gap-2 w-full px-2 py-1 rounded-md text-[12px] transition-colors ${activePanel === "git" ? "bg-bg-elevated text-accent-primary" : "text-text-secondary hover:text-text-primary hover:bg-surface-hover"}`}
+                className={`relative flex items-center gap-2 w-full px-2.5 py-1.5 rounded-lg text-[12px] transition-all duration-150 ${
+                  activePanel === "git"
+                    ? "bg-accent-primary/10 text-accent-primary font-medium shadow-[inset_0_0_0_1px_var(--idc-glow)]"
+                    : "text-text-secondary hover:text-text-primary hover:bg-bg-hover hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]"
+                }`}
               >
-                {activePanel === "git" && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-r bg-accent-primary" />}
+                {activePanel === "git" && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r bg-accent-primary" />}
                 <GitBranch size={13} className="shrink-0" />
                 <span className="truncate">Git</span>
               </button>
@@ -167,9 +175,13 @@ export function Sidebar() {
                   if (!rightPanelOpen) setRightPanelOpen(true);
                   setRightPanel("settings");
                 }}
-                className={`relative flex items-center gap-2 w-full px-2 py-1 rounded-md text-[12px] transition-colors ${activePanel === "settings" ? "bg-bg-elevated text-accent-primary" : "text-text-secondary hover:text-text-primary hover:bg-surface-hover"}`}
+                className={`relative flex items-center gap-2 w-full px-2.5 py-1.5 rounded-lg text-[12px] transition-all duration-150 ${
+                  activePanel === "settings"
+                    ? "bg-accent-primary/10 text-accent-primary font-medium shadow-[inset_0_0_0_1px_var(--idc-glow)]"
+                    : "text-text-secondary hover:text-text-primary hover:bg-bg-hover hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]"
+                }`}
               >
-                {activePanel === "settings" && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-r bg-accent-primary" />}
+                {activePanel === "settings" && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r bg-accent-primary" />}
                 <Settings size={13} className="shrink-0" />
                 <span className="truncate">Settings</span>
               </button>
