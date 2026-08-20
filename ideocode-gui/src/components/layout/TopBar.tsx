@@ -59,7 +59,7 @@ export function TopBar() {
   return (
     <header
       data-tauri-drag-region
-      className="flex items-center h-9 px-2 gap-3 bg-transparent border-b border-white/5 select-none shrink-0 z-20"
+      className="flex items-center h-9 px-2 gap-3 bg-bg-secondary/40 border-b border-border-subtle select-none shrink-0 z-20 surface-blur hairline-bottom"
     >
       {/* Brand / project */}
       <div className="flex items-center gap-2 min-w-0" data-tauri-drag-region>
@@ -76,19 +76,25 @@ export function TopBar() {
         <span className="text-xs text-text-secondary font-medium truncate max-w-40">{projectName}</span>
       </div>
 
+      {/* Divider */}
+      <div className="hidden sm:block w-px h-5 bg-border-subtle mx-1" />
+
       {/* Command bar */}
       <div className="flex-1 flex justify-center min-w-0">
         <button
           onClick={() => setCommandPaletteOpen(true)}
-          className="group flex items-center gap-2 h-6 px-3 rounded-md border border-white/5 bg-white/5 text-text-muted hover:border-accent-primary/40 hover:text-text-secondary transition-all w-full max-w-sm focus-visible:outline-2 focus-visible:outline-accent-secondary"
+          className="group flex items-center gap-2 h-6 px-3 rounded-md border border-transparent bg-bg-tertiary text-text-muted hover:border-border-default hover:text-text-primary hover:bg-bg-hover transition-all w-full max-w-sm focus-visible:outline-2 focus-visible:outline-accent-secondary"
         >
           <Search size={12} className="transition-colors group-hover:text-accent-primary" />
           <span className="text-xs flex-1 text-left truncate">Search commands, files, actions…</span>
-          <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded-md bg-bg-tertiary text-[10px] font-mono text-text-muted border border-border-subtle">
+          <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded-md bg-bg-elevated text-[10px] font-mono text-text-muted border border-border-subtle">
             ⌘K
           </kbd>
         </button>
       </div>
+
+      {/* Divider */}
+      <div className="hidden sm:block w-px h-5 bg-border-subtle mx-1" />
 
       {/* Session actions */}
       <div className="flex items-center gap-1 shrink-0">
@@ -104,14 +110,17 @@ export function TopBar() {
         </Tooltip>
       </div>
 
+      {/* Divider */}
+      <div className="hidden sm:block w-px h-5 bg-border-subtle mx-1" />
+
       {/* Window controls */}
       {tauri && (
-        <div className="flex items-center -mr-3 h-full shrink-0">
+        <div className="flex items-center -mr-1 h-full shrink-0">
           <button
             onClick={() => winControl(() => getCurrentWindow().minimize())}
             aria-label="Minimize window"
             title="Minimize"
-            className="flex items-center justify-center w-11 h-full text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors duration-100"
+            className="flex items-center justify-center w-11 h-full text-text-muted hover:text-text-primary hover:bg-bg-hover active:bg-bg-elevated transition-colors duration-75 rounded-l-md"
           >
             <Minus size={14} />
           </button>
@@ -119,7 +128,7 @@ export function TopBar() {
             onClick={() => winControl(() => getCurrentWindow().toggleMaximize())}
             aria-label={isMaximized ? "Restore window" : "Maximize window"}
             title={isMaximized ? "Restore" : "Maximize"}
-            className="flex items-center justify-center w-11 h-full text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors duration-100"
+            className="flex items-center justify-center w-11 h-full text-text-muted hover:text-text-primary hover:bg-bg-hover active:bg-bg-elevated transition-colors duration-75"
           >
             {isMaximized ? <Copy size={12} /> : <Square size={11} />}
           </button>
@@ -127,7 +136,7 @@ export function TopBar() {
             onClick={() => winControl(() => getCurrentWindow().close())}
             aria-label="Close window"
             title="Close"
-            className="flex items-center justify-center w-11 h-full text-text-muted hover:text-white hover:bg-error transition-colors duration-100"
+            className="flex items-center justify-center w-11 h-full text-text-muted hover:text-white hover:bg-error active:bg-error/80 transition-colors duration-75 rounded-r-md"
           >
             <X size={15} />
           </button>

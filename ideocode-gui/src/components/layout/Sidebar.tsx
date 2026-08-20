@@ -1,5 +1,6 @@
 import { useAppStore, type PanelId } from "../../stores/appStore";
 import { useGoalStore } from "../../stores/goalStore";
+import { Tooltip } from "../ui/Tooltip";
 import {
   MessageCirclePlus,
   FolderOpen,
@@ -31,6 +32,8 @@ import {
   FileCode2,
   LayoutTemplate,
   Palette,
+  ChevronLeft,
+  Menu,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -63,6 +66,7 @@ const NAV_ITEMS: NavItem[] = [
 export function Sidebar() {
   const [tasksOpen, setTasksOpen] = useState(true);
   const [toolsOpen, setToolsOpen] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const { setChatPanelOpen, setRightPanel, setRightPanelOpen, rightPanelOpen } = useAppStore();
   const activePanel = useAppStore((s) => s.rightPanel);
   const { goal, status, tasks, selectTask, selectedTaskId, removeTask, toggleTaskDone } = useGoalStore();
@@ -80,214 +84,296 @@ export function Sidebar() {
     setRightPanel("files");
   };
 
+  const navBtnClass = (panel: PanelId) =>
+    `relative flex items-center gap-2 w-full px-2.5 py-1.5 rounded-lg text-[12px] transition-all duration-150 ${
+      activePanel === panel
+        ? "bg-accent-primary/10 text-accent-primary font-medium shadow-[inset_0_0_0_1px_var(--idc-glow)]"
+        : "text-text-secondary hover:text-text-primary hover:bg-bg-hover hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]"
+    }`;
+
+  const collapsedBtnClass = (panel: PanelId) =>
+    `flex items-center justify-center w-8 h-8 rounded-lg transition-all ${
+      activePanel === panel
+        ? "bg-accent-primary/10 text-accent-primary"
+        : "text-text-secondary hover:text-text-primary hover:bg-bg-hover"
+    }`;
+
+  const activeIndicator = (panel: PanelId) =>
+    activePanel === panel ? <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r bg-accent-primary" /> : null;
+
   return (
-    <nav aria-label="Main navigation" className="relative flex-col shrink-0 overflow-hidden transition-all duration-300 ease-spring hidden md:block bg-bg-secondary/40 border-r border-border-default z-20 w-56 md:w-60 lg:w-64">
+    <nav
+      aria-label="Main navigation"
+      className="relative flex-col shrink-0 overflow-hidden transition-all duration-300 ease-spring hidden md:block bg-bg-secondary/40 border-r border-border-default z-20"
+      style={{ width: collapsed ? 48 : undefined }}
+    >
       <div className="flex h-full min-h-0 flex-col w-56 md:w-60 lg:w-64 transition-all duration-300 ease-spring">
-        <div data-tauri-drag-region className="h-12 shrink-0 cursor-move" />
-
-        <div className="flex flex-col gap-1 px-2 py-3">
+        {/* Drag region + collapse toggle */}
+        <div className="flex items-center h-12 shrink-0">
+          <div data-tauri-drag-region className="flex-1 h-full cursor-move" />
           <button
-            onClick={handleNewTask}
-            className="group/button inline-flex h-8 w-full shrink-0 items-center justify-start gap-2 rounded-lg border border-transparent px-2.5 text-sm font-medium whitespace-nowrap text-foreground outline-none transition-all hover:bg-surface-hover hover:text-foreground"
+            onClick={() => setCollapsed(!collapsed)}
+            className="flex items-center justify-center w-8 h-8 mr-1 rounded-md text-text-muted hover:text-text-primary hover:bg-bg-hover transition-all"
+            title={collapsed ? "Expand positionbar" : "Collapse positionbar"}
+            aria-label={collapsed ? "Expand positionbar" : "Collapse positionbar"}
           >
-            <MessageCirclePlus className="size-4 shrink-0" />
-            <span className="truncate">New Task</span>
-            <span className="ml-auto shrink-0 text-[11px] font-normal text-foreground-subtlest">⌘N</span>
-          </button>
-
-          <button
-            onClick={handleOpenWorkspace}
-            className="group/button inline-flex h-8 w-full shrink-0 items-center justify-start gap-2 rounded-lg border border-transparent px-2.5 text-sm font-medium whitespace-nowrap text-foreground outline-none transition-all hover:bg-surface-hover hover:text-foreground"
-          >
-            <FolderOpen className="size-4 shrink-0" />
-            <span>Open Workspace</span>
+            {collapsed ? <Menu size={14} /> : <ChevronLeft size={14} />}
           </button>
         </div>
 
-        {goal && (
-          <div className="mx-2 mb-2 p-2.5 rounded-lg bg-bg-tertiary border border-border-subtle cursor-pointer hover:border-accent-primary/30 transition-fast" onClick={() => { if (!rightPanelOpen) setRightPanelOpen(true); setRightPanel("goal"); }}>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <Target size={12} className="text-accent-primary shrink-0" />
-              <span className="text-[10px] font-semibold text-text-secondary uppercase tracking-wider">Goal</span>
-              {status !== "idle" && (
-                <span
-                  className={`ml-auto text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
-                    status === "in_progress"
-                      ? "bg-success/10 text-success"
-                      : status === "paused"
-                        ? "bg-warning/10 text-warning"
-                        : "bg-accent-primary/10 text-accent-primary"
-                  }`}
-                >
-                  {status === "in_progress" ? "Active" : status === "paused" ? "Paused" : "Done"}
-                </span>
-              )}
-            </div>
-            <p className="text-[11px] text-text-primary leading-snug line-clamp-2">{goal}</p>
-          </div>
-        )}
-
-        <div className="px-2 pb-1">
-          <button
-            onClick={() => setToolsOpen(!toolsOpen)}
-            className="flex items-center gap-1.5 text-[10px] font-semibold text-text-muted uppercase tracking-wider w-full"
-          >
-            <ChevronRight size={11} className={`transition-transform ${toolsOpen ? "rotate-90" : ""}`} />
-            Tools
-          </button>
-          {toolsOpen && (
-            <div className="mt-1 space-y-0.5">
-              {NAV_ITEMS.map((item) => (
+        {collapsed ? (
+          /* ── Collapsed: icon-only nav ── */
+          <div className="flex flex-col items-center gap-1 px-1 py-2 overflow-y-auto scroll-thin">
+            <Tooltip label="New Task" position="right">
+              <button
+                onClick={handleNewTask}
+                className="flex items-center justify-center w-8 h-8 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-all"
+              >
+                <MessageCirclePlus size={16} />
+              </button>
+            </Tooltip>
+            <Tooltip label="Open Workspace" position="right">
+              <button
+                onClick={handleOpenWorkspace}
+                className="flex items-center justify-center w-8 h-8 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-all"
+              >
+                <FolderOpen size={16} />
+              </button>
+            </Tooltip>
+            <div className="w-5 h-px bg-border-subtle my-1" />
+            {NAV_ITEMS.map((item) => (
+              <Tooltip key={item.id} label={item.label} position="right">
                 <button
-                  key={item.id}
                   onClick={() => {
                     if (!rightPanelOpen) setRightPanelOpen(true);
                     setRightPanel(item.panel);
                   }}
-                  className={`relative flex items-center gap-2 w-full px-2.5 py-1.5 rounded-lg text-[12px] transition-all duration-150 ${
-                    activePanel === item.panel
-                      ? "bg-accent-primary/10 text-accent-primary font-medium shadow-[inset_0_0_0_1px_var(--idc-glow)]"
-                      : "text-text-secondary hover:text-text-primary hover:bg-bg-hover hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]"
-                  }`}
+                  className={collapsedBtnClass(item.panel)}
                 >
-                  {activePanel === item.panel && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r bg-accent-primary" />}
-                  <item.icon size={13} className="shrink-0" />
-                  <span className="truncate">{item.label}</span>
+                  <item.icon size={16} />
                 </button>
-              ))}
+              </Tooltip>
+            ))}
+            <div className="w-5 h-px bg-border-subtle my-1" />
+            <Tooltip label="Git" position="right">
               <button
                 onClick={() => {
                   if (!rightPanelOpen) setRightPanelOpen(true);
                   setRightPanel("git");
                 }}
-                className={`relative flex items-center gap-2 w-full px-2.5 py-1.5 rounded-lg text-[12px] transition-all duration-150 ${
-                  activePanel === "git"
-                    ? "bg-accent-primary/10 text-accent-primary font-medium shadow-[inset_0_0_0_1px_var(--idc-glow)]"
-                    : "text-text-secondary hover:text-text-primary hover:bg-bg-hover hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]"
-                }`}
+                className={collapsedBtnClass("git")}
               >
-                {activePanel === "git" && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r bg-accent-primary" />}
-                <GitBranch size={13} className="shrink-0" />
-                <span className="truncate">Git</span>
+                <GitBranch size={16} />
               </button>
+            </Tooltip>
+            <Tooltip label="Settings" position="right">
               <button
                 onClick={() => {
                   if (!rightPanelOpen) setRightPanelOpen(true);
                   setRightPanel("settings");
                 }}
-                className={`relative flex items-center gap-2 w-full px-2.5 py-1.5 rounded-lg text-[12px] transition-all duration-150 ${
-                  activePanel === "settings"
-                    ? "bg-accent-primary/10 text-accent-primary font-medium shadow-[inset_0_0_0_1px_var(--idc-glow)]"
-                    : "text-text-secondary hover:text-text-primary hover:bg-bg-hover hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]"
-                }`}
+                className={collapsedBtnClass("settings")}
               >
-                {activePanel === "settings" && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r bg-accent-primary" />}
-                <Settings size={13} className="shrink-0" />
-                <span className="truncate">Settings</span>
+                <Settings size={16} />
+              </button>
+            </Tooltip>
+          </div>
+        ) : (
+          /* ── Expanded: full positionbar ── */
+          <>
+            <div className="flex flex-col gap-1 px-2 py-3">
+              <button
+                onClick={handleNewTask}
+                className="group/button inline-flex h-8 w-full shrink-0 items-center justify-start gap-2 rounded-lg border border-transparent px-2.5 text-sm font-medium whitespace-nowrap text-foreground outline-none transition-all hover:bg-surface-hover hover:text-foreground"
+              >
+                <MessageCirclePlus className="size-4 shrink-0" />
+                <span className="truncate">New Task</span>
+                <span className="ml-auto shrink-0 text-[11px] font-normal text-foreground-subtlest">⌘N</span>
+              </button>
+
+              <button
+                onClick={handleOpenWorkspace}
+                className="group/button inline-flex h-8 w-full shrink-0 items-center justify-start gap-2 rounded-lg border border-transparent px-2.5 text-sm font-medium whitespace-nowrap text-foreground outline-none transition-all hover:bg-surface-hover hover:text-foreground"
+              >
+                <FolderOpen className="size-4 shrink-0" />
+                <span>Open Workspace</span>
               </button>
             </div>
-          )}
-        </div>
 
-        <div className="flex min-h-0 flex-1 flex-col gap-2 pt-2">
-          <div className="flex items-center justify-between gap-2 pl-[18px] pr-3">
-            <h3 className="min-w-0 text-[13px] font-semibold text-foreground-subtlest">Tasks</h3>
-            <span 
-              className="text-[10px] text-text-muted font-mono"
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              {pendingTasks.length}
-            </span>
-          </div>
-
-          <div className="relative flex min-h-0 flex-1">
-            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto scroll-thin">
-              <div className="flex min-h-0 flex-col gap-3 px-2">
-                {activeTask && (
-                  <div className="p-2 rounded-lg bg-accent-primary/5 border border-accent-primary/15">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <span className="flex size-4 items-center justify-center">
-                        <span className="block size-1.5 rounded-full bg-accent-primary animate-pulse" />
-                      </span>
-                      <span className="text-[10px] font-semibold text-accent-primary uppercase tracking-wider">In Progress</span>
-                    </div>
-                    <p className="text-[11px] text-text-primary leading-snug line-clamp-2 pl-5.5">{activeTask.title}</p>
-                  </div>
-                )}
-
-                <ul className="space-y-0.5">
-                  {pendingTasks
-                    .filter((t) => t.status !== "in_progress")
-                    .map((task) => (
-                      <li
-                        key={task.id}
-                        onClick={() => selectTask(task.id === selectedTaskId ? null : task.id)}
-                        className={`group/task-item flex items-center gap-2 rounded-lg py-1 pl-2.5 pr-1 transition-all cursor-pointer ${
-                          task.id === selectedTaskId
-                            ? "bg-selected text-foreground shadow-sm"
-                            : "hover:bg-surface-hover text-foreground-subtle hover:text-foreground"
-                        }`}
-                      >
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleTaskDone(task.id);
-                          }}
-                          className="shrink-0 text-text-muted hover:text-success transition-colors"
-                        >
-                          <Circle size={13} />
-                        </button>
-                        <p className="min-w-0 flex-1 truncate text-[13px]">{task.title}</p>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeTask(task.id);
-                          }}
-                          className="shrink-0 opacity-0 group-hover/task-item:opacity-100 text-text-muted hover:text-error transition-all"
-                        >
-                          <Trash2 size={11} />
-                        </button>
-                      </li>
-                    ))}
-                </ul>
-
-                {doneTasks.length > 0 && (
-                  <div>
-                    <button
-                      onClick={() => setTasksOpen(!tasksOpen)}
-                      className="flex items-center gap-1.5 text-[10px] font-medium text-text-muted hover:text-text-secondary transition-colors"
+            {goal && (
+              <div className="mx-2 mb-2 p-2.5 rounded-lg bg-bg-tertiary border border-border-subtle cursor-pointer hover:border-accent-primary/30 transition-fast" onClick={() => { if (!rightPanelOpen) setRightPanelOpen(true); setRightPanel("goal"); }}>
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <Target size={12} className="text-accent-primary shrink-0" />
+                  <span className="text-[10px] font-semibold text-text-secondary uppercase tracking-wider">Goal</span>
+                  {status !== "idle" && (
+                    <span
+                      className={`ml-auto text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
+                        status === "in_progress"
+                          ? "bg-success/10 text-success"
+                          : status === "paused"
+                            ? "bg-warning/10 text-warning"
+                            : "bg-accent-primary/10 text-accent-primary"
+                      }`}
                     >
-                      <ChevronRight size={11} className={`transition-transform ${tasksOpen ? "rotate-90" : ""}`} />
-                      Completed ({doneTasks.length})
+                      {status === "in_progress" ? "Active" : status === "paused" ? "Paused" : "Done"}
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-text-primary leading-snug line-clamp-2">{goal}</p>
+              </div>
+            )}
+
+            <div className="px-2 pb-1">
+              <button
+                onClick={() => setToolsOpen(!toolsOpen)}
+                className="flex items-center gap-1.5 text-[10px] font-semibold text-text-muted uppercase tracking-wider w-full"
+              >
+                <ChevronRight size={11} className={`transition-transform ${toolsOpen ? "rotate-90" : ""}`} />
+                Tools
+              </button>
+              {toolsOpen && (
+                <div className="mt-1 space-y-0.5">
+                  {NAV_ITEMS.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        if (!rightPanelOpen) setRightPanelOpen(true);
+                        setRightPanel(item.panel);
+                      }}
+                      className={navBtnClass(item.panel)}
+                    >
+                      {activeIndicator(item.panel)}
+                      <item.icon size={13} className="shrink-0" />
+                      <span className="truncate">{item.label}</span>
                     </button>
-                    {tasksOpen && (
-                      <ul className="mt-1 space-y-0.5">
-                        {doneTasks.map((task) => (
+                  ))}
+                  <button
+                    onClick={() => {
+                      if (!rightPanelOpen) setRightPanelOpen(true);
+                      setRightPanel("git");
+                    }}
+                    className={navBtnClass("git")}
+                  >
+                    {activeIndicator("git")}
+                    <GitBranch size={13} className="shrink-0" />
+                    <span className="truncate">Git</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (!rightPanelOpen) setRightPanelOpen(true);
+                      setRightPanel("settings");
+                    }}
+                    className={navBtnClass("settings")}
+                  >
+                    {activeIndicator("settings")}
+                    <Settings size={13} className="shrink-0" />
+                    <span className="truncate">Settings</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="flex min-h-0 flex-1 flex-col gap-2 pt-2">
+              <div className="flex items-center justify-between gap-2 pl-[18px] pr-3">
+                <h3 className="min-w-0 text-[13px] font-semibold text-foreground-subtlest">Tasks</h3>
+                <span
+                  className="text-[10px] text-text-muted font-mono"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  {pendingTasks.length}
+                </span>
+              </div>
+
+              <div className="relative flex min-h-0 flex-1">
+                <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto scroll-thin">
+                  <div className="flex min-h-0 flex-col gap-3 px-2">
+                    {activeTask && (
+                      <div className="p-2 rounded-lg bg-accent-primary/5 border border-accent-primary/15">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className="flex size-4 items-center justify-center">
+                            <span className="block size-1.5 rounded-full bg-accent-primary animate-pulse" />
+                          </span>
+                          <span className="text-[10px] font-semibold text-accent-primary uppercase tracking-wider">In Progress</span>
+                        </div>
+                        <p className="text-[11px] text-text-primary leading-snug line-clamp-2 pl-5.5">{activeTask.title}</p>
+                      </div>
+                    )}
+
+                    <ul className="space-y-0.5">
+                      {pendingTasks
+                        .filter((t) => t.status !== "in_progress")
+                        .map((task) => (
                           <li
                             key={task.id}
-                            className="flex items-center gap-2 py-1 pl-6 pr-1 text-foreground-subtle/60"
+                            onClick={() => selectTask(task.id === selectedTaskId ? null : task.id)}
+                            className={`group/task-item flex items-center gap-2 rounded-lg py-1 pl-2.5 pr-1 transition-all cursor-pointer ${
+                              task.id === selectedTaskId
+                                ? "bg-selected text-foreground shadow-sm"
+                                : "hover:bg-surface-hover text-foreground-subtle hover:text-foreground"
+                            }`}
                           >
-                            <CheckCircle2 size={13} className="text-success/60 shrink-0" />
-                            <p className="min-w-0 flex-1 truncate text-[13px] line-through">{task.title}</p>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleTaskDone(task.id);
+                              }}
+                              className="shrink-0 text-text-muted hover:text-success transition-colors"
+                            >
+                              <Circle size={13} />
+                            </button>
+                            <p className="min-w-0 flex-1 truncate text-[13px]">{task.title}</p>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeTask(task.id);
+                              }}
+                              className="shrink-0 opacity-0 group-hover/task-item:opacity-100 text-text-muted hover:text-error transition-all"
+                            >
+                              <Trash2 size={11} />
+                            </button>
                           </li>
                         ))}
-                      </ul>
+                    </ul>
+
+                    {doneTasks.length > 0 && (
+                      <div>
+                        <button
+                          onClick={() => setTasksOpen(!tasksOpen)}
+                          className="flex items-center gap-1.5 text-[10px] font-medium text-text-muted hover:text-text-secondary transition-colors"
+                        >
+                          <ChevronRight size={11} className={`transition-transform ${tasksOpen ? "rotate-90" : ""}`} />
+                          Completed ({doneTasks.length})
+                        </button>
+                        {tasksOpen && (
+                          <ul className="mt-1 space-y-0.5">
+                            {doneTasks.map((task) => (
+                              <li
+                                key={task.id}
+                                className="flex items-center gap-2 py-1 pl-6 pr-1 text-foreground-subtle/60"
+                              >
+                                <CheckCircle2 size={13} className="text-success/60 shrink-0" />
+                                <p className="min-w-0 flex-1 truncate text-[13px] line-through">{task.title}</p>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+
+                    {tasks.length === 0 && (
+                      <div className="py-8 text-center">
+                        <ListTodo size={24} className="mx-auto mb-2 text-text-muted/40" />
+                        <p className="text-[11px] text-text-muted">No tasks yet</p>
+                        <p className="text-[10px] text-text-muted/60 mt-0.5">Set a goal or add tasks manually</p>
+                      </div>
                     )}
                   </div>
-                )}
-
-                {tasks.length === 0 && (
-                  <div className="py-8 text-center">
-                    <ListTodo size={24} className="mx-auto mb-2 text-text-muted/40" />
-                    <p className="text-[11px] text-text-muted">No tasks yet</p>
-                    <p className="text-[10px] text-text-muted/60 mt-0.5">Set a goal or add tasks manually</p>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </nav>
   );
