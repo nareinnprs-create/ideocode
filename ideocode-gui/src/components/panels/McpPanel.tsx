@@ -47,7 +47,7 @@ export function McpPanel() {
   const STATUS_COLORS = { connected: "text-success", disconnected: "text-text-muted", error: "text-error" };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="MCP servers">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
           <Plug size={14} /> MCP Services
@@ -84,7 +84,7 @@ export function McpPanel() {
           servers.map((s) => (
             <div key={s.id} className="px-3 py-2 border-b border-border-subtle hover:bg-bg-elevated transition-fast group">
               <div className="flex items-center gap-2">
-                <button onClick={() => toggle(s.id)} className="shrink-0">
+                <button onClick={() => toggle(s.id)} className="shrink-0" aria-label={s.enabled ? `Disable ${s.name}` : `Enable ${s.name}`}>
                   {s.enabled ? <ToggleRight size={16} className="text-success" /> : <ToggleLeft size={16} className="text-text-muted" />}
                 </button>
                 <div className="flex-1 min-w-0">
@@ -94,7 +94,7 @@ export function McpPanel() {
                   </div>
                   <div className="text-[11px] text-text-muted font-mono truncate">{s.url}</div>
                 </div>
-                <button onClick={() => remove(s.id)} className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
+                <button onClick={() => remove(s.id)} className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast" aria-label={`Remove ${s.name}`}>
                   <Trash2 size={11} />
                 </button>
               </div>

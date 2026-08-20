@@ -108,12 +108,12 @@ export function ProjectTemplatesPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Project templates">
       <div className="flex items-center justify-between h-10 px-3 border-b border-border-subtle">
         <span className="text-xs font-medium text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
           <LayoutTemplate size={13} /> Project Templates
         </span>
-        <button onClick={() => setShowAdd(!showAdd)} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
+        <button onClick={() => setShowAdd(!showAdd)} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated" aria-label={showAdd ? "Close template form" : "Create template"}>
           <Plus size={14} />
         </button>
       </div>
@@ -121,7 +121,7 @@ export function ProjectTemplatesPanel() {
       <div className="px-3 py-2 border-b border-border-subtle">
         <div className="flex items-center gap-2 bg-bg-surface rounded border border-border-subtle px-2 py-1">
           <Search size={13} className="text-text-muted shrink-0" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search templates..." className="flex-1 bg-transparent text-text-primary text-xs outline-none placeholder:text-text-muted" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search templates..." aria-label="Search templates" className="flex-1 bg-transparent text-text-primary text-xs outline-none placeholder:text-text-muted" />
         </div>
       </div>
 

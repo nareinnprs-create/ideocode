@@ -61,7 +61,7 @@ export function GitPanel() {
   const currentBranchName = branches.find((b) => b.current)?.name ?? status.branch;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Git panel">
       {error && (
         <div className="mx-3 mt-2 p-2 rounded bg-error/10 border border-error/30">
           <div className="text-xs text-error">{error}</div>
@@ -73,6 +73,8 @@ export function GitPanel() {
         <div className="relative">
           <button
             onClick={() => setShowBranchDropdown(!showBranchDropdown)}
+            aria-label="Switch branch"
+            aria-expanded={showBranchDropdown}
             className="flex items-center gap-1.5 px-2 py-1 text-xs rounded bg-bg-elevated border border-border-subtle hover:border-accent-primary transition-fast"
           >
             <GitBranch size={13} className="text-accent-primary" />
@@ -108,16 +110,16 @@ export function GitPanel() {
         {status.behind > 0 && <span className="text-[11px] text-warning">↓{status.behind}</span>}
 
         <div className="ml-auto flex items-center gap-1">
-          <button onClick={() => pull(rootPath)} className="p-1.5 text-text-muted hover:text-text-primary rounded hover:bg-bg-elevated transition-fast" title="Pull">
+          <button onClick={() => pull(rootPath)} aria-label="Pull" className="p-1.5 text-text-muted hover:text-text-primary rounded hover:bg-bg-elevated transition-fast" title="Pull">
             <ArrowDownToLine size={13} />
           </button>
-          <button onClick={() => push(rootPath)} className="p-1.5 text-text-muted hover:text-text-primary rounded hover:bg-bg-elevated transition-fast" title="Push">
+          <button onClick={() => push(rootPath)} aria-label="Push" className="p-1.5 text-text-muted hover:text-text-primary rounded hover:bg-bg-elevated transition-fast" title="Push">
             <ArrowUpFromLine size={13} />
           </button>
-          <button onClick={() => stash(rootPath)} className="p-1.5 text-text-muted hover:text-text-primary rounded hover:bg-bg-elevated transition-fast" title="Stash">
+          <button onClick={() => stash(rootPath)} aria-label="Stash changes" className="p-1.5 text-text-muted hover:text-text-primary rounded hover:bg-bg-elevated transition-fast" title="Stash">
             <Package size={13} />
           </button>
-          <button onClick={() => { loadStatus(rootPath); loadBranches(rootPath); }} className="p-1 text-text-muted hover:text-text-primary transition-fast">
+          <button onClick={() => { loadStatus(rootPath); loadBranches(rootPath); }} aria-label="Refresh git status" className="p-1 text-text-muted hover:text-text-primary transition-fast">
             <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
           </button>
         </div>
@@ -158,6 +160,7 @@ export function GitPanel() {
             icon={<Plus size={12} className="text-success" />}
             files={status.staged}
             actionIcon={<Minus size={12} />}
+            actionLabel="Unstage file"
             onActionClick={(p) => unstageFile(rootPath, p)}
             onFileClick={(p) => { setSelectedFile(p); loadDiff(rootPath, p); }}
           />
@@ -168,6 +171,7 @@ export function GitPanel() {
             icon={<Minus size={12} className="text-warning" />}
             files={status.modified}
             actionIcon={<Plus size={12} />}
+            actionLabel="Stage file"
             onActionClick={(p) => stageFile(rootPath, p)}
             onFileClick={(p) => { setSelectedFile(p); loadDiff(rootPath, p); }}
           />
@@ -178,6 +182,7 @@ export function GitPanel() {
             icon={<AlertTriangle size={12} className="text-info" />}
             files={status.untracked}
             actionIcon={<Plus size={12} />}
+            actionLabel="Stage file"
             onActionClick={(p) => stageFile(rootPath, p)}
             onFileClick={(p) => { setSelectedFile(p); loadDiff(rootPath, p); }}
           />
@@ -188,6 +193,7 @@ export function GitPanel() {
             icon={<AlertTriangle size={12} className="text-error" />}
             files={status.conflicted}
             actionIcon={<Plus size={12} />}
+            actionLabel="Stage file"
             onActionClick={(p) => stageFile(rootPath, p)}
             onFileClick={(p) => { setSelectedFile(p); loadDiff(rootPath, p); }}
           />
@@ -208,11 +214,12 @@ export function GitPanel() {
             placeholder={amend ? "Amend message..." : "Commit message..."}
             className="flex-1 bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary"
           />
-          <button
-            onClick={handleCommit}
-            disabled={!commitMsg.trim() || totalChanges === 0}
-            className="px-2 py-1.5 rounded bg-accent-primary text-white text-xs hover:bg-accent-hover disabled:opacity-30 disabled:cursor-not-allowed transition-fast"
-          >
+            <button
+              onClick={handleCommit}
+              disabled={!commitMsg.trim() || totalChanges === 0}
+              aria-label="Commit changes"
+              className="px-2 py-1.5 rounded bg-accent-primary text-white text-xs hover:bg-accent-hover disabled:opacity-30 disabled:cursor-not-allowed transition-fast"
+            >
             <GitCommit size={14} />
           </button>
         </div>
@@ -228,10 +235,10 @@ export function GitPanel() {
 }
 
 function FileSection({
-  title, icon, files, actionIcon, onActionClick, onFileClick,
+  title, icon, files, actionIcon, actionLabel, onActionClick, onFileClick,
 }: {
   title: string; icon: React.ReactNode; files: { path: string; status: string }[];
-  actionIcon?: React.ReactNode; onActionClick?: (path: string) => void; onFileClick: (path: string) => void;
+  actionIcon?: React.ReactNode; actionLabel?: string; onActionClick?: (path: string) => void; onFileClick: (path: string) => void;
 }) {
   return (
     <div className="py-1">
@@ -245,6 +252,7 @@ function FileSection({
           key={f.path}
           file={f}
           actionIcon={actionIcon}
+          actionLabel={actionLabel}
           onActionClick={onActionClick}
           onFileClick={onFileClick}
         />
@@ -254,10 +262,11 @@ function FileSection({
 }
 
 function FileEntry({
-  file, actionIcon, onActionClick, onFileClick,
+  file, actionIcon, actionLabel, onActionClick, onFileClick,
 }: {
   file: { path: string; status: string };
   actionIcon?: React.ReactNode;
+  actionLabel?: string;
   onActionClick?: (path: string) => void;
   onFileClick: (path: string) => void;
 }) {
@@ -277,6 +286,7 @@ function FileEntry({
         {actionIcon && onActionClick && (
           <button
             onClick={(e) => { e.stopPropagation(); onActionClick(file.path); }}
+            aria-label={actionLabel}
             className="p-1 rounded text-text-muted hover:text-text-primary hover:bg-bg-hover opacity-0 group-hover:opacity-100 transition-fast"
           >
             {actionIcon}

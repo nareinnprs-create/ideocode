@@ -78,13 +78,13 @@ export function CodeSnippetsPanel() {
   const copyCode = (c: string) => navigator.clipboard.writeText(c);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Code snippets">
       <div className="flex items-center justify-between h-10 px-3 border-b border-border-subtle">
         <span className="text-xs font-medium text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
           <FileCode2 size={13} /> Code Snippets
         </span>
         <div className="flex items-center gap-1">
-          <button onClick={() => { resetForm(); setShowAdd(!showAdd); }} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
+          <button onClick={() => { resetForm(); setShowAdd(!showAdd); }} aria-label="Add snippet" aria-expanded={showAdd} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
             <Plus size={14} />
           </button>
         </div>
@@ -93,21 +93,21 @@ export function CodeSnippetsPanel() {
       <div className="px-3 py-2 border-b border-border-subtle">
         <div className="flex items-center gap-2 bg-bg-surface rounded border border-border-subtle px-2 py-1">
           <Search size={13} className="text-text-muted shrink-0" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search snippets..." className="flex-1 bg-transparent text-text-primary text-xs outline-none placeholder:text-text-muted" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search snippets..." aria-label="Search snippets" className="flex-1 bg-transparent text-text-primary text-xs outline-none placeholder:text-text-muted" />
         </div>
       </div>
 
       {showAdd && (
         <div className="mx-3 mt-2 p-3 rounded border border-border-subtle bg-bg-surface space-y-2">
-          <input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="Snippet name" className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
-          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
+          <input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="Snippet name" aria-label="Snippet name" className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
+          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" aria-label="Snippet description" className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
           <div className="flex gap-2">
             <select value={lang} onChange={(e) => setLang(e.target.value)} className="bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle outline-none focus:border-accent-primary">
               {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
             </select>
-            <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Tags (comma-separated)" className="flex-1 bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
+            <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Tags (comma-separated)" aria-label="Snippet tags" className="flex-1 bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
           </div>
-          <textarea value={code} onChange={(e) => setCode(e.target.value)} placeholder="Paste your code..." rows={6} className="w-full bg-bg-primary text-text-primary text-xs font-mono px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary resize-y" />
+          <textarea value={code} onChange={(e) => setCode(e.target.value)} placeholder="Paste your code..." rows={6} aria-label="Snippet code" className="w-full bg-bg-primary text-text-primary text-xs font-mono px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary resize-y" />
           <div className="flex justify-end gap-1">
             <button onClick={resetForm} className="px-2 py-1 text-[11px] rounded bg-bg-elevated text-text-secondary transition-fast hover:bg-bg-hover">Cancel</button>
             <button onClick={editingId ? handleUpdate : handleAdd} disabled={!name.trim() || !code.trim()} className="px-2 py-1 text-[11px] rounded bg-accent-primary text-white disabled:opacity-50 transition-fast hover:bg-accent-hover">{editingId ? "Update" : "Save"}</button>
@@ -138,9 +138,9 @@ export function CodeSnippetsPanel() {
                   )}
                 </div>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-fast">
-                  <button onClick={() => copyCode(s.code)} className="p-1 text-text-muted hover:text-accent-primary transition-fast" title="Copy"><Copy size={12} /></button>
-                  <button onClick={() => startEdit(s)} className="p-1 text-text-muted hover:text-text-primary transition-fast" title="Edit"><Edit3 size={12} /></button>
-                  <button onClick={() => remove(s.id)} className="p-1 text-text-muted hover:text-error transition-fast" title="Delete"><Trash2 size={12} /></button>
+                  <button onClick={() => copyCode(s.code)} aria-label="Copy snippet" className="p-1 text-text-muted hover:text-accent-primary transition-fast" title="Copy"><Copy size={12} /></button>
+                  <button onClick={() => startEdit(s)} aria-label="Edit snippet" className="p-1 text-text-muted hover:text-text-primary transition-fast" title="Edit"><Edit3 size={12} /></button>
+                  <button onClick={() => remove(s.id)} aria-label="Delete snippet" className="p-1 text-text-muted hover:text-error transition-fast" title="Delete"><Trash2 size={12} /></button>
                 </div>
               </div>
             </div>

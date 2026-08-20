@@ -30,20 +30,20 @@ export function TaskManagementPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full text-text-primary">
+    <div className="flex flex-col h-full text-text-primary" role="region" aria-label="Task management">
       <div className="flex items-center justify-between px-3 py-2 border-b border-border-default">
         <h3 className="text-sm font-semibold">Tasks</h3>
         <div className="flex gap-1">
-          <button onClick={() => setShowCreate(!showCreate)} className="text-xs px-2 py-1 rounded bg-accent-primary text-white transition-fast">+ New</button>
+          <button onClick={() => setShowCreate(!showCreate)} aria-expanded={showCreate} aria-label="Add task" className="text-xs px-2 py-1 rounded bg-accent-primary text-white transition-fast">+ New</button>
           <button onClick={clearFinished} className="text-xs px-2 py-1 rounded border border-border-subtle text-text-muted hover:bg-bg-hover transition-fast">Clear done</button>
         </div>
       </div>
 
       {showCreate && (
         <div className="p-3 border-b border-border-default space-y-2">
-          <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Task name" className="w-full px-2 py-1 text-xs bg-bg-secondary border border-border-subtle rounded text-text-primary placeholder:text-text-muted" />
-          <input value={newCommand} onChange={e => setNewCommand(e.target.value)} placeholder="Command (e.g. cargo build)" className="w-full px-2 py-1 text-xs bg-bg-secondary border border-border-subtle rounded text-text-primary placeholder:text-text-muted" />
-          <input value={newCwd} onChange={e => setNewCwd(e.target.value)} placeholder="Working directory" className="w-full px-2 py-1 text-xs bg-bg-secondary border border-border-subtle rounded text-text-primary placeholder:text-text-muted" />
+          <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Task name" aria-label="Task name" className="w-full px-2 py-1 text-xs bg-bg-secondary border border-border-subtle rounded text-text-primary placeholder:text-text-muted" />
+          <input value={newCommand} onChange={e => setNewCommand(e.target.value)} placeholder="Command (e.g. cargo build)" aria-label="Task command" className="w-full px-2 py-1 text-xs bg-bg-secondary border border-border-subtle rounded text-text-primary placeholder:text-text-muted" />
+          <input value={newCwd} onChange={e => setNewCwd(e.target.value)} placeholder="Working directory" aria-label="Working directory" className="w-full px-2 py-1 text-xs bg-bg-secondary border border-border-subtle rounded text-text-primary placeholder:text-text-muted" />
           <button onClick={handleCreate} className="w-full py-1 text-xs bg-accent-primary text-white rounded font-medium transition-fast hover:bg-accent-hover">Create & Run</button>
         </div>
       )}
@@ -58,10 +58,11 @@ export function TaskManagementPanel() {
         )}
         {tasks.map(task => (
           <div key={task.id} className="border-b border-border-default">
-            <div
-              className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-bg-hover transition-fast"
-              onClick={() => setExpandedId(expandedId === task.id ? null : task.id)}
-            >
+              <div
+                className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-bg-hover transition-fast"
+                onClick={() => setExpandedId(expandedId === task.id ? null : task.id)}
+                aria-expanded={expandedId === task.id}
+              >
               <span>{statusIcon(task.status)}</span>
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-medium truncate">{task.name}</div>
@@ -79,7 +80,7 @@ export function TaskManagementPanel() {
                 {task.status === 'running' && (
                   <button onClick={(e) => { e.stopPropagation(); cancel(task.id); }} className="text-[10px] px-1.5 py-0.5 rounded bg-error/20 text-error font-medium transition-fast hover:bg-error/30">Cancel</button>
                 )}
-                <button onClick={(e) => { e.stopPropagation(); remove(task.id); }} className="text-[10px] px-1.5 py-0.5 rounded border border-border-subtle text-text-muted hover:bg-bg-hover transition-fast">×</button>
+                <button onClick={(e) => { e.stopPropagation(); remove(task.id); }} aria-label="Remove task" className="text-[10px] px-1.5 py-0.5 rounded border border-border-subtle text-text-muted hover:bg-bg-hover transition-fast">×</button>
               </div>
             </div>
             {expandedId === task.id && task.output && (

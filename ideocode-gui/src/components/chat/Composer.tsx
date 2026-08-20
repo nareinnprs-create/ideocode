@@ -388,13 +388,14 @@ export function Composer() {
 
       {/* @ mention palette */}
       {menuOpen === "mention" && (
-        <div className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default glass-strong overflow-hidden animate-scale-in">
+        <div className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default glass-strong overflow-hidden animate-scale-in" role="listbox" aria-label="Mention suggestions">
           <div className="px-3 py-1.5 text-[11px] uppercase tracking-wider text-text-muted border-b border-border-subtle">
             {mentionCandidates.length === 0 ? "No matching files" : (mentionQuery ? "Codebase files" : "Open files")}
           </div>
           {mentionCandidates.map((path, i) => (
             <button
               key={path}
+              role="option"
               onClick={() => insertMention(path)}
               onMouseEnter={() => setActiveIdx(i)}
               className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-fast ${

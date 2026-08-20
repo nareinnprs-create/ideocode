@@ -127,6 +127,7 @@ export function Sidebar() {
             <Tooltip label="New Task" position="right">
               <button
                 onClick={handleNewTask}
+                aria-label="New Task"
                 className="flex items-center justify-center w-8 h-8 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-all"
               >
                 <MessageCirclePlus size={16} />
@@ -135,6 +136,7 @@ export function Sidebar() {
             <Tooltip label="Open Workspace" position="right">
               <button
                 onClick={handleOpenWorkspace}
+                aria-label="Open Workspace"
                 className="flex items-center justify-center w-8 h-8 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-all"
               >
                 <FolderOpen size={16} />
@@ -148,6 +150,7 @@ export function Sidebar() {
                     if (!rightPanelOpen) setRightPanelOpen(true);
                     setRightPanel(item.panel);
                   }}
+                  aria-label={item.label}
                   className={collapsedBtnClass(item.panel)}
                 >
                   <item.icon size={16} />
@@ -161,6 +164,7 @@ export function Sidebar() {
                   if (!rightPanelOpen) setRightPanelOpen(true);
                   setRightPanel("git");
                 }}
+                aria-label="Git"
                 className={collapsedBtnClass("git")}
               >
                 <GitBranch size={16} />
@@ -172,6 +176,7 @@ export function Sidebar() {
                   if (!rightPanelOpen) setRightPanelOpen(true);
                   setRightPanel("settings");
                 }}
+                aria-label="Settings"
                 className={collapsedBtnClass("settings")}
               >
                 <Settings size={16} />
@@ -226,6 +231,7 @@ export function Sidebar() {
             <div className="px-2 pb-1">
               <button
                 onClick={() => setToolsOpen(!toolsOpen)}
+                aria-expanded={toolsOpen}
                 className="flex items-center gap-1.5 text-[10px] font-semibold text-text-muted uppercase tracking-wider w-full"
               >
                 <ChevronRight size={11} className={`transition-transform ${toolsOpen ? "rotate-90" : ""}`} />
@@ -318,6 +324,7 @@ export function Sidebar() {
                                 e.stopPropagation();
                                 toggleTaskDone(task.id);
                               }}
+                              aria-label="Mark task done"
                               className="shrink-0 text-text-muted hover:text-success transition-colors"
                             >
                               <Circle size={13} />
@@ -328,6 +335,7 @@ export function Sidebar() {
                                 e.stopPropagation();
                                 removeTask(task.id);
                               }}
+                              aria-label="Delete task"
                               className="shrink-0 opacity-0 group-hover/task-item:opacity-100 text-text-muted hover:text-error transition-all"
                             >
                               <Trash2 size={11} />
@@ -340,6 +348,7 @@ export function Sidebar() {
                       <div>
                         <button
                           onClick={() => setTasksOpen(!tasksOpen)}
+                          aria-expanded={tasksOpen}
                           className="flex items-center gap-1.5 text-[10px] font-medium text-text-muted hover:text-text-secondary transition-colors"
                         >
                           <ChevronRight size={11} className={`transition-transform ${tasksOpen ? "rotate-90" : ""}`} />

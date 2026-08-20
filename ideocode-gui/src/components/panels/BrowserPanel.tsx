@@ -72,7 +72,7 @@ export function BrowserPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Browser panel">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button
           onClick={() => setRightPanelOpen(false)}
@@ -84,6 +84,7 @@ export function BrowserPanel() {
         <div className="flex gap-1">
           <button
             onClick={load}
+            aria-label="Refresh page"
             className="p-1.5 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
             title="Refresh"
           >
@@ -91,6 +92,7 @@ export function BrowserPanel() {
           </button>
           <button
             onClick={handleClear}
+            aria-label="Clear browser context"
             className="p-1.5 text-text-muted hover:text-error transition-fast rounded hover:bg-bg-elevated"
             title="Clear"
           >
@@ -166,6 +168,7 @@ export function BrowserPanel() {
               href={ctx.active_tab.url}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Open in external browser"
               className="p-1 text-text-muted hover:text-text-primary transition-fast"
             >
               <ExternalLink size={12} />
@@ -206,6 +209,7 @@ export function BrowserPanel() {
           </span>
           <button
             onClick={handleCopy}
+            aria-label="Copy URL"
             className="p-1 text-text-muted hover:text-text-primary transition-fast"
             title="Copy"
           >

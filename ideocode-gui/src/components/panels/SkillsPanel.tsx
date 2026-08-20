@@ -32,12 +32,12 @@ export function SkillsPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Skills panel">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
           <WandSparkles size={14} /> Skills
         </button>
-        <button onClick={() => setShowAdd(!showAdd)} className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
+        <button onClick={() => setShowAdd(!showAdd)} aria-label="Add skill" aria-expanded={showAdd} className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
           + Add
         </button>
       </div>
@@ -77,7 +77,7 @@ export function SkillsPanel() {
                 )}
                 <div className="text-[10px] text-text-muted mt-0.5">{s.scope}</div>
               </div>
-              <button onClick={() => removeSkill(s.id)} className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
+              <button onClick={() => removeSkill(s.id)} aria-label="Delete skill" className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
                 <Trash2 size={11} />
               </button>
             </div>

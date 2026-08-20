@@ -87,13 +87,14 @@ export function SettingsPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Settings">
       {/* Tabs */}
       <div className="flex gap-px px-2 pt-2 border-b border-border-subtle bg-bg-tertiary">
         {(["appearance", "chat", "editor", "providers", "terminal", "shortcuts", "mcp", "rules", "privacy", "about"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
+            aria-selected={tab === t}
             className={`px-3 py-1.5 text-[11px] font-medium rounded-t transition-fast uppercase tracking-wider
               ${tab === t
                 ? "text-accent-primary bg-bg-secondary border-b-2 border-accent-primary"
@@ -501,6 +502,8 @@ function ToggleRow({
     <div className="flex items-start gap-3">
       <button
         onClick={() => onChange(!checked)}
+        aria-label={`${label} toggle`}
+        aria-pressed={checked}
         className={`relative shrink-0 rounded-full transition-fast mt-0.5
           ${checked ? "bg-accent-primary" : "bg-bg-elevated border border-border-subtle"}`}
         style={{ height: "18px", width: "32px" }}
@@ -546,6 +549,7 @@ function ProvidersTab({
                 value={settings.api_keys?.[provider] || ""}
                 onChange={(e) => handleKeyChange(provider, e.target.value)}
                 placeholder={`sk-...`}
+                aria-label={`${provider} API key`}
                 className="w-full bg-bg-primary border border-border-subtle rounded px-2 py-1.5 text-xs text-text-primary outline-none font-mono"
               />
             </div>
@@ -573,6 +577,7 @@ function RulesTab({
           value={settings.custom_instructions || ""}
           onChange={(e) => onChange({ custom_instructions: e.target.value })}
           placeholder="e.g. Always use TypeScript and standard format. Keep answers concise."
+          aria-label="Custom instructions"
           className="w-full h-48 bg-bg-primary border border-border-subtle rounded px-2 py-2 text-xs text-text-primary outline-none resize-none font-sans"
         />
       </Section>

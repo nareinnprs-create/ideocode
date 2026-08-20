@@ -61,12 +61,12 @@ export function HooksPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Hooks panel">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
           <Anchor size={14} /> Hooks
         </button>
-        <button onClick={() => setShowAdd(!showAdd)} className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
+        <button onClick={() => setShowAdd(!showAdd)} aria-label="Add hook" aria-expanded={showAdd} className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
           <Plus size={14} /> Add
         </button>
       </div>
@@ -107,7 +107,7 @@ export function HooksPanel() {
                   {h.matcher.patterns.length > 0 && ` · patterns: ${h.matcher.patterns.join(", ")}`}
                 </div>
               </div>
-              <button onClick={() => removeHook(h.id)} className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
+              <button onClick={() => removeHook(h.id)} aria-label="Delete hook" className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
                 <Trash2 size={11} />
               </button>
             </div>

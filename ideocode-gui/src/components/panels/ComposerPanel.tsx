@@ -62,7 +62,7 @@ export function ComposerPanel() {
 
   if (openFiles.length === 0) {
     return (
-      <div className="flex flex-col h-full bg-bg-primary">
+      <div className="flex flex-col h-full bg-bg-primary" role="region" aria-label="Composer">
         <div className="p-3 border-b border-border-subtle bg-bg-secondary/50 flex flex-col gap-2">
           <h3 className="text-[13px] font-medium text-text-primary flex items-center gap-2">
             <LayoutTemplate size={14} className="text-accent-primary" />
@@ -86,7 +86,7 @@ export function ComposerPanel() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-bg-primary">
+    <div className="flex flex-col h-full bg-bg-primary" role="region" aria-label="Composer">
       <div className="p-3 border-b border-border-subtle bg-bg-secondary/50 flex flex-col gap-2">
         <h3 className="text-[13px] font-medium text-text-primary flex items-center gap-2">
           <LayoutTemplate size={14} className="text-accent-primary" />

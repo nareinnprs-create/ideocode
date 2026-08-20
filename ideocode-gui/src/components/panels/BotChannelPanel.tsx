@@ -19,7 +19,7 @@ export function BotChannelPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Bot channel panel">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
           <Radio size={14} /> Bot Channel
@@ -53,7 +53,7 @@ export function BotChannelPanel() {
         </div>
         <div className="flex items-center justify-between p-2 rounded bg-bg-tertiary border border-border-subtle">
           <span className="text-xs text-text-primary">Enable bot</span>
-          <button onClick={() => update({ enabled: !config.enabled })}>
+          <button onClick={() => update({ enabled: !config.enabled })} aria-label={config.enabled ? "Disable bot" : "Enable bot"} aria-expanded={config.enabled}>
             {config.enabled ? <ToggleRight size={20} className="text-success" /> : <ToggleLeft size={20} className="text-text-muted" />}
           </button>
         </div>

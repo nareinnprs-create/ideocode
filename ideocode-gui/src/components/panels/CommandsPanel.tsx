@@ -43,7 +43,7 @@ export function CommandsPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Commands">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
           <Terminal size={14} /> Commands
@@ -55,12 +55,16 @@ export function CommandsPanel() {
       {showAdd && (
         <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle space-y-1.5">
           <input type="text" placeholder="Command name" value={name} onChange={(e) => setName(e.target.value)}
+            aria-label="Command name"
             className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary" />
           <input type="text" placeholder="Description" value={desc} onChange={(e) => setDesc(e.target.value)}
+            aria-label="Command description"
             className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary" />
           <input type="text" placeholder="Shell command" value={cmd} onChange={(e) => setCmd(e.target.value)}
+            aria-label="Shell command"
             className="w-full p-1.5 text-xs font-mono bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary" />
           <input type="text" placeholder="Keyboard shortcut (optional)" value={shortcut} onChange={(e) => setShortcut(e.target.value)}
+            aria-label="Keyboard shortcut"
             className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary" />
           <button onClick={handleAdd} disabled={!name.trim() || !cmd.trim()}
             className="w-full px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast">
@@ -82,7 +86,7 @@ export function CommandsPanel() {
               useAppStore.getState().setBottomPanel("terminal");
               useAppStore.getState().setBottomPanelOpen(true);
               setRunTarget(null);
-            }} className="px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover transition-fast">Run</button>
+            }} aria-label="Run command" className="px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover transition-fast">Run</button>
           </div>
         </div>
       </Modal>
@@ -101,7 +105,7 @@ export function CommandsPanel() {
                 <div className="text-[11px] text-text-muted font-mono truncate">{c.command}</div>
               </div>
               {c.shortcut && <span className="text-[10px] font-mono text-text-muted bg-bg-tertiary px-1.5 py-0.5 rounded">{c.shortcut}</span>}
-              <button onClick={() => remove(c.id)} className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
+              <button onClick={() => remove(c.id)} aria-label="Delete command" className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
                 <Trash2 size={11} />
               </button>
             </div>

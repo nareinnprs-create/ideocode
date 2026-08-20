@@ -94,13 +94,14 @@ export function TimelinePanel() {
   const clearTimeline = () => setEntries([]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Timeline">
       <div className="px-3 py-2 border-b border-border-subtle flex items-center gap-2">
         <Clock size={14} className="text-accent-primary" />
         <span className="text-xs font-semibold text-text-primary">Timeline</span>
         <div className="flex-1" />
         <button
           onClick={clearTimeline}
+          aria-label="Clear timeline"
           className="p-1 rounded hover:bg-bg-hover text-text-muted hover:text-text-primary transition-colors"
           title="Clear Timeline"
         >

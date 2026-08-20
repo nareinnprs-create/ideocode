@@ -53,12 +53,13 @@ export function BuildPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Build panel">
       {/* Toolbar */}
       <div className="flex items-center gap-2 px-3 py-2 border-b border-border-subtle">
         <button
           onClick={handleBuild}
           disabled={loading}
+          aria-label="Run build"
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-fast
             bg-accent-primary text-white hover:bg-accent-hover disabled:opacity-40"
         >
@@ -72,6 +73,7 @@ export function BuildPanel() {
         <button
           onClick={handleCheck}
           disabled={loading}
+          aria-label="Run cargo check"
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-fast
             bg-bg-elevated text-text-primary hover:bg-bg-hover disabled:opacity-40 border border-border-subtle"
         >

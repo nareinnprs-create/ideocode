@@ -43,12 +43,12 @@ export function RemoteDevPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Remote dev panel">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
           <Monitor size={14} /> Remote Dev
         </button>
-        <button onClick={() => setShowAdd(!showAdd)} className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
+        <button onClick={() => setShowAdd(!showAdd)} aria-label="Add remote host" aria-expanded={showAdd} className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
           <Plus size={14} /> Add
         </button>
       </div>
@@ -101,7 +101,7 @@ export function RemoteDevPanel() {
                   {h.status === "connecting" ? "Connecting..." : "Connect"}
                 </button>
               )}
-              <button onClick={() => removeHost(h.id)} className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
+              <button onClick={() => removeHost(h.id)} aria-label="Remove remote host" className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
                 <Trash2 size={11} />
               </button>
             </div>

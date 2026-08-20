@@ -213,7 +213,7 @@ export function CommandPalette() {
         )}
 
         {/* Results */}
-        <div ref={resultsRef} className="max-h-[320px] overflow-y-auto py-1 scroll-thin">
+        <div ref={resultsRef} className="max-h-[320px] overflow-y-auto py-1 scroll-thin" role="listbox" aria-label="Commands">
           {results.length === 0 ? (
             <div className="px-4 py-6 text-center text-text-muted text-sm">
               No commands found
@@ -241,6 +241,8 @@ export function CommandPalette() {
                             <button
                               key={cmd.id}
                               data-idx={idx}
+                              role="option"
+                              aria-selected={idx === selectedIdx}
                               onClick={() => executeCommand(cmd)}
                               onMouseEnter={() => setSelectedIdx(idx)}
                               className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast

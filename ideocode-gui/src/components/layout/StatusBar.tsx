@@ -54,11 +54,13 @@ export function StatusBar() {
   }, [busy]);
 
   const engineState =
-    gateway?.online
-      ? { label: "Engine online", dot: "bg-success", text: "text-success", pulse: false }
-      : gateway?.installing
-        ? { label: "Engine installing", dot: "bg-warning", text: "text-warning", pulse: true }
-        : { label: "Engine starting", dot: "bg-accent-primary", text: "text-accent-primary", pulse: true };
+    gateway === null
+      ? { label: "Offline", dot: "bg-error", text: "text-error", pulse: true }
+      : gateway?.online
+        ? { label: "Engine online", dot: "bg-success", text: "text-success", pulse: false }
+        : gateway?.installing
+          ? { label: "Engine installing", dot: "bg-warning", text: "text-warning", pulse: true }
+          : { label: "Engine starting", dot: "bg-accent-primary", text: "text-accent-primary", pulse: true };
 
   const gitChanges = gitStatus
     ? gitStatus.staged.length + gitStatus.modified.length + gitStatus.untracked.length + gitStatus.conflicted.length
@@ -116,7 +118,7 @@ export function StatusBar() {
             <button
               onClick={() => useAppStore.getState().setRightPanel("git")}
               className="flex items-center gap-1.5 text-text-secondary hover:text-text-primary transition-fast"
-              title="Open Git panel"
+              aria-label="Open Git panel"
             >
               <GitBranch size={12} className="text-info" />
               <span className="font-medium max-w-40 truncate">{gitStatus.branch}</span>

@@ -176,7 +176,7 @@ export function MemoryPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Memory panel">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button
           onClick={() => setRightPanelOpen(false)}
@@ -203,6 +203,7 @@ export function MemoryPanel() {
             placeholder="Search memories..."
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
+            aria-label="Search memories"
             className="w-full pl-7 pr-2 py-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-primary"
           />
         </div>
@@ -215,6 +216,7 @@ export function MemoryPanel() {
             placeholder="What do you want to remember?"
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            aria-label="Memory content"
             className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary placeholder-text-muted resize-none h-20 focus:outline-none focus:border-accent-primary"
           />
           <input
@@ -222,6 +224,7 @@ export function MemoryPanel() {
             placeholder="Tags (comma-separated)"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
+            aria-label="Memory tags"
             className="w-full mt-1 p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-primary"
           />
           <div className="flex items-center gap-2 mt-1">

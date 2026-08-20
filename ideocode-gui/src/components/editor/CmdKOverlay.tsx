@@ -51,6 +51,7 @@ export function CmdKOverlay({ isOpen, onClose, position, onSubmit }: CmdKOverlay
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Generate or edit code..."
+          aria-label="AI command input"
           className="flex-1 bg-transparent border-none outline-none text-sm font-sans text-text-primary placeholder:text-text-muted"
           onKeyDown={(e) => {
             if (e.key === "Escape") {
@@ -62,6 +63,7 @@ export function CmdKOverlay({ isOpen, onClose, position, onSubmit }: CmdKOverlay
         <button
           type="submit"
           disabled={!prompt.trim() || loading}
+          aria-label="Send command"
           className="w-6 h-6 rounded-md bg-accent-primary/20 text-accent-primary hover:bg-accent-primary/30 flex items-center justify-center shrink-0 disabled:opacity-50 transition-fast"
         >
           {loading ? <Loader2 size={12} className="animate-spin" /> : <CornerDownLeft size={12} />}

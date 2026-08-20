@@ -77,7 +77,7 @@ export function ProviderPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Provider settings">
       {/* Back button */}
       <div className="px-1 pt-1">
         <button
@@ -170,7 +170,8 @@ export function ProviderPanel() {
             <button
               onClick={() => setLogsOpen(!logsOpen)}
               className="p-1 rounded hover:bg-bg-tertiary text-text-muted hover:text-text-primary transition-fast"
-              title="View Engine Logs"
+              aria-label="Toggle engine logs"
+              aria-expanded={logsOpen}
             >
               <Terminal size={14} />
             </button>
@@ -200,6 +201,7 @@ export function ProviderPanel() {
               value={apiKeyInput}
               onChange={(e) => setApiKeyInput(e.target.value)}
               placeholder="Enter API key..."
+              aria-label="API key"
               className="w-full pr-7 bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary"
             />
             <button

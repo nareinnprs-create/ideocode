@@ -250,19 +250,19 @@ export function WikiPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Wiki panel">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
           <BookOpen size={14} /> Wiki
         </button>
         <div className="flex items-center gap-1">
-          <button onClick={handleNew} className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
+          <button onClick={handleNew} aria-label="New wiki page" className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
             <Plus size={14} /> New
           </button>
-          <button onClick={handleExport} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
+          <button onClick={handleExport} aria-label="Export wiki" className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
             <Download size={14} /> Export
           </button>
-          <button onClick={() => importRef.current?.click()} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
+          <button onClick={() => importRef.current?.click()} aria-label="Import wiki" className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
             <Upload size={14} /> Import
           </button>
           <input ref={importRef} type="file" accept=".json" onChange={handleImport} className="hidden" />
@@ -291,6 +291,7 @@ export function WikiPanel() {
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-medium text-text-primary">{page.title}</span>
                     <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(page.id); }}
+                      aria-label="Delete wiki page"
                       className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
                       <Trash2 size={11} />
                     </button>
@@ -309,7 +310,7 @@ export function WikiPanel() {
       ) : (
         <div className="flex-1 flex flex-col min-h-0">
           <div className="px-3 py-2 border-b border-border-subtle flex items-center gap-2">
-            <button onClick={() => { setSelectedId(null); setEditing(false); }} className="text-text-muted hover:text-text-primary transition-fast">
+            <button onClick={() => { setSelectedId(null); setEditing(false); }} aria-label="Close page" className="text-text-muted hover:text-text-primary transition-fast">
               <X size={14} />
             </button>
             {editing ? (
@@ -319,9 +320,9 @@ export function WikiPanel() {
                 <span className="flex-1 text-xs font-medium text-text-primary">{selected?.title}</span>
             )}
             {editing ? (
-              <button onClick={handleSave} className="p-1 text-success hover:bg-success/10 rounded transition-fast"><Save size={14} /></button>
+              <button onClick={handleSave} aria-label="Save page" className="p-1 text-success hover:bg-success/10 rounded transition-fast"><Save size={14} /></button>
             ) : (
-              <button onClick={startEdit} className="p-1 text-text-muted hover:text-text-primary hover:bg-bg-hover rounded transition-fast"><Edit3 size={14} /></button>
+              <button onClick={startEdit} aria-label="Edit page" className="p-1 text-text-muted hover:text-text-primary hover:bg-bg-hover rounded transition-fast"><Edit3 size={14} /></button>
             )}
           </div>
           <div className="flex-1 overflow-y-auto p-3">

@@ -76,6 +76,8 @@ function EditCard({ edit }: { edit: FileEdit }) {
         <button
           onClick={() => setExpanded(!expanded)}
           className="text-text-muted hover:text-text-primary shrink-0"
+          aria-expanded={expanded}
+          aria-label={expanded ? "Collapse diff" : "Expand diff"}
         >
           {expanded ? (
             <ChevronDown className="w-3.5 h-3.5" />
@@ -130,7 +132,7 @@ export function EditReviewPanel() {
   const pending = edits.filter((e) => e.status === "pending");
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Edit review">
       <div className="flex items-center gap-2 px-3 h-9 border-b border-border-subtle bg-bg-secondary shrink-0">
         <RotateCcw className="w-3.5 h-3.5 text-text-muted" />
         <span className="text-xs font-medium text-text-primary">

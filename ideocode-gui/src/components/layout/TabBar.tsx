@@ -105,6 +105,7 @@ export function TabBar() {
       {contextMenu && (
         <div
           className="fixed z-50 min-w-[180px] py-1 rounded-lg border border-border-subtle bg-bg-secondary shadow-xl animate-fade-in"
+          role="menu"
           style={{ left: contextMenu.x, top: contextMenu.y }}
         >
           <ContextMenuItem
@@ -148,6 +149,7 @@ function ContextMenuItem({
 }) {
   return (
     <button
+      role="menuitem"
       onClick={(e) => {
         e.stopPropagation();
         if (!disabled) onClick();

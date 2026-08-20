@@ -83,7 +83,7 @@ export function SearchPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Search panel">
       {/* Header */}
       <div className="px-1 pt-1 flex items-center justify-between">
         <button
@@ -94,9 +94,10 @@ export function SearchPanel() {
           Back
         </button>
         <div className="flex gap-0.5">
-          <button
-            onClick={() => { setMode("filename"); setResults([]); setSearched(false); }}
-            className={`px-2 py-1 text-[11px] rounded transition-fast ${
+            <button
+              onClick={() => { setMode("filename"); setResults([]); setSearched(false); }}
+              aria-label="Search by filename"
+              className={`px-2 py-1 text-[11px] rounded transition-fast ${
               mode === "filename"
                 ? "bg-accent-primary text-white"
                 : "text-text-muted hover:text-text-primary"
@@ -104,9 +105,10 @@ export function SearchPanel() {
           >
             Files
           </button>
-          <button
-            onClick={() => { setMode("content"); setResults([]); setSearched(false); }}
-            className={`px-2 py-1 text-[11px] rounded transition-fast ${
+            <button
+              onClick={() => { setMode("content"); setResults([]); setSearched(false); }}
+              aria-label="Search file contents"
+              className={`px-2 py-1 text-[11px] rounded transition-fast ${
               mode === "content"
                 ? "bg-accent-primary text-white"
                 : "text-text-muted hover:text-text-primary"
@@ -114,9 +116,10 @@ export function SearchPanel() {
           >
             Content
           </button>
-          <button
-            onClick={() => { setMode("semantic"); setResults([]); setSearched(false); }}
-            className={`px-2 py-1 text-[11px] rounded transition-fast ${
+            <button
+              onClick={() => { setMode("semantic"); setResults([]); setSearched(false); }}
+              aria-label="Search semantically"
+              className={`px-2 py-1 text-[11px] rounded transition-fast ${
               mode === "semantic"
                 ? "bg-accent-primary text-white"
                 : "text-text-muted hover:text-text-primary"
@@ -141,6 +144,7 @@ export function SearchPanel() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             placeholder={mode === "filename" ? "Search filenames..." : "Search file contents..."}
+            aria-label="Search across files"
             className="flex-1 bg-transparent text-text-primary text-xs outline-none placeholder:text-text-muted"
           />
         </div>

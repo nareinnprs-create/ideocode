@@ -32,7 +32,7 @@ export function OutputPanel() {
   }, [lines]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Output panel">
       <div className="flex items-center gap-2 px-3 h-8 border-b border-border-subtle bg-bg-secondary">
         <Terminal size={13} className="text-text-muted" />
         <span className="text-xs font-medium text-text-primary">Output</span>
@@ -41,7 +41,7 @@ export function OutputPanel() {
         <button
           onClick={() => setLines([])}
           className="p-1 text-text-muted hover:text-error transition-fast rounded hover:bg-bg-elevated"
-          title="Clear output"
+          aria-label="Clear output"
         >
           <Trash2 size={13} />
         </button>

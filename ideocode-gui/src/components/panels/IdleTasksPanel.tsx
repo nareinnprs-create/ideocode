@@ -38,12 +38,12 @@ export function IdleTasksPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Idle tasks panel">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
           <Timer size={14} /> Idle Tasks
         </button>
-        <button onClick={() => setShowAdd(!showAdd)} className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
+        <button onClick={() => setShowAdd(!showAdd)} aria-label="Add idle task" aria-expanded={showAdd} className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
           + Add
         </button>
       </div>
@@ -95,7 +95,7 @@ export function IdleTasksPanel() {
                   </button>
                 )}
                 {(t.status === "completed" || t.status === "failed" || t.status === "cancelled") && (
-                  <button onClick={() => remove(t.id)} className="p-1 text-text-muted hover:text-error transition-fast" title="Remove">
+                  <button onClick={() => remove(t.id)} aria-label="Remove task" className="p-1 text-text-muted hover:text-error transition-fast" title="Remove">
                     <Trash2 size={11} />
                   </button>
                 )}

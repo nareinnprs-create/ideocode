@@ -121,7 +121,7 @@ export function FileExplorer() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="File explorer">
       {/* Header */}
       <div className="flex items-center justify-between h-10 px-3 border-b border-border-subtle">
         <span className="text-xs font-medium text-text-secondary uppercase tracking-wider">
@@ -131,14 +131,14 @@ export function FileExplorer() {
           <button
             onClick={() => setSortBy(sortBy === "name" ? "type" : sortBy === "type" ? "size" : "name")}
             className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
-            title={`Sort by ${sortBy === "name" ? "type" : sortBy === "type" ? "size" : "name"}`}
+            aria-label={`Sort by ${sortBy === "name" ? "type" : sortBy === "type" ? "size" : "name"}`}
           >
             <ArrowUpDown size={14} />
           </button>
           <button
             onClick={loadTree}
             className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
-            title="Refresh"
+            aria-label="Refresh file list"
           >
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
           </button>

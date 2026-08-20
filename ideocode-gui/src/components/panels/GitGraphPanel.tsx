@@ -85,7 +85,7 @@ export function GitGraphPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Git graph panel">
       <div className="flex items-center justify-between h-10 px-3 border-b border-border-subtle">
         <span className="text-xs font-medium text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
           <GitBranch size={13} /> Git Graph
@@ -93,6 +93,7 @@ export function GitGraphPanel() {
         <button
           onClick={loadGraph}
           disabled={loading}
+          aria-label="Refresh git graph"
           className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
           title="Refresh graph"
         >
@@ -121,6 +122,10 @@ export function GitGraphPanel() {
                 <div
                   className="flex items-start gap-2 px-3 py-2 hover:bg-bg-elevated transition-fast cursor-pointer border-b border-border-subtle/50"
                   onClick={() => setExpandedCommit(isExpanded ? null : commit.hash)}
+                  role="button"
+                  aria-expanded={isExpanded}
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setExpandedCommit(isExpanded ? null : commit.hash); } }}
                 >
                   <div className="flex flex-col items-center shrink-0 pt-0.5">
                     <div

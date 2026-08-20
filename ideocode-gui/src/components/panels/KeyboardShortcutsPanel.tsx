@@ -148,16 +148,16 @@ export function KeyboardShortcutsPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Keyboard shortcuts">
       <div className="px-3 pt-2 pb-1 flex items-center justify-between border-b border-border-subtle">
         <span className="flex items-center gap-1.5 text-xs font-medium text-text-primary">
           <Keyboard size={14} /> Shortcuts
         </span>
         <div className="flex items-center gap-1">
-          <button onClick={exportShortcuts} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated" title="Export">
+          <button onClick={exportShortcuts} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated" aria-label="Export shortcuts">
             <Download size={13} />
           </button>
-          <button onClick={importShortcuts} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated" title="Import">
+          <button onClick={importShortcuts} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated" aria-label="Import shortcuts">
             <Upload size={13} />
           </button>
           <button onClick={() => setShowAdd(!showAdd)} className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
@@ -184,6 +184,7 @@ export function KeyboardShortcutsPanel() {
             placeholder="Action name"
             value={action}
             onChange={(e) => setAction(e.target.value)}
+            aria-label="Action name"
             className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary"
           />
           <div className="flex gap-1.5">

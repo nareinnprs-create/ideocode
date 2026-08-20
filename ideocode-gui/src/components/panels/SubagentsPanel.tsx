@@ -114,7 +114,7 @@ export function SubagentsPanel() {
   const isRunning = runningIds.size > 0;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Sub-agents">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
           <Users size={14} /> Subagents
@@ -122,8 +122,10 @@ export function SubagentsPanel() {
       </div>
       <div className="px-3 py-2 border-b border-border-subtle space-y-1.5">
         <input type="text" placeholder="Agent name (optional)" value={nameInput} onChange={(e) => setNameInput(e.target.value)}
+          aria-label="Agent name"
           className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary" />
         <textarea placeholder="What should the subagent do?" value={taskInput} onChange={(e) => setTaskInput(e.target.value)} rows={2}
+          aria-label="Subagent task"
           className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary resize-none" />
         <button onClick={handleSpawn} disabled={!taskInput.trim() || isRunning}
           className="w-full px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast">
@@ -137,6 +139,7 @@ export function SubagentsPanel() {
           agents.map((a) => (
             <div key={a.id} className="border-b border-border-subtle group">
               <div onClick={() => setExpandedId(expandedId === a.id ? null : a.id)}
+                aria-expanded={expandedId === a.id}
                 className="px-3 py-2 hover:bg-bg-elevated cursor-pointer transition-fast flex items-center gap-2">
                 <ChevronRight size={12} className={`text-text-muted transition-transform ${expandedId === a.id ? "rotate-90" : ""}`} />
                 <div className="flex-1 min-w-0">
@@ -148,6 +151,7 @@ export function SubagentsPanel() {
                   <div className="text-[11px] text-text-muted truncate">{a.task}</div>
                 </div>
                 <button onClick={(e) => { e.stopPropagation(); remove(a.id); }}
+                  aria-label="Delete agent"
                   className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
                   <Trash2 size={11} />
                 </button>

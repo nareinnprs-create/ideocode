@@ -145,11 +145,11 @@ export function DebugPanel() {
   const title = runKind === "cargo" ? "Cargo run" : runKind === "npm" ? "npm run dev" : "No runnable project";
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Debug panel">
       {/* Toolbar */}
       <div className="flex items-center gap-1 px-2 py-2 border-b border-border-subtle">
         <button
-          title={running ? "Stop the running process" : "Start the project"}
+          aria-label={running ? "Stop the running process" : "Start the project"}
           onClick={() => (running ? stop() : start(false))}
           disabled={detecting || (!runKind && !running)}
           className="p-1.5 text-text-muted disabled:opacity-25 enabled:hover:bg-bg-elevated transition-fast rounded"
@@ -157,7 +157,7 @@ export function DebugPanel() {
           {running ? <Square size={14} /> : <BugPlay size={14} />}
         </button>
         <button
-          title="Restart the project"
+          aria-label="Restart the project"
           onClick={() => start(true)}
           disabled={running || detecting || !runKind}
           className="p-1.5 text-text-muted disabled:opacity-25 enabled:hover:bg-bg-elevated transition-fast rounded"
@@ -166,21 +166,21 @@ export function DebugPanel() {
         </button>
         <span className="w-px h-4 bg-border-subtle mx-1" />
         <button
-          title="Step Over (requires a DAP debugger)"
+          aria-label="Step Over (requires a DAP debugger)"
           disabled
           className="p-1.5 text-text-muted opacity-25"
         >
           <ArrowDown size={14} />
         </button>
         <button
-          title="Step Into (requires a DAP debugger)"
+          aria-label="Step Into (requires a DAP debugger)"
           disabled
           className="p-1.5 text-text-muted opacity-25"
         >
           <ArrowRight size={14} />
         </button>
         <button
-          title="Step Out (requires a DAP debugger)"
+          aria-label="Step Out (requires a DAP debugger)"
           disabled
           className="p-1.5 text-text-muted opacity-25"
         >

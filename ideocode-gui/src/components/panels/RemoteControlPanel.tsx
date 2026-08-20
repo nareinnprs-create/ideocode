@@ -8,7 +8,7 @@ export function RemoteControlPanel() {
   const [active, setActive] = useState(false);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Remote control">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
           <Cast size={14} /> Remote Control
@@ -33,6 +33,7 @@ export function RemoteControlPanel() {
         {!active ? (
           <div className="space-y-2">
             <input type="text" placeholder="Session ID (leave empty to create new)" value={sessionId} onChange={(e) => setSessionId(e.target.value)}
+              aria-label="Session ID"
               className="w-full p-1.5 text-xs font-mono bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary" />
             <button onClick={() => setActive(true)}
               className="w-full px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover transition-fast">

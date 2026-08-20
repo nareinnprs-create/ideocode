@@ -70,7 +70,7 @@ export function IssuePanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Issues">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button
           onClick={() => setRightPanelOpen(false)}

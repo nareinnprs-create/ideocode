@@ -49,7 +49,7 @@ export function ChatMessageList() {
 
   return (
     <div className="group relative flex-1 min-h-0 flex flex-col">
-      <div className="flex-1 overflow-y-auto px-4 pt-5 pb-6 space-y-5 scroll-thin">
+      <div className="flex-1 overflow-y-auto px-4 pt-5 pb-6 space-y-5 scroll-thin" role="log" aria-label="Chat messages">
         <button
           onClick={() => void clearMessages()}
           title="Start a new chat"
@@ -101,7 +101,7 @@ export function ChatMessageList() {
         {loading && <AgentReasoningVisualizer />}
 
         {branches.length > 0 && (
-          <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-bg-secondary/60 border border-border-subtle">
+          <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-bg-secondary/60 border border-border-subtle" role="tablist" aria-label="Chat branches">
             <GitBranch size={12} className="text-text-muted" />
             <span className="text-[11px] text-text-muted">Branches:</span>
             <button
@@ -163,7 +163,16 @@ function AgentReasoningVisualizer() {
     <div className="flex flex-col gap-1.5 pl-0.5 animate-blur-in">
       <div 
         className="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition-opacity"
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
         onClick={() => setExpanded(!expanded)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setExpanded(!expanded);
+          }
+        }}
       >
         <AssistantAvatar streaming />
         <span className="text-[13px] text-text-muted font-medium flex items-center gap-1.5">
@@ -364,7 +373,7 @@ function MessageBubble({
               className="w-full bg-transparent text-text-primary text-sm leading-relaxed resize-none outline-none min-h-[48px]"
             />
             <div className="flex items-center justify-end gap-1 mt-1">
-              <button onClick={commitEdit} title="Save edit" className="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-fast">
+              <button onClick={commitEdit} title="Save edit" aria-label="Save edit" className="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-fast">
                 <Check size={14} />
               </button>
               <button
@@ -373,6 +382,7 @@ function MessageBubble({
                   setEditing(false);
                 }}
                 title="Cancel edit"
+                aria-label="Cancel edit"
                 className="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-fast"
               >
                 <X size={14} />
@@ -385,12 +395,12 @@ function MessageBubble({
           </div>
         )}
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-fast pl-0.5">
-          <button onClick={copy} title="Copy" className="msg-action">
+          <button onClick={copy} title="Copy" aria-label="Copy message" className="msg-action">
             <Copy size={12} />
           </button>
           <EditHistoryButton messageId={message.id} role="user" />
           {isLast && (
-            <button onClick={() => setEditing(true)} title="Edit message" className="msg-action">
+            <button onClick={() => setEditing(true)} title="Edit message" aria-label="Edit message" className="msg-action">
               <Pencil size={12} />
             </button>
           )}
@@ -442,20 +452,21 @@ function MessageBubble({
       )}
 
       <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-fast pl-0.5">
-        <button onClick={copy} title="Copy" className="msg-action">
+        <button onClick={copy} title="Copy" aria-label="Copy message" className="msg-action">
           <Copy size={12} />
         </button>
         <ForkButton messageId={message.id} messageIndex={messageIndex} messages={allMessages} />
         <EditHistoryButton messageId={message.id} role="assistant" />
         {isLast && (
           <>
-            <button onClick={() => { createBranch(); }} title="Create branch" className="msg-action">
+            <button onClick={() => { createBranch(); }} title="Create branch" aria-label="Create branch" className="msg-action">
               <GitBranch size={12} />
             </button>
             <div className="relative">
               <button
                 onClick={() => setShowRegenerateMenu(!showRegenerateMenu)}
                 title="Regenerate"
+                aria-label="Regenerate response"
                 className="msg-action"
               >
                 <RefreshCw size={12} />

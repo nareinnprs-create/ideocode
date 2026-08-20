@@ -34,7 +34,7 @@ export function PluginsPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Plugins">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
           <Puzzle size={14} /> Plugins
@@ -45,9 +45,9 @@ export function PluginsPanel() {
       </div>
       {showAdd && (
         <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle space-y-1.5">
-          <input type="text" placeholder="Plugin name" value={name} onChange={(e) => setName(e.target.value)}
+          <input type="text" placeholder="Plugin name" value={name} onChange={(e) => setName(e.target.value)} aria-label="Plugin name"
             className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary" />
-          <input type="text" placeholder="Description" value={desc} onChange={(e) => setDesc(e.target.value)}
+          <input type="text" placeholder="Description" value={desc} onChange={(e) => setDesc(e.target.value)} aria-label="Plugin description"
             className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary" />
           <button onClick={handleAdd} disabled={!name.trim()}
             className="w-full px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast">Install</button>
@@ -62,7 +62,7 @@ export function PluginsPanel() {
         ) : plugins.map((p) => (
           <div key={p.id} className="px-3 py-2 border-b border-border-subtle hover:bg-bg-elevated transition-fast group">
             <div className="flex items-center gap-2">
-              <button onClick={() => toggle(p.id)} className="shrink-0">
+              <button onClick={() => toggle(p.id)} className="shrink-0" aria-label={p.enabled ? `Disable ${p.name}` : `Enable ${p.name}`}>
                 {p.enabled ? <ToggleRight size={16} className="text-success" /> : <ToggleLeft size={16} className="text-text-muted" />}
               </button>
               <div className="flex-1 min-w-0">
@@ -76,7 +76,7 @@ export function PluginsPanel() {
                   {p.mcpServers.length > 0 && ` · ${p.mcpServers.length} MCP`}
                 </div>
               </div>
-              <button onClick={() => uninstall(p.id)} className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
+              <button onClick={() => uninstall(p.id)} className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast" aria-label={`Uninstall ${p.name}`}>
                 <Trash2 size={11} />
               </button>
             </div>

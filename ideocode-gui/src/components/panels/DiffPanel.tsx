@@ -23,13 +23,14 @@ export function DiffPanel() {
   const hasDiff = leftFile && rightFile && leftFile !== rightFile;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Diff viewer">
       <div className="flex items-center gap-3 px-3 h-9 border-b border-border-subtle bg-bg-secondary shrink-0">
         <span className="text-xs font-medium text-text-primary">Diff</span>
         <select
           value={leftFile}
           onChange={(e) => setLeftFile(e.target.value)}
           className="flex-1 bg-bg-primary border border-border-subtle rounded px-2 py-1 text-[11px] text-text-primary outline-none font-mono"
+          aria-label="Original file (left side)"
         >
           <option value="">Original (left)…</option>
           {filesWithContent.map((f) => (
@@ -40,6 +41,7 @@ export function DiffPanel() {
           value={rightFile}
           onChange={(e) => setRightFile(e.target.value)}
           className="flex-1 bg-bg-primary border border-border-subtle rounded px-2 py-1 text-[11px] text-text-primary outline-none font-mono"
+          aria-label="Modified file (right side)"
         >
           <option value="">Modified (right)…</option>
           {filesWithContent.map((f) => (

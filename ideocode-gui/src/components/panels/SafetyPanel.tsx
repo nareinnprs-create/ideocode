@@ -31,7 +31,7 @@ export function SafetyPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Safety panel">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
           <Shield size={14} /> Safety
@@ -41,7 +41,7 @@ export function SafetyPanel() {
         {rules.map((r) => (
           <div key={r.id} className="flex items-center justify-between p-2 rounded hover:bg-bg-elevated transition-fast">
             <span className="text-xs text-text-primary">{r.label}</span>
-            <button onClick={() => toggle(r.id)}>
+            <button onClick={() => toggle(r.id)} aria-label={`Toggle ${r.label}`} aria-expanded={r.enabled}>
               {r.enabled ? <ToggleRight size={20} className="text-success" /> : <ToggleLeft size={20} className="text-text-muted" />}
             </button>
           </div>

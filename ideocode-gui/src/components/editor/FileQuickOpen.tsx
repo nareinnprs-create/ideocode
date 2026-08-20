@@ -180,7 +180,7 @@ export function FileQuickOpen() {
             <X size={14} />
           </button>
         </div>
-        <div ref={resultsRef} className="max-h-[320px] overflow-y-auto py-1 scroll-thin">
+        <div ref={resultsRef} className="max-h-[320px] overflow-y-auto py-1 scroll-thin" role="listbox" aria-label="Files">
           {results.length === 0 ? (
             <div className="px-4 py-6 text-center text-text-muted text-sm">
               No files found
@@ -190,6 +190,7 @@ export function FileQuickOpen() {
               <button
                 key={file.path}
                 data-idx={idx}
+                role="option"
                 onClick={() => {
                   void openFile(file.path);
                   setOpen(false);

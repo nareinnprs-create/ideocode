@@ -125,7 +125,7 @@ export function UsageStatsPanel() {
   }, [filtered]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Usage statistics">
       <div className="px-1 pt-1 flex items-center justify-between">
         <button
           onClick={() => setRightPanelOpen(false)}

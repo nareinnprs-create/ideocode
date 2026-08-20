@@ -40,7 +40,7 @@ export function SessionHistory() {
     .slice(0, filter === "recent" ? 10 : 50);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" role="region" aria-label="Session history">
       {/* Filter tabs */}
       <div className="flex gap-px px-2 py-2 border-b border-border-subtle bg-bg-tertiary">
         {(["all", "recent", "saved"] as const).map((f) => (
@@ -68,6 +68,7 @@ export function SessionHistory() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search sessions..."
+            aria-label="Search sessions"
             className="flex-1 bg-transparent text-text-primary text-[11px] outline-none placeholder:text-text-muted"
           />
         </div>
@@ -163,6 +164,7 @@ function SessionCard({ session }: { session: Session }) {
         <button
           onClick={() => loadSession(session.id)}
           title="Resume session"
+          aria-label="Resume session"
           className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-accent-primary transition-fast"
         >
           <Play size={12} />
@@ -174,6 +176,7 @@ function SessionCard({ session }: { session: Session }) {
             setEditing(true);
           }}
           title="Rename session"
+          aria-label="Rename session"
           className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-accent-primary transition-fast"
         >
           <Pencil size={12} />
@@ -183,6 +186,7 @@ function SessionCard({ session }: { session: Session }) {
             e.stopPropagation();
             setDeleting(!deleting);
           }}
+          aria-label="Delete session"
           className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-error transition-fast"
         >
           <Trash2 size={12} />
@@ -203,6 +207,7 @@ function SessionCard({ session }: { session: Session }) {
               notify("error", "Export failed", `${err}`);
             }
           }}
+          aria-label="Export session"
           className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-accent-primary transition-fast"
         >
           <Download size={12} />
