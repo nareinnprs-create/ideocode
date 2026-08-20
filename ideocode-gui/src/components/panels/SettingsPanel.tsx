@@ -226,8 +226,8 @@ function AppearanceTab({
                         }`}
                     >
                       <div className="flex flex-col gap-0.5 shrink-0">
-                        <div className="w-5 h-5 rounded-md border border-white/10" style={{ background: t.bg }} />
-                        <div className="w-5 h-5 rounded-md border border-white/10" style={{ background: t.bgSecondary }} />
+                        <div className="w-5 h-5 rounded-md border border-border-subtle" style={{ background: t.bg }} />
+                        <div className="w-5 h-5 rounded-md border border-border-subtle" style={{ background: t.bgSecondary }} />
                       </div>
                       <div className="min-w-0">
                         <div className="text-xs font-medium text-text-primary truncate">{t.label}</div>
