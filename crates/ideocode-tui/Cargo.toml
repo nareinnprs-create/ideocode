@@ -1,6 +1,6 @@
 [package]
 name = "ideocode-tui"
-version = "0.1.0"
+version = "1.2.0"
 license = "MIT"
 edition = "2024"
 publish = false

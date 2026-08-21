@@ -24,7 +24,6 @@ import { UsageStatsPanel } from "../panels/UsageStatsPanel";
 import { PluginsPanel } from "../panels/PluginsPanel";
 import { SkillsPanel } from "../panels/SkillsPanel";
 import { BotChannelPanel } from "../panels/BotChannelPanel";
-import { RemoteDevPanel } from "../panels/RemoteDevPanel";
 import { RemoteControlPanel } from "../panels/RemoteControlPanel";
 import { KeyboardShortcutsPanel } from "../panels/KeyboardShortcutsPanel";
 import { SafetyPanel } from "../panels/SafetyPanel";
@@ -204,7 +203,10 @@ function PanelContent({ panel }: { panel: string }) {
     case "bot-channel":
       return wrapped(<BotChannelPanel />);
     case "remote-dev":
-      return wrapped(<RemoteDevPanel />);
+      return wrapped(<div className="flex flex-col items-center justify-center h-full text-fg-muted p-6 text-center">
+        <p className="text-sm font-medium text-fg-primary mb-1">Remote Dev</p>
+        <p className="text-xs">SSH/WSL/Docker connections coming in a future release.</p>
+      </div>);
     case "remote-control":
       return wrapped(<RemoteControlPanel />);
     case "shortcuts":
