@@ -1,0 +1,57 @@
+{
+  "name": "@ideocode/types",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./automations": {
+      "types": "./src/automations.ts",
+      "default": "./src/automations.ts"
+    },
+    "./workflows": {
+      "types": "./src/workflows.ts",
+      "default": "./src/workflows.ts"
+    },
+    "./openwork-affordance": {
+      "types": "./src/openwork-affordance.ts",
+      "default": "./src/openwork-affordance.ts"
+    },
+    "./openwork-context": {
+      "types": "./src/openwork-context.ts",
+      "default": "./src/openwork-context.ts"
+    },
+    "./openwork-provider": {
+      "types": "./src/openwork-provider.ts",
+      "default": "./src/openwork-provider.ts"
+    },
+    "./skill-created-app": {
+      "types": "./src/skill-created-app.ts",
+      "default": "./src/skill-created-app.ts"
+    },
+    "./connection-action-app": {
+      "types": "./src/connection-action-app.ts",
+      "default": "./src/connection-action-app.ts"
+    },
+    "./plugin-flow-app": {
+      "types": "./src/plugin-flow-app.ts",
+      "default": "./src/plugin-flow-app.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "zod": "^4.3.6"
+  }
+}

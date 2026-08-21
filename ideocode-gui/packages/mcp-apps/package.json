@@ -1,0 +1,38 @@
+{
+  "name": "@ideocode/mcp-apps",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./skill-created": {
+      "types": "./src/skill-created.tsx",
+      "default": "./src/skill-created.tsx"
+    },
+    "./connection-action": {
+      "types": "./src/connection-action.tsx",
+      "default": "./src/connection-action.tsx"
+    },
+    "./plugin-flow": {
+      "types": "./src/plugin-flow.tsx",
+      "default": "./src/plugin-flow.tsx"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ideocode/types": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.6.3",
+    "zod": "^4.3.6"
+  }
+}

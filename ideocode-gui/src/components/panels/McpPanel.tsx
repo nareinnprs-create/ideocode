@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { AlertTriangle, Plug, Plus, Trash2, ToggleLeft, ToggleRight } from "lucide-react";
 import { useAppStore } from "../../stores/appStore";
+import type { EnterpriseMcpConnection, EnterpriseMcpAuthorization } from "@ideocode/enterprise-mcp-client/contracts";
 
-interface McpServer {
-  id: string;
-  name: string;
-  url: string;
-  enabled: boolean;
+interface McpServer extends EnterpriseMcpConnection {
   status: "connected" | "disconnected" | "error";
   tools: string[];
 }
@@ -23,13 +20,19 @@ export function McpPanel() {
   const [showAdd, setShowAdd] = useState(false);
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
+  const [authType, setAuthType] = useState<EnterpriseMcpAuthorization["type"]>("api-key");
+  const [apiKey, setApiKey] = useState("");
 
   const handleAdd = () => {
     if (!name.trim() || !url.trim()) return;
-    const next = [...servers, { id: `mcp-${Date.now()}`, name, url, enabled: true, status: "disconnected" as const, tools: [] }];
+    const authorization: EnterpriseMcpAuthorization = authType === "api-key"
+      ? { type: "api-key", token: apiKey }
+      : { type: "oauth", configuration: { applicationType: "web" }, persistence: "memory" };
+    
+    const next = [...servers, { id: `mcp-${Date.now()}`, name, serverUrl: url, enabled: true, status: "disconnected" as const, tools: [], authorization }];
     setServers(next);
     saveServers(next);
-    setName(""); setUrl(""); setShowAdd(false);
+    setName(""); setUrl(""); setApiKey(""); setShowAdd(false);
   };
 
   const toggle = (id: string) => {
@@ -62,7 +65,16 @@ export function McpPanel() {
             className="w-full p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary focus:outline-none focus:border-accent" />
           <input type="text" placeholder="Server URL or path" value={url} onChange={(e) => setUrl(e.target.value)}
             className="w-full p-1.5 text-xs font-mono bg-surface-elevated border border-border-subtle rounded text-fg-primary focus:outline-none focus:border-accent" />
-          <button onClick={handleAdd} disabled={!name.trim() || !url.trim()}
+          <select value={authType} onChange={(e) => setAuthType(e.target.value as EnterpriseMcpAuthorization["type"])}
+            className="w-full p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary focus:outline-none focus:border-accent">
+            <option value="api-key">API Key</option>
+            <option value="oauth">OAuth</option>
+          </select>
+          {authType === "api-key" && (
+            <input type="password" placeholder="API Key" value={apiKey} onChange={(e) => setApiKey(e.target.value)}
+              className="w-full p-1.5 text-xs font-mono bg-surface-elevated border border-border-subtle rounded text-fg-primary focus:outline-none focus:border-accent" />
+          )}
+          <button onClick={handleAdd} disabled={!name.trim() || !url.trim() || (authType === "api-key" && !apiKey.trim())}
             className="w-full px-3 py-1.5 text-xs bg-accent text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast">
             Add Server
           </button>
@@ -92,7 +104,7 @@ export function McpPanel() {
                     <span className="text-xs font-medium text-fg-primary">{s.name}</span>
                     <span className={`text-[10px] font-medium ${STATUS_COLORS[s.status]}`}>{s.status}</span>
                   </div>
-                  <div className="text-[11px] text-fg-muted font-mono truncate">{s.url}</div>
+                  <div className="text-[11px] text-fg-muted font-mono truncate">{s.serverUrl}</div>
                 </div>
                 <button onClick={() => remove(s.id)} className="p-1 text-fg-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast" aria-label={`Remove ${s.name}`}>
                   <Trash2 size={11} />
