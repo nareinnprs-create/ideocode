@@ -111,12 +111,12 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
         role="dialog"
         aria-modal="true"
         aria-label="IDEOCODE Setup Wizard"
-        className="w-full max-w-lg bg-bg-primary border border-border-default rounded-xl shadow-2xl p-8"
+        className="w-full max-w-lg surface-blur bg-surface-elevated border border-border-default rounded-xl shadow-2xl p-8"
       >
         <div className="text-center mb-6">
           <div className="text-5xl mb-4">{STEPS[step].icon}</div>
-          <h2 className="text-2xl font-bold text-text-primary">{STEPS[step].title}</h2>
-          <p className="text-text-secondary mt-2">{STEPS[step].description}</p>
+          <h2 className="text-2xl font-bold text-fg-primary">{STEPS[step].title}</h2>
+          <p className="text-fg-secondary mt-2">{STEPS[step].description}</p>
           <div className="mt-2">
             <span className="sr-only">Step {step + 1} of {STEPS.length}</span>
           </div>
@@ -131,10 +131,10 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
                   setTheme(t.id as any);
                   achievementStore.unlock('theme-change');
                 }}
-                className="flex flex-col items-center gap-1 p-3 rounded-lg border border-border-subtle hover:border-accent-primary transition-fast"
+                className="flex flex-col items-center gap-1 p-3 rounded-lg border border-border-subtle hover:border-accent transition-fast"
               >
                 <div className="w-8 h-8 rounded-full" style={{ backgroundColor: t.color }} />
-                <span className="text-xs text-text-secondary">{t.name}</span>
+                <span className="text-xs text-fg-secondary">{t.name}</span>
               </button>
             ))}
           </div>
@@ -148,7 +148,7 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
             {providers
               .filter((p: Provider) => p.id !== 'baanzon-verso')
               .map((p: Provider) => (
-                <div key={p.id} className="p-3 rounded-lg border border-border-subtle text-sm text-text-secondary">
+                <div key={p.id} className="p-3 rounded-lg border border-border-subtle text-sm text-fg-secondary">
                   {p.name} — {p.is_configured ? '✅ Configured' : '⚠️ Needs API key'}
                 </div>
               ))}
@@ -162,7 +162,7 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
                 await pickWorkspace();
                 achievementStore.unlock('workspace-open');
               }}
-              className="w-full p-4 rounded-lg border-2 border-dashed border-border-subtle hover:border-accent-primary text-text-secondary hover:text-text-primary transition-fast"
+              className="w-full p-4 rounded-lg border-2 border-dashed border-border-subtle hover:border-accent text-fg-secondary hover:text-fg-primary transition-fast"
             >
               📂 Click to choose a folder
             </button>
@@ -172,7 +172,7 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
         <div className="flex items-center justify-between mt-6">
           <button
             onClick={skip}
-            className="text-sm text-text-secondary hover:text-text-primary transition-fast"
+            className="text-sm text-fg-secondary hover:text-fg-primary transition-fast"
           >
             Skip
           </button>
@@ -181,14 +181,14 @@ export function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
               <div
                 key={i}
                 className={`w-2 h-2 rounded-full transition-fast ${
-                  i === step ? 'bg-accent-primary' : 'bg-border-subtle'
+                  i === step ? 'bg-accent' : 'bg-border-subtle'
                 }`}
               />
             ))}
           </div>
           <button
             onClick={next}
-            className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-hover text-sm font-medium transition-fast"
+            className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover text-sm font-medium transition-fast"
           >
             {step === STEPS.length - 1 ? 'Get Started' : 'Next'}
           </button>

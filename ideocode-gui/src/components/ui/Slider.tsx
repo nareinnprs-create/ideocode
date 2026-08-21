@@ -26,8 +26,8 @@ export function Slider({
     <div className="flex flex-col gap-1.5 min-w-0">
       {(label || valueLabel) && (
         <div className="flex items-center justify-between">
-          {label && <span className="text-[11px] font-medium text-text-secondary">{label}</span>}
-          {valueLabel && <span className="text-[11px] font-mono text-text-muted">{valueLabel}</span>}
+          {label && <span className="text-[11px] font-medium text-fg-secondary">{label}</span>}
+          {valueLabel && <span className="text-[11px] font-mono text-fg-muted">{valueLabel}</span>}
         </div>
       )}
       <input

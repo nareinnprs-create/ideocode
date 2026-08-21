@@ -49,7 +49,7 @@ export function DiffViewer({ file, diff, originalContent, modifiedContent, heigh
 
   if (!isParseable) {
     return (
-      <pre className="px-3 py-2 text-[11px] font-mono text-text-secondary max-h-48 overflow-y-auto whitespace-pre-wrap">
+      <pre className="px-3 py-2 text-[11px] font-mono text-fg-secondary max-h-48 overflow-y-auto whitespace-pre-wrap">
         {diff ? "Binary or unparseable diff" : "No diff available"}
       </pre>
     );

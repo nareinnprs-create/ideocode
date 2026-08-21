@@ -72,9 +72,9 @@ export function GoalSummaryPanel() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-3 py-2 border-b border-border-subtle flex items-center gap-2">
-        <Target size={14} className="text-accent-primary" />
-        <span className="text-xs font-semibold text-text-primary">Goal Summary</span>
+      <div className="px-3 py-2 border-b border-border-subtle surface-blur flex items-center gap-2">
+        <Target size={14} className="text-accent" />
+        <span className="text-xs font-semibold text-fg-primary">Goal Summary</span>
         {status !== "idle" && (
           <Badge tone={STATUS_CONFIG[status].tone} className="ml-auto">
             {STATUS_CONFIG[status].label}
@@ -84,7 +84,7 @@ export function GoalSummaryPanel() {
 
       <div className="flex-1 overflow-y-auto scroll-thin p-3 space-y-4">
         {status === "idle" && !goal ? (
-          <div className="flex flex-col items-center justify-center h-full text-text-muted text-xs space-y-2">
+          <div className="flex flex-col items-center justify-center h-full text-fg-muted text-xs space-y-2">
             <Target size={24} className="opacity-40" />
             <span>No active goal</span>
             <span className="text-[10px] opacity-60">Start a goal to track progress</span>
@@ -92,7 +92,7 @@ export function GoalSummaryPanel() {
         ) : (
           <>
             <div>
-              <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Objective</div>
+              <div className="text-[10px] text-fg-muted uppercase tracking-wider mb-1">Objective</div>
               {editingObjective ? (
                 <div className="flex items-center gap-1">
                   <input
@@ -107,7 +107,7 @@ export function GoalSummaryPanel() {
                       }
                     }}
                     onBlur={handleSaveObjective}
-                    className="flex-1 px-2 py-1 text-xs rounded border border-border-subtle bg-bg-tertiary text-text-primary focus:outline-none focus:border-accent-primary"
+                    className="flex-1 px-2 py-1 text-xs rounded border border-border-subtle bg-surface-elevated text-fg-primary focus:outline-none focus:border-accent"
                   />
                 </div>
               ) : (
@@ -116,7 +116,7 @@ export function GoalSummaryPanel() {
                     setDraftObjective(goal);
                     setEditingObjective(true);
                   }}
-                  className="w-full text-left px-2 py-1.5 text-xs text-text-primary rounded hover:bg-bg-hover transition-fast"
+                  className="w-full text-left px-2 py-1.5 text-xs text-fg-primary rounded hover:bg-surface-hover transition-fast"
                 >
                   {goal}
                 </button>
@@ -124,19 +124,19 @@ export function GoalSummaryPanel() {
             </div>
 
             {status !== "idle" && (
-              <div className="flex items-center gap-2 text-xs text-text-muted">
+              <div className="flex items-center gap-2 text-xs text-fg-muted">
                 <Clock size={12} />
                 <span>{formatElapsed(elapsed)}</span>
-                <span className="text-text-muted/40">|</span>
+                <span className="text-fg-muted/40">|</span>
                 <span>{tasks.length} tasks</span>
-                <span className="text-text-muted/40">|</span>
+                <span className="text-fg-muted/40">|</span>
                 <span>Iteration 1</span>
               </div>
             )}
 
             {totalTasks > 0 && (
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-[10px] text-text-muted">
+                <div className="flex items-center justify-between text-[10px] text-fg-muted">
                   <span>Progress</span>
                   <span>{doneTasks.length}/{totalTasks}</span>
                 </div>
@@ -145,9 +145,9 @@ export function GoalSummaryPanel() {
             )}
 
             <div className="space-y-1">
-              <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Tasks</div>
+              <div className="text-[10px] text-fg-muted uppercase tracking-wider mb-1">Tasks</div>
               {tasks.length === 0 ? (
-                <div className="text-[11px] text-text-muted px-2 py-3 text-center">
+                <div className="text-[11px] text-fg-muted px-2 py-3 text-center">
                   No tasks yet
                 </div>
               ) : (
@@ -155,16 +155,16 @@ export function GoalSummaryPanel() {
                   <button
                     key={task.id}
                     onClick={() => toggleTaskDone(task.id)}
-                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-bg-hover transition-fast group"
+                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-surface-hover transition-fast group"
                   >
                     {task.status === "done" ? (
                       <CheckCircle2 size={14} className="text-success shrink-0" />
                     ) : task.status === "in_progress" ? (
                       <AlertTriangle size={14} className="text-warning shrink-0" />
                     ) : (
-                      <Circle size={14} className="text-text-muted shrink-0" />
+                      <Circle size={14} className="text-fg-muted shrink-0" />
                     )}
-                    <span className={`flex-1 text-xs text-left ${task.status === "done" ? "line-through text-text-muted" : "text-text-primary"}`}>
+                    <span className={`flex-1 text-xs text-left ${task.status === "done" ? "line-through text-fg-muted" : "text-fg-primary"}`}>
                       {task.title}
                     </span>
                   </button>
@@ -173,15 +173,15 @@ export function GoalSummaryPanel() {
             </div>
 
             <div>
-              <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Budget Limit</div>
+              <div className="text-[10px] text-fg-muted uppercase tracking-wider mb-1">Budget Limit</div>
               <div className="flex items-center gap-1.5">
-                <DollarSign size={12} className="text-text-muted" />
+                <DollarSign size={12} className="text-fg-muted" />
                 <input
                   type="number"
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
                   placeholder="Optional"
-                  className="flex-1 px-2 py-1 text-xs rounded border border-border-subtle bg-bg-tertiary text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary"
+                  className="flex-1 px-2 py-1 text-xs rounded border border-border-subtle bg-surface-elevated text-fg-primary placeholder:text-fg-muted focus:outline-none focus:border-accent"
                 />
               </div>
             </div>

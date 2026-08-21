@@ -74,14 +74,14 @@ export function IssuePanel() {
       <div className="px-1 pt-1 flex items-center justify-between">
         <button
           onClick={() => setRightPanelOpen(false)}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
+          className="flex items-center gap-1 px-2 py-1 text-xs text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated"
         >
           <ArrowLeft size={14} />
           Back
         </button>
         <button
           onClick={() => setShowFetch(!showFetch)}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated"
+          className="flex items-center gap-1 px-2 py-1 text-xs text-accent hover:text-accent-hover transition-fast rounded hover:bg-surface-elevated"
         >
           <RefreshCw size={14} />
           Fetch
@@ -92,19 +92,19 @@ export function IssuePanel() {
       <div className="px-3 py-2">
         <div className="flex gap-1">
           <div className="relative flex-1">
-            <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-text-muted" />
+            <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-fg-muted" />
             <input
               type="text"
               placeholder="Search issues..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              className="w-full pl-7 pr-2 py-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-primary"
+              className="w-full pl-7 pr-2 py-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted focus:outline-none focus:border-accent"
             />
           </div>
           <button
             onClick={handleSearch}
-            className="px-2 py-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-muted hover:text-text-primary transition-fast"
+            className="px-2 py-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-muted hover:text-fg-primary transition-fast"
           >
             Go
           </button>
@@ -113,22 +113,22 @@ export function IssuePanel() {
 
       {/* Fetch form */}
       {showFetch && (
-        <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle">
+        <div className="mx-3 mb-2 p-2 rounded bg-surface-elevated border border-border-subtle">
           <div className="flex gap-1 mb-1">
             <input
               type="text"
               placeholder="Owner (e.g. facebook)"
               value={owner}
               onChange={(e) => setOwner(e.target.value)}
-              className="flex-1 p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-primary"
+              className="flex-1 p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted focus:outline-none focus:border-accent"
             />
-            <span className="flex items-center text-text-muted text-xs">/</span>
+            <span className="flex items-center text-fg-muted text-xs">/</span>
             <input
               type="text"
               placeholder="Repo (e.g. react)"
               value={repo}
               onChange={(e) => setRepo(e.target.value)}
-              className="flex-1 p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-primary"
+              className="flex-1 p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted focus:outline-none focus:border-accent"
             />
           </div>
           <input
@@ -136,12 +136,12 @@ export function IssuePanel() {
             placeholder="GitHub token (optional for public repos)"
             value={token}
             onChange={(e) => setToken(e.target.value)}
-            className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-primary mb-1"
+            className="w-full p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted focus:outline-none focus:border-accent mb-1"
           />
           <button
             onClick={handleFetch}
             disabled={!owner.trim() || !repo.trim()}
-            className="w-full px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast"
+            className="w-full px-3 py-1.5 text-xs bg-accent text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast"
           >
             Fetch Issues
           </button>
@@ -151,7 +151,7 @@ export function IssuePanel() {
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-8">
-          <div className="flex items-center gap-2 text-text-muted text-xs animate-pulse">
+          <div className="flex items-center gap-2 text-fg-muted text-xs animate-pulse">
             <RefreshCw size={14} className="animate-spin" />
             Loading issues...
           </div>
@@ -160,7 +160,7 @@ export function IssuePanel() {
 
       {/* Error */}
       {error && (
-        <div className="mx-3 my-2 p-2 rounded bg-bg-elevated border border-border-subtle">
+        <div className="mx-3 my-2 p-2 rounded bg-surface-elevated border border-border-subtle">
           <div className="flex items-start gap-2">
             <AlertCircle size={14} className="text-error mt-0.5 shrink-0" />
             <div className="text-xs text-error">{error}</div>
@@ -170,7 +170,7 @@ export function IssuePanel() {
 
       {/* Empty */}
       {!loading && !error && issues.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-8 text-text-muted">
+        <div className="flex flex-col items-center justify-center py-8 text-fg-muted">
           <AlertCircle size={24} className="mb-2 opacity-50" />
           <div className="text-xs">No issues loaded</div>
           <div className="text-[11px] mt-1">Click Fetch to load issues from GitHub</div>
@@ -182,7 +182,7 @@ export function IssuePanel() {
         {issues.map((issue) => (
           <div
             key={`${issue.source}-${issue.id}`}
-            className="px-3 py-2 border-b border-border-subtle last:border-none hover:bg-bg-elevated transition-fast group"
+            className="px-3 py-2 border-b border-border-subtle last:border-none hover:bg-surface-elevated transition-fast group"
           >
             <div className="flex items-start gap-2">
               <div className="flex-1 min-w-0">
@@ -196,19 +196,19 @@ export function IssuePanel() {
                     href={issue.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs font-medium text-text-primary hover:text-accent-primary truncate"
+                    className="text-xs font-medium text-fg-primary hover:text-accent truncate"
                   >
                     {issue.title}
                   </a>
-                  <ExternalLink size={10} className="text-text-muted shrink-0 opacity-0 group-hover:opacity-100" />
+                  <ExternalLink size={10} className="text-fg-muted shrink-0 opacity-0 group-hover:opacity-100" />
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[11px] text-text-muted">
+                  <span className="text-[11px] text-fg-muted">
                     {issue.repository}
                   </span>
-                  <span className="text-[11px] text-text-muted">#{issue.id}</span>
+                  <span className="text-[11px] text-fg-muted">#{issue.id}</span>
                   <span className={`text-[11px] px-1 rounded ${
-                    issue.state === "open" ? "bg-success/10 text-success" : "bg-text-muted/10 text-text-muted"
+                    issue.state === "open" ? "bg-success/10 text-success" : "bg-text-muted/10 text-fg-muted"
                   }`}>
                     {issue.state}
                   </span>
@@ -218,7 +218,7 @@ export function IssuePanel() {
                     {issue.labels.map((label) => (
                       <span
                         key={label}
-                        className="text-[11px] px-1 py-0.5 rounded bg-accent-primary/10 text-accent-primary"
+                        className="text-[11px] px-1 py-0.5 rounded bg-accent/10 text-accent"
                       >
                         {label}
                       </span>
@@ -226,7 +226,7 @@ export function IssuePanel() {
                   </div>
                 )}
                 {issue.body && (
-                  <div className="text-[11px] text-text-muted mt-1 line-clamp-2">
+                  <div className="text-[11px] text-fg-muted mt-1 line-clamp-2">
                     {issue.body.slice(0, 200)}
                   </div>
                 )}

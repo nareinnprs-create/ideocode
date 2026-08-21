@@ -335,7 +335,7 @@ export function Composer() {
   const activeFileName = activeFile ? activeFile.split(/[/\\]/).pop() : null;
 
   return (
-    <div className="px-3 pb-3 pt-2 shrink-0 relative z-20">
+    <div className="px-3 pb-3 pt-2 shrink-0 relative z-20 surface-blur">
       {/* Slash command palette */}
       {menuOpen === "slash" && (
         <CommandAutocomplete
@@ -388,8 +388,8 @@ export function Composer() {
 
       {/* @ mention palette */}
       {menuOpen === "mention" && (
-        <div className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default glass-strong overflow-hidden animate-scale-in" role="listbox" aria-label="Mention suggestions">
-          <div className="px-3 py-1.5 text-[11px] uppercase tracking-wider text-text-muted border-b border-border-subtle">
+        <div className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default surface-blur bg-surface-elevated overflow-hidden animate-scale-in" role="listbox" aria-label="Mention suggestions">
+          <div className="px-3 py-1.5 text-[11px] uppercase tracking-wider text-fg-muted border-b border-border-subtle">
             {mentionCandidates.length === 0 ? "No matching files" : (mentionQuery ? "Codebase files" : "Open files")}
           </div>
           {mentionCandidates.map((path, i) => (
@@ -399,11 +399,11 @@ export function Composer() {
               onClick={() => insertMention(path)}
               onMouseEnter={() => setActiveIdx(i)}
               className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-fast ${
-                i === activeIdx ? "bg-accent-primary/10" : ""
+                i === activeIdx ? "bg-accent/10" : ""
               }`}
             >
-              <FileText size={14} className="text-text-muted shrink-0" />
-              <span className="text-[13px] text-text-primary truncate font-mono">{path}</span>
+              <FileText size={14} className="text-fg-muted shrink-0" />
+              <span className="text-[13px] text-fg-primary truncate font-mono">{path}</span>
             </button>
           ))}
         </div>
@@ -425,8 +425,8 @@ export function Composer() {
             }}
             className={`px-3 py-1 text-xs font-medium rounded-t-md border-b-2 transition-all ${
               activeTabId === tab.id
-                ? "border-accent-primary text-text-primary bg-bg-secondary/50"
-                : "border-transparent text-text-muted hover:text-text-secondary hover:bg-bg-hover"
+                ? "border-accent text-fg-primary bg-surface/50"
+                : "border-transparent text-fg-muted hover:text-fg-secondary hover:bg-surface-hover"
             }`}
           >
             {tab.label}
@@ -444,7 +444,7 @@ export function Composer() {
             setActiveTabId(newId);
             setInput("");
           }}
-          className="ml-1 p-1 text-text-muted hover:text-text-primary rounded hover:bg-bg-hover"
+          className="ml-1 p-1 text-fg-muted hover:text-fg-primary rounded hover:bg-surface-hover"
           aria-label="New Chat Tab"
         >
           <Plus size={14} />
@@ -464,8 +464,8 @@ export function Composer() {
                 aria-pressed={mode === id}
                 className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-150 ${
                   mode === id
-                    ? "bg-accent-primary/12 text-accent-primary glow-soft"
-                    : "text-text-muted hover:text-text-secondary hover:bg-bg-hover"
+                    ? "bg-accent/12 text-accent glow-soft"
+                    : "text-fg-muted hover:text-fg-secondary hover:bg-surface-hover"
                 }`}
               >
                 <ModeIcon size={13} />
@@ -489,7 +489,7 @@ export function Composer() {
                 useProviderStore.getState().setActiveProvider(p.id, newModel);
               }
             }}
-            className="model-select bg-transparent text-text-muted hover:text-text-primary text-[11px] outline-none cursor-pointer border border-transparent hover:border-border-subtle rounded px-1 py-0.5 transition-fast max-w-[130px] truncate appearance-none"
+            className="model-select bg-transparent text-fg-muted hover:text-fg-primary text-[11px] outline-none cursor-pointer border border-transparent hover:border-border-subtle rounded px-1 py-0.5 transition-fast max-w-[130px] truncate appearance-none"
             aria-label="Select AI Model"
           >
             <option value="auto">Auto (Default)</option>
@@ -510,10 +510,10 @@ export function Composer() {
 
       {/* Composer card */}
       <div
-        className={`rounded-xl border bg-bg-secondary shadow-[0_1px_2px_rgba(24,27,39,0.04),0_4px_16px_-8px_rgba(24,27,39,0.08)] transition-all duration-200 ease-spring ${
+        className={`rounded-xl border bg-surface shadow-[0_1px_2px_rgba(24,27,39,0.04),0_4px_16px_-8px_rgba(24,27,39,0.08)] transition-all duration-200 ease-spring ${
           focused
-            ? "border-accent-primary/50 shadow-[0_0_0_1px_var(--idc-glow),0_0_28px_-8px_var(--idc-glow),0_2px_8px_-2px_rgba(24,27,39,0.12)]"
-            : "border-border-default hover:border-border-strong hover:shadow-raise"
+            ? "border-accent/50 shadow-[0_0_0_1px_var(--idc-glow),0_0_28px_-8px_var(--idc-glow),0_2px_8px_-2px_rgba(24,27,39,0.12)]"
+            : "border-border-default hover:border-border-default hover:shadow-md"
         }`}
       >
         {/* Input row */}
@@ -521,7 +521,7 @@ export function Composer() {
           <Tooltip label="Attach file">
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="p-2 text-text-muted hover:text-text-primary transition-fast rounded-lg hover:bg-bg-hover shrink-0"
+              className="p-2 text-fg-muted hover:text-fg-primary transition-fast rounded-lg hover:bg-surface-hover shrink-0"
               aria-label="Attach file"
             >
               <Paperclip size={16} />
@@ -532,7 +532,7 @@ export function Composer() {
               className={`p-2 transition-fast rounded-lg shrink-0 ${
                 isRecording 
                   ? "text-error bg-error/10 hover:bg-error/20 animate-pulse" 
-                  : "text-text-muted hover:text-text-primary hover:bg-bg-hover"
+                  : "text-fg-muted hover:text-fg-primary hover:bg-surface-hover"
               }`}
               onClick={toggleRecording}
               aria-label={isRecording ? "Stop dictation" : "Start voice dictation"}
@@ -602,7 +602,7 @@ export function Composer() {
             placeholder="Ask IDEOCODE to build, edit, or explain…"
             rows={1}
             aria-label="Chat message"
-            className="flex-1 bg-transparent text-text-primary placeholder:text-text-muted resize-none outline-none text-sm leading-relaxed max-h-32 py-1.5 px-0.5"
+            className="flex-1 bg-transparent text-fg-primary placeholder:text-fg-muted resize-none outline-none text-sm leading-relaxed max-h-32 py-1.5 px-0.5"
           />
 
           {streaming ? (
@@ -638,12 +638,12 @@ export function Composer() {
         {/* Footer row: context + model */}
         <div className="flex items-center justify-between gap-2 px-2.5 pb-2">
           {activeFileName ? (
-            <span className="flex items-center gap-1 min-w-0 text-[11px] text-text-muted">
-              <FileText size={11} className="text-text-muted shrink-0" />
+            <span className="flex items-center gap-1 min-w-0 text-[11px] text-fg-muted">
+              <FileText size={11} className="text-fg-muted shrink-0" />
               <span className="truncate max-w-40">{activeFileName}</span>
             </span>
           ) : (
-            <span className="text-[11px] text-text-muted/70">Ctrl+Shift+P for commands</span>
+            <span className="text-[11px] text-fg-muted/70">Ctrl+Shift+P for commands</span>
           )}
 
           <div className="relative shrink-0">
@@ -659,7 +659,7 @@ export function Composer() {
                 }
               }}
               aria-label="Select model"
-              className="model-select appearance-none bg-transparent border border-transparent rounded-md pl-2 pr-6 py-0.5 text-[11px] font-medium text-text-secondary outline-none hover:border-border-subtle hover:bg-bg-hover focus:border-accent-primary cursor-pointer max-w-44 min-w-0"
+              className="model-select appearance-none bg-transparent border border-transparent rounded-md pl-2 pr-6 py-0.5 text-[11px] font-medium text-fg-secondary outline-none hover:border-border-subtle hover:bg-surface-hover focus:border-accent cursor-pointer max-w-44 min-w-0"
             >
               {model === "auto" && <option value="auto">auto</option>}
               {providers
@@ -672,7 +672,7 @@ export function Composer() {
             </select>
             <ChevronDown
               size={11}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-fg-muted pointer-events-none"
             />
           </div>
         </div>

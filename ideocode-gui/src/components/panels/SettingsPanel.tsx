@@ -89,7 +89,7 @@ export function SettingsPanel() {
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Settings">
       {/* Tabs */}
-      <div className="flex gap-px px-2 pt-2 border-b border-border-subtle bg-bg-tertiary">
+      <div className="flex gap-px px-2 pt-2 border-b border-border-subtle bg-surface-elevated">
         {(["appearance", "chat", "editor", "providers", "terminal", "shortcuts", "mcp", "rules", "privacy", "about"] as const).map((t) => (
           <button
             key={t}
@@ -97,8 +97,8 @@ export function SettingsPanel() {
             aria-selected={tab === t}
             className={`px-3 py-1.5 text-[11px] font-medium rounded-t transition-fast uppercase tracking-wider
               ${tab === t
-                ? "text-accent-primary bg-bg-secondary border-b-2 border-accent-primary"
-                : "text-text-muted hover:text-text-secondary"
+                ? "text-accent bg-surface border-b-2 border-accent"
+                : "text-fg-muted hover:text-fg-secondary"
               }`}
           >
             {t}
@@ -123,7 +123,7 @@ export function SettingsPanel() {
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {!settings ? (
-          <div className="p-4 text-center text-text-muted text-xs">Loading...</div>
+          <div className="p-4 text-center text-fg-muted text-xs">Loading...</div>
         ) : tab === "appearance" ? (
           <AppearanceTab settings={settings} onChange={handleChange} />
         ) : tab === "chat" ? (
@@ -196,8 +196,8 @@ function AppearanceTab({
               className={`flex-1 px-2 py-1.5 text-xs rounded transition-fast border
                 ${
                   scheme === m.id
-                    ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-                    : "border-border-subtle text-text-muted hover:border-text-muted"
+                    ? "border-accent bg-accent/10 text-accent"
+                    : "border-border-subtle text-fg-muted hover:border-text-muted"
                 }`}
             >
               {m.label}
@@ -214,7 +214,7 @@ function AppearanceTab({
             if (themesInTier.length === 0) return null;
             return (
               <div key={tier}>
-                <div className="text-[10px] text-text-muted uppercase tracking-wider mb-2 font-medium">{tier}</div>
+                <div className="text-[10px] text-fg-muted uppercase tracking-wider mb-2 font-medium">{tier}</div>
                 <div className="grid grid-cols-2 gap-2">
                   {themesInTier.map((t) => (
                     <button
@@ -222,8 +222,8 @@ function AppearanceTab({
                       onClick={() => handleThemeSelect(t.id)}
                       className={`flex items-center gap-3 p-2.5 rounded-lg border transition-all text-left
                         ${currentTheme === t.id
-                          ? "border-accent-primary bg-accent-primary/10 ring-1 ring-accent-primary/30"
-                          : "border-border-subtle hover:border-text-muted hover:bg-bg-hover"
+                          ? "border-accent bg-accent/10 ring-1 ring-accent/30"
+                          : "border-border-subtle hover:border-text-muted hover:bg-surface-hover"
                         }`}
                     >
                       <div className="flex flex-col gap-0.5 shrink-0">
@@ -231,8 +231,8 @@ function AppearanceTab({
                         <div className="w-5 h-5 rounded-md border border-border-subtle" style={{ background: t.bgSecondary }} />
                       </div>
                       <div className="min-w-0">
-                        <div className="text-xs font-medium text-text-primary truncate">{t.label}</div>
-                        <div className="text-[10px] text-text-muted truncate">{t.description}</div>
+                        <div className="text-xs font-medium text-fg-primary truncate">{t.label}</div>
+                        <div className="text-[10px] text-fg-muted truncate">{t.description}</div>
                       </div>
                       <div className="ml-auto shrink-0">
                         <div className="w-3 h-3 rounded-full" style={{ background: t.accent }} />
@@ -251,7 +251,7 @@ function AppearanceTab({
         <select
           value={settings.font_family}
           onChange={(e) => onChange({ font_family: e.target.value })}
-          className="w-full bg-bg-primary border border-border-subtle rounded px-2 py-1.5 text-xs text-text-primary outline-none"
+          className="w-full bg-surface border border-border-subtle rounded px-2 py-1.5 text-xs text-fg-primary outline-none"
         >
           {FONT_FAMILIES.map((f) => (
             <option key={f} value={f}>{f}</option>
@@ -268,8 +268,8 @@ function AppearanceTab({
               onClick={() => onChange({ font_size: s })}
               className={`px-2.5 py-1 text-xs rounded transition-fast border
                 ${settings.font_size === s
-                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-                  : "border-border-subtle text-text-muted hover:border-text-muted"
+                  ? "border-accent bg-accent/10 text-accent"
+                  : "border-border-subtle text-fg-muted hover:border-text-muted"
                 }`}
             >
               {s}
@@ -303,7 +303,7 @@ function AppearanceTab({
             className="w-7 h-7 rounded cursor-pointer bg-transparent border border-border-subtle"
             aria-label="Custom accent color"
           />
-          <span className="text-[11px] text-text-muted font-mono">{settings.accent_color}</span>
+          <span className="text-[11px] text-fg-muted font-mono">{settings.accent_color}</span>
         </div>
       </Section>
 
@@ -316,15 +316,15 @@ function AppearanceTab({
               onClick={() => onChange({ ui_font_size: s })}
               className={`px-2.5 py-1 text-xs rounded transition-fast border
                 ${settings.ui_font_size === s
-                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-                  : "border-border-subtle text-text-muted hover:border-text-muted"
+                  ? "border-accent bg-accent/10 text-accent"
+                  : "border-border-subtle text-fg-muted hover:border-text-muted"
                 }`}
             >
               {s}
             </button>
           ))}
         </div>
-        <p className="text-[11px] text-text-muted mt-1">
+        <p className="text-[11px] text-fg-muted mt-1">
           Scales the whole interface. The editor font size above is independent.
         </p>
       </Section>
@@ -352,8 +352,8 @@ function ChatTab({
               onClick={() => onChange({ mode: m.id })}
               className={`px-2.5 py-1 text-xs rounded transition-fast border
                 ${settings.mode === m.id
-                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-                  : "border-border-subtle text-text-muted hover:border-text-muted"
+                  ? "border-accent bg-accent/10 text-accent"
+                  : "border-border-subtle text-fg-muted hover:border-text-muted"
                 }`}
             >
               {m.label}
@@ -366,7 +366,7 @@ function ChatTab({
         <select
           value={settings.active_model}
           onChange={(e) => onChange({ active_model: e.target.value })}
-          className="w-full bg-bg-primary border border-border-subtle rounded px-2 py-1.5 text-xs text-text-primary outline-none font-mono"
+          className="w-full bg-surface border border-border-subtle rounded px-2 py-1.5 text-xs text-fg-primary outline-none font-mono"
         >
           <option value="auto">auto</option>
           {modelOptions.map((id) => (
@@ -374,7 +374,7 @@ function ChatTab({
           ))}
         </select>
         {modelOptions.length === 0 && (
-          <p className="text-[11px] text-text-muted mt-1">
+          <p className="text-[11px] text-fg-muted mt-1">
             No providers loaded yet — pick a model in the chat composer to populate this list.
           </p>
         )}
@@ -388,15 +388,15 @@ function ChatTab({
               onClick={() => onChange({ reasoning_effort: r.id })}
               className={`px-2.5 py-1 text-xs rounded transition-fast border
                 ${settings.reasoning_effort === r.id
-                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-                  : "border-border-subtle text-text-muted hover:border-text-muted"
+                  ? "border-accent bg-accent/10 text-accent"
+                  : "border-border-subtle text-fg-muted hover:border-text-muted"
                 }`}
             >
               {r.label}
             </button>
           ))}
         </div>
-        <p className="text-[11px] text-text-muted mt-1">
+        <p className="text-[11px] text-fg-muted mt-1">
           Controls how much effort reasoning models spend on each response.
         </p>
       </Section>
@@ -428,8 +428,8 @@ function EditorTab({
               onClick={() => onChange({ tab_size: s })}
               className={`px-2.5 py-1 text-xs rounded transition-fast border
                 ${settings.tab_size === s
-                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-                  : "border-border-subtle text-text-muted hover:border-text-muted"
+                  ? "border-accent bg-accent/10 text-accent"
+                  : "border-border-subtle text-fg-muted hover:border-text-muted"
                 }`}
             >
               {s}
@@ -464,11 +464,11 @@ function AboutTab() {
   const version = useAppStore((s) => s.version);
   return (
     <div className="p-6 text-center space-y-4">
-      <div className="text-xl font-semibold text-text-primary">IDEOCODE</div>
-      <div className="text-text-muted text-xs">
+      <div className="text-xl font-semibold text-fg-primary">IDEOCODE</div>
+      <div className="text-fg-muted text-xs">
         <p>Version {version}</p>
         <p className="mt-2">Multi-model AI coding assistant</p>
-        <p className="mt-4 text-text-muted">
+        <p className="mt-4 text-fg-muted">
           Built with Tauri 2.x + React 19 + TypeScript
         </p>
       </div>
@@ -479,7 +479,7 @@ function AboutTab() {
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-[11px] font-medium text-text-secondary mb-2 uppercase tracking-wider">
+      <label className="block text-[11px] font-medium text-fg-secondary mb-2 uppercase tracking-wider">
         {label}
       </label>
       {children}
@@ -505,7 +505,7 @@ function ToggleRow({
         aria-label={`${label} toggle`}
         aria-pressed={checked}
         className={`relative shrink-0 rounded-full transition-fast mt-0.5
-          ${checked ? "bg-accent-primary" : "bg-bg-elevated border border-border-subtle"}`}
+          ${checked ? "bg-accent" : "bg-surface-elevated border border-border-subtle"}`}
         style={{ height: "18px", width: "32px" }}
       >
         <div
@@ -515,8 +515,8 @@ function ToggleRow({
         />
       </button>
       <div>
-        <div className="text-xs text-text-primary">{label}</div>
-        <div className="text-[11px] text-text-muted mt-0.5">{description}</div>
+        <div className="text-xs text-fg-primary">{label}</div>
+        <div className="text-[11px] text-fg-muted mt-0.5">{description}</div>
       </div>
     </div>
   );
@@ -537,20 +537,20 @@ function ProvidersTab({
   return (
     <div className="p-4 space-y-5">
       <Section label="API Keys">
-        <p className="text-[11px] text-text-muted mb-3">
+        <p className="text-[11px] text-fg-muted mb-3">
           Enter your API keys for the providers you wish to use. Keys are stored locally.
         </p>
         <div className="space-y-3">
           {(["openai", "anthropic", "gemini"]).map((provider) => (
             <div key={provider} className="flex flex-col gap-1">
-              <label className="text-xs text-text-primary capitalize">{provider}</label>
+              <label className="text-xs text-fg-primary capitalize">{provider}</label>
               <input
                 type="password"
                 value={settings.api_keys?.[provider] || ""}
                 onChange={(e) => handleKeyChange(provider, e.target.value)}
                 placeholder={`sk-...`}
                 aria-label={`${provider} API key`}
-                className="w-full bg-bg-primary border border-border-subtle rounded px-2 py-1.5 text-xs text-text-primary outline-none font-mono"
+                className="w-full bg-surface border border-border-subtle rounded px-2 py-1.5 text-xs text-fg-primary outline-none font-mono"
               />
             </div>
           ))}
@@ -570,7 +570,7 @@ function RulesTab({
   return (
     <div className="p-4 space-y-5 flex flex-col h-full">
       <Section label="Custom Instructions">
-        <p className="text-[11px] text-text-muted mb-3">
+        <p className="text-[11px] text-fg-muted mb-3">
           These instructions will be appended to the system prompt for every chat session, helping you customize how IDEOCODE behaves.
         </p>
         <textarea
@@ -578,7 +578,7 @@ function RulesTab({
           onChange={(e) => onChange({ custom_instructions: e.target.value })}
           placeholder="e.g. Always use TypeScript and standard format. Keep answers concise."
           aria-label="Custom instructions"
-          className="w-full h-48 bg-bg-primary border border-border-subtle rounded px-2 py-2 text-xs text-text-primary outline-none resize-none font-sans"
+          className="w-full h-48 bg-surface border border-border-subtle rounded px-2 py-2 text-xs text-fg-primary outline-none resize-none font-sans"
         />
       </Section>
     </div>
@@ -598,7 +598,7 @@ function TerminalTab({
         <select
           value={settings.terminal_shell || "default"}
           onChange={(e) => onChange({ terminal_shell: e.target.value })}
-          className="w-full bg-bg-primary border border-border-subtle rounded px-2 py-1.5 text-xs text-text-primary outline-none"
+          className="w-full bg-surface border border-border-subtle rounded px-2 py-1.5 text-xs text-fg-primary outline-none"
         >
           <option value="default">System Default</option>
           <option value="bash">Bash</option>
@@ -606,7 +606,7 @@ function TerminalTab({
           <option value="powershell">PowerShell</option>
           <option value="cmd">Command Prompt</option>
         </select>
-        <p className="text-[11px] text-text-muted mt-1">
+        <p className="text-[11px] text-fg-muted mt-1">
           Shell used for the integrated terminal.
         </p>
       </Section>
@@ -619,8 +619,8 @@ function TerminalTab({
               onClick={() => onChange({ terminal_font_size: s })}
               className={`px-2.5 py-1 text-xs rounded transition-fast border
                 ${(settings.terminal_font_size ?? 13) === s
-                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-                  : "border-border-subtle text-text-muted hover:border-text-muted"
+                  ? "border-accent bg-accent/10 text-accent"
+                  : "border-border-subtle text-fg-muted hover:border-text-muted"
                 }`}
             >
               {s}
@@ -637,8 +637,8 @@ function TerminalTab({
               onClick={() => onChange({ terminal_cursor_style: style })}
               className={`px-2.5 py-1 text-xs rounded transition-fast border capitalize
                 ${(settings.terminal_cursor_style ?? "bar") === style
-                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-                  : "border-border-subtle text-text-muted hover:border-text-muted"
+                  ? "border-accent bg-accent/10 text-accent"
+                  : "border-border-subtle text-fg-muted hover:border-text-muted"
                 }`}
             >
               {style}
@@ -654,7 +654,7 @@ function ShortcutsTab() {
   return (
     <div className="p-4 space-y-4">
       <Section label="Keyboard Shortcuts">
-        <p className="text-[11px] text-text-muted mb-3">
+        <p className="text-[11px] text-fg-muted mb-3">
           Current keyboard shortcuts. Edit them from the Keyboard Shortcuts panel.
         </p>
         <div className="space-y-2">
@@ -671,8 +671,8 @@ function ShortcutsTab() {
             { keys: "Escape", action: "Close Overlays" },
           ].map(({ keys, action }) => (
             <div key={keys} className="flex items-center justify-between py-1.5 border-b border-border-subtle last:border-0">
-              <span className="text-xs text-text-secondary">{action}</span>
-              <kbd className="px-2 py-0.5 rounded bg-bg-tertiary text-[11px] font-mono text-text-muted border border-border-subtle">
+              <span className="text-xs text-fg-secondary">{action}</span>
+              <kbd className="px-2 py-0.5 rounded bg-surface-elevated text-[11px] font-mono text-fg-muted border border-border-subtle">
                 {keys}
               </kbd>
             </div>
@@ -713,7 +713,7 @@ function PrivacyTab({
             onChange={(v) => onChange({ privacy_mask_files: v })}
           />
         </div>
-        <p className="text-[11px] text-text-muted mt-3">
+        <p className="text-[11px] text-fg-muted mt-3">
           All chat messages are processed locally through the IDEOCODE engine. 
           API keys are stored locally and never shared.
         </p>
@@ -726,15 +726,15 @@ function MCPTab() {
   return (
     <div className="space-y-4">
       <div>
-        <h4 className="text-xs font-medium text-text-primary mb-2">MCP Server Configuration</h4>
-        <p className="text-[11px] text-text-muted mb-3">
+        <h4 className="text-xs font-medium text-fg-primary mb-2">MCP Server Configuration</h4>
+        <p className="text-[11px] text-fg-muted mb-3">
           Model Context Protocol servers extend IDEOCODE with external tools and data sources.
         </p>
         <div className="space-y-2">
-          <div className="flex items-center justify-between p-2 rounded bg-bg-elevated border border-border-subtle">
+          <div className="flex items-center justify-between p-2 rounded bg-surface-elevated border border-border-subtle">
             <div>
-              <div className="text-xs text-text-primary">MCP Integration</div>
-              <div className="text-[10px] text-text-muted">Requires MCP backend server</div>
+              <div className="text-xs text-fg-primary">MCP Integration</div>
+              <div className="text-[10px] text-fg-muted">Requires MCP backend server</div>
             </div>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-warning/10 text-warning">Not Available</span>
           </div>

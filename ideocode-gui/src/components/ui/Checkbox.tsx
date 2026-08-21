@@ -34,17 +34,17 @@ export function Checkbox({
         className={[
           "inline-flex items-center justify-center w-4 h-4 rounded border mt-0.5 shrink-0 transition-all duration-150",
           checked
-            ? "bg-accent-primary border-accent-primary"
-            : "border-border-default bg-bg-primary group-hover:border-text-muted",
-          disabled ? "" : "group-hover:border-text-muted",
+            ? "bg-accent border-accent"
+            : "border-border-default bg-surface group-hover:border-fg-muted",
+          disabled ? "" : "group-hover:border-fg-muted",
         ].join(" ")}
       >
         {checked && <Check size={11} className="text-white" strokeWidth={3} />}
       </span>
       {(label || description) && (
         <span className="flex flex-col gap-0.5 min-w-0">
-          {label && <span className="text-sm text-text-primary leading-tight">{label}</span>}
-          {description && <span className="text-[11px] text-text-muted leading-snug">{description}</span>}
+          {label && <span className="text-sm text-fg-primary leading-tight">{label}</span>}
+          {description && <span className="text-[11px] text-fg-muted leading-snug">{description}</span>}
         </span>
       )}
     </label>

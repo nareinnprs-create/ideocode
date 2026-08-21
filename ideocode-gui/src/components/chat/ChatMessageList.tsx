@@ -49,12 +49,12 @@ export function ChatMessageList() {
 
   return (
     <div className="group relative flex-1 min-h-0 flex flex-col">
-      <div className="flex-1 overflow-y-auto px-4 pt-5 pb-6 space-y-5 scroll-thin" role="log" aria-label="Chat messages">
+      <div className="flex-1 overflow-y-auto px-4 pt-5 pb-6 space-y-5 scroll-thin surface-blur" role="log" aria-label="Chat messages">
         <button
           onClick={() => void clearMessages()}
           title="Start a new chat"
           aria-label="Start a new chat"
-          className="absolute top-3 right-3 z-10 btn-icon opacity-0 group-hover:opacity-100 transition-fast bg-bg-secondary/70 border border-border-subtle backdrop-blur"
+          className="absolute top-3 right-3 z-10 btn-icon opacity-0 group-hover:opacity-100 transition-fast bg-surface/70 border border-border-subtle backdrop-blur"
         >
           <Plus size={14} />
         </button>
@@ -101,12 +101,12 @@ export function ChatMessageList() {
         {loading && <AgentReasoningVisualizer />}
 
         {branches.length > 0 && (
-          <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-bg-secondary/60 border border-border-subtle" role="tablist" aria-label="Chat branches">
-            <GitBranch size={12} className="text-text-muted" />
-            <span className="text-[11px] text-text-muted">Branches:</span>
+          <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-surface/60 border border-border-subtle" role="tablist" aria-label="Chat branches">
+            <GitBranch size={12} className="text-fg-muted" />
+            <span className="text-[11px] text-fg-muted">Branches:</span>
             <button
               onClick={() => switchBranch("")}
-              className={`text-[11px] px-1.5 py-0.5 rounded transition-fast ${!activeBranchId ? "bg-accent-primary/10 text-accent-primary" : "text-text-muted hover:text-text-secondary"}`}
+              className={`text-[11px] px-1.5 py-0.5 rounded transition-fast ${!activeBranchId ? "bg-accent/10 text-accent" : "text-fg-muted hover:text-fg-secondary"}`}
             >
               Main
             </button>
@@ -114,7 +114,7 @@ export function ChatMessageList() {
               <button
                 key={b.id}
                 onClick={() => switchBranch(b.id)}
-                className={`text-[11px] px-1.5 py-0.5 rounded transition-fast ${activeBranchId === b.id ? "bg-accent-primary/10 text-accent-primary" : "text-text-muted hover:text-text-secondary"}`}
+                className={`text-[11px] px-1.5 py-0.5 rounded transition-fast ${activeBranchId === b.id ? "bg-accent/10 text-accent" : "text-fg-muted hover:text-fg-secondary"}`}
               >
                 {b.label}
               </button>
@@ -175,8 +175,8 @@ function AgentReasoningVisualizer() {
         }}
       >
         <AssistantAvatar streaming />
-        <span className="text-[13px] text-text-muted font-medium flex items-center gap-1.5">
-          <Brain size={14} className="text-accent-primary animate-pulse" />
+        <span className="text-[13px] text-fg-muted font-medium flex items-center gap-1.5">
+          <Brain size={14} className="text-accent animate-pulse" />
           Agent Reasoning{dots}
         </span>
       </div>
@@ -191,11 +191,11 @@ function AgentReasoningVisualizer() {
           >
             <div className="border-l-2 border-border-subtle pl-3 py-1 space-y-1.5">
               {steps.map((step) => (
-                <div key={step.label} className="text-[12px] text-text-muted flex items-center gap-2">
+                <div key={step.label} className="text-[12px] text-fg-muted flex items-center gap-2">
                   {step.status === "done" && <Check size={12} className="text-success" />}
-                  {step.status === "active" && <Sparkles size={12} className="text-accent-primary animate-pulse" />}
+                  {step.status === "active" && <Sparkles size={12} className="text-accent animate-pulse" />}
                   {step.status === "pending" && <span className="w-3 h-3 rounded-full border border-border-subtle" />}
-                  <span className={step.status === "active" ? "text-text-primary" : ""}>{step.label}{step.status === "active" ? dots : ""}</span>
+                  <span className={step.status === "active" ? "text-fg-primary" : ""}>{step.label}{step.status === "active" ? dots : ""}</span>
                 </div>
               ))}
             </div>
@@ -242,10 +242,10 @@ function EmptyChat() {
       <div className="text-center space-y-6 animate-blur-in max-w-md px-4 py-8">
         <div className="flex flex-col items-center gap-2.5">
           <AssistantAvatar />
-          <h1 className="text-[17px] font-semibold tracking-tight text-text-primary">
+          <h1 className="text-[17px] font-semibold tracking-tight text-fg-primary">
             IDEOCODE
           </h1>
-          <p className="text-[13px] text-text-muted -mt-1">
+          <p className="text-[13px] text-fg-muted -mt-1">
             Multi-model AI coding assistant · {model}
           </p>
         </div>
@@ -256,20 +256,20 @@ function EmptyChat() {
               key={prompt}
               onClick={() => void sendMessage(prompt)}
               disabled={streaming || loading}
-              className="elevate-hover flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-border-subtle bg-bg-secondary/60 text-left hover:border-accent-primary/50 hover:bg-bg-hover disabled:opacity-40 disabled:cursor-not-allowed"
+              className="elevate-hover flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-border-subtle bg-surface/60 text-left hover:border-accent/50 hover:bg-surface-hover disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <Icon size={15} className="text-accent-primary shrink-0" />
+              <Icon size={15} className="text-accent shrink-0" />
               <span className="min-w-0">
-                <span className="block text-[12.5px] font-medium text-text-primary truncate">
+                <span className="block text-[12.5px] font-medium text-fg-primary truncate">
                   {label}
                 </span>
-                <span className="block text-[11px] text-text-muted truncate">{desc}</span>
+                <span className="block text-[11px] text-fg-muted truncate">{desc}</span>
               </span>
             </button>
           ))}
         </div>
 
-        <div className="flex items-center justify-center gap-2 text-[11px] text-text-muted">
+        <div className="flex items-center justify-center gap-2 text-[11px] text-fg-muted">
           <Kbd>Ctrl</Kbd>
           <span className="opacity-50">+</span>
           <Kbd>Shift</Kbd>
@@ -293,10 +293,10 @@ function StreamingBubble({
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-2 pl-0.5">
         <AssistantAvatar streaming />
-        <span className="text-xs font-medium text-text-primary">IDEOCODE</span>
-        <span className="text-[11px] text-accent-primary">streaming…</span>
+        <span className="text-xs font-medium text-fg-primary">IDEOCODE</span>
+        <span className="text-[11px] text-accent">streaming…</span>
       </div>
-      <div className="text-sm leading-relaxed text-text-primary pl-0.5 pr-2">
+      <div className="text-sm leading-relaxed text-fg-primary pl-0.5 pr-2">
         <MarkdownRenderer content={content} onFileClick={onFileClick} />
         <Caret />
       </div>
@@ -306,7 +306,7 @@ function StreamingBubble({
 
 function Caret() {
   return (
-    <span className="inline-block w-[2px] h-[1em] bg-accent-primary ml-0.5 animate-stream rounded-full align-text-bottom shadow-[0_0_8px_var(--idc-glow)]" />
+    <span className="inline-block w-[2px] h-[1em] bg-accent ml-0.5 animate-stream rounded-full align-text-bottom shadow-[0_0_8px_var(--idc-glow)]" />
   );
 }
 
@@ -355,7 +355,7 @@ function MessageBubble({
     return (
       <div className="flex flex-col gap-1">
         {editing ? (
-          <div className="w-full max-w-[90%] bg-accent-primary/8 border border-accent-primary/40 rounded-lg p-2">
+          <div className="w-full max-w-[90%] bg-accent/8 border border-accent/40 rounded-lg p-2">
             <textarea
               autoFocus
               value={draft}
@@ -370,10 +370,10 @@ function MessageBubble({
                   setEditing(false);
                 }
               }}
-              className="w-full bg-transparent text-text-primary text-sm leading-relaxed resize-none outline-none min-h-[48px]"
+              className="w-full bg-transparent text-fg-primary text-sm leading-relaxed resize-none outline-none min-h-[48px]"
             />
             <div className="flex items-center justify-end gap-1 mt-1">
-              <button onClick={commitEdit} title="Save edit" aria-label="Save edit" className="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-fast">
+              <button onClick={commitEdit} title="Save edit" aria-label="Save edit" className="p-1 rounded text-fg-secondary hover:text-fg-primary hover:bg-surface-hover transition-fast">
                 <Check size={14} />
               </button>
               <button
@@ -383,14 +383,14 @@ function MessageBubble({
                 }}
                 title="Cancel edit"
                 aria-label="Cancel edit"
-                className="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-fast"
+                className="p-1 rounded text-fg-secondary hover:text-fg-primary hover:bg-surface-hover transition-fast"
               >
                 <X size={14} />
               </button>
             </div>
           </div>
         ) : (
-          <div className="text-sm leading-relaxed text-text-primary pl-0.5 pr-2 whitespace-pre-wrap">
+          <div className="text-sm leading-relaxed text-fg-primary pl-0.5 pr-2 whitespace-pre-wrap">
             {message.content}
           </div>
         )}
@@ -414,8 +414,8 @@ function MessageBubble({
       {isGroupStart && (
         <div className="flex items-center gap-2 pl-0.5">
           <AssistantAvatar />
-          <span className="text-xs font-medium text-text-primary">IDEOCODE</span>
-          {time && <span className="text-[11px] text-text-muted">{time}</span>}
+          <span className="text-xs font-medium text-fg-primary">IDEOCODE</span>
+          {time && <span className="text-[11px] text-fg-muted">{time}</span>}
         </div>
       )}
 
@@ -433,14 +433,14 @@ function MessageBubble({
       ))}
 
       {message.content && (
-        <div className="text-sm leading-relaxed text-text-primary pl-0.5 pr-2">
+        <div className="text-sm leading-relaxed text-fg-primary pl-0.5 pr-2">
           <MarkdownRenderer content={message.content} onFileClick={onFileClick} />
           <Checklist content={message.content} />
         </div>
       )}
 
       {message.usage && (
-        <div className="flex items-center gap-3 text-[11px] text-text-muted pl-1">
+        <div className="flex items-center gap-3 text-[11px] text-fg-muted pl-1">
           <span>{message.usage.total_tokens.toLocaleString()} tokens</span>
           {message.usage.prompt_tokens > 0 && (
             <span>{message.usage.prompt_tokens.toLocaleString()} in</span>
@@ -472,24 +472,24 @@ function MessageBubble({
                 <RefreshCw size={12} />
               </button>
               {showRegenerateMenu && (
-                <div className="absolute bottom-full right-0 mb-1 z-50 min-w-[120px] py-1 rounded-lg border border-border-subtle bg-bg-secondary shadow-xl animate-fade-in">
+                <div className="absolute bottom-full right-0 mb-1 z-50 min-w-[120px] py-1 rounded-lg border border-border-subtle bg-surface shadow-xl animate-fade-in">
                   <button
                     onClick={() => { void regenerate(); setShowRegenerateMenu(false); }}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-text-secondary hover:bg-accent-primary/10 hover:text-accent-primary transition-fast"
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-fg-secondary hover:bg-accent/10 hover:text-accent transition-fast"
                   >
                     <RefreshCw size={11} />
                     Same model
                   </button>
                   <button
                     onClick={() => { void regenerate("openai/gpt-4o"); setShowRegenerateMenu(false); }}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-text-secondary hover:bg-accent-primary/10 hover:text-accent-primary transition-fast"
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-fg-secondary hover:bg-accent/10 hover:text-accent transition-fast"
                   >
                     <Sparkles size={11} />
                     GPT-4o
                   </button>
                   <button
                     onClick={() => { void regenerate("anthropic/claude-sonnet-4-20250514"); setShowRegenerateMenu(false); }}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-text-secondary hover:bg-accent-primary/10 hover:text-accent-primary transition-fast"
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-fg-secondary hover:bg-accent/10 hover:text-accent transition-fast"
                   >
                     <Sparkles size={11} />
                     Claude Sonnet

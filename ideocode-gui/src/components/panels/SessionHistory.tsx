@@ -42,7 +42,7 @@ export function SessionHistory() {
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Session history">
       {/* Filter tabs */}
-      <div className="flex gap-px px-2 py-2 border-b border-border-subtle bg-bg-tertiary">
+      <div className="flex gap-px px-2 py-2 border-b border-border-subtle bg-surface-elevated">
         {(["all", "recent", "saved"] as const).map((f) => (
           <button
             key={f}
@@ -50,8 +50,8 @@ export function SessionHistory() {
             className={`px-2.5 py-1 text-[11px] font-medium rounded-t transition-fast uppercase tracking-wider
               ${
                 filter === f
-                  ? "text-accent-primary bg-bg-secondary border-b-2 border-accent-primary"
-                  : "text-text-muted hover:text-text-secondary"
+                  ? "text-accent bg-surface border-b-2 border-accent"
+                  : "text-fg-muted hover:text-fg-secondary"
               }`}
           >
             {f}
@@ -60,16 +60,16 @@ export function SessionHistory() {
       </div>
 
       {/* Search */}
-      <div className="px-3 py-2 border-b border-border-subtle">
-        <div className="flex items-center gap-1.5 bg-bg-primary rounded px-2 py-1.5 border border-border-subtle">
-          <Search size={12} className="text-text-muted shrink-0" />
+      <div className="px-3 py-2 border-b border-border-subtle surface-blur">
+        <div className="flex items-center gap-1.5 bg-surface rounded px-2 py-1.5 border border-border-subtle">
+          <Search size={12} className="text-fg-muted shrink-0" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search sessions..."
             aria-label="Search sessions"
-            className="flex-1 bg-transparent text-text-primary text-[11px] outline-none placeholder:text-text-muted"
+            className="flex-1 bg-transparent text-fg-primary text-[11px] outline-none placeholder:text-fg-muted"
           />
         </div>
       </div>
@@ -77,10 +77,10 @@ export function SessionHistory() {
       {/* Session list */}
       <div className="flex-1 overflow-y-auto">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-text-muted">
+          <div className="flex flex-col items-center justify-center py-12 text-fg-muted">
             <MessageSquare size={24} className="mb-2 opacity-40" />
             <div className="text-xs">{search ? "No sessions match your search" : "No sessions yet"}</div>
-            {!search && <div className="text-[10px] text-text-muted mt-1">Start a chat to create your first session</div>}
+            {!search && <div className="text-[10px] text-fg-muted mt-1">Start a chat to create your first session</div>}
           </div>
         ) : (
           filtered.map((session) => (
@@ -90,7 +90,7 @@ export function SessionHistory() {
       </div>
 
       {/* Count */}
-      <div className="px-3 py-1.5 border-t border-border-subtle text-[11px] text-text-muted">
+      <div className="px-3 py-1.5 border-t border-border-subtle text-[11px] text-fg-muted">
         {sessions.length} total sessions
       </div>
     </div>
@@ -115,9 +115,9 @@ function SessionCard({ session }: { session: Session }) {
   };
 
   return (
-    <div className="group px-3 py-2 hover:bg-bg-elevated transition-fast border-b border-border-subtle/50">
+    <div className="group px-3 py-2 hover:bg-surface-elevated transition-fast border-b border-border-subtle/50">
       <div className="flex items-start gap-2">
-        <MessageSquare size={14} className="shrink-0 text-text-muted mt-0.5" />
+        <MessageSquare size={14} className="shrink-0 text-fg-muted mt-0.5" />
         <div className="flex-1 min-w-0">
           {editing ? (
             <input
@@ -133,28 +133,28 @@ function SessionCard({ session }: { session: Session }) {
                 }
               }}
               onBlur={commitRename}
-              className="w-full text-[13px] font-medium bg-bg-primary border border-accent-primary rounded px-1.5 py-0.5 text-text-primary outline-none"
+              className="w-full text-[13px] font-medium bg-surface border border-accent rounded px-1.5 py-0.5 text-fg-primary outline-none"
             />
           ) : (
             <button
               onClick={() => loadSession(session.id)}
               title="Resume session"
-              className="text-[13px] text-text-primary truncate font-medium hover:text-accent-primary transition-fast block max-w-full"
+              className="text-[13px] text-fg-primary truncate font-medium hover:text-accent transition-fast block max-w-full"
             >
               {session.title || "Untitled Session"}
             </button>
           )}
           <div className="flex items-center gap-2 mt-0.5">
-            <span className="flex items-center gap-1 text-[11px] text-text-muted">
+            <span className="flex items-center gap-1 text-[11px] text-fg-muted">
               <MessageSquare size={10} />
               {session.message_count} msgs
             </span>
-            <span className="flex items-center gap-1 text-[11px] text-text-muted">
+            <span className="flex items-center gap-1 text-[11px] text-fg-muted">
               <Clock size={10} />
               {time}
             </span>
             {session.save_label && (
-              <span className="flex items-center gap-1 text-[11px] text-accent-primary">
+              <span className="flex items-center gap-1 text-[11px] text-accent">
                 <Tag size={10} />
                 {session.save_label}
               </span>
@@ -165,7 +165,7 @@ function SessionCard({ session }: { session: Session }) {
           onClick={() => loadSession(session.id)}
           title="Resume session"
           aria-label="Resume session"
-          className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-accent-primary transition-fast"
+          className="opacity-0 group-hover:opacity-100 p-1 text-fg-muted hover:text-accent transition-fast"
         >
           <Play size={12} />
         </button>
@@ -177,7 +177,7 @@ function SessionCard({ session }: { session: Session }) {
           }}
           title="Rename session"
           aria-label="Rename session"
-          className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-accent-primary transition-fast"
+          className="opacity-0 group-hover:opacity-100 p-1 text-fg-muted hover:text-accent transition-fast"
         >
           <Pencil size={12} />
         </button>
@@ -187,7 +187,7 @@ function SessionCard({ session }: { session: Session }) {
             setDeleting(!deleting);
           }}
           aria-label="Delete session"
-          className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-error transition-fast"
+          className="opacity-0 group-hover:opacity-100 p-1 text-fg-muted hover:text-error transition-fast"
         >
           <Trash2 size={12} />
         </button>
@@ -208,7 +208,7 @@ function SessionCard({ session }: { session: Session }) {
             }
           }}
           aria-label="Export session"
-          className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-accent-primary transition-fast"
+          className="opacity-0 group-hover:opacity-100 p-1 text-fg-muted hover:text-accent transition-fast"
         >
           <Download size={12} />
         </button>
@@ -216,9 +216,9 @@ function SessionCard({ session }: { session: Session }) {
 
       {editing && (
         <div className="mt-2 flex items-center gap-2 px-1">
-          <span className="text-[11px] text-text-muted flex-1">Press Enter to save, Esc to cancel</span>
+          <span className="text-[11px] text-fg-muted flex-1">Press Enter to save, Esc to cancel</span>
           <button
-            className="px-2 py-0.5 text-[11px] bg-accent-primary text-white rounded hover:opacity-80"
+            className="px-2 py-0.5 text-[11px] bg-accent text-white rounded hover:opacity-80"
             onClick={commitRename}
           >
             <Check size={11} />
@@ -240,7 +240,7 @@ function SessionCard({ session }: { session: Session }) {
             Yes
           </button>
           <button
-            className="px-2 py-0.5 text-[11px] bg-bg-elevated text-text-secondary rounded hover:bg-bg-hover"
+            className="px-2 py-0.5 text-[11px] bg-surface-elevated text-fg-secondary rounded hover:bg-surface-hover"
             onClick={(e) => {
               e.stopPropagation();
               setDeleting(false);

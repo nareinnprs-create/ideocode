@@ -33,8 +33,8 @@ export function Toggle({
         className={[
           "relative inline-flex h-5 w-9 shrink-0 rounded-full border transition-colors duration-200 mt-0.5",
           checked
-            ? "bg-accent-primary border-accent-primary"
-            : "bg-bg-tertiary border-border-default group-hover:border-text-muted",
+            ? "bg-accent border-accent"
+            : "bg-surface-elevated border-border-default group-hover:border-fg-muted",
           disabled ? "cursor-not-allowed" : "",
         ].join(" ")}
       >
@@ -47,8 +47,8 @@ export function Toggle({
       </span>
       {(label || description) && (
         <span className="flex flex-col gap-0.5 min-w-0">
-          {label && <span className="text-sm text-text-primary leading-tight">{label}</span>}
-          {description && <span className="text-[11px] text-text-muted leading-snug">{description}</span>}
+          {label && <span className="text-sm text-fg-primary leading-tight">{label}</span>}
+          {description && <span className="text-[11px] text-fg-muted leading-snug">{description}</span>}
         </span>
       )}
     </button>

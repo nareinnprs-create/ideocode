@@ -195,16 +195,16 @@ export function CodeEditor({ file: overrideFile }: { file?: string } = {}) {
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar: breadcrumbs + actions */}
-      <div className="flex items-center justify-between h-8 px-2 border-b border-border-subtle bg-bg-secondary/60 shrink-0">
+      <div className="flex items-center justify-between h-8 px-2 border-b border-border-subtle bg-surface/60 shrink-0">
         <div className="flex items-center min-w-0 text-[11px]">
           {segments.map((seg, i) => {
             const isLast = i === segments.length - 1;
             return (
               <span key={i} className="flex items-center min-w-0">
-                {i > 0 && <ChevronRight size={11} className="text-text-muted shrink-0 mx-0.5" />}
+                {i > 0 && <ChevronRight size={11} className="text-fg-muted shrink-0 mx-0.5" />}
                 <span
                   className={`truncate ${
-                    isLast ? "text-text-primary font-medium" : "text-text-muted hover:text-text-secondary cursor-pointer transition-fast"
+                    isLast ? "text-fg-primary font-medium" : "text-fg-muted hover:text-fg-secondary cursor-pointer transition-fast"
                   }`}
                 >
                   {seg}
@@ -217,17 +217,17 @@ export function CodeEditor({ file: overrideFile }: { file?: string } = {}) {
 
         <div className="flex items-center gap-0.5 shrink-0">
           <Tooltip label={editorSplit ? "Exit split view" : "Split editor (side-by-side)"}>
-            <IconButton size="sm" label={editorSplit ? "Exit split view" : "Split editor"} onClick={toggleEditorSplit} className={editorSplit ? "text-accent-primary" : ""}>
+            <IconButton size="sm" label={editorSplit ? "Exit split view" : "Split editor"} onClick={toggleEditorSplit} className={editorSplit ? "text-accent" : ""}>
               <Columns2 size={14} />
             </IconButton>
           </Tooltip>
           <Tooltip label={editorSettings?.word_wrap ? "Disable word wrap" : "Enable word wrap"}>
-            <IconButton size="sm" label="Toggle word wrap" onClick={toggleWordWrap} className={editorSettings?.word_wrap ? "text-accent-primary" : ""}>
+            <IconButton size="sm" label="Toggle word wrap" onClick={toggleWordWrap} className={editorSettings?.word_wrap ? "text-accent" : ""}>
               <WrapText size={14} />
             </IconButton>
           </Tooltip>
           <Tooltip label={editorSettings?.minimap ? "Hide minimap" : "Show minimap"}>
-            <IconButton size="sm" label="Toggle minimap" onClick={toggleMinimap} className={editorSettings?.minimap ? "text-accent-primary" : ""}>
+            <IconButton size="sm" label="Toggle minimap" onClick={toggleMinimap} className={editorSettings?.minimap ? "text-accent" : ""}>
               <Map size={14} />
             </IconButton>
           </Tooltip>
@@ -271,9 +271,9 @@ export function CodeEditor({ file: overrideFile }: { file?: string } = {}) {
           }} 
         />
         {inlineAI?.active ? (
-          <div className="absolute inset-0 z-10 flex flex-col bg-bg-primary/50 backdrop-blur-md">
+          <div className="absolute inset-0 z-10 flex flex-col bg-surface/50 backdrop-blur-md">
             <div className="flex items-center justify-between px-4 py-2 border-b border-border-default bg-transparent">
-              <div className="text-xs text-text-primary font-medium">
+              <div className="text-xs text-fg-primary font-medium">
                 {inlineAI.loading ? (
                   <span className="flex items-center gap-2"><Loader2 size={12} className="animate-spin" /> Generating changes...</span>
                 ) : inlineAI.error ? (
@@ -285,7 +285,7 @@ export function CodeEditor({ file: overrideFile }: { file?: string } = {}) {
               <div className="flex gap-2">
                 <button
                   onClick={() => setInlineAI(null)}
-                  className="px-3 py-1 rounded bg-bg-elevated hover:bg-bg-hover text-text-primary text-xs transition-fast border border-border-subtle"
+                  className="px-3 py-1 rounded bg-surface-elevated hover:bg-surface-hover text-fg-primary text-xs transition-fast border border-border-subtle"
                 >
                   Reject
                 </button>
@@ -295,7 +295,7 @@ export function CodeEditor({ file: overrideFile }: { file?: string } = {}) {
                     setContent(currentFile!, inlineAI.modified);
                     setInlineAI(null);
                   }}
-                  className="px-3 py-1 rounded bg-accent-primary hover:bg-accent-hover text-white text-xs font-medium transition-fast disabled:opacity-50"
+                  className="px-3 py-1 rounded bg-accent hover:bg-accent-hover text-white text-xs font-medium transition-fast disabled:opacity-50"
                 >
                   Accept
                 </button>

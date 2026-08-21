@@ -92,16 +92,16 @@ export function GoalCommandHandler({ input, onCommand }: GoalCommandHandlerProps
   return (
     <div className="absolute bottom-full left-0 right-0 mb-2 z-30 mx-4">
       <div
-        className="rounded-lg border border-accent-primary/30 bg-bg-secondary shadow-xl animate-scale-in p-2.5 cursor-pointer hover:border-accent-primary/50 transition-fast"
+        className="rounded-lg border border-accent/30 bg-surface shadow-xl animate-scale-in p-2.5 cursor-pointer hover:border-accent/50 transition-fast"
         onClick={() => onCommand(parsed.action, parsed.args)}
       >
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-accent-primary/10 flex items-center justify-center shrink-0">
-            <Icon size={13} className="text-accent-primary" />
+          <div className="w-6 h-6 rounded-md bg-accent/10 flex items-center justify-center shrink-0">
+            <Icon size={13} className="text-accent" />
           </div>
           <div className="min-w-0">
-            <div className="text-[11px] font-semibold text-accent-primary">{actionLabels[parsed.action]}</div>
-            <div className="text-[11px] text-text-muted truncate">{parsed.description}</div>
+            <div className="text-[11px] font-semibold text-accent">{actionLabels[parsed.action]}</div>
+            <div className="text-[11px] text-fg-muted truncate">{parsed.description}</div>
           </div>
         </div>
       </div>

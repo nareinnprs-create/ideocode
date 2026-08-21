@@ -17,13 +17,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   return (
     <div className="flex flex-col gap-1 min-w-0">
       {label && (
-        <label htmlFor={inputId} className="text-[11px] font-medium text-text-secondary">
+        <label htmlFor={inputId} className="text-[11px] font-medium text-fg-secondary">
           {label}
         </label>
       )}
       <div className="relative flex items-center">
         {leadingIcon && (
-          <span className="absolute left-2.5 text-text-muted pointer-events-none flex items-center">
+          <span className="absolute left-2.5 text-fg-muted pointer-events-none flex items-center">
             {leadingIcon}
           </span>
         )}
@@ -32,19 +32,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           id={inputId}
           aria-invalid={!!error}
           className={[
-            "w-full h-8 rounded-lg border bg-bg-primary px-3 text-sm text-text-primary placeholder:text-text-muted",
+            "w-full h-8 rounded-lg border bg-surface px-3 text-sm text-fg-primary placeholder:text-fg-muted",
             "transition-all duration-150 outline-none",
             leadingIcon ? "pl-8" : "",
             trailingIcon ? "pr-8" : "",
             error
               ? "border-error/60 focus:border-error focus:ring-2 focus:ring-error/20"
-              : "border-border-subtle focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20 hover:border-border-default",
+              : "border-border-subtle focus:border-accent focus:ring-2 focus:ring-accent/20 hover:border-border-default",
             className,
           ].join(" ")}
           {...rest}
         />
         {trailingIcon && (
-          <span className="absolute right-2.5 text-text-muted pointer-events-none flex items-center">
+          <span className="absolute right-2.5 text-fg-muted pointer-events-none flex items-center">
             {trailingIcon}
           </span>
         )}
@@ -54,7 +54,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           <AlertCircle size={11} /> {error}
         </span>
       ) : hint ? (
-        <span className="text-[11px] text-text-muted">{hint}</span>
+        <span className="text-[11px] text-fg-muted">{hint}</span>
       ) : null}
     </div>
   );

@@ -82,7 +82,7 @@ export function ProviderPanel() {
       <div className="px-1 pt-1">
         <button
           onClick={() => setRightPanelOpen(false)}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
+          className="flex items-center gap-1 px-2 py-1 text-xs text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated"
         >
           <ArrowLeft size={14} />
           Back
@@ -92,7 +92,7 @@ export function ProviderPanel() {
       {/* Loading */}
       {loading && !timedOut && (
         <div className="flex items-center justify-center py-8">
-          <div className="flex items-center gap-2 text-text-muted text-xs animate-pulse">
+          <div className="flex items-center gap-2 text-fg-muted text-xs animate-pulse">
             <RefreshCw size={14} className="animate-spin" />
             Loading providers...
           </div>
@@ -100,11 +100,11 @@ export function ProviderPanel() {
       )}
 
       {loading && timedOut && (
-        <div className="mx-3 my-2 p-2 rounded bg-bg-elevated border border-border-subtle">
+        <div className="mx-3 my-2 p-2 rounded bg-surface-elevated border border-border-subtle">
           <div className="text-xs text-warning mb-1">Loading is taking longer than expected.</div>
           <button
             onClick={() => { setTimedOut(false); loadProviders(); loadStatus(); }}
-            className="text-xs text-accent-primary hover:underline"
+            className="text-xs text-accent hover:underline"
           >
             Retry
           </button>
@@ -113,11 +113,11 @@ export function ProviderPanel() {
 
       {/* Error */}
       {error && (
-        <div className="mx-3 my-2 p-2 rounded bg-bg-elevated border border-border-subtle">
+        <div className="mx-3 my-2 p-2 rounded bg-surface-elevated border border-border-subtle">
           <div className="text-xs text-error mb-1">{error}</div>
           <button
             onClick={() => { loadProviders(); loadStatus(); }}
-            className="text-xs text-accent-primary hover:underline"
+            className="text-xs text-accent hover:underline"
           >
             Retry
           </button>
@@ -126,17 +126,17 @@ export function ProviderPanel() {
 
       {/* Active provider */}
       {status && !loading && (
-        <div className="px-3 py-3 border-b border-border-subtle">
-          <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1.5">
+        <div className="px-3 py-3 border-b border-border-subtle surface-blur">
+          <div className="text-[11px] uppercase tracking-wider text-fg-muted mb-1.5">
             Active
           </div>
           <div className="flex items-center gap-2">
-            <Cpu size={14} className="text-accent-primary" />
+            <Cpu size={14} className="text-accent" />
             <div>
-              <div className="text-xs font-medium text-text-primary">
+              <div className="text-xs font-medium text-fg-primary">
                 {status.active_provider}
               </div>
-              <div className="text-[11px] text-text-muted font-mono">
+              <div className="text-[11px] text-fg-muted font-mono">
                 {status.active_model}
               </div>
             </div>
@@ -146,7 +146,7 @@ export function ProviderPanel() {
 
       {/* Built-in engine status */}
       {gateway && (
-        <div className="border-b border-border-subtle">
+        <div className="border-b border-border-subtle surface-blur">
           <div
             className="px-3 py-2 flex items-center gap-2"
             title={gateway.disabled ? "Baanzon Verso is disabled via IDEOCODE_DISABLE_BAANZON_GATEWAY" : gateway.base_url}
@@ -157,8 +157,8 @@ export function ProviderPanel() {
                 gateway.online ? "text-success" : gateway.installing ? "text-warning" : "text-error"
               }
             />
-            <span className="text-xs font-medium text-text-primary flex-1">{gateway.engine}</span>
-            <span className="text-[11px] text-text-muted font-mono">
+            <span className="text-xs font-medium text-fg-primary flex-1">{gateway.engine}</span>
+            <span className="text-[11px] text-fg-muted font-mono">
               {gateway.online
                 ? "ONLINE"
                 : gateway.installing
@@ -169,7 +169,7 @@ export function ProviderPanel() {
             </span>
             <button
               onClick={() => setLogsOpen(!logsOpen)}
-              className="p-1 rounded hover:bg-bg-tertiary text-text-muted hover:text-text-primary transition-fast"
+              className="p-1 rounded hover:bg-surface-elevated text-fg-muted hover:text-fg-primary transition-fast"
               aria-label="Toggle engine logs"
               aria-expanded={logsOpen}
             >
@@ -177,7 +177,7 @@ export function ProviderPanel() {
             </button>
           </div>
           {logsOpen && (
-            <div className="bg-bg-primary px-3 py-2 border-t border-border-subtle max-h-32 overflow-y-auto text-left font-mono text-[10px] text-text-muted leading-relaxed">
+            <div className="bg-surface px-3 py-2 border-t border-border-subtle max-h-32 overflow-y-auto text-left font-mono text-[10px] text-fg-muted leading-relaxed">
               {logs.length === 0 ? (
                 <div className="italic opacity-50">No logs yet...</div>
               ) : (
@@ -192,8 +192,8 @@ export function ProviderPanel() {
       )}
 
       {/* API Key input */}
-      <div className="px-3 py-2 border-b border-border-subtle">
-        <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1.5">API Key</div>
+      <div className="px-3 py-2 border-b border-border-subtle surface-blur">
+        <div className="text-[11px] uppercase tracking-wider text-fg-muted mb-1.5">API Key</div>
         <div className="flex gap-1">
           <div className="relative flex-1">
             <input
@@ -202,11 +202,11 @@ export function ProviderPanel() {
               onChange={(e) => setApiKeyInput(e.target.value)}
               placeholder="Enter API key..."
               aria-label="API key"
-              className="w-full pr-7 bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary"
+              className="w-full pr-7 bg-surface text-fg-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-fg-muted outline-none focus:border-accent"
             />
             <button
               onClick={() => setShowApiKey(!showApiKey)}
-              className="absolute right-1 top-1/2 -translate-y-1/2 p-0.5 text-text-muted hover:text-text-primary transition-fast"
+              className="absolute right-1 top-1/2 -translate-y-1/2 p-0.5 text-fg-muted hover:text-fg-primary transition-fast"
             >
               {showApiKey ? <EyeOff size={12} /> : <Eye size={12} />}
             </button>
@@ -219,12 +219,12 @@ export function ProviderPanel() {
               }
             }}
             disabled={!apiKeyInput.trim()}
-            className="px-2 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast"
+            className="px-2 py-1.5 text-xs bg-accent text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast"
           >
             Save
           </button>
         </div>
-        <div className="text-[11px] text-text-muted mt-1">
+        <div className="text-[11px] text-fg-muted mt-1">
           API keys are set via environment variables (not saved through this UI). Clicking Save refreshes status.
         </div>
       </div>
@@ -275,10 +275,10 @@ function ProviderCard({
             provider.is_configured ? "bg-success" : "bg-text-muted"
           }`}
         />
-        <span className="text-xs font-medium text-text-primary flex-1">
+        <span className="text-xs font-medium text-fg-primary flex-1">
           {provider.name}
         </span>
-        {isActive && <Check size={12} className="text-accent-primary shrink-0" />}
+        {isActive && <Check size={12} className="text-accent shrink-0" />}
       </button>
       <div className="flex flex-wrap gap-1 pl-4">
         {provider.models.map((model) => (
@@ -287,8 +287,8 @@ function ProviderCard({
             onClick={() => onSelectModel(model.id)}
             className={`text-[11px] px-1.5 py-0.5 rounded font-mono transition-fast border ${
               activeModel === model.id
-                ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-                : "border-border-subtle text-text-secondary hover:border-text-muted"
+                ? "border-accent bg-accent/10 text-accent"
+                : "border-border-subtle text-fg-secondary hover:border-text-muted"
             }`}
           >
             {model.name}

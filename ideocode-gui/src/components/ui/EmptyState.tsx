@@ -13,13 +13,13 @@ export function EmptyState({ icon, title, description, action, className = "", c
   return (
     <div className={`flex flex-col items-center justify-center text-center px-4 ${compact ? "py-6" : "py-12"} ${className}`}>
       {icon && (
-        <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-bg-elevated/60 border border-border-subtle text-text-muted mb-3">
+        <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-surface-elevated/60 border border-border-subtle text-fg-muted mb-3">
           {icon}
         </div>
       )}
-      <div className={`font-medium text-text-primary ${compact ? "text-xs" : "text-sm"}`}>{title}</div>
+      <div className={`font-medium text-fg-primary ${compact ? "text-xs" : "text-sm"}`}>{title}</div>
       {description && (
-        <div className={`text-text-muted mt-1 max-w-xs ${compact ? "text-[11px]" : "text-xs"} leading-relaxed`}>
+        <div className={`text-fg-muted mt-1 max-w-xs ${compact ? "text-[11px]" : "text-xs"} leading-relaxed`}>
           {description}
         </div>
       )}

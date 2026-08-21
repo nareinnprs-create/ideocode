@@ -39,17 +39,17 @@ export function Checklist({ content }: ChecklistProps) {
   };
 
   return (
-    <div className="rounded-xl border border-border-subtle bg-bg-secondary overflow-hidden my-1.5">
+    <div className="rounded-xl border border-border-subtle bg-surface overflow-hidden my-1.5">
       <div className="flex items-center justify-between px-3 py-2 border-b border-border-subtle">
         <div className="flex items-center gap-2">
           {allDone ? (
             <CheckCircle2 size={13} className="text-success" />
           ) : (
-            <ListChecks size={13} className="text-accent-primary" />
+            <ListChecks size={13} className="text-accent" />
           )}
-          <span className="text-xs font-medium text-text-primary">Checklist</span>
+          <span className="text-xs font-medium text-fg-primary">Checklist</span>
         </div>
-        <span className="text-[11px] font-mono text-text-muted">
+        <span className="text-[11px] font-mono text-fg-muted">
           {done}/{items.length}
         </span>
       </div>
@@ -63,7 +63,7 @@ export function Checklist({ content }: ChecklistProps) {
             checked={item.checked}
             onCheckedChange={() => toggle(i)}
             label={
-              <span className={item.checked ? "line-through text-text-muted" : ""}>{item.text}</span>
+              <span className={item.checked ? "line-through text-fg-muted" : ""}>{item.text}</span>
             }
           />
         ))}

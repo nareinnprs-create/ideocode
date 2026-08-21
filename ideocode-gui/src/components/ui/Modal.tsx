@@ -114,17 +114,17 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={`relative w-full ${WIDTH_CLASSES[width]} rounded-xl border border-border-default glass-strong animate-pop-in max-h-[85vh] flex flex-col`}
+        className={`relative w-full ${WIDTH_CLASSES[width]} rounded-xl border border-border-subtle surface-blur bg-surface-elevated animate-pop-in max-h-[85vh] flex flex-col`}
       >
         {(title || showCloseButton) && (
           <div className="flex items-start gap-3 px-4 pt-4 pb-2 border-b border-border-subtle">
             <div className="flex-1 min-w-0">
               {title && (
-                <h2 id={titleId} className="text-sm font-semibold text-text-primary leading-tight">
+                <h2 id={titleId} className="text-sm font-semibold text-fg-primary leading-tight">
                   {title}
                 </h2>
               )}
-              {description && <p className="text-[11px] text-text-muted mt-1 leading-snug">{description}</p>}
+              {description && <p className="text-[11px] text-fg-muted mt-1 leading-snug">{description}</p>}
             </div>
             {showCloseButton && <IconButton size="sm" label="Close dialog" onClick={onClose}><X /></IconButton>}
           </div>

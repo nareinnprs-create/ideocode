@@ -58,7 +58,7 @@ export function CollapsibleTrigger({ children, asChild }: CollapsibleTriggerProp
     <button
       type="button"
       onClick={onToggle}
-      className="flex items-center gap-1.5 w-full text-left text-xs font-medium text-text-secondary hover:text-text-primary transition-colors"
+      className="flex items-center gap-1.5 w-full text-left text-xs font-medium text-fg-secondary hover:text-fg-primary transition-colors"
     >
       <ChevronRight
         size={14}

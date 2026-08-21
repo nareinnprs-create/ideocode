@@ -45,7 +45,7 @@ interface TabsListProps {
 
 export function TabsList({ children, className = "" }: TabsListProps) {
   return (
-    <div role="tablist" className={`flex items-center gap-0.5 p-0.5 rounded-lg bg-bg-tertiary ${className}`}>
+    <div role="tablist" className={`flex items-center gap-0.5 p-0.5 rounded-lg bg-surface-elevated ${className}`}>
       {children}
     </div>
   );
@@ -70,7 +70,7 @@ export function TabsTrigger({ value, children, disabled = false, className = "" 
       onClick={() => ctx.onValueChange(value)}
       className={[
         "flex-1 text-xs font-medium px-3 py-1.5 rounded-md transition-all duration-150",
-        isActive ? "bg-bg-elevated text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary",
+        isActive ? "bg-surface text-fg-primary shadow-sm" : "text-fg-secondary hover:text-fg-primary",
         disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer",
         className,
       ].join(" ")}

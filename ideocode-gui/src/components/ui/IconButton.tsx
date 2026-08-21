@@ -26,12 +26,12 @@ export function IconButton({
 }: IconButtonProps) {
   const variantClasses =
     variant === "filled"
-      ? "bg-accent-primary text-white hover:bg-accent-hover"
+      ? "bg-accent text-white hover:bg-accent-hover"
       : variant === "danger"
-        ? "text-error hover:bg-error/10 hover:text-error"
+        ? "text-error hover:bg-error-muted hover:text-error"
         : variant === "outline"
-          ? "text-text-secondary border border-border-subtle hover:text-text-primary hover:bg-bg-hover"
-          : "text-text-muted hover:text-text-primary hover:bg-bg-hover";
+          ? "text-fg-secondary border border-border-subtle hover:text-fg-primary hover:bg-surface-hover"
+          : "text-fg-muted hover:text-fg-primary hover:bg-surface-hover";
 
   return (
     <button

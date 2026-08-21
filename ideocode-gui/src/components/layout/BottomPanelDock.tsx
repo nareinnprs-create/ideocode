@@ -1,7 +1,9 @@
 import { lazy, Suspense, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Terminal, Hammer, BugPlay, Brain, AlertCircle, X, FileOutput, GitCompare, Clock } from "lucide-react";
 import { useAppStore, type PanelId } from "../../stores/appStore";
 import { useDragResize } from "../../hooks/useDragResize";
+import { pageTransition, transitions } from "../../lib/motion";
 
 const TerminalPane = lazy(() =>
   import("../terminal/TerminalPane").then((m) => ({ default: m.TerminalPane })),
@@ -83,7 +85,7 @@ export function BottomPanelDock() {
   if (!bottomPanelOpen) return null;
 
   return (
-    <div className="flex flex-col shrink-0 border-t border-border-subtle bg-bg-secondary">
+    <div className="flex flex-col shrink-0 border-t border-border-subtle bg-surface">
       <div
         {...bind}
         role="separator"
@@ -102,11 +104,11 @@ export function BottomPanelDock() {
                 onClick={() => setBottomPanel(id)}
                 className={`flex items-center gap-1.5 px-2.5 h-7 rounded-md text-xs font-medium transition-all duration-150 ${
                   active
-                    ? "bg-bg-hover text-text-primary"
-                    : "text-text-muted hover:text-text-secondary hover:bg-bg-hover"
+                    ? "bg-accent-subtle text-accent"
+                    : "text-fg-muted hover:text-fg-secondary hover:bg-surface-hover"
                 }`}
               >
-                <Icon size={13} className={active ? "text-text-primary" : ""} />
+                <Icon size={13} className={active ? "text-accent" : ""} />
                 <span>{label}</span>
               </button>
             );
@@ -114,7 +116,7 @@ export function BottomPanelDock() {
         </div>
         <button
           onClick={() => setBottomPanelOpen(false)}
-          className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
+          className="p-1 text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated"
           title="Close bottom panel"
           aria-label="Close bottom panel"
         >
@@ -122,15 +124,27 @@ export function BottomPanelDock() {
         </button>
       </div>
       <div style={{ height: bottomPanelHeight }} className="min-h-0 overflow-hidden">
-        <Suspense
-          fallback={
-            <div className="h-full flex items-center justify-center text-xs text-text-muted animate-pulse">
-              Loading…
-            </div>
-          }
-        >
-          <PanelLoader panel={bottomPanel} />
-        </Suspense>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={bottomPanel}
+            variants={pageTransition}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={transitions.gentle}
+            className="h-full"
+          >
+            <Suspense
+              fallback={
+                <div className="h-full flex items-center justify-center text-xs text-fg-muted animate-pulse">
+                  Loading…
+                </div>
+              }
+            >
+              <PanelLoader panel={bottomPanel} />
+            </Suspense>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

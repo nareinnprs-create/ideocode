@@ -33,14 +33,14 @@ export function OutputPanel() {
 
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Output panel">
-      <div className="flex items-center gap-2 px-3 h-8 border-b border-border-subtle bg-bg-secondary">
-        <Terminal size={13} className="text-text-muted" />
-        <span className="text-xs font-medium text-text-primary">Output</span>
-        <span className="text-[11px] text-text-muted">Build & process output</span>
+      <div className="flex items-center gap-2 px-3 h-8 border-b border-border-subtle surface-blur bg-surface/60">
+        <Terminal size={13} className="text-fg-muted" />
+        <span className="text-xs font-medium text-fg-primary">Output</span>
+        <span className="text-[11px] text-fg-muted">Build & process output</span>
         <div className="flex-1" />
         <button
           onClick={() => setLines([])}
-          className="p-1 text-text-muted hover:text-error transition-fast rounded hover:bg-bg-elevated"
+          className="p-1 text-fg-muted hover:text-error transition-fast rounded hover:bg-surface-elevated"
           aria-label="Clear output"
         >
           <Trash2 size={13} />
@@ -48,17 +48,17 @@ export function OutputPanel() {
       </div>
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-3 font-mono text-[11px] leading-relaxed bg-bg-primary"
+        className="flex-1 overflow-y-auto p-3 font-mono text-[11px] leading-relaxed bg-surface"
       >
         {lines.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-text-muted">
+          <div className="flex flex-col items-center justify-center h-full text-fg-muted">
             <Terminal size={20} className="mb-2 opacity-40" />
             <span>No output yet</span>
           </div>
         ) : (
           lines.map((line, i) => (
-            <div key={i} className="flex gap-2 text-text-secondary whitespace-pre-wrap break-all">
-              <span className="text-text-muted shrink-0">{line.ts}</span>
+            <div key={i} className="flex gap-2 text-fg-secondary whitespace-pre-wrap break-all">
+              <span className="text-fg-muted shrink-0">{line.ts}</span>
               <span>{line.text}</span>
             </div>
           ))

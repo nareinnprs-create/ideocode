@@ -85,7 +85,7 @@ export function ContextMenu({ children, items, label = "Context menu" }: Context
         ref={menuRef}
         role="menu"
         aria-label={label}
-        className="fixed z-[100] min-w-48 py-1 rounded-lg border border-border-default bg-bg-elevated shadow-pop animate-scale-in"
+        className="fixed z-[100] min-w-48 py-1 rounded-lg border border-border-subtle bg-surface-elevated shadow-pop animate-scale-in"
         style={{ left: pos.x, top: pos.y }}
       >
         {items.map((item, index) => {
@@ -114,12 +114,12 @@ export function ContextMenu({ children, items, label = "Context menu" }: Context
                 item.disabled
                   ? "opacity-40 cursor-not-allowed"
                   : item.danger
-                    ? "text-error hover:bg-error/10"
-                    : "text-text-secondary hover:text-text-primary hover:bg-bg-hover",
+                    ? "text-error hover:bg-error-muted"
+                    : "text-fg-secondary hover:text-fg-primary hover:bg-surface-hover",
                 activeIndex === index && !item.disabled
                   ? item.danger
-                    ? "bg-error/10"
-                    : "bg-bg-hover"
+                    ? "bg-error-muted"
+                    : "bg-surface-hover"
                   : "",
               ].join(" ")}
             >
@@ -128,7 +128,7 @@ export function ContextMenu({ children, items, label = "Context menu" }: Context
               )}
               <span className="flex-1 text-left truncate">{item.label}</span>
               {item.shortcut && (
-                <span className="shrink-0 text-[11px] font-mono text-text-muted">
+                <span className="shrink-0 text-[11px] font-mono text-fg-muted">
                   {item.shortcut}
                 </span>
               )}

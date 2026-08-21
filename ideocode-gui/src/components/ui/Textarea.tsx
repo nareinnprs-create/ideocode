@@ -14,7 +14,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
   return (
     <div className="flex flex-col gap-1 min-w-0">
       {label && (
-        <label htmlFor={inputId} className="text-[11px] font-medium text-text-secondary">
+        <label htmlFor={inputId} className="text-[11px] font-medium text-fg-secondary">
           {label}
         </label>
       )}
@@ -23,11 +23,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
         id={inputId}
         aria-invalid={!!error}
         className={[
-          "w-full min-h-20 rounded-lg border bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-muted resize-y",
+          "w-full min-h-20 rounded-lg border bg-surface px-3 py-2 text-sm text-fg-primary placeholder:text-fg-muted resize-y",
           "transition-all duration-150 outline-none",
           error
             ? "border-error/60 focus:border-error focus:ring-2 focus:ring-error/20"
-            : "border-border-subtle focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20 hover:border-border-default",
+            : "border-border-subtle focus:border-accent focus:ring-2 focus:ring-accent/20 hover:border-border-default",
           className,
         ].join(" ")}
         {...rest}
@@ -35,7 +35,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
       {error ? (
         <span className="text-[11px] text-error">{error}</span>
       ) : hint ? (
-        <span className="text-[11px] text-text-muted">{hint}</span>
+        <span className="text-[11px] text-fg-muted">{hint}</span>
       ) : null}
     </div>
   );

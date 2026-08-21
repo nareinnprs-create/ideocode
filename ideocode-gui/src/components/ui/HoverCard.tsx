@@ -73,7 +73,7 @@ export function HoverCard({
           onMouseEnter={show}
           onMouseLeave={hide}
         >
-          <div className="rounded-xl border border-border-default bg-bg-elevated shadow-pop p-3">
+          <div className="rounded-xl border border-border-subtle bg-surface-elevated shadow-pop p-3">
             {children}
           </div>
         </div>

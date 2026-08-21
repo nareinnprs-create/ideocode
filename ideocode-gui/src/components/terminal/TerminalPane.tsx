@@ -223,15 +223,15 @@ export function TerminalPane({ visible }: Props) {
   return (
     <div className="flex flex-col h-full">
       {/* Tab bar */}
-      <div className="flex items-center h-9 border-b border-border-subtle bg-bg-secondary px-2 gap-1">
+      <div className="flex items-center h-9 border-b border-border-subtle surface-blur bg-surface/60 px-2 gap-1">
         <div className="flex items-center gap-1 min-w-0 flex-1 overflow-x-auto scroll-thin">
           {terminals.map((t) => (
             <div
               key={t.id}
               className={`group flex items-center gap-1.5 px-2.5 h-7 rounded-md text-xs font-medium cursor-pointer transition-all shrink-0
                 ${t.id === activeId
-                  ? "bg-bg-hover text-text-primary"
-                  : "text-text-muted hover:text-text-secondary hover:bg-bg-hover"
+                  ? "bg-surface-hover text-fg-primary"
+                  : "text-fg-muted hover:text-fg-secondary hover:bg-surface-hover"
                 }`}
               onClick={() => setActive(t.id)}
               onDoubleClick={() => startRename(t.id, t.name)}
@@ -246,7 +246,7 @@ export function TerminalPane({ visible }: Props) {
                     if (e.key === "Enter") commitRename();
                     if (e.key === "Escape") setEditingId(null);
                   }}
-                  className="w-20 bg-transparent text-text-primary text-xs outline-none border-b border-accent-primary"
+                  className="w-20 bg-transparent text-fg-primary text-xs outline-none border-b border-accent"
                   onClick={(e) => e.stopPropagation()}
                 />
               ) : (
@@ -258,7 +258,7 @@ export function TerminalPane({ visible }: Props) {
                     e.stopPropagation();
                     removeTerminal(t.id);
                   }}
-                  className="p-0.5 rounded text-text-muted hover:text-text-primary hover:bg-bg-elevated opacity-0 group-hover:opacity-100 transition-fast"
+                  className="p-0.5 rounded text-fg-muted hover:text-fg-primary hover:bg-surface-elevated opacity-0 group-hover:opacity-100 transition-fast"
                   title="Close terminal"
                 >
                   <X size={11} />
@@ -270,14 +270,14 @@ export function TerminalPane({ visible }: Props) {
         <div className="flex items-center gap-0.5 shrink-0">
           <button
             onClick={() => setSearchOpen(!searchOpen)}
-            className="p-1 rounded text-text-muted hover:text-text-primary hover:bg-bg-hover transition-fast"
+            className="p-1 rounded text-fg-muted hover:text-fg-primary hover:bg-surface-hover transition-fast"
             title="Search in terminal"
           >
             <Search size={13} />
           </button>
           <button
             onClick={() => addTerminal()}
-            className="p-1 rounded text-text-muted hover:text-text-primary hover:bg-bg-hover transition-fast"
+            className="p-1 rounded text-fg-muted hover:text-fg-primary hover:bg-surface-hover transition-fast"
             title="New terminal"
           >
             <Plus size={13} />
@@ -287,19 +287,19 @@ export function TerminalPane({ visible }: Props) {
 
       {/* Search bar */}
       {searchOpen && (
-        <div className="flex items-center gap-2 px-3 h-8 border-b border-border-subtle bg-bg-secondary">
-          <Search size={12} className="text-text-muted shrink-0" />
+        <div className="flex items-center gap-2 px-3 h-8 border-b border-border-subtle bg-surface">
+          <Search size={12} className="text-fg-muted shrink-0" />
           <input
             ref={searchRef}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search terminal output…"
-            className="flex-1 bg-transparent text-text-primary text-xs outline-none placeholder:text-text-muted"
+            className="flex-1 bg-transparent text-fg-primary text-xs outline-none placeholder:text-fg-muted"
           />
           <button
             onClick={() => setSearchOpen(false)}
-            className="p-0.5 text-text-muted hover:text-text-primary transition-fast"
+            className="p-0.5 text-fg-muted hover:text-fg-primary transition-fast"
           >
             <X size={12} />
           </button>

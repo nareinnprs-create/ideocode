@@ -52,14 +52,14 @@ export function ConfirmDialog({
       <div className="flex items-start gap-3">
         <div
           className={`flex items-center justify-center w-9 h-9 rounded-lg shrink-0 border ${
-            danger ? "bg-error/10 border-error/30 text-error" : "bg-accent-primary/10 border-accent-primary/25 text-accent-primary"
+            danger ? "bg-error-muted border-error/30 text-error" : "bg-accent-subtle border-accent/25 text-accent"
           }`}
         >
           <AlertTriangle size={18} />
         </div>
         <div className="min-w-0">
-          <div className="text-sm font-medium text-text-primary leading-tight">{title}</div>
-          {description && <div className="text-xs text-text-secondary mt-1 leading-relaxed">{description}</div>}
+          <div className="text-sm font-medium text-fg-primary leading-tight">{title}</div>
+          {description && <div className="text-xs text-fg-secondary mt-1 leading-relaxed">{description}</div>}
         </div>
       </div>
     </Modal>

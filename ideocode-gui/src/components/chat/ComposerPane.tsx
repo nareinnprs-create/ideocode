@@ -82,7 +82,7 @@ export function ComposerPane() {
       role="dialog"
       aria-modal="true"
       aria-label="Composer"
-      className={`absolute z-40 bg-bg-primary/95 backdrop-blur-3xl border border-border-default rounded-2xl shadow-modal flex flex-col overflow-hidden transition-all duration-300 ease-spring ${
+      className={`absolute z-40 bg-surface/95 backdrop-blur-3xl border border-border-default rounded-2xl shadow-lg flex flex-col overflow-hidden transition-all duration-300 ease-spring ${
         fullscreen
           ? "inset-4"
           : "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[650px]"
@@ -90,21 +90,21 @@ export function ComposerPane() {
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-border-default bg-transparent select-none" data-tauri-drag-region>
         <div className="flex items-center gap-2">
-          <Sparkles size={16} className="text-accent-primary" />
-          <span className="font-semibold text-text-primary text-sm">Composer</span>
-          <span className="text-xs text-text-muted ml-2">Cmd+I</span>
+          <Sparkles size={16} className="text-accent" />
+          <span className="font-semibold text-fg-primary text-sm">Composer</span>
+          <span className="text-xs text-fg-muted ml-2">Cmd+I</span>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFullscreen(!fullscreen)}
-            className="p-1 rounded-md text-text-muted hover:bg-bg-hover hover:text-text-primary transition-colors"
+            className="p-1 rounded-md text-fg-muted hover:bg-surface-hover hover:text-fg-primary transition-colors"
             aria-label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
           >
             {fullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
           </button>
           <button
             onClick={() => setComposerOpen(false)}
-            className="p-1 rounded-md text-text-muted hover:bg-bg-hover hover:text-error transition-colors"
+            className="p-1 rounded-md text-fg-muted hover:bg-surface-hover hover:text-error transition-colors"
             aria-label="Close composer"
           >
             <X size={14} />
@@ -123,16 +123,16 @@ export function ComposerPane() {
         {hasEdits && (
           <div className="flex-1 flex flex-col bg-transparent">
             <div className="p-3 border-b border-border-default bg-transparent flex items-center justify-between">
-              <span className="text-[13px] font-medium text-text-primary flex items-center gap-2">
-                <FileEdit size={14} className="text-accent-primary" />
+              <span className="text-[13px] font-medium text-fg-primary flex items-center gap-2">
+                <FileEdit size={14} className="text-accent" />
                 Workspace Edits
               </span>
               {pendingCount > 0 && (
                 <div className="flex items-center gap-2">
-                  <button onClick={rejectAll} className="text-[11px] px-2 py-1 rounded border border-border-subtle hover:bg-bg-hover text-text-secondary transition-colors" aria-label="Reject all changes">
+                  <button onClick={rejectAll} className="text-[11px] px-2 py-1 rounded border border-border-subtle hover:bg-surface-hover text-fg-secondary transition-colors" aria-label="Reject all changes">
                     Reject All
                   </button>
-                  <button onClick={acceptAll} className="text-[11px] px-2 py-1 rounded bg-accent-primary text-white hover:bg-accent-hover transition-colors font-medium flex items-center gap-1" aria-label="Accept all changes">
+                  <button onClick={acceptAll} className="text-[11px] px-2 py-1 rounded bg-accent text-white hover:bg-accent-hover transition-colors font-medium flex items-center gap-1" aria-label="Accept all changes">
                     <Check size={12} /> Accept All ({pendingCount})
                   </button>
                 </div>
@@ -146,11 +146,11 @@ export function ComposerPane() {
                     key={edit.id}
                     onClick={() => setSelectedEditId(edit.id)}
                     className={`w-full flex flex-col text-left p-2 rounded-md transition-colors border ${
-                      selectedEdit?.id === edit.id ? "bg-bg-elevated border-border-subtle" : "border-transparent hover:bg-bg-hover"
+                      selectedEdit?.id === edit.id ? "bg-surface-elevated border-border-subtle" : "border-transparent hover:bg-surface-hover"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[12px] font-medium text-text-primary truncate" title={edit.path}>
+                      <span className="text-[12px] font-medium text-fg-primary truncate" title={edit.path}>
                         {edit.path.split(/[/\\]/).pop()}
                       </span>
                       {edit.status === "pending" && (
@@ -173,11 +173,11 @@ export function ComposerPane() {
                 ))}
               </div>
 
-              <div className="flex-1 flex flex-col bg-bg-primary overflow-hidden">
+              <div className="flex-1 flex flex-col bg-surface overflow-hidden">
                 {selectedEdit ? (
                   <>
-                    <div className="px-3 py-2 border-b border-border-subtle flex items-center gap-2 bg-bg-tertiary/50">
-                      <span className="text-[11px] text-text-muted font-mono">{selectedEdit.path}</span>
+                    <div className="px-3 py-2 border-b border-border-subtle flex items-center gap-2 bg-surface-elevated/50">
+                      <span className="text-[11px] text-fg-muted font-mono">{selectedEdit.path}</span>
                     </div>
                     <div className="flex-1 overflow-hidden">
                       <DiffViewer 
@@ -189,7 +189,7 @@ export function ComposerPane() {
                     </div>
                   </>
                 ) : (
-                  <div className="flex-1 flex items-center justify-center text-text-muted text-sm">
+                  <div className="flex-1 flex items-center justify-center text-fg-muted text-sm">
                     Select an edit to view diff
                   </div>
                 )}

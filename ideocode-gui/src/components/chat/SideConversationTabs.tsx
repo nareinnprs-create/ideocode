@@ -11,15 +11,15 @@ export function SideConversationTabs() {
   if (tabs.length === 0) return null;
 
   return (
-    <div className="flex items-center gap-0.5 overflow-x-auto px-2 py-1 border-b border-border-subtle scrollbar-none bg-bg-primary/50">
+    <div className="flex items-center gap-0.5 overflow-x-auto px-2 py-1 border-b border-border-subtle scrollbar-none bg-surface/50">
       {tabs.map((tab) => (
         <button
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
           className={`group flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md transition-all duration-150 shrink-0 ${
             activeTabId === tab.id
-              ? "bg-accent-primary/10 text-accent-primary border border-accent-primary/25"
-              : "text-text-muted hover:text-text-secondary hover:bg-bg-hover border border-transparent"
+              ? "bg-accent/10 text-accent border border-accent/25"
+              : "text-fg-muted hover:text-fg-secondary hover:bg-surface-hover border border-transparent"
           }`}
         >
           <span className="truncate max-w-[100px]">{tab.title}</span>
@@ -36,7 +36,7 @@ export function SideConversationTabs() {
       ))}
       <button
         onClick={() => addTab()}
-        className="ml-1 p-1 text-text-muted hover:text-text-primary rounded hover:bg-bg-hover transition-fast shrink-0"
+        className="ml-1 p-1 text-fg-muted hover:text-fg-primary rounded hover:bg-surface-hover transition-fast shrink-0"
         title="New conversation tab"
       >
         <Plus size={12} />

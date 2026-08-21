@@ -42,8 +42,8 @@ export function ExecutionModePicker() {
             aria-pressed={executionMode === id}
             className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all duration-150 ${
               executionMode === id
-                ? "bg-accent-primary/12 text-accent-primary glow-soft"
-                : "text-text-muted hover:text-text-secondary hover:bg-bg-hover"
+                ? "bg-accent/12 text-accent glow-soft"
+                : "text-fg-muted hover:text-fg-secondary hover:bg-surface-hover"
             }`}
           >
             <ModeIcon size={13} />
@@ -51,10 +51,10 @@ export function ExecutionModePicker() {
           </button>
         </Tooltip>
       ))}
-      <span className="text-[10px] text-text-muted ml-1">
-        <kbd className="px-1 py-0.5 rounded bg-bg-elevated/50 border border-border-subtle text-[9px]">Shift</kbd>
+      <span className="text-[10px] text-fg-muted ml-1">
+        <kbd className="px-1 py-0.5 rounded bg-surface-elevated/50 border border-border-subtle text-[9px]">Shift</kbd>
         +
-        <kbd className="px-1 py-0.5 rounded bg-bg-elevated/50 border border-border-subtle text-[9px]">Tab</kbd>
+        <kbd className="px-1 py-0.5 rounded bg-surface-elevated/50 border border-border-subtle text-[9px]">Tab</kbd>
       </span>
     </div>
   );

@@ -5,11 +5,11 @@ export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "outl
 export type ButtonSize = "xs" | "sm" | "md" | "lg";
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  primary: "bg-accent-primary text-white hover:bg-accent-hover",
-  secondary: "bg-bg-elevated text-text-primary hover:bg-bg-hover border border-border-subtle",
-  ghost: "text-text-secondary hover:text-text-primary hover:bg-bg-hover",
-  danger: "text-error hover:bg-error/10 border border-transparent hover:border-error/30",
-  outline: "border border-border-default text-text-primary hover:bg-bg-hover",
+  primary: "bg-accent text-white hover:bg-accent-hover",
+  secondary: "bg-surface-elevated text-fg-primary hover:bg-surface-hover border border-border-subtle",
+  ghost: "text-fg-secondary hover:text-fg-primary hover:bg-surface-hover",
+  danger: "text-error hover:bg-error-muted border border-transparent hover:border-error/30",
+  outline: "border border-border-default text-fg-primary hover:bg-surface-hover",
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {

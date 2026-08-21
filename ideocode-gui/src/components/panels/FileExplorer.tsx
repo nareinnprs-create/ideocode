@@ -123,21 +123,21 @@ export function FileExplorer() {
   return (
     <div className="flex flex-col h-full" role="region" aria-label="File explorer">
       {/* Header */}
-      <div className="flex items-center justify-between h-10 px-3 border-b border-border-subtle">
-        <span className="text-xs font-medium text-text-secondary uppercase tracking-wider">
+      <div className="flex items-center justify-between h-10 px-3 border-b border-border-subtle surface-blur">
+        <span className="text-xs font-medium text-fg-secondary uppercase tracking-wider">
           Files
         </span>
         <div className="flex items-center gap-1">
           <button
             onClick={() => setSortBy(sortBy === "name" ? "type" : sortBy === "type" ? "size" : "name")}
-            className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
+            className="p-1 text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated"
             aria-label={`Sort by ${sortBy === "name" ? "type" : sortBy === "type" ? "size" : "name"}`}
           >
             <ArrowUpDown size={14} />
           </button>
           <button
             onClick={loadTree}
-            className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
+            className="p-1 text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated"
             aria-label="Refresh file list"
           >
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
@@ -156,7 +156,7 @@ export function FileExplorer() {
       <div className="flex-1 overflow-y-auto py-1">
         {!rootPath ? (
           <div className="px-3 py-4">
-            <div className="text-xs text-text-muted mb-2">Enter a project path to browse:</div>
+            <div className="text-xs text-fg-muted mb-2">Enter a project path to browse:</div>
             <div className="flex gap-1">
               <input
                 type="text"
@@ -164,19 +164,19 @@ export function FileExplorer() {
                 onChange={(e) => setPathInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && pathInput.trim() && setRootPath(pathInput.trim())}
                 placeholder="C:\path\to\project"
-                className="flex-1 bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary"
+                className="flex-1 bg-surface text-fg-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-fg-muted outline-none focus:border-accent"
               />
               <button
                 onClick={() => pathInput.trim() && setRootPath(pathInput.trim())}
                 disabled={!pathInput.trim()}
-                className="px-2 py-1.5 rounded bg-accent-primary text-white text-xs hover:bg-accent-hover disabled:opacity-50 transition-fast"
+                className="px-2 py-1.5 rounded bg-accent text-white text-xs hover:bg-accent-hover disabled:opacity-50 transition-fast"
               >
                 <FolderInput size={14} />
               </button>
             </div>
           </div>
         ) : tree.length === 0 && !loading ? (
-          <div className="px-3 py-4 text-center text-text-muted text-xs">
+          <div className="px-3 py-4 text-center text-fg-muted text-xs">
             No files found in {rootPath}
           </div>
         ) : (
@@ -222,7 +222,7 @@ export function FileExplorer() {
 
       {/* Root path */}
       {rootPath && (
-        <div className="px-3 py-1.5 border-t border-border-subtle text-[11px] text-text-muted truncate">
+        <div className="px-3 py-1.5 border-t border-border-subtle text-[11px] text-fg-muted truncate">
           {rootPath}
         </div>
       )}
@@ -297,7 +297,7 @@ function TreeNode({
         <div>
           {renamingPath === node.path ? (
             <div className="flex items-center gap-1 py-0.5" style={{ paddingLeft: `${depth * 12 + 8}px` }}>
-              <Icon size={14} className={`shrink-0 ${node.is_dir ? "text-accent-primary" : "text-text-muted"}`} />
+              <Icon size={14} className={`shrink-0 ${node.is_dir ? "text-accent" : "text-fg-muted"}`} />
               <input
                 autoFocus
                 value={renameValue}
@@ -307,28 +307,28 @@ function TreeNode({
                   if (e.key === "Escape") setRenamingPath(null);
                 }}
                 onBlur={() => setRenamingPath(null)}
-                className="flex-1 bg-bg-primary text-text-primary text-xs px-1 py-0.5 rounded border border-accent-primary outline-none"
+                className="flex-1 bg-surface text-fg-primary text-xs px-1 py-0.5 rounded border border-accent outline-none"
               />
             </div>
           ) : (
             <button
               onClick={handleClick}
-              className={`w-full flex items-center gap-1.5 px-2 py-0.5 text-xs hover:bg-bg-elevated transition-fast text-left
-                ${isSelected ? "bg-bg-elevated text-accent-primary" : "text-text-secondary"}`}
+              className={`w-full flex items-center gap-1.5 px-2 py-0.5 text-xs hover:bg-surface-elevated transition-fast text-left
+                ${isSelected ? "bg-surface-elevated text-accent" : "text-fg-secondary"}`}
               style={{ paddingLeft: `${depth * 12 + 8}px` }}
             >
               {node.is_dir ? (
-                isExpanded ? <ChevronDown size={12} className="shrink-0 text-text-muted" /> : <ChevronRight size={12} className="shrink-0 text-text-muted" />
+                isExpanded ? <ChevronDown size={12} className="shrink-0 text-fg-muted" /> : <ChevronRight size={12} className="shrink-0 text-fg-muted" />
               ) : (
                 <span className="w-3" />
               )}
-              <Icon size={14} className={`shrink-0 ${node.is_dir ? "text-accent-primary" : "text-text-muted"}`} />
+              <Icon size={14} className={`shrink-0 ${node.is_dir ? "text-accent" : "text-fg-muted"}`} />
               <span className="truncate">{node.name}</span>
               {gitLetter && (
                 <span className={`ml-1 text-[10px] font-mono font-bold ${gitColor}`}>{gitLetter}</span>
               )}
               {!node.is_dir && node.size !== undefined && (
-                <span className="ml-auto text-[11px] text-text-muted">{formatSize(node.size)}</span>
+                <span className="ml-auto text-[11px] text-fg-muted">{formatSize(node.size)}</span>
               )}
             </button>
           )}
@@ -381,7 +381,7 @@ function NewEntryForm({ type, depth, onDone }: { type: "file" | "folder"; parent
 
   return (
     <div className="flex items-center gap-1 py-0.5" style={{ paddingLeft: `${depth * 12 + 8}px` }}>
-      <Icon size={14} className="shrink-0 text-accent-primary" />
+      <Icon size={14} className="shrink-0 text-accent" />
       <input
         autoFocus
         value={name}
@@ -392,7 +392,7 @@ function NewEntryForm({ type, depth, onDone }: { type: "file" | "folder"; parent
         }}
         onBlur={() => onDone()}
         placeholder={`${type} name`}
-        className="flex-1 bg-bg-primary text-text-primary text-xs px-1 py-0.5 rounded border border-accent-primary outline-none placeholder:text-text-muted"
+        className="flex-1 bg-surface text-fg-primary text-xs px-1 py-0.5 rounded border border-accent outline-none placeholder:text-fg-muted"
       />
     </div>
   );

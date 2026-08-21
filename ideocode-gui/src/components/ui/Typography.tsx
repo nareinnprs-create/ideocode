@@ -16,7 +16,7 @@ export function Heading({ level = 2, className = "", ref, ...rest }: HeadingProp
   return (
     <Tag
       ref={ref}
-      className={`${LEVEL_CLASSES[level]} font-sans text-text-primary ${className}`}
+      className={`${LEVEL_CLASSES[level]} font-sans text-fg-primary ${className}`}
       {...rest}
     />
   );
@@ -29,9 +29,9 @@ interface TextProps extends ComponentPropsWithRef<"p"> {
 }
 
 const TEXT_VARIANT: Record<NonNullable<TextProps["variant"]>, string> = {
-  primary: "text-text-primary",
-  secondary: "text-text-secondary",
-  muted: "text-text-muted",
+  primary: "text-fg-primary",
+  secondary: "text-fg-secondary",
+  muted: "text-fg-muted",
 };
 
 const TEXT_SIZE: Record<NonNullable<TextProps["size"]>, string> = {
@@ -51,9 +51,9 @@ export function Text({ variant = "primary", mono = false, size = "md", className
 }
 
 export function Label({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <span className={`text-[11px] font-medium text-text-secondary ${className}`}>{children}</span>;
+  return <span className={`text-[11px] font-medium text-fg-secondary ${className}`}>{children}</span>;
 }
 
 export function Caption({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <span className={`text-[11px] text-text-muted ${className}`}>{children}</span>;
+  return <span className={`text-[11px] text-fg-muted ${className}`}>{children}</span>;
 }

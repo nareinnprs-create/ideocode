@@ -7,7 +7,7 @@ interface ProgressProps {
 }
 
 const TONE_CLASSES = {
-  accent: "bg-accent-primary",
+  accent: "bg-accent",
   success: "bg-success",
   warning: "bg-warning",
   error: "bg-error",
@@ -21,7 +21,7 @@ export function Progress({ value = 0, max = 100, indeterminate = false, classNam
       aria-valuemin={0}
       aria-valuemax={max}
       aria-valuenow={indeterminate ? undefined : value}
-      className={`h-1 w-full rounded-full bg-bg-tertiary overflow-hidden ${className}`}
+      className={`h-1 w-full rounded-full bg-surface-elevated overflow-hidden ${className}`}
     >
       <div
         className={`h-full rounded-full transition-all duration-300 ${indeterminate ? "shimmer w-1/3" : TONE_CLASSES[tone]}`}

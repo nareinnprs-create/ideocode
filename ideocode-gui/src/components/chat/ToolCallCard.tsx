@@ -15,7 +15,7 @@ const STATUS_ICONS: Record<string, typeof Wrench> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  queued: "text-text-muted",
+  queued: "text-fg-muted",
   running: "text-info",
   completed: "text-success",
   error: "text-error",
@@ -55,7 +55,7 @@ export function ToolCallCard({ toolCall }: Props) {
   const [expanded, setExpanded] = useState(false);
   const status = toolCall.status ?? "completed";
   const Icon = STATUS_ICONS[status] ?? Wrench;
-  const colorClass = STATUS_COLORS[status] ?? "text-text-muted";
+  const colorClass = STATUS_COLORS[status] ?? "text-fg-muted";
   const nameColor = toolColor(toolCall.name);
   const [elapsed, setElapsed] = useState(0);
 
@@ -71,16 +71,16 @@ export function ToolCallCard({ toolCall }: Props) {
 
   return (
     <div
-      className={`my-1.5 rounded-lg border overflow-hidden bg-bg-secondary/70 transition-all duration-200 ${
+      className={`my-1.5 rounded-lg border overflow-hidden surface-blur bg-surface/70 transition-all duration-200 ${
         status === "running"
-          ? "border-accent-primary/30 glow-soft"
+          ? "border-accent/30 glow-soft"
           : "border-border-subtle hover:border-border-default"
       }`}
     >
       {/* Header — always visible */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-2 px-3 py-2 hover:bg-bg-hover transition-fast text-left"
+        className="w-full flex items-center gap-2 px-3 py-2 hover:bg-surface-hover transition-fast text-left"
       >
         <Icon
           size={14}
@@ -90,7 +90,7 @@ export function ToolCallCard({ toolCall }: Props) {
           {toolCall.name}
         </span>
         {elapsedText && (
-          <span className="text-[11px] text-text-muted font-mono tabular-nums">{elapsedText}</span>
+          <span className="text-[11px] text-fg-muted font-mono tabular-nums">{elapsedText}</span>
         )}
         <span className="flex items-center gap-1.5">
           <span className={`w-[5px] h-[5px] rounded-full ${colorClass} ${status === "running" ? "status-dot animate-pulse-glow" : ""}`} />
@@ -99,9 +99,9 @@ export function ToolCallCard({ toolCall }: Props) {
           </span>
         </span>
         {expanded ? (
-          <ChevronDown size={14} className="text-text-muted" />
+          <ChevronDown size={14} className="text-fg-muted" />
         ) : (
-          <ChevronRight size={14} className="text-text-muted" />
+          <ChevronRight size={14} className="text-fg-muted" />
         )}
       </button>
 
@@ -110,10 +110,10 @@ export function ToolCallCard({ toolCall }: Props) {
         <div className="border-t border-border-subtle">
           {/* Input */}
           <div className="px-3 py-2">
-            <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1">
+            <div className="text-[11px] uppercase tracking-wider text-fg-muted mb-1">
               Input
             </div>
-            <pre className="text-xs font-mono text-text-secondary bg-bg-primary rounded p-2 overflow-x-auto max-h-40 overflow-y-auto">
+            <pre className="text-xs font-mono text-fg-secondary bg-surface rounded p-2 overflow-x-auto max-h-40 overflow-y-auto">
               {formatJson(toolCall.input)}
             </pre>
           </div>
@@ -121,10 +121,10 @@ export function ToolCallCard({ toolCall }: Props) {
           {/* Output */}
           {toolCall.output && (
             <div className="px-3 py-2 border-t border-border-subtle">
-              <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1">
+              <div className="text-[11px] uppercase tracking-wider text-fg-muted mb-1">
                 Output
               </div>
-              <pre className="text-xs font-mono text-text-secondary bg-bg-primary rounded p-2 overflow-x-auto max-h-40 overflow-y-auto">
+              <pre className="text-xs font-mono text-fg-secondary bg-surface rounded p-2 overflow-x-auto max-h-40 overflow-y-auto">
                 {toolCall.output}
               </pre>
             </div>
@@ -132,11 +132,11 @@ export function ToolCallCard({ toolCall }: Props) {
 
           {/* Pending Approval Controls */}
           {status === "pending_approval" && (
-            <div className="px-3 py-2 border-t border-border-subtle flex items-center justify-end gap-2 bg-bg-secondary/50">
-              <button className="px-3 py-1.5 rounded-md text-xs font-medium text-text-secondary bg-bg-elevated border border-border-subtle hover:text-text-primary hover:bg-bg-hover transition-fast">
+            <div className="px-3 py-2 border-t border-border-subtle flex items-center justify-end gap-2 bg-surface/50">
+              <button className="px-3 py-1.5 rounded-md text-xs font-medium text-fg-secondary bg-surface-elevated border border-border-subtle hover:text-fg-primary hover:bg-surface-hover transition-fast">
                 Reject
               </button>
-              <button className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-accent-primary hover:brightness-110 transition-fast shadow-[inset_0_1px_0_0_rgba(255,255,255,0.18)]">
+              <button className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-accent hover:brightness-110 transition-fast shadow-[inset_0_1px_0_0_rgba(255,255,255,0.18)]">
                 Approve
               </button>
             </div>

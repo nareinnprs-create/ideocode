@@ -154,7 +154,7 @@ export function CommandPalette() {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[12vh]">
       <div
-        className="absolute inset-0 bg-bg-overlay/40 backdrop-blur-[2px] animate-fade-in"
+        className="absolute inset-0 bg-surface-overlay/40 backdrop-blur-[2px] animate-fade-in"
         onClick={() => setCommandPaletteOpen(false)}
         aria-hidden="true"
       />
@@ -164,11 +164,11 @@ export function CommandPalette() {
         role="dialog"
         aria-modal="true"
         aria-label="Command Palette"
-        className="relative w-full max-w-xl glass-strong rounded-xl overflow-hidden animate-float-in"
+        className="relative w-full max-w-xl surface-blur bg-surface-elevated rounded-xl overflow-hidden animate-float-in"
       >
         {/* Input */}
         <div className="flex items-center gap-2 px-4 py-3 border-b border-border-default hairline-top">
-          <Search size={16} className="text-text-muted shrink-0" />
+          <Search size={16} className="text-fg-muted shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -176,12 +176,12 @@ export function CommandPalette() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDownInput}
             placeholder="Search commands…"
-            className="flex-1 bg-transparent text-text-primary text-sm outline-none placeholder:text-text-muted"
+            className="flex-1 bg-transparent text-fg-primary text-sm outline-none placeholder:text-fg-muted"
             aria-label="Search commands"
           />
           <button
             onClick={() => setCommandPaletteOpen(false)}
-            className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-hover"
+            className="p-1 text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-hover"
             aria-label="Close command palette"
           >
             <X size={14} />
@@ -198,12 +198,12 @@ export function CommandPalette() {
                   a.run();
                   setCommandPaletteOpen(false);
                 }}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border-subtle bg-transparent text-xs font-medium text-text-secondary hover:border-accent-primary/40 hover:text-accent-primary hover:bg-bg-hover transition-all duration-150"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border-subtle bg-transparent text-xs font-medium text-fg-secondary hover:border-accent/40 hover:text-accent hover:bg-surface-hover transition-all duration-150"
               >
                 <a.icon size={13} />
                 {a.label}
                 {a.hint && (
-                  <kbd className="px-1 rounded bg-bg-tertiary text-[10px] font-mono text-text-muted">
+                  <kbd className="px-1 rounded bg-surface-elevated text-[10px] font-mono text-fg-muted">
                     {a.hint}
                   </kbd>
                 )}
@@ -215,7 +215,7 @@ export function CommandPalette() {
         {/* Results */}
         <div ref={resultsRef} className="max-h-[320px] overflow-y-auto py-1 scroll-thin" role="listbox" aria-label="Commands">
           {results.length === 0 ? (
-            <div className="px-4 py-6 text-center text-text-muted text-sm">
+            <div className="px-4 py-6 text-center text-fg-muted text-sm">
               No commands found
             </div>
           ) : (
@@ -231,7 +231,7 @@ export function CommandPalette() {
                     if (groupResults.length === 0) return null;
                     return (
                       <div key={g.category}>
-                        <div className="px-4 pt-2 pb-1 text-[11px] font-medium uppercase tracking-wide text-text-muted">
+                        <div className="px-4 pt-2 pb-1 text-[11px] font-medium uppercase tracking-wide text-fg-muted">
                           {g.category}
                         </div>
                         {groupResults.map((cmd) => {
@@ -248,14 +248,14 @@ export function CommandPalette() {
                               className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-fast
                                 ${
                                   idx === selectedIdx
-                                    ? "bg-accent-primary/10 text-accent-primary"
-                                    : "text-text-secondary hover:bg-bg-elevated"
+                                    ? "bg-accent/10 text-accent"
+                                    : "text-fg-secondary hover:bg-surface-elevated"
                                 }`}
                             >
                               <Icon size={16} className="shrink-0 opacity-50" />
                               <span className="flex-1 text-left">{cmd.label}</span>
                               {cmd.shortcut && (
-                                <kbd className="text-[11px] text-text-muted bg-bg-tertiary px-1.5 py-0.5 rounded font-mono border border-border-subtle">
+                                <kbd className="text-[11px] text-fg-muted bg-surface-elevated px-1.5 py-0.5 rounded font-mono border border-border-subtle">
                                   {cmd.shortcut}
                                 </kbd>
                               )}

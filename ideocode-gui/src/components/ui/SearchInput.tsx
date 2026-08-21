@@ -61,7 +61,7 @@ export function SearchInput({
 
   return (
     <div className={`relative flex items-center ${className}`}>
-      <Search size={14} className="absolute left-2.5 text-text-muted pointer-events-none" />
+      <Search size={14} className="absolute left-2.5 text-fg-muted pointer-events-none" />
       <input
         ref={inputRef}
         type="text"
@@ -70,13 +70,13 @@ export function SearchInput({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         autoFocus={autoFocus}
-        className="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg border border-border-subtle bg-bg-tertiary text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/20 transition-colors"
+        className="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg border border-border-subtle bg-surface-elevated text-fg-primary placeholder:text-fg-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-colors"
       />
       {currentValue && (
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-2 text-text-muted hover:text-text-primary transition-colors"
+          className="absolute right-2 text-fg-muted hover:text-fg-primary transition-colors"
         >
           <X size={12} />
         </button>

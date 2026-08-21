@@ -10,7 +10,7 @@ export function Skeleton({ className = "", lines = 1, height = "h-3" }: Skeleton
       {Array.from({ length: lines }).map((_, i) => (
         <div
           key={i}
-          className={`relative overflow-hidden rounded bg-bg-elevated ${height} ${
+          className={`relative overflow-hidden rounded bg-surface-elevated ${height} ${
             i === lines - 1 && lines > 1 ? "w-2/3" : "w-full"
           }`}
         >

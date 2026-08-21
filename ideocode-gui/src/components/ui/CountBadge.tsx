@@ -6,8 +6,8 @@ interface CountBadgeProps {
 }
 
 const VARIANT_CLASSES = {
-  default: "bg-bg-elevated text-text-secondary",
-  accent: "bg-accent-primary text-white",
+  default: "bg-surface-elevated text-fg-secondary",
+  accent: "bg-accent text-white",
   danger: "bg-error text-white",
 };
 

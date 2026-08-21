@@ -147,12 +147,12 @@ export function DebugPanel() {
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Debug panel">
       {/* Toolbar */}
-      <div className="flex items-center gap-1 px-2 py-2 border-b border-border-subtle">
+      <div className="flex items-center gap-1 px-2 py-2 border-b border-border-subtle surface-blur">
         <button
           aria-label={running ? "Stop the running process" : "Start the project"}
           onClick={() => (running ? stop() : start(false))}
           disabled={detecting || (!runKind && !running)}
-          className="p-1.5 text-text-muted disabled:opacity-25 enabled:hover:bg-bg-elevated transition-fast rounded"
+          className="p-1.5 text-fg-muted disabled:opacity-25 enabled:hover:bg-surface-elevated transition-fast rounded"
         >
           {running ? <Square size={14} /> : <BugPlay size={14} />}
         </button>
@@ -160,7 +160,7 @@ export function DebugPanel() {
           aria-label="Restart the project"
           onClick={() => start(true)}
           disabled={running || detecting || !runKind}
-          className="p-1.5 text-text-muted disabled:opacity-25 enabled:hover:bg-bg-elevated transition-fast rounded"
+          className="p-1.5 text-fg-muted disabled:opacity-25 enabled:hover:bg-surface-elevated transition-fast rounded"
         >
           <RotateCcw size={14} />
         </button>
@@ -168,25 +168,25 @@ export function DebugPanel() {
         <button
           aria-label="Step Over (requires a DAP debugger)"
           disabled
-          className="p-1.5 text-text-muted opacity-25"
+          className="p-1.5 text-fg-muted opacity-25"
         >
           <ArrowDown size={14} />
         </button>
         <button
           aria-label="Step Into (requires a DAP debugger)"
           disabled
-          className="p-1.5 text-text-muted opacity-25"
+          className="p-1.5 text-fg-muted opacity-25"
         >
           <ArrowRight size={14} />
         </button>
         <button
           aria-label="Step Out (requires a DAP debugger)"
           disabled
-          className="p-1.5 text-text-muted opacity-25"
+          className="p-1.5 text-fg-muted opacity-25"
         >
           <ArrowUp size={14} />
         </button>
-        <div className="ml-auto flex items-center gap-1.5 text-[11px] text-text-muted">
+        <div className="ml-auto flex items-center gap-1.5 text-[11px] text-fg-muted">
           {running && <Loader2 size={11} className="animate-spin text-success" />}
           <span className={running ? "text-success" : undefined}>
             {running ? "RUNNING" : proc.state === "exited" ? `EXITED ${proc.code}` : title}
@@ -200,7 +200,7 @@ export function DebugPanel() {
         className="flex-1 overflow-y-auto p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap"
       >
         {lines.length === 0 && (
-          <div className="flex items-center justify-center h-full text-text-muted text-xs">
+          <div className="flex items-center justify-center h-full text-fg-muted text-xs">
             {detecting
               ? "Detecting project type..."
               : runKind
@@ -213,12 +213,12 @@ export function DebugPanel() {
             key={i}
             className={
               line.startsWith("$ ")
-                ? "text-accent-primary"
+                ? "text-accent"
                 : proc.error && line.includes(proc.error)
                   ? "text-error"
                   : line.includes("error[") || line.startsWith("error:")
                     ? "text-error"
-                    : "text-text-secondary"
+                    : "text-fg-secondary"
             }
           >
             {line || "\u00a0"}

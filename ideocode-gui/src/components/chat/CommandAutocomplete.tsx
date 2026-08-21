@@ -87,9 +87,9 @@ export function CommandAutocomplete({ input, onSelect, onClose }: CommandAutocom
   return (
     <div
       ref={listRef}
-      className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default glass-strong overflow-hidden animate-scale-in max-h-48 overflow-y-auto"
+      className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-lg border border-border-default surface-blur bg-surface-elevated overflow-hidden animate-scale-in max-h-48 overflow-y-auto"
     >
-      <div className="px-3 py-1.5 text-[11px] uppercase tracking-wider text-text-muted border-b border-border-subtle flex items-center gap-1.5">
+      <div className="px-3 py-1.5 text-[11px] uppercase tracking-wider text-fg-muted border-b border-border-subtle flex items-center gap-1.5">
         <Command size={10} />
         Commands
       </div>
@@ -103,12 +103,12 @@ export function CommandAutocomplete({ input, onSelect, onClose }: CommandAutocom
           }}
           onMouseEnter={() => setActiveIdx(i)}
           className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-fast ${
-            i === activeIdx ? "bg-accent-primary/10" : ""
+            i === activeIdx ? "bg-accent/10" : ""
           }`}
         >
-          <cmd.icon size={14} className="text-accent-primary shrink-0" />
-          <span className="text-[13px] text-text-primary font-medium">/{cmd.label}</span>
-          <span className="text-xs text-text-muted flex-1 text-right truncate">{cmd.description}</span>
+          <cmd.icon size={14} className="text-accent shrink-0" />
+          <span className="text-[13px] text-fg-primary font-medium">/{cmd.label}</span>
+          <span className="text-xs text-fg-muted flex-1 text-right truncate">{cmd.description}</span>
         </button>
       ))}
     </div>

@@ -24,14 +24,14 @@ export function Toast({ id, type, title, description, action, onDismiss }: Toast
       <div className="flex items-start gap-2 px-3 py-2.5">
         {TYPE_ICONS[type]}
         <div className="flex-1 min-w-0">
-          <div className="text-xs font-medium text-text-primary">{title}</div>
-          {description && <div className="text-[11px] text-text-muted mt-0.5 break-words">{description}</div>}
+          <div className="text-xs font-medium text-fg-primary">{title}</div>
+          {description && <div className="text-[11px] text-fg-muted mt-0.5 break-words">{description}</div>}
           {action && <div className="mt-1.5">{action}</div>}
         </div>
         <button
           onClick={() => onDismiss(id)}
           aria-label="Dismiss notification"
-          className="p-0.5 text-text-muted hover:text-text-primary transition-fast"
+          className="p-0.5 text-fg-muted hover:text-fg-primary transition-fast"
         >
           <X size={12} />
         </button>

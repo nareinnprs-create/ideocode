@@ -149,7 +149,7 @@ export function FileQuickOpen() {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[12vh]">
       <div
-        className="absolute inset-0 bg-bg-overlay/40 backdrop-blur-[2px] animate-fade-in"
+        className="absolute inset-0 bg-surface-overlay/40 backdrop-blur-[2px] animate-fade-in"
         onClick={() => setOpen(false)}
         aria-hidden="true"
       />
@@ -158,10 +158,10 @@ export function FileQuickOpen() {
         role="dialog"
         aria-modal="true"
         aria-label="Quick Open File"
-        className="relative w-full max-w-lg glass-strong rounded-xl overflow-hidden animate-float-in"
+        className="relative w-full max-w-lg surface-blur bg-surface-elevated rounded-xl overflow-hidden animate-float-in"
       >
         <div className="flex items-center gap-2 px-4 py-3 border-b border-border-default hairline-top">
-          <Search size={16} className="text-text-muted shrink-0" />
+          <Search size={16} className="text-fg-muted shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -169,12 +169,12 @@ export function FileQuickOpen() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDownInput}
             placeholder="Search files by name…"
-            className="flex-1 bg-transparent text-text-primary text-sm outline-none placeholder:text-text-muted"
+            className="flex-1 bg-transparent text-fg-primary text-sm outline-none placeholder:text-fg-muted"
             aria-label="Search files"
           />
           <button
             onClick={() => setOpen(false)}
-            className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-hover"
+            className="p-1 text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-hover"
             aria-label="Close"
           >
             <X size={14} />
@@ -182,7 +182,7 @@ export function FileQuickOpen() {
         </div>
         <div ref={resultsRef} className="max-h-[320px] overflow-y-auto py-1 scroll-thin" role="listbox" aria-label="Files">
           {results.length === 0 ? (
-            <div className="px-4 py-6 text-center text-text-muted text-sm">
+            <div className="px-4 py-6 text-center text-fg-muted text-sm">
               No files found
             </div>
           ) : (
@@ -199,13 +199,13 @@ export function FileQuickOpen() {
                 className={`w-full flex items-center gap-2.5 px-4 py-2 text-sm transition-fast
                   ${
                     idx === selectedIdx
-                      ? "bg-accent-primary/10 text-accent-primary"
-                      : "text-text-secondary hover:bg-bg-elevated"
+                      ? "bg-accent/10 text-accent"
+                      : "text-fg-secondary hover:bg-surface-elevated"
                   }`}
               >
                 <FileCode2 size={14} className="shrink-0 opacity-50" />
                 <span className="truncate font-mono text-xs">{file.name}</span>
-                <span className="ml-auto text-[11px] text-text-muted truncate max-w-60">{file.path}</span>
+                <span className="ml-auto text-[11px] text-fg-muted truncate max-w-60">{file.path}</span>
               </button>
             ))
           )}

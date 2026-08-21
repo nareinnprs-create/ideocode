@@ -109,63 +109,63 @@ export function ProjectTemplatesPanel() {
 
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Project templates">
-      <div className="flex items-center justify-between h-10 px-3 border-b border-border-subtle">
-        <span className="text-xs font-medium text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+      <div className="flex items-center justify-between h-10 px-3 border-b border-border-subtle surface-blur">
+        <span className="text-xs font-medium text-fg-secondary uppercase tracking-wider flex items-center gap-1.5">
           <LayoutTemplate size={13} /> Project Templates
         </span>
-        <button onClick={() => setShowAdd(!showAdd)} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated" aria-label={showAdd ? "Close template form" : "Create template"}>
+        <button onClick={() => setShowAdd(!showAdd)} className="p-1 text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated" aria-label={showAdd ? "Close template form" : "Create template"}>
           <Plus size={14} />
         </button>
       </div>
 
-      <div className="px-3 py-2 border-b border-border-subtle">
+      <div className="px-3 py-2 border-b border-border-subtle surface-blur">
         <div className="flex items-center gap-2 bg-bg-surface rounded border border-border-subtle px-2 py-1">
-          <Search size={13} className="text-text-muted shrink-0" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search templates..." aria-label="Search templates" className="flex-1 bg-transparent text-text-primary text-xs outline-none placeholder:text-text-muted" />
+          <Search size={13} className="text-fg-muted shrink-0" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search templates..." aria-label="Search templates" className="flex-1 bg-transparent text-fg-primary text-xs outline-none placeholder:text-fg-muted" />
         </div>
       </div>
 
       {showAdd && (
         <div className="mx-3 mt-2 p-3 rounded border border-border-subtle bg-bg-surface space-y-2">
-          <input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="Template name" className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
-          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
-          <input value={lang} onChange={(e) => setLang(e.target.value)} placeholder="Language" className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
+          <input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="Template name" className="w-full bg-surface text-fg-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-fg-muted outline-none focus:border-accent" />
+          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" className="w-full bg-surface text-fg-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-fg-muted outline-none focus:border-accent" />
+          <input value={lang} onChange={(e) => setLang(e.target.value)} placeholder="Language" className="w-full bg-surface text-fg-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-fg-muted outline-none focus:border-accent" />
           <div className="flex justify-end gap-1">
-            <button onClick={() => setShowAdd(false)} className="px-2 py-1 text-[11px] rounded bg-bg-elevated text-text-secondary transition-fast hover:bg-bg-hover">Cancel</button>
-            <button onClick={handleAdd} disabled={!name.trim()} className="px-2 py-1 text-[11px] rounded bg-accent-primary text-white disabled:opacity-50 transition-fast hover:bg-accent-hover">Create</button>
+            <button onClick={() => setShowAdd(false)} className="px-2 py-1 text-[11px] rounded bg-surface-elevated text-fg-secondary transition-fast hover:bg-surface-hover">Cancel</button>
+            <button onClick={handleAdd} disabled={!name.trim()} className="px-2 py-1 text-[11px] rounded bg-accent text-white disabled:opacity-50 transition-fast hover:bg-accent-hover">Create</button>
           </div>
         </div>
       )}
 
       <div className="flex-1 overflow-y-auto py-1">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-2 text-text-muted">
+          <div className="flex flex-col items-center justify-center h-full gap-2 text-fg-muted">
             <LayoutTemplate size={24} className="opacity-30" />
             <div className="text-xs">No templates found</div>
           </div>
         ) : (
           filtered.map((t) => (
-            <div key={t.id} className="px-3 py-3 hover:bg-bg-elevated transition-fast border-b border-border-subtle/50 group">
+            <div key={t.id} className="px-3 py-3 hover:bg-surface-elevated transition-fast border-b border-border-subtle/50 group">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <FolderOpen size={14} className="text-accent-primary shrink-0" />
-                    <span className="text-xs font-medium text-text-primary">{t.name}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-bg-surface text-text-muted">{t.language}</span>
+                    <FolderOpen size={14} className="text-accent shrink-0" />
+                    <span className="text-xs font-medium text-fg-primary">{t.name}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-bg-surface text-fg-muted">{t.language}</span>
                   </div>
-                  {t.description && <div className="text-[10px] text-text-secondary mt-1">{t.description}</div>}
-                  <div className="flex items-center gap-2 mt-1 text-[10px] text-text-muted">
+                  {t.description && <div className="text-[10px] text-fg-secondary mt-1">{t.description}</div>}
+                  <div className="flex items-center gap-2 mt-1 text-[10px] text-fg-muted">
                     <Code2 size={10} />
                     <span>{t.files.length} files</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-fast">
                   <button onClick={() => useTemplate(t)} disabled={appliedId === t.id}
-                    className="flex items-center gap-1 px-2 py-1 text-[10px] rounded bg-accent-primary text-white hover:bg-accent-hover disabled:opacity-70 transition-fast">
+                    className="flex items-center gap-1 px-2 py-1 text-[10px] rounded bg-accent text-white hover:bg-accent-hover disabled:opacity-70 transition-fast">
                     {appliedId === t.id ? <><Check size={10} /> Applied</> : <><Play size={10} /> Use</>}
                   </button>
                   {!BUILT_IN_TEMPLATES.some((b) => b.id === t.id) && (
-                    <button onClick={() => remove(t.id)} className="p-1 text-text-muted hover:text-error transition-fast">
+                    <button onClick={() => remove(t.id)} className="p-1 text-fg-muted hover:text-error transition-fast">
                       <Trash2 size={12} />
                     </button>
                   )}

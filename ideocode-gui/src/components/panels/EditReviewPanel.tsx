@@ -36,7 +36,7 @@ function MiniDiff({ edit }: { edit: FileEdit }) {
                 ? "bg-error/15 text-error"
                 : l.type === "added"
                   ? "bg-success/15 text-success"
-                  : "text-text-muted"
+                  : "text-fg-muted"
             }`}
           >
             {l.left}
@@ -52,7 +52,7 @@ function MiniDiff({ edit }: { edit: FileEdit }) {
                 ? "bg-success/15 text-success"
                 : l.type === "removed"
                   ? "bg-error/15 text-error"
-                  : "text-text-muted"
+                  : "text-fg-muted"
             }`}
           >
             {l.right}
@@ -71,11 +71,11 @@ function EditCard({ edit }: { edit: FileEdit }) {
   const fileName = edit.path.split(/[/\\]/).pop() ?? edit.path;
 
   return (
-    <div className="border border-border-subtle rounded-md bg-bg-secondary overflow-hidden">
+    <div className="border border-border-subtle rounded-md bg-surface overflow-hidden">
       <div className="flex items-center gap-2 px-3 py-2">
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-text-muted hover:text-text-primary shrink-0"
+          className="text-fg-muted hover:text-fg-primary shrink-0"
           aria-expanded={expanded}
           aria-label={expanded ? "Collapse diff" : "Expand diff"}
         >
@@ -86,10 +86,10 @@ function EditCard({ edit }: { edit: FileEdit }) {
           )}
         </button>
         <FileEditIcon className="w-3.5 h-3.5 text-accent shrink-0" />
-        <span className="text-[11px] font-mono text-text-primary truncate flex-1">
+        <span className="text-[11px] font-mono text-fg-primary truncate flex-1">
           {fileName}
         </span>
-        <span className="text-[10px] text-text-muted truncate max-w-[200px]">
+        <span className="text-[10px] text-fg-muted truncate max-w-[200px]">
           {edit.path}
         </span>
         {edit.status === "pending" && (
@@ -133,9 +133,9 @@ export function EditReviewPanel() {
 
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Edit review">
-      <div className="flex items-center gap-2 px-3 h-9 border-b border-border-subtle bg-bg-secondary shrink-0">
-        <RotateCcw className="w-3.5 h-3.5 text-text-muted" />
-        <span className="text-xs font-medium text-text-primary">
+      <div className="flex items-center gap-2 px-3 h-9 border-b border-border-subtle bg-surface shrink-0">
+        <RotateCcw className="w-3.5 h-3.5 text-fg-muted" />
+        <span className="text-xs font-medium text-fg-primary">
           Edit Review
         </span>
         {pending.length > 0 && (
@@ -163,7 +163,7 @@ export function EditReviewPanel() {
         {edits.length > 0 && (
           <button
             onClick={clearEdits}
-            className="text-[10px] text-text-muted hover:text-text-primary"
+            className="text-[10px] text-fg-muted hover:text-fg-primary"
           >
             Clear
           </button>
@@ -171,7 +171,7 @@ export function EditReviewPanel() {
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto p-2 flex flex-col gap-2">
         {edits.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-text-muted gap-2">
+          <div className="flex flex-col items-center justify-center h-full text-fg-muted gap-2">
             <FileEditIcon className="w-8 h-8 opacity-30" />
             <span className="text-xs">No edits to review</span>
           </div>

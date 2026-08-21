@@ -34,10 +34,10 @@ function renderInline(text: string): React.ReactNode[] {
     }
 
     if (type === "bold") {
-      parts.push(<strong key={key++} className="font-semibold text-text-primary">{earliest[1]}</strong>);
+      parts.push(<strong key={key++} className="font-semibold text-fg-primary">{earliest[1]}</strong>);
     } else {
       parts.push(
-        <code key={key++} className="px-1 py-0.5 text-[11px] font-mono bg-bg-tertiary text-accent-primary rounded">
+        <code key={key++} className="px-1 py-0.5 text-[11px] font-mono bg-surface-elevated text-accent rounded">
           {earliest[1]}
         </code>
       );
@@ -64,19 +64,19 @@ function renderMarkdown(text: string): React.ReactNode {
         const lines = trimmed.split("\n");
 
         if (lines.length === 1 && lines[0].startsWith("### ")) {
-          return <h3 key={next()} className="text-xs font-bold text-text-primary mt-2">{renderInline(lines[0].slice(4))}</h3>;
+          return <h3 key={next()} className="text-xs font-bold text-fg-primary mt-2">{renderInline(lines[0].slice(4))}</h3>;
         }
         if (lines.length === 1 && lines[0].startsWith("## ")) {
-          return <h2 key={next()} className="text-sm font-bold text-text-primary mt-3">{renderInline(lines[0].slice(3))}</h2>;
+          return <h2 key={next()} className="text-sm font-bold text-fg-primary mt-3">{renderInline(lines[0].slice(3))}</h2>;
         }
         if (lines.length === 1 && lines[0].startsWith("# ")) {
-          return <h1 key={next()} className="text-base font-bold text-text-primary mt-3">{renderInline(lines[0].slice(2))}</h1>;
+          return <h1 key={next()} className="text-base font-bold text-fg-primary mt-3">{renderInline(lines[0].slice(2))}</h1>;
         }
 
         if (lines.length === 1 && trimmed.startsWith("```") && trimmed.endsWith("```")) {
           const code = trimmed.slice(3, -3);
           return (
-            <pre key={next()} className="p-2 text-[11px] font-mono bg-bg-tertiary text-text-primary rounded border border-border-subtle overflow-x-auto whitespace-pre-wrap">
+            <pre key={next()} className="p-2 text-[11px] font-mono bg-surface-elevated text-fg-primary rounded border border-border-subtle overflow-x-auto whitespace-pre-wrap">
               {code}
             </pre>
           );
@@ -86,7 +86,7 @@ function renderMarkdown(text: string): React.ReactNode {
         if (allCodeBlock) {
           const code = trimmed.replace(/^```[a-z]*\n?/, "").replace(/\n?```$/, "");
           return (
-            <pre key={next()} className="p-2 text-[11px] font-mono bg-bg-tertiary text-text-primary rounded border border-border-subtle overflow-x-auto whitespace-pre-wrap">
+            <pre key={next()} className="p-2 text-[11px] font-mono bg-surface-elevated text-fg-primary rounded border border-border-subtle overflow-x-auto whitespace-pre-wrap">
               {code}
             </pre>
           );
@@ -95,7 +95,7 @@ function renderMarkdown(text: string): React.ReactNode {
         const isUnorderedList = lines.every((l) => /^[\s]*[-*] /.test(l));
         if (isUnorderedList) {
           return (
-            <ul key={next()} className="list-disc list-inside space-y-0.5 text-xs text-text-secondary">
+            <ul key={next()} className="list-disc list-inside space-y-0.5 text-xs text-fg-secondary">
               {lines.map((l, i) => (
                 <li key={i}>{renderInline(l.replace(/^[\s]*[-*] /, ""))}</li>
               ))}
@@ -106,7 +106,7 @@ function renderMarkdown(text: string): React.ReactNode {
         const isOrderedList = lines.every((l) => /^[\s]*\d+\. /.test(l));
         if (isOrderedList) {
           return (
-            <ol key={next()} className="list-decimal list-inside space-y-0.5 text-xs text-text-secondary">
+            <ol key={next()} className="list-decimal list-inside space-y-0.5 text-xs text-fg-secondary">
               {lines.map((l, i) => (
                 <li key={i}>{renderInline(l.replace(/^[\s]*\d+\. /, ""))}</li>
               ))}
@@ -117,14 +117,14 @@ function renderMarkdown(text: string): React.ReactNode {
         const isBlockquote = lines.every((l) => /^> /.test(l));
         if (isBlockquote) {
           return (
-            <blockquote key={next()} className="pl-2 border-l-2 border-accent-primary text-xs text-text-muted italic">
+            <blockquote key={next()} className="pl-2 border-l-2 border-accent text-xs text-fg-muted italic">
               {lines.map((l, i) => <div key={i}>{renderInline(l.replace(/^> /, ""))}</div>)}
             </blockquote>
           );
         }
 
         return (
-          <p key={next()} className="text-xs text-text-secondary leading-relaxed">
+          <p key={next()} className="text-xs text-fg-secondary leading-relaxed">
             {lines.map((l, i) => (
               <React.Fragment key={i}>
                 {i > 0 && <br />}
@@ -252,17 +252,17 @@ export function WikiPanel() {
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Wiki panel">
       <div className="px-1 pt-1 flex items-center justify-between">
-        <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
+        <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated">
           <BookOpen size={14} /> Wiki
         </button>
         <div className="flex items-center gap-1">
-          <button onClick={handleNew} aria-label="New wiki page" className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
+          <button onClick={handleNew} aria-label="New wiki page" className="flex items-center gap-1 px-2 py-1 text-xs text-accent hover:text-accent-hover transition-fast rounded hover:bg-surface-elevated">
             <Plus size={14} /> New
           </button>
-          <button onClick={handleExport} aria-label="Export wiki" className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
+          <button onClick={handleExport} aria-label="Export wiki" className="flex items-center gap-1 px-2 py-1 text-xs text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated">
             <Download size={14} /> Export
           </button>
-          <button onClick={() => importRef.current?.click()} aria-label="Import wiki" className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
+          <button onClick={() => importRef.current?.click()} aria-label="Import wiki" className="flex items-center gap-1 px-2 py-1 text-xs text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated">
             <Upload size={14} /> Import
           </button>
           <input ref={importRef} type="file" accept=".json" onChange={handleImport} className="hidden" />
@@ -273,34 +273,34 @@ export function WikiPanel() {
         <>
           <div className="px-3 py-2">
             <div className="relative">
-              <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-text-muted" />
+              <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-fg-muted" />
               <input type="text" placeholder="Search wiki..." value={search} onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-7 pr-2 py-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-primary" />
+                className="w-full pl-7 pr-2 py-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted focus:outline-none focus:border-accent" />
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
             {filtered.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-text-muted">
+              <div className="flex flex-col items-center justify-center py-12 text-fg-muted">
                 <BookOpen size={24} className="mb-2 opacity-50" />
                 <div className="text-xs">No wiki pages yet</div>
               </div>
             ) : (
               filtered.map((page) => (
                 <div key={page.id} onClick={() => setSelectedId(page.id)}
-                  className="px-3 py-2 border-b border-border-subtle hover:bg-bg-elevated cursor-pointer transition-fast group">
+                  className="px-3 py-2 border-b border-border-subtle hover:bg-surface-elevated cursor-pointer transition-fast group">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-text-primary">{page.title}</span>
+                    <span className="text-xs font-medium text-fg-primary">{page.title}</span>
                     <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(page.id); }}
                       aria-label="Delete wiki page"
-                      className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
+                      className="p-1 text-fg-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
                       <Trash2 size={11} />
                     </button>
                   </div>
-                  <div className="text-[11px] text-text-muted mt-0.5 line-clamp-1">{page.content || "Empty page"}</div>
+                  <div className="text-[11px] text-fg-muted mt-0.5 line-clamp-1">{page.content || "Empty page"}</div>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-bg-tertiary text-text-muted">{page.category}</span>
-                    <span className="text-[10px] text-text-muted">{wordCount(page.content)} words</span>
-                    <span className="text-[10px] text-text-muted">{new Date(page.updatedAt).toLocaleDateString()}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface-elevated text-fg-muted">{page.category}</span>
+                    <span className="text-[10px] text-fg-muted">{wordCount(page.content)} words</span>
+                    <span className="text-[10px] text-fg-muted">{new Date(page.updatedAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               ))
@@ -310,26 +310,26 @@ export function WikiPanel() {
       ) : (
         <div className="flex-1 flex flex-col min-h-0">
           <div className="px-3 py-2 border-b border-border-subtle flex items-center gap-2">
-            <button onClick={() => { setSelectedId(null); setEditing(false); }} aria-label="Close page" className="text-text-muted hover:text-text-primary transition-fast">
+            <button onClick={() => { setSelectedId(null); setEditing(false); }} aria-label="Close page" className="text-fg-muted hover:text-fg-primary transition-fast">
               <X size={14} />
             </button>
             {editing ? (
                 <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)}
-                  className="flex-1 text-xs font-medium text-text-primary bg-transparent border-b border-border-subtle focus:outline-none focus:border-accent-primary" />
+                  className="flex-1 text-xs font-medium text-fg-primary bg-transparent border-b border-border-subtle focus:outline-none focus:border-accent" />
               ) : (
-                <span className="flex-1 text-xs font-medium text-text-primary">{selected?.title}</span>
+                <span className="flex-1 text-xs font-medium text-fg-primary">{selected?.title}</span>
             )}
             {editing ? (
               <button onClick={handleSave} aria-label="Save page" className="p-1 text-success hover:bg-success/10 rounded transition-fast"><Save size={14} /></button>
             ) : (
-              <button onClick={startEdit} aria-label="Edit page" className="p-1 text-text-muted hover:text-text-primary hover:bg-bg-hover rounded transition-fast"><Edit3 size={14} /></button>
+              <button onClick={startEdit} aria-label="Edit page" className="p-1 text-fg-muted hover:text-fg-primary hover:bg-surface-hover rounded transition-fast"><Edit3 size={14} /></button>
             )}
           </div>
           <div className="flex-1 overflow-y-auto p-3">
             {editing ? (
               <div className="space-y-2">
                 <select value={editCategory} onChange={(e) => setEditCategory(e.target.value)}
-                  className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary">
+                  className="w-full p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary focus:outline-none focus:border-accent">
                   <option value="general">General</option>
                   <option value="architecture">Architecture</option>
                   <option value="api">API</option>
@@ -337,13 +337,13 @@ export function WikiPanel() {
                   <option value="reference">Reference</option>
                 </select>
                 <textarea value={editContent} onChange={(e) => setEditContent(e.target.value)}
-                  className="w-full h-full min-h-[300px] p-2 text-xs font-mono bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary resize-none"
+                  className="w-full h-full min-h-[300px] p-2 text-xs font-mono bg-surface-elevated border border-border-subtle rounded text-fg-primary focus:outline-none focus:border-accent resize-none"
                   placeholder="Write your wiki content in Markdown..." />
               </div>
             ) : (
-              <div className="text-xs text-text-secondary leading-relaxed">
+              <div className="text-xs text-fg-secondary leading-relaxed">
                 {renderMarkdown(selected?.content || "")}
-                {!selected?.content && <span className="text-text-muted italic">Empty page. Click edit to add content.</span>}
+                {!selected?.content && <span className="text-fg-muted italic">Empty page. Click edit to add content.</span>}
               </div>
             )}
           </div>

@@ -29,7 +29,7 @@ export function RadioGroup<T extends string>({
           <label
             key={opt.value}
             className={`flex items-start gap-2.5 rounded-lg px-2.5 py-2 transition-colors duration-150 ${
-              disabled ? "opacity-50 cursor-not-allowed" : selected ? "bg-bg-hover" : "cursor-pointer hover:bg-bg-hover/60"
+              disabled ? "opacity-50 cursor-not-allowed" : selected ? "bg-surface-hover" : "cursor-pointer hover:bg-surface-hover/60"
             }`}
           >
             <input
@@ -45,16 +45,16 @@ export function RadioGroup<T extends string>({
               aria-hidden="true"
               className={[
                 "inline-flex items-center justify-center w-4 h-4 rounded-full border-2 mt-0.5 shrink-0 transition-all duration-150",
-                selected ? "border-accent-primary" : "border-border-default",
+                selected ? "border-accent" : "border-border-default",
               ].join(" ")}
             >
-              {selected && <span className="w-1.5 h-1.5 rounded-full bg-accent-primary" />}
+              {selected && <span className="w-1.5 h-1.5 rounded-full bg-accent" />}
             </span>
             <span className="flex flex-col gap-0.5 min-w-0">
-              <span className={`text-sm leading-tight ${selected ? "text-text-primary font-medium" : "text-text-secondary"}`}>
+              <span className={`text-sm leading-tight ${selected ? "text-fg-primary font-medium" : "text-fg-secondary"}`}>
                 {opt.label}
               </span>
-              {opt.description && <span className="text-[11px] text-text-muted leading-snug">{opt.description}</span>}
+              {opt.description && <span className="text-[11px] text-fg-muted leading-snug">{opt.description}</span>}
             </span>
           </label>
         );

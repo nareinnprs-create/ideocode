@@ -76,7 +76,7 @@ export function BrowserPanel() {
       <div className="px-1 pt-1 flex items-center justify-between">
         <button
           onClick={() => setRightPanelOpen(false)}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
+          className="flex items-center gap-1 px-2 py-1 text-xs text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated"
         >
           <ArrowLeft size={14} />
           Back
@@ -85,7 +85,7 @@ export function BrowserPanel() {
           <button
             onClick={load}
             aria-label="Refresh page"
-            className="p-1.5 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
+            className="p-1.5 text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated"
             title="Refresh"
           >
             <RefreshCw size={14} />
@@ -93,7 +93,7 @@ export function BrowserPanel() {
           <button
             onClick={handleClear}
             aria-label="Clear browser context"
-            className="p-1.5 text-text-muted hover:text-error transition-fast rounded hover:bg-bg-elevated"
+            className="p-1.5 text-fg-muted hover:text-error transition-fast rounded hover:bg-surface-elevated"
             title="Clear"
           >
             <Trash2 size={14} />
@@ -102,8 +102,8 @@ export function BrowserPanel() {
       </div>
 
       {/* Manual tab input */}
-      <div className="px-3 py-2 border-b border-border-subtle">
-        <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1.5">
+      <div className="px-3 py-2 border-b border-border-subtle surface-blur">
+        <div className="text-[11px] uppercase tracking-wider text-fg-muted mb-1.5">
           Add Tab Manually
         </div>
         <input
@@ -111,7 +111,7 @@ export function BrowserPanel() {
           placeholder="URL"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-primary mb-1"
+          className="w-full p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted focus:outline-none focus:border-accent mb-1"
         />
         <div className="flex gap-1">
           <input
@@ -119,12 +119,12 @@ export function BrowserPanel() {
             placeholder="Page title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="flex-1 p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-primary"
+            className="flex-1 p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted focus:outline-none focus:border-accent"
           />
           <button
             onClick={handleSetTab}
             disabled={!url.trim()}
-            className="px-2 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast"
+            className="px-2 py-1.5 text-xs bg-accent text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast"
           >
             Add
           </button>
@@ -133,7 +133,7 @@ export function BrowserPanel() {
 
       {/* Error */}
       {error && (
-        <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle">
+        <div className="mx-3 mb-2 p-2 rounded bg-surface-elevated border border-border-subtle">
           <div className="text-xs text-error">{error}</div>
         </div>
       )}
@@ -141,7 +141,7 @@ export function BrowserPanel() {
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-8">
-          <div className="flex items-center gap-2 text-text-muted text-xs animate-pulse">
+          <div className="flex items-center gap-2 text-fg-muted text-xs animate-pulse">
             <Globe size={14} />
             Loading browser context...
           </div>
@@ -150,17 +150,17 @@ export function BrowserPanel() {
 
       {/* Active tab */}
       {ctx?.active_tab && (
-        <div className="px-3 py-2 border-b border-border-subtle">
-          <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1.5">
+        <div className="px-3 py-2 border-b border-border-subtle surface-blur">
+          <div className="text-[11px] uppercase tracking-wider text-fg-muted mb-1.5">
             Current Tab
           </div>
           <div className="flex items-center gap-2">
-            <Globe size={14} className="text-accent-primary shrink-0" />
+            <Globe size={14} className="text-accent shrink-0" />
             <div className="flex-1 min-w-0">
-              <div className="text-xs text-text-primary truncate">
+              <div className="text-xs text-fg-primary truncate">
                 {ctx.active_tab.title}
               </div>
-              <div className="text-[11px] text-text-muted truncate">
+              <div className="text-[11px] text-fg-muted truncate">
                 {ctx.active_tab.url}
               </div>
             </div>
@@ -169,7 +169,7 @@ export function BrowserPanel() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Open in external browser"
-              className="p-1 text-text-muted hover:text-text-primary transition-fast"
+              className="p-1 text-fg-muted hover:text-fg-primary transition-fast"
             >
               <ExternalLink size={12} />
             </a>
@@ -179,19 +179,19 @@ export function BrowserPanel() {
 
       {/* Recent tabs */}
       {ctx && ctx.recent_tabs.length > 0 && (
-        <div className="px-3 py-2 border-b border-border-subtle">
-          <div className="text-[11px] uppercase tracking-wider text-text-muted mb-1.5">
+        <div className="px-3 py-2 border-b border-border-subtle surface-blur">
+          <div className="text-[11px] uppercase tracking-wider text-fg-muted mb-1.5">
             Recent Tabs ({ctx.recent_tabs.length})
           </div>
           <div className="space-y-1 max-h-32 overflow-y-auto">
             {ctx.recent_tabs.map((tab, i) => (
               <div key={i} className="flex items-center gap-2">
-                <span className="text-[11px] text-text-muted w-4">{i + 1}.</span>
+                <span className="text-[11px] text-fg-muted w-4">{i + 1}.</span>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[11px] text-text-primary truncate">
+                  <div className="text-[11px] text-fg-primary truncate">
                     {tab.title}
                   </div>
-                  <div className="text-[11px] text-text-muted truncate">
+                  <div className="text-[11px] text-fg-muted truncate">
                     {tab.url}
                   </div>
                 </div>
@@ -204,28 +204,28 @@ export function BrowserPanel() {
       {/* Context text */}
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex items-center justify-between px-3 py-1">
-          <span className="text-[11px] uppercase tracking-wider text-text-muted">
+          <span className="text-[11px] uppercase tracking-wider text-fg-muted">
             Context Summary
           </span>
           <button
             onClick={handleCopy}
             aria-label="Copy URL"
-            className="p-1 text-text-muted hover:text-text-primary transition-fast"
+            className="p-1 text-fg-muted hover:text-fg-primary transition-fast"
             title="Copy"
           >
             <Copy size={12} />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-3 pb-2">
-          <pre className="text-[11px] text-text-secondary font-mono whitespace-pre-wrap bg-bg-tertiary p-2 rounded">
+          <pre className="text-[11px] text-fg-secondary font-mono whitespace-pre-wrap bg-surface-elevated p-2 rounded">
             {text || "No browser context available. Use the browser extension to share tabs."}
           </pre>
         </div>
       </div>
 
       {/* Instructions */}
-      <div className="px-3 py-2 border-t border-border-subtle bg-bg-elevated">
-        <div className="text-[11px] text-text-muted">
+      <div className="px-3 py-2 border-t border-border-subtle bg-surface-elevated">
+        <div className="text-[11px] text-fg-muted">
           Install the browser extension or use the manual tab input above to share your browsing context with IDEOCODE.
         </div>
       </div>

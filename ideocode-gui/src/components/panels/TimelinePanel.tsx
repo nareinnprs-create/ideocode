@@ -21,7 +21,7 @@ const TYPE_ICONS = {
 };
 
 const TYPE_COLORS = {
-  "file-edit": "text-accent-primary",
+  "file-edit": "text-accent",
   "git-commit": "text-success",
   "agent-action": "text-warning",
   message: "text-info",
@@ -96,13 +96,13 @@ export function TimelinePanel() {
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Timeline">
       <div className="px-3 py-2 border-b border-border-subtle flex items-center gap-2">
-        <Clock size={14} className="text-accent-primary" />
-        <span className="text-xs font-semibold text-text-primary">Timeline</span>
+        <Clock size={14} className="text-accent" />
+        <span className="text-xs font-semibold text-fg-primary">Timeline</span>
         <div className="flex-1" />
         <button
           onClick={clearTimeline}
           aria-label="Clear timeline"
-          className="p-1 rounded hover:bg-bg-hover text-text-muted hover:text-text-primary transition-colors"
+          className="p-1 rounded hover:bg-surface-hover text-fg-muted hover:text-fg-primary transition-colors"
           title="Clear Timeline"
         >
           <Trash2 size={12} />
@@ -112,10 +112,10 @@ export function TimelinePanel() {
         <div className="relative">
           <div className="absolute left-[11px] top-0 bottom-0 w-px bg-border-subtle" />
           {entries.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 text-text-muted">
+            <div className="flex flex-col items-center justify-center py-12 text-fg-muted">
               <Clock size={24} className="mb-2 opacity-40" />
               <div className="text-xs">No events yet</div>
-              <div className="text-[10px] text-text-muted mt-1">Activity will appear here as you work</div>
+              <div className="text-[10px] text-fg-muted mt-1">Activity will appear here as you work</div>
             </div>
           )}
           {entries.map((entry) => {
@@ -123,20 +123,20 @@ export function TimelinePanel() {
             return (
               <div key={entry.id} className="relative flex gap-3 pb-4 last:pb-0">
                 <div
-                  className={`shrink-0 w-6 h-6 rounded-full bg-bg-elevated border border-border-subtle flex items-center justify-center z-10 ${TYPE_COLORS[entry.type]}`}
+                  className={`shrink-0 w-6 h-6 rounded-full bg-surface-elevated border border-border-subtle flex items-center justify-center z-10 ${TYPE_COLORS[entry.type]}`}
                 >
                   <Icon size={12} />
                 </div>
                 <div className="flex-1 min-w-0 pt-0.5">
-                  <div className="text-xs font-medium text-text-primary">
+                  <div className="text-xs font-medium text-fg-primary">
                     {entry.title}
                   </div>
                   {entry.description && (
-                    <div className="text-[11px] text-text-muted mt-0.5 truncate">
+                    <div className="text-[11px] text-fg-muted mt-0.5 truncate">
                       {entry.description}
                     </div>
                   )}
-                  <div className="text-[10px] text-text-muted mt-1">
+                  <div className="text-[10px] text-fg-muted mt-1">
                     {formatTime(entry.timestamp)}
                   </div>
                 </div>

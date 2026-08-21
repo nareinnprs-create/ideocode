@@ -60,7 +60,7 @@ export function StatusBar() {
         ? { label: "Engine online", dot: "bg-success", text: "text-success", pulse: false }
         : gateway?.installing
           ? { label: "Engine installing", dot: "bg-warning", text: "text-warning", pulse: true }
-          : { label: "Engine starting", dot: "bg-accent-primary", text: "text-accent-primary", pulse: true };
+          : { label: "Engine starting", dot: "bg-accent", text: "text-accent", pulse: true };
 
   const gitChanges = gitStatus
     ? gitStatus.staged.length + gitStatus.modified.length + gitStatus.untracked.length + gitStatus.conflicted.length
@@ -110,34 +110,36 @@ export function StatusBar() {
   const totalTokens = messages.reduce((acc, m) => acc + (m.usage?.total_tokens ?? 0), 0);
 
   return (
-    <footer className="flex items-center justify-between h-7 px-3 bg-bg-secondary/80 border-t border-border-default text-[11px] text-text-secondary select-none gap-3 surface-blur hairline-top">
+    <footer className="flex items-center justify-between h-7 px-3 surface-blur hairline-top text-[11px] text-fg-secondary select-none gap-3"
+      style={{ background: "color-mix(in srgb, var(--color-surface) 70%, transparent)" }}
+    >
       {/* Left — git + engine */}
       <div className="flex items-center gap-3 min-w-0">
         {gitStatus ? (
           <Tooltip label={`${gitChanges} changed file${gitChanges === 1 ? "" : "s"}`}>
             <button
               onClick={() => useAppStore.getState().setRightPanel("git")}
-              className="flex items-center gap-1.5 text-text-secondary hover:text-text-primary transition-fast"
+              className="flex items-center gap-1.5 text-fg-secondary hover:text-fg-primary transition-fast"
               aria-label="Open Git panel"
             >
               <GitBranch size={12} className="text-info" />
               <span className="font-medium max-w-40 truncate">{gitStatus.branch}</span>
               {gitChanges > 0 && (
-                <span className="px-1.5 rounded-md bg-warning/15 text-warning font-mono text-[10px] font-semibold">
+                <span className="px-1.5 rounded-md bg-warning-muted text-warning font-mono text-[10px] font-semibold">
                   {gitChanges}
                 </span>
               )}
-              {gitStatus.ahead > 0 && <span className="text-accent-primary font-semibold">↑{gitStatus.ahead}</span>}
+              {gitStatus.ahead > 0 && <span className="text-accent font-semibold">↑{gitStatus.ahead}</span>}
               {gitStatus.behind > 0 && <span className="text-warning font-semibold">↓{gitStatus.behind}</span>}
             </button>
           </Tooltip>
         ) : (
-          <span className="text-text-muted">No git repo</span>
+          <span className="text-fg-muted">No git repo</span>
         )}
 
         <span className="flex items-center gap-1.5">
           {busy ? (
-            <Loader2 size={12} className="animate-spin text-accent-primary" />
+            <Loader2 size={12} className="animate-spin text-accent" />
           ) : (
             <span className={`w-2 h-2 rounded-full ${engineState.dot} ${engineState.pulse ? "animate-pulse-glow" : ""}`} />
           )}
@@ -154,14 +156,14 @@ export function StatusBar() {
       {/* Center — model + tokens */}
       <div className="flex items-center gap-3 min-w-0">
         {model && (
-          <span className="text-text-secondary font-mono truncate max-w-48 px-1.5 py-0.5 rounded bg-bg-elevated border border-border-subtle" title={model}>
+          <span className="text-fg-secondary font-mono truncate max-w-48 px-1.5 py-0.5 rounded bg-surface-elevated border border-border-subtle" title={model}>
             {model}
           </span>
         )}
         <Tooltip label={`Execution: ${EXEC_MODE_LABELS[executionMode]} (Shift+Tab to cycle)`}>
           <button
             onClick={cycleExecMode}
-            className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover border border-border-subtle transition-fast"
+            className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium text-fg-secondary hover:text-fg-primary hover:bg-surface-hover border border-border-subtle transition-fast"
           >
             <ExecIcon size={10} />
             <span>{EXEC_MODE_LABELS[executionMode]}</span>
@@ -170,17 +172,17 @@ export function StatusBar() {
         <Tooltip label={`Thought: ${THOUGHT_LABELS[thoughtLevel]} (Ctrl+T to cycle)`}>
           <button
             onClick={cycleThoughtLevel}
-            className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover border border-border-subtle transition-fast"
+            className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium text-fg-secondary hover:text-fg-primary hover:bg-surface-hover border border-border-subtle transition-fast"
           >
             <ThoughtIcon size={10} />
             <span>{THOUGHT_LABELS[thoughtLevel]}</span>
           </button>
         </Tooltip>
         {totalTokens > 0 && (
-          <span className="flex items-center gap-1 text-accent-primary">
+          <span className="flex items-center gap-1 text-accent">
             <Zap size={10} />
             <span className="font-mono font-semibold">{totalTokens.toLocaleString()}</span>
-            <span className="text-text-muted">tokens</span>
+            <span className="text-fg-muted">tokens</span>
           </span>
         )}
       </div>
@@ -193,7 +195,7 @@ export function StatusBar() {
             <span>Local</span>
           </span>
         </Tooltip>
-        <span className="text-text-muted font-mono">v{version}</span>
+        <span className="text-fg-muted font-mono">v{version}</span>
       </div>
     </footer>
   );

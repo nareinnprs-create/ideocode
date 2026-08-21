@@ -32,7 +32,7 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
             return (
               <Suspense
                 fallback={
-                  <div className="my-2 p-3 text-xs text-text-muted animate-pulse rounded-lg bg-bg-secondary">
+                  <div className="my-2 p-3 text-xs text-fg-muted animate-pulse rounded-lg bg-surface">
                     Rendering diagram...
                   </div>
                 }
@@ -54,7 +54,7 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
               <button
                 onClick={() => onFileClick(raw)}
                 title={`Open ${raw}`}
-                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-bg-elevated text-text-primary text-[13px] font-mono hover:text-accent-primary hover:bg-bg-hover transition-fast cursor-pointer align-middle underline decoration-dotted decoration-text-muted underline-offset-2"
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-elevated text-fg-primary text-[13px] font-mono hover:text-accent hover:bg-surface-hover transition-fast cursor-pointer align-middle underline decoration-dotted decoration-text-muted underline-offset-2"
               >
                 <FileCode2 size={12} />
                 {raw}
@@ -63,7 +63,7 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
           }
           return (
             <code
-              className="bg-bg-elevated px-1.5 py-0.5 rounded text-text-primary text-[13px] font-mono"
+              className="bg-surface-elevated px-1.5 py-0.5 rounded text-fg-primary text-[13px] font-mono"
               {...props}
             >
               {children}
@@ -76,7 +76,7 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-accent-primary hover:underline"
+              className="text-accent hover:underline"
             >
               {children}
             </a>
@@ -92,21 +92,21 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
         },
         h1({ children }) {
           return (
-            <h1 className="text-xl font-bold text-text-primary mt-4 mb-2">
+            <h1 className="text-xl font-bold text-fg-primary mt-4 mb-2">
               {children}
             </h1>
           );
         },
         h2({ children }) {
           return (
-            <h2 className="text-lg font-semibold text-text-primary mt-3 mb-1.5">
+            <h2 className="text-lg font-semibold text-fg-primary mt-3 mb-1.5">
               {children}
             </h2>
           );
         },
         h3({ children }) {
           return (
-            <h3 className="text-base font-semibold text-text-primary mt-2 mb-1">
+            <h3 className="text-base font-semibold text-fg-primary mt-2 mb-1">
               {children}
             </h3>
           );
@@ -116,7 +116,7 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
         },
         blockquote({ children }) {
           return (
-            <blockquote className="border-l-2 border-accent-primary pl-3 text-text-secondary italic my-2">
+            <blockquote className="border-l-2 border-accent pl-3 text-fg-secondary italic my-2">
               {children}
             </blockquote>
           );
@@ -130,7 +130,7 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
         },
         th({ children }) {
           return (
-            <th className="border border-border-default px-3 py-1.5 text-left font-medium bg-bg-tertiary">
+            <th className="border border-border-default px-3 py-1.5 text-left font-medium bg-surface-elevated">
               {children}
             </th>
           );
@@ -175,12 +175,12 @@ function CodeBlock({ children, lang }: { children: React.ReactNode; lang: string
 
   return (
     <div className="group/cb my-2 rounded-lg overflow-hidden border border-border-subtle">
-      <div className="flex items-center justify-between px-3 py-1.5 bg-bg-tertiary/60 border-b border-border-subtle">
-        <span className="text-[11px] text-text-muted font-mono">{lang || "code"}</span>
+      <div className="flex items-center justify-between px-3 py-1.5 bg-surface-elevated/60 border-b border-border-subtle">
+        <span className="text-[11px] text-fg-muted font-mono">{lang || "code"}</span>
         <div className="flex items-center gap-2">
           <button
             onClick={handleApply}
-            className="flex items-center gap-1.5 p-1 rounded-md text-accent-primary hover:bg-accent-primary/10 opacity-60 group-hover/cb:opacity-100 focus-visible:opacity-100 transition-fast"
+            className="flex items-center gap-1.5 p-1 rounded-md text-accent hover:bg-accent/10 opacity-60 group-hover/cb:opacity-100 focus-visible:opacity-100 transition-fast"
             title="Stage edit for active file"
           >
             <Play size={12} />
@@ -188,14 +188,14 @@ function CodeBlock({ children, lang }: { children: React.ReactNode; lang: string
           </button>
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 p-1 rounded-md text-text-muted hover:text-text-primary hover:bg-bg-hover opacity-60 group-hover/cb:opacity-100 focus-visible:opacity-100 transition-fast"
+            className="flex items-center gap-1.5 p-1 rounded-md text-fg-muted hover:text-fg-primary hover:bg-surface-hover opacity-60 group-hover/cb:opacity-100 focus-visible:opacity-100 transition-fast"
           >
             {copied ? <Check size={12} /> : <Copy size={12} />}
             <span className="text-[11px]">{copied ? "Copied" : "Copy"}</span>
           </button>
         </div>
       </div>
-      <pre className="bg-bg-secondary p-3 overflow-x-auto text-[13px] leading-relaxed font-mono">
+      <pre className="bg-surface p-3 overflow-x-auto text-[13px] leading-relaxed font-mono">
         {children}
       </pre>
     </div>

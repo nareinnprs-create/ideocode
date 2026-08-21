@@ -79,68 +79,68 @@ export function CodeSnippetsPanel() {
 
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Code snippets">
-      <div className="flex items-center justify-between h-10 px-3 border-b border-border-subtle">
-        <span className="text-xs font-medium text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+      <div className="flex items-center justify-between h-10 px-3 border-b border-border-subtle surface-blur">
+        <span className="text-xs font-medium text-fg-secondary uppercase tracking-wider flex items-center gap-1.5">
           <FileCode2 size={13} /> Code Snippets
         </span>
         <div className="flex items-center gap-1">
-          <button onClick={() => { resetForm(); setShowAdd(!showAdd); }} aria-label="Add snippet" aria-expanded={showAdd} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
+          <button onClick={() => { resetForm(); setShowAdd(!showAdd); }} aria-label="Add snippet" aria-expanded={showAdd} className="p-1 text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated">
             <Plus size={14} />
           </button>
         </div>
       </div>
 
-      <div className="px-3 py-2 border-b border-border-subtle">
+      <div className="px-3 py-2 border-b border-border-subtle surface-blur">
         <div className="flex items-center gap-2 bg-bg-surface rounded border border-border-subtle px-2 py-1">
-          <Search size={13} className="text-text-muted shrink-0" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search snippets..." aria-label="Search snippets" className="flex-1 bg-transparent text-text-primary text-xs outline-none placeholder:text-text-muted" />
+          <Search size={13} className="text-fg-muted shrink-0" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search snippets..." aria-label="Search snippets" className="flex-1 bg-transparent text-fg-primary text-xs outline-none placeholder:text-fg-muted" />
         </div>
       </div>
 
       {showAdd && (
         <div className="mx-3 mt-2 p-3 rounded border border-border-subtle bg-bg-surface space-y-2">
-          <input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="Snippet name" aria-label="Snippet name" className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
-          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" aria-label="Snippet description" className="w-full bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
+          <input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="Snippet name" aria-label="Snippet name" className="w-full bg-surface text-fg-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-fg-muted outline-none focus:border-accent" />
+          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" aria-label="Snippet description" className="w-full bg-surface text-fg-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-fg-muted outline-none focus:border-accent" />
           <div className="flex gap-2">
-            <select value={lang} onChange={(e) => setLang(e.target.value)} className="bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle outline-none focus:border-accent-primary">
+            <select value={lang} onChange={(e) => setLang(e.target.value)} className="bg-surface text-fg-primary text-xs px-2 py-1.5 rounded border border-border-subtle outline-none focus:border-accent">
               {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
             </select>
-            <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Tags (comma-separated)" aria-label="Snippet tags" className="flex-1 bg-bg-primary text-text-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary" />
+            <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Tags (comma-separated)" aria-label="Snippet tags" className="flex-1 bg-surface text-fg-primary text-xs px-2 py-1.5 rounded border border-border-subtle placeholder:text-fg-muted outline-none focus:border-accent" />
           </div>
-          <textarea value={code} onChange={(e) => setCode(e.target.value)} placeholder="Paste your code..." rows={6} aria-label="Snippet code" className="w-full bg-bg-primary text-text-primary text-xs font-mono px-2 py-1.5 rounded border border-border-subtle placeholder:text-text-muted outline-none focus:border-accent-primary resize-y" />
+          <textarea value={code} onChange={(e) => setCode(e.target.value)} placeholder="Paste your code..." rows={6} aria-label="Snippet code" className="w-full bg-surface text-fg-primary text-xs font-mono px-2 py-1.5 rounded border border-border-subtle placeholder:text-fg-muted outline-none focus:border-accent resize-y" />
           <div className="flex justify-end gap-1">
-            <button onClick={resetForm} className="px-2 py-1 text-[11px] rounded bg-bg-elevated text-text-secondary transition-fast hover:bg-bg-hover">Cancel</button>
-            <button onClick={editingId ? handleUpdate : handleAdd} disabled={!name.trim() || !code.trim()} className="px-2 py-1 text-[11px] rounded bg-accent-primary text-white disabled:opacity-50 transition-fast hover:bg-accent-hover">{editingId ? "Update" : "Save"}</button>
+            <button onClick={resetForm} className="px-2 py-1 text-[11px] rounded bg-surface-elevated text-fg-secondary transition-fast hover:bg-surface-hover">Cancel</button>
+            <button onClick={editingId ? handleUpdate : handleAdd} disabled={!name.trim() || !code.trim()} className="px-2 py-1 text-[11px] rounded bg-accent text-white disabled:opacity-50 transition-fast hover:bg-accent-hover">{editingId ? "Update" : "Save"}</button>
           </div>
         </div>
       )}
 
       <div className="flex-1 overflow-y-auto py-1">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-2 text-text-muted">
+          <div className="flex flex-col items-center justify-center h-full gap-2 text-fg-muted">
             <FileCode2 size={24} className="opacity-30" />
             <div className="text-xs">{snippets.length === 0 ? "No snippets saved" : "No matches found"}</div>
           </div>
         ) : (
           filtered.map((s) => (
-            <div key={s.id} className="px-3 py-2 hover:bg-bg-elevated transition-fast border-b border-border-subtle/50 group">
+            <div key={s.id} className="px-3 py-2 hover:bg-surface-elevated transition-fast border-b border-border-subtle/50 group">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-text-primary">{s.name}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-bg-surface text-text-muted">{s.language}</span>
+                    <span className="text-xs font-medium text-fg-primary">{s.name}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-bg-surface text-fg-muted">{s.language}</span>
                   </div>
-                  {s.description && <div className="text-[10px] text-text-secondary mt-0.5">{s.description}</div>}
+                  {s.description && <div className="text-[10px] text-fg-secondary mt-0.5">{s.description}</div>}
                   {s.tags.length > 0 && (
                     <div className="flex gap-1 mt-1">
-                      {s.tags.map((t) => <span key={t} className="text-[9px] px-1 py-0.5 rounded bg-accent-primary/10 text-accent-primary">{t}</span>)}
+                      {s.tags.map((t) => <span key={t} className="text-[9px] px-1 py-0.5 rounded bg-accent/10 text-accent">{t}</span>)}
                     </div>
                   )}
                 </div>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-fast">
-                  <button onClick={() => copyCode(s.code)} aria-label="Copy snippet" className="p-1 text-text-muted hover:text-accent-primary transition-fast" title="Copy"><Copy size={12} /></button>
-                  <button onClick={() => startEdit(s)} aria-label="Edit snippet" className="p-1 text-text-muted hover:text-text-primary transition-fast" title="Edit"><Edit3 size={12} /></button>
-                  <button onClick={() => remove(s.id)} aria-label="Delete snippet" className="p-1 text-text-muted hover:text-error transition-fast" title="Delete"><Trash2 size={12} /></button>
+                  <button onClick={() => copyCode(s.code)} aria-label="Copy snippet" className="p-1 text-fg-muted hover:text-accent transition-fast" title="Copy"><Copy size={12} /></button>
+                  <button onClick={() => startEdit(s)} aria-label="Edit snippet" className="p-1 text-fg-muted hover:text-fg-primary transition-fast" title="Edit"><Edit3 size={12} /></button>
+                  <button onClick={() => remove(s.id)} aria-label="Delete snippet" className="p-1 text-fg-muted hover:text-error transition-fast" title="Delete"><Trash2 size={12} /></button>
                 </div>
               </div>
             </div>

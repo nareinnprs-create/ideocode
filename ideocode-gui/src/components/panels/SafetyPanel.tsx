@@ -33,26 +33,26 @@ export function SafetyPanel() {
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Safety panel">
       <div className="px-1 pt-1 flex items-center justify-between">
-        <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated">
+        <button onClick={() => setRightPanelOpen(false)} className="flex items-center gap-1 px-2 py-1 text-xs text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated">
           <Shield size={14} /> Safety
         </button>
       </div>
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
         {rules.map((r) => (
-          <div key={r.id} className="flex items-center justify-between p-2 rounded hover:bg-bg-elevated transition-fast">
-            <span className="text-xs text-text-primary">{r.label}</span>
+          <div key={r.id} className="flex items-center justify-between p-2 rounded hover:bg-surface-elevated transition-fast">
+            <span className="text-xs text-fg-primary">{r.label}</span>
             <button onClick={() => toggle(r.id)} aria-label={`Toggle ${r.label}`} aria-expanded={r.enabled}>
-              {r.enabled ? <ToggleRight size={20} className="text-success" /> : <ToggleLeft size={20} className="text-text-muted" />}
+              {r.enabled ? <ToggleRight size={20} className="text-success" /> : <ToggleLeft size={20} className="text-fg-muted" />}
             </button>
           </div>
         ))}
       </div>
       <div className="px-3 py-2 border-t border-border-subtle">
         <button onClick={resetDefaults}
-          className="w-full px-3 py-1.5 text-[11px] text-text-muted hover:text-text-primary hover:bg-bg-elevated rounded transition-fast border border-border-subtle">
+          className="w-full px-3 py-1.5 text-[11px] text-fg-muted hover:text-fg-primary hover:bg-surface-elevated rounded transition-fast border border-border-subtle">
           Reset to Defaults
         </button>
-        <div className="mt-1.5 text-[11px] text-text-muted">
+        <div className="mt-1.5 text-[11px] text-fg-muted">
           Safety confirmations protect against destructive operations. Toggle each rule to control when you see confirmation dialogs.
         </div>
       </div>

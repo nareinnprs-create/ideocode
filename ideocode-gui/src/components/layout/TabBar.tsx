@@ -42,7 +42,7 @@ export function TabBar() {
   };
 
   return (
-    <div className="flex items-center h-9 bg-bg-secondary border-b border-border-subtle overflow-x-auto scroll-thin shrink-0" role="tablist" aria-label="Open files">
+    <div className="flex items-center h-9 surface-blur bg-surface/60 border-b border-border-subtle overflow-x-auto scroll-thin shrink-0" role="tablist" aria-label="Open files">
       <div className="flex h-full items-stretch">
         {openFiles.map((path) => {
           const isActive = path === activeFile;
@@ -64,8 +64,8 @@ export function TabBar() {
               className={`group relative flex items-center gap-1.5 px-3 text-xs transition-all duration-150 cursor-pointer select-none
                 ${
                   isActive
-                    ? "bg-bg-primary text-text-primary"
-                    : "bg-bg-secondary text-text-muted hover:bg-bg-hover hover:text-text-secondary"
+                    ? "bg-surface text-fg-primary"
+                    : "bg-surface text-fg-muted hover:bg-surface-hover hover:text-fg-secondary"
                 }`}
             >
               {isActive && (
@@ -73,7 +73,7 @@ export function TabBar() {
               )}
               <FileCode2
                 size={13}
-                className={isActive ? "text-accent-primary" : "text-text-muted"}
+                className={isActive ? "text-accent" : "text-fg-muted"}
               />
               <span className="font-mono whitespace-nowrap">{name}</span>
               {isDirty ? (
@@ -91,7 +91,7 @@ export function TabBar() {
                     e.stopPropagation();
                     closeFile(path);
                   }}
-                  className="ml-0.5 p-0.5 rounded text-text-muted hover:text-text-primary hover:bg-bg-elevated transition-fast opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                  className="ml-0.5 p-0.5 rounded text-fg-muted hover:text-fg-primary hover:bg-surface-elevated transition-fast opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
                 >
                   <X size={11} />
                 </button>
@@ -104,7 +104,7 @@ export function TabBar() {
       {/* Context Menu */}
       {contextMenu && (
         <div
-          className="fixed z-50 min-w-[180px] py-1 rounded-lg border border-border-subtle bg-bg-secondary shadow-xl animate-fade-in"
+          className="fixed z-50 min-w-[180px] py-1 rounded-lg border border-border-subtle bg-surface shadow-xl animate-fade-in"
           role="menu"
           style={{ left: contextMenu.x, top: contextMenu.y }}
         >
@@ -155,7 +155,7 @@ function ContextMenuItem({
         if (!disabled) onClick();
       }}
       disabled={disabled}
-      className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-text-secondary hover:bg-accent-primary/10 hover:text-accent-primary transition-fast disabled:opacity-40 disabled:cursor-not-allowed"
+      className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-fg-secondary hover:bg-accent/10 hover:text-accent transition-fast disabled:opacity-40 disabled:cursor-not-allowed"
     >
       {icon}
       {label}

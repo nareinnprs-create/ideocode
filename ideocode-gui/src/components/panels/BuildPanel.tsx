@@ -55,13 +55,13 @@ export function BuildPanel() {
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Build panel">
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-border-subtle">
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-border-subtle surface-blur">
         <button
           onClick={handleBuild}
           disabled={loading}
           aria-label="Run build"
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-fast
-            bg-accent-primary text-white hover:bg-accent-hover disabled:opacity-40"
+            bg-accent text-white hover:bg-accent-hover disabled:opacity-40"
         >
           {loading && activeTask === "build" ? (
             <Loader2 size={14} className="animate-spin" />
@@ -75,7 +75,7 @@ export function BuildPanel() {
           disabled={loading}
           aria-label="Run cargo check"
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-fast
-            bg-bg-elevated text-text-primary hover:bg-bg-hover disabled:opacity-40 border border-border-subtle"
+            bg-surface-elevated text-fg-primary hover:bg-surface-hover disabled:opacity-40 border border-border-subtle"
         >
           {loading && activeTask === "check" ? (
             <Loader2 size={14} className="animate-spin" />
@@ -106,18 +106,18 @@ export function BuildPanel() {
         className="flex-1 overflow-y-auto p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap"
       >
         {!output && !loading && (
-          <div className="flex items-center justify-center h-full text-text-muted text-xs">
+          <div className="flex items-center justify-center h-full text-fg-muted text-xs">
             Run a build or check to see output
           </div>
         )}
         {loading && (
-          <div className="flex items-center gap-2 text-text-muted text-xs animate-pulse mb-2">
+          <div className="flex items-center gap-2 text-fg-muted text-xs animate-pulse mb-2">
             <Loader2 size={12} className="animate-spin" />
             Running cargo {activeTask}...
           </div>
         )}
         {output && output.stdout && (
-          <div className="text-text-primary">{output.stdout}</div>
+          <div className="text-fg-primary">{output.stdout}</div>
         )}
         {output && output.stderr && (
           <div className="text-warning">{output.stderr}</div>

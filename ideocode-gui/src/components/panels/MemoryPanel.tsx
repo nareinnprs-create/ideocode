@@ -180,14 +180,14 @@ export function MemoryPanel() {
       <div className="px-1 pt-1 flex items-center justify-between">
         <button
           onClick={() => setRightPanelOpen(false)}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated"
+          className="flex items-center gap-1 px-2 py-1 text-xs text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated"
         >
           <ArrowLeft size={14} />
           Back
         </button>
         <button
           onClick={() => setShowAdd(!showAdd)}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated"
+          className="flex items-center gap-1 px-2 py-1 text-xs text-accent hover:text-accent-hover transition-fast rounded hover:bg-surface-elevated"
         >
           <Plus size={14} />
           Add
@@ -197,27 +197,27 @@ export function MemoryPanel() {
       {/* Search */}
       <div className="px-3 py-2">
         <div className="relative">
-          <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-text-muted" />
+          <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-fg-muted" />
           <input
             type="text"
             placeholder="Search memories..."
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
             aria-label="Search memories"
-            className="w-full pl-7 pr-2 py-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-primary"
+            className="w-full pl-7 pr-2 py-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted focus:outline-none focus:border-accent"
           />
         </div>
       </div>
 
       {/* Add form */}
       {showAdd && (
-        <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle">
+        <div className="mx-3 mb-2 p-2 rounded bg-surface-elevated border border-border-subtle">
           <textarea
             placeholder="What do you want to remember?"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             aria-label="Memory content"
-            className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary placeholder-text-muted resize-none h-20 focus:outline-none focus:border-accent-primary"
+            className="w-full p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted resize-none h-20 focus:outline-none focus:border-accent"
           />
           <input
             type="text"
@@ -225,13 +225,13 @@ export function MemoryPanel() {
             value={tags}
             onChange={(e) => setTags(e.target.value)}
             aria-label="Memory tags"
-            className="w-full mt-1 p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-primary"
+            className="w-full mt-1 p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted focus:outline-none focus:border-accent"
           />
           <div className="flex items-center gap-2 mt-1">
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="flex-1 p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary"
+              className="flex-1 p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary focus:outline-none focus:border-accent"
             >
               <option value="general">General</option>
               <option value="fact">Fact</option>
@@ -241,7 +241,7 @@ export function MemoryPanel() {
             </select>
             <button
               onClick={handleAdd}
-              className="px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover transition-fast"
+              className="px-3 py-1.5 text-xs bg-accent text-white rounded hover:bg-accent-hover transition-fast"
             >
               Save
             </button>
@@ -252,7 +252,7 @@ export function MemoryPanel() {
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-8">
-          <div className="flex items-center gap-2 text-text-muted text-xs animate-pulse">
+          <div className="flex items-center gap-2 text-fg-muted text-xs animate-pulse">
             <Brain size={14} />
             Loading memories...
           </div>
@@ -261,7 +261,7 @@ export function MemoryPanel() {
 
       {/* Error */}
       {error && (
-        <div className="mx-3 my-2 p-2 rounded bg-bg-elevated border border-border-subtle">
+        <div className="mx-3 my-2 p-2 rounded bg-surface-elevated border border-border-subtle">
           <div className="text-xs text-error">{error}</div>
         </div>
       )}
@@ -276,8 +276,8 @@ export function MemoryPanel() {
               className={[
                 "shrink-0 px-2.5 py-1 text-[11px] rounded-full border transition-fast",
                 activeFilter === cat
-                  ? "bg-accent-primary/15 border-accent-primary text-accent-primary"
-                  : "bg-bg-tertiary border-border-subtle text-text-muted hover:text-text-primary hover:border-border-default",
+                  ? "bg-accent/15 border-accent text-accent"
+                  : "bg-surface-elevated border-border-subtle text-fg-muted hover:text-fg-primary hover:border-border-default",
               ].join(" ")}
             >
               {cat}
@@ -286,13 +286,13 @@ export function MemoryPanel() {
           <div className="relative ml-auto shrink-0" ref={sortRef}>
             <button
               onClick={() => setShowSortMenu(!showSortMenu)}
-              className="flex items-center gap-1 px-2 py-1 text-[11px] rounded border border-border-subtle bg-bg-tertiary text-text-muted hover:text-text-primary hover:border-border-default transition-fast"
+              className="flex items-center gap-1 px-2 py-1 text-[11px] rounded border border-border-subtle bg-surface-elevated text-fg-muted hover:text-fg-primary hover:border-border-default transition-fast"
             >
               <ArrowUpDown size={11} />
               {SORT_LABELS[sortMode]}
             </button>
             {showSortMenu && (
-              <div className="absolute right-0 top-full mt-1 z-50 min-w-36 py-1 rounded-lg border border-border-default bg-bg-elevated shadow-pop">
+              <div className="absolute right-0 top-full mt-1 z-50 min-w-36 py-1 rounded-lg border border-border-default bg-surface-elevated shadow-pop">
                 {(["newest", "oldest", "alpha"] as SortMode[]).map((mode) => (
                   <button
                     key={mode}
@@ -303,8 +303,8 @@ export function MemoryPanel() {
                     className={[
                       "w-full text-left px-3 py-1.5 text-xs transition-colors",
                       sortMode === mode
-                        ? "text-accent-primary bg-accent-primary/10"
-                        : "text-text-secondary hover:text-text-primary hover:bg-bg-hover",
+                        ? "text-accent bg-accent/10"
+                        : "text-fg-secondary hover:text-fg-primary hover:bg-surface-hover",
                     ].join(" ")}
                   >
                     {SORT_LABELS[mode]}
@@ -318,7 +318,7 @@ export function MemoryPanel() {
 
       {/* Empty */}
       {!loading && !error && filtered.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-8 text-text-muted">
+        <div className="flex flex-col items-center justify-center py-8 text-fg-muted">
           <BookOpen size={24} className="mb-2 opacity-50" />
           <div className="text-xs">
             {entries.length === 0 ? "No memories yet" : "No matching memories"}
@@ -335,7 +335,7 @@ export function MemoryPanel() {
           const isEditing = editingId === entry.id;
           return (
             <ContextMenu key={entry.id} items={buildContextMenuItems(entry)}>
-              <div className="px-3 py-2 border-b border-border-subtle last:border-none hover:bg-bg-elevated transition-fast group">
+              <div className="px-3 py-2 border-b border-border-subtle last:border-none hover:bg-surface-elevated transition-fast group">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     {isEditing ? (
@@ -345,12 +345,12 @@ export function MemoryPanel() {
                         onChange={(e) => setEditContent(e.target.value)}
                         onBlur={() => commitEdit(entry)}
                         onKeyDown={(e) => handleEditKeyDown(e, entry)}
-                        className="w-full p-1.5 text-xs bg-bg-tertiary border border-accent-primary rounded text-text-primary resize-none focus:outline-none"
+                        className="w-full p-1.5 text-xs bg-surface-elevated border border-accent rounded text-fg-primary resize-none focus:outline-none"
                         rows={3}
                       />
                     ) : (
                       <div
-                        className="text-xs text-text-primary break-words whitespace-pre-wrap cursor-pointer hover:bg-accent-primary/5 rounded px-0.5 -mx-0.5"
+                        className="text-xs text-fg-primary break-words whitespace-pre-wrap cursor-pointer hover:bg-accent/5 rounded px-0.5 -mx-0.5"
                         onClick={() => startEdit(entry)}
                         title="Click to edit"
                       >
@@ -358,25 +358,25 @@ export function MemoryPanel() {
                       </div>
                     )}
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[11px] px-1.5 py-0.5 rounded bg-bg-tertiary text-text-muted uppercase">
+                      <span className="text-[11px] px-1.5 py-0.5 rounded bg-surface-elevated text-fg-muted uppercase">
                         {entry.category}
                       </span>
                       {entry.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="text-[11px] px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary"
+                          className="text-[11px] px-1.5 py-0.5 rounded bg-accent/10 text-accent"
                         >
                           {tag}
                         </span>
                       ))}
                     </div>
-                    <div className="text-[11px] text-text-muted mt-1">
+                    <div className="text-[11px] text-fg-muted mt-1">
                       {new Date(entry.created_at * 1000).toLocaleDateString()}
                     </div>
                   </div>
                   <button
                     onClick={() => deleteMemory(entry.id)}
-                    className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast"
+                    className="p-1 text-fg-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast"
                   >
                     <Trash2 size={12} />
                   </button>

@@ -59,7 +59,8 @@ export function TopBar() {
   return (
     <header
       data-tauri-drag-region
-      className="flex items-center h-9 px-2 gap-3 bg-bg-secondary/40 border-b border-border-subtle select-none shrink-0 z-20 surface-blur hairline-bottom"
+      className="flex items-center h-9 px-2 gap-3 surface-blur hairline-bottom select-none shrink-0 z-20"
+      style={{ background: "color-mix(in srgb, var(--color-surface) 60%, transparent)" }}
     >
       {/* Brand / project */}
       <div className="flex items-center gap-2 min-w-0" data-tauri-drag-region>
@@ -69,11 +70,11 @@ export function TopBar() {
         >
           <Sparkles size={10} />
         </span>
-        <span className="text-[12px] font-medium text-text-primary tracking-tight shrink-0">
+        <span className="text-[12px] font-medium text-fg-primary tracking-tight shrink-0">
           IDEOCODE
         </span>
-        <span className="text-text-muted opacity-50">/</span>
-        <span className="text-xs text-text-secondary font-medium truncate max-w-40">{projectName}</span>
+        <span className="text-fg-muted opacity-50">/</span>
+        <span className="text-xs text-fg-secondary font-medium truncate max-w-40">{projectName}</span>
       </div>
 
       {/* Divider */}
@@ -83,11 +84,11 @@ export function TopBar() {
       <div className="flex-1 flex justify-center min-w-0">
         <button
           onClick={() => setCommandPaletteOpen(true)}
-          className="group flex items-center gap-2 h-6 px-3 rounded-md border border-transparent bg-bg-tertiary text-text-muted hover:border-border-default hover:text-text-primary hover:bg-bg-hover transition-all w-full max-w-sm focus-visible:outline-2 focus-visible:outline-accent-secondary"
+          className="group flex items-center gap-2 h-6 px-3 rounded-md border border-border-subtle bg-surface-elevated text-fg-muted hover:border-accent hover:text-fg-primary hover:bg-surface-hover transition-all w-full max-w-sm focus-visible:outline-2 focus-visible:outline-accent"
         >
-          <Search size={12} className="transition-colors group-hover:text-accent-primary" />
+          <Search size={12} className="transition-colors group-hover:text-accent" />
           <span className="text-xs flex-1 text-left truncate">Search commands, files, actions…</span>
-          <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded-md bg-bg-elevated text-[10px] font-mono text-text-muted border border-border-subtle">
+          <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded-md bg-surface text-[10px] font-mono text-fg-muted border border-border-subtle">
             ⌘K
           </kbd>
         </button>
@@ -120,7 +121,7 @@ export function TopBar() {
             onClick={() => winControl(() => getCurrentWindow().minimize())}
             aria-label="Minimize window"
             title="Minimize"
-            className="flex items-center justify-center w-11 h-full text-text-muted hover:text-text-primary hover:bg-bg-hover active:bg-bg-elevated transition-colors duration-75 rounded-l-md"
+            className="flex items-center justify-center w-11 h-full text-fg-muted hover:text-fg-primary hover:bg-surface-hover active:bg-surface-elevated transition-colors duration-75 rounded-l-md"
           >
             <Minus size={14} />
           </button>
@@ -128,7 +129,7 @@ export function TopBar() {
             onClick={() => winControl(() => getCurrentWindow().toggleMaximize())}
             aria-label={isMaximized ? "Restore window" : "Maximize window"}
             title={isMaximized ? "Restore" : "Maximize"}
-            className="flex items-center justify-center w-11 h-full text-text-muted hover:text-text-primary hover:bg-bg-hover active:bg-bg-elevated transition-colors duration-75"
+            className="flex items-center justify-center w-11 h-full text-fg-muted hover:text-fg-primary hover:bg-surface-hover active:bg-surface-elevated transition-colors duration-75"
           >
             {isMaximized ? <Copy size={12} /> : <Square size={11} />}
           </button>
@@ -136,7 +137,7 @@ export function TopBar() {
             onClick={() => winControl(() => getCurrentWindow().close())}
             aria-label="Close window"
             title="Close"
-            className="flex items-center justify-center w-11 h-full text-text-muted hover:text-white hover:bg-error active:bg-error/80 transition-colors duration-75 rounded-r-md"
+            className="flex items-center justify-center w-11 h-full text-fg-muted hover:text-white hover:bg-error active:bg-error/80 transition-colors duration-75 rounded-r-md"
           >
             <X size={15} />
           </button>

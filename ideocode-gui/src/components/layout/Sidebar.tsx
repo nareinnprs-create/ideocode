@@ -87,25 +87,28 @@ export function Sidebar() {
   const navBtnClass = (panel: PanelId) =>
     `relative flex items-center gap-2 w-full px-2.5 py-1.5 rounded-lg text-[12px] transition-all duration-150 ${
       activePanel === panel
-        ? "bg-accent-primary/10 text-accent-primary font-medium shadow-[inset_0_0_0_1px_var(--idc-glow)]"
-        : "text-text-secondary hover:text-text-primary hover:bg-bg-hover hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]"
+        ? "bg-accent-subtle text-accent font-medium shadow-glow-soft"
+        : "text-fg-secondary hover:text-fg-primary hover:bg-surface-hover"
     }`;
 
   const collapsedBtnClass = (panel: PanelId) =>
     `flex items-center justify-center w-8 h-8 rounded-lg transition-all ${
       activePanel === panel
-        ? "bg-accent-primary/10 text-accent-primary"
-        : "text-text-secondary hover:text-text-primary hover:bg-bg-hover"
+        ? "bg-accent-subtle text-accent"
+        : "text-fg-secondary hover:text-fg-primary hover:bg-surface-hover"
     }`;
 
   const activeIndicator = (panel: PanelId) =>
-    activePanel === panel ? <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r bg-accent-primary" /> : null;
+    activePanel === panel ? <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r bg-accent" /> : null;
 
   return (
     <nav
       aria-label="Main navigation"
-      className="relative flex-col shrink-0 overflow-hidden transition-all duration-300 ease-spring hidden md:block bg-bg-secondary/40 border-r border-border-default z-20"
-      style={{ width: collapsed ? 48 : undefined }}
+      className="relative flex-col shrink-0 overflow-hidden transition-all duration-300 ease-spring hidden md:block surface-blur hairline-right z-20"
+      style={{
+        width: collapsed ? 48 : undefined,
+        background: "color-mix(in srgb, var(--color-surface) 50%, transparent)",
+      }}
     >
       <div className="flex h-full min-h-0 flex-col w-56 md:w-60 lg:w-64 transition-all duration-300 ease-spring">
         {/* Drag region + collapse toggle */}
@@ -113,7 +116,7 @@ export function Sidebar() {
           <div data-tauri-drag-region className="flex-1 h-full cursor-move" />
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="flex items-center justify-center w-8 h-8 mr-1 rounded-md text-text-muted hover:text-text-primary hover:bg-bg-hover transition-all"
+            className="flex items-center justify-center w-8 h-8 mr-1 rounded-md text-fg-muted hover:text-fg-primary hover:bg-surface-hover transition-all"
             title={collapsed ? "Expand positionbar" : "Collapse positionbar"}
             aria-label={collapsed ? "Expand positionbar" : "Collapse positionbar"}
           >
@@ -128,7 +131,7 @@ export function Sidebar() {
               <button
                 onClick={handleNewTask}
                 aria-label="New Task"
-                className="flex items-center justify-center w-8 h-8 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-all"
+                className="flex items-center justify-center w-8 h-8 rounded-lg text-fg-muted hover:text-fg-primary hover:bg-surface-hover transition-all"
               >
                 <MessageCirclePlus size={16} />
               </button>
@@ -137,7 +140,7 @@ export function Sidebar() {
               <button
                 onClick={handleOpenWorkspace}
                 aria-label="Open Workspace"
-                className="flex items-center justify-center w-8 h-8 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-all"
+                className="flex items-center justify-center w-8 h-8 rounded-lg text-fg-muted hover:text-fg-primary hover:bg-surface-hover transition-all"
               >
                 <FolderOpen size={16} />
               </button>
@@ -189,16 +192,16 @@ export function Sidebar() {
             <div className="flex flex-col gap-1 px-2 py-3">
               <button
                 onClick={handleNewTask}
-                className="group/button inline-flex h-8 w-full shrink-0 items-center justify-start gap-2 rounded-lg border border-transparent px-2.5 text-sm font-medium whitespace-nowrap text-foreground outline-none transition-all hover:bg-surface-hover hover:text-foreground"
+                className="group/button inline-flex h-8 w-full shrink-0 items-center justify-start gap-2 rounded-lg border border-transparent px-2.5 text-sm font-medium whitespace-nowrap text-fg-primary outline-none transition-all hover:bg-surface-hover hover:text-fg-primary"
               >
                 <MessageCirclePlus className="size-4 shrink-0" />
                 <span className="truncate">New Task</span>
-                <span className="ml-auto shrink-0 text-[11px] font-normal text-foreground-subtlest">⌘N</span>
+                <span className="ml-auto shrink-0 text-[11px] font-normal text-fg-muted">⌘N</span>
               </button>
 
               <button
                 onClick={handleOpenWorkspace}
-                className="group/button inline-flex h-8 w-full shrink-0 items-center justify-start gap-2 rounded-lg border border-transparent px-2.5 text-sm font-medium whitespace-nowrap text-foreground outline-none transition-all hover:bg-surface-hover hover:text-foreground"
+                className="group/button inline-flex h-8 w-full shrink-0 items-center justify-start gap-2 rounded-lg border border-transparent px-2.5 text-sm font-medium whitespace-nowrap text-fg-primary outline-none transition-all hover:bg-surface-hover hover:text-fg-primary"
               >
                 <FolderOpen className="size-4 shrink-0" />
                 <span>Open Workspace</span>
@@ -206,25 +209,25 @@ export function Sidebar() {
             </div>
 
             {goal && (
-              <div className="mx-2 mb-2 p-2.5 rounded-lg bg-bg-tertiary border border-border-subtle cursor-pointer hover:border-accent-primary/30 transition-fast" onClick={() => { if (!rightPanelOpen) setRightPanelOpen(true); setRightPanel("goal"); }}>
+              <div className="mx-2 mb-2 p-2.5 rounded-lg bg-surface-elevated border border-border-subtle cursor-pointer hover:border-accent/30 transition-fast" onClick={() => { if (!rightPanelOpen) setRightPanelOpen(true); setRightPanel("goal"); }}>
                 <div className="flex items-center gap-1.5 mb-1.5">
-                  <Target size={12} className="text-accent-primary shrink-0" />
-                  <span className="text-[10px] font-semibold text-text-secondary uppercase tracking-wider">Goal</span>
+                  <Target size={12} className="text-accent shrink-0" />
+                  <span className="text-[10px] font-semibold text-fg-secondary uppercase tracking-wider">Goal</span>
                   {status !== "idle" && (
                     <span
                       className={`ml-auto text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
                         status === "in_progress"
-                          ? "bg-success/10 text-success"
+                          ? "bg-success-muted text-success"
                           : status === "paused"
-                            ? "bg-warning/10 text-warning"
-                            : "bg-accent-primary/10 text-accent-primary"
+                            ? "bg-warning-muted text-warning"
+                            : "bg-accent-subtle text-accent"
                       }`}
                     >
                       {status === "in_progress" ? "Active" : status === "paused" ? "Paused" : "Done"}
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-text-primary leading-snug line-clamp-2">{goal}</p>
+                <p className="text-[11px] text-fg-primary leading-snug line-clamp-2">{goal}</p>
               </div>
             )}
 
@@ -232,7 +235,7 @@ export function Sidebar() {
               <button
                 onClick={() => setToolsOpen(!toolsOpen)}
                 aria-expanded={toolsOpen}
-                className="flex items-center gap-1.5 text-[10px] font-semibold text-text-muted uppercase tracking-wider w-full"
+                className="flex items-center gap-1.5 text-[10px] font-semibold text-fg-muted uppercase tracking-wider w-full"
               >
                 <ChevronRight size={11} className={`transition-transform ${toolsOpen ? "rotate-90" : ""}`} />
                 Tools
@@ -281,9 +284,9 @@ export function Sidebar() {
 
             <div className="flex min-h-0 flex-1 flex-col gap-2 pt-2">
               <div className="flex items-center justify-between gap-2 pl-[18px] pr-3">
-                <h3 className="min-w-0 text-[13px] font-semibold text-foreground-subtlest">Tasks</h3>
+                <h3 className="min-w-0 text-[13px] font-semibold text-fg-muted">Tasks</h3>
                 <span
-                  className="text-[10px] text-text-muted font-mono"
+                  className="text-[10px] text-fg-muted font-mono"
                   aria-live="polite"
                   aria-atomic="true"
                 >
@@ -295,14 +298,14 @@ export function Sidebar() {
                 <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto scroll-thin">
                   <div className="flex min-h-0 flex-col gap-3 px-2">
                     {activeTask && (
-                      <div className="p-2 rounded-lg bg-accent-primary/5 border border-accent-primary/15">
+                      <div className="p-2 rounded-lg bg-accent-subtle border border-accent/15">
                         <div className="flex items-center gap-1.5 mb-1">
                           <span className="flex size-4 items-center justify-center">
-                            <span className="block size-1.5 rounded-full bg-accent-primary animate-pulse" />
+                            <span className="block size-1.5 rounded-full bg-accent animate-pulse" />
                           </span>
-                          <span className="text-[10px] font-semibold text-accent-primary uppercase tracking-wider">In Progress</span>
+                          <span className="text-[10px] font-semibold text-accent uppercase tracking-wider">In Progress</span>
                         </div>
-                        <p className="text-[11px] text-text-primary leading-snug line-clamp-2 pl-5.5">{activeTask.title}</p>
+                        <p className="text-[11px] text-fg-primary leading-snug line-clamp-2 pl-5.5">{activeTask.title}</p>
                       </div>
                     )}
 
@@ -315,8 +318,8 @@ export function Sidebar() {
                             onClick={() => selectTask(task.id === selectedTaskId ? null : task.id)}
                             className={`group/task-item flex items-center gap-2 rounded-lg py-1 pl-2.5 pr-1 transition-all cursor-pointer ${
                               task.id === selectedTaskId
-                                ? "bg-selected text-foreground shadow-sm"
-                                : "hover:bg-surface-hover text-foreground-subtle hover:text-foreground"
+                                ? "bg-accent-subtle text-fg-primary shadow-glow-soft"
+                                : "hover:bg-surface-hover text-fg-secondary hover:text-fg-primary"
                             }`}
                           >
                             <button
@@ -325,7 +328,7 @@ export function Sidebar() {
                                 toggleTaskDone(task.id);
                               }}
                               aria-label="Mark task done"
-                              className="shrink-0 text-text-muted hover:text-success transition-colors"
+                              className="shrink-0 text-fg-muted hover:text-success transition-colors"
                             >
                               <Circle size={13} />
                             </button>
@@ -336,7 +339,7 @@ export function Sidebar() {
                                 removeTask(task.id);
                               }}
                               aria-label="Delete task"
-                              className="shrink-0 opacity-0 group-hover/task-item:opacity-100 text-text-muted hover:text-error transition-all"
+                              className="shrink-0 opacity-0 group-hover/task-item:opacity-100 text-fg-muted hover:text-error transition-all"
                             >
                               <Trash2 size={11} />
                             </button>
@@ -349,7 +352,7 @@ export function Sidebar() {
                         <button
                           onClick={() => setTasksOpen(!tasksOpen)}
                           aria-expanded={tasksOpen}
-                          className="flex items-center gap-1.5 text-[10px] font-medium text-text-muted hover:text-text-secondary transition-colors"
+                          className="flex items-center gap-1.5 text-[10px] font-medium text-fg-muted hover:text-fg-secondary transition-colors"
                         >
                           <ChevronRight size={11} className={`transition-transform ${tasksOpen ? "rotate-90" : ""}`} />
                           Completed ({doneTasks.length})
@@ -359,7 +362,7 @@ export function Sidebar() {
                             {doneTasks.map((task) => (
                               <li
                                 key={task.id}
-                                className="flex items-center gap-2 py-1 pl-6 pr-1 text-text-muted"
+                                className="flex items-center gap-2 py-1 pl-6 pr-1 text-fg-muted"
                               >
                                 <CheckCircle2 size={13} className="text-success/60 shrink-0" />
                                 <p className="min-w-0 flex-1 truncate text-[13px] line-through">{task.title}</p>
@@ -372,9 +375,9 @@ export function Sidebar() {
 
                     {tasks.length === 0 && (
                       <div className="py-8 text-center">
-                        <ListTodo size={24} className="mx-auto mb-2 text-text-muted/40" />
-                        <p className="text-[11px] text-text-muted">No tasks yet</p>
-                        <p className="text-[10px] text-text-muted mt-0.5">Set a goal or add tasks manually</p>
+                        <ListTodo size={24} className="mx-auto mb-2 text-fg-muted/40" />
+                        <p className="text-[11px] text-fg-muted">No tasks yet</p>
+                        <p className="text-[10px] text-fg-muted mt-0.5">Set a goal or add tasks manually</p>
                       </div>
                     )}
                   </div>

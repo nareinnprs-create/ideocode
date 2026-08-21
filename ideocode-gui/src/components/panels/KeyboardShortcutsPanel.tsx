@@ -149,18 +149,18 @@ export function KeyboardShortcutsPanel() {
 
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Keyboard shortcuts">
-      <div className="px-3 pt-2 pb-1 flex items-center justify-between border-b border-border-subtle">
-        <span className="flex items-center gap-1.5 text-xs font-medium text-text-primary">
+      <div className="px-3 pt-2 pb-1 flex items-center justify-between border-b border-border-subtle surface-blur">
+        <span className="flex items-center gap-1.5 text-xs font-medium text-fg-primary">
           <Keyboard size={14} /> Shortcuts
         </span>
         <div className="flex items-center gap-1">
-          <button onClick={exportShortcuts} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated" aria-label="Export shortcuts">
+          <button onClick={exportShortcuts} className="p-1 text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated" aria-label="Export shortcuts">
             <Download size={13} />
           </button>
-          <button onClick={importShortcuts} className="p-1 text-text-muted hover:text-text-primary transition-fast rounded hover:bg-bg-elevated" aria-label="Import shortcuts">
+          <button onClick={importShortcuts} className="p-1 text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated" aria-label="Import shortcuts">
             <Upload size={13} />
           </button>
-          <button onClick={() => setShowAdd(!showAdd)} className="flex items-center gap-1 px-2 py-1 text-xs text-accent-primary hover:text-accent-hover transition-fast rounded hover:bg-bg-elevated">
+          <button onClick={() => setShowAdd(!showAdd)} className="flex items-center gap-1 px-2 py-1 text-xs text-accent hover:text-accent-hover transition-fast rounded hover:bg-surface-elevated">
             <Plus size={13} /> Add
           </button>
         </div>
@@ -178,14 +178,14 @@ export function KeyboardShortcutsPanel() {
       )}
 
       {showAdd && (
-        <div className="mx-3 mb-2 p-2 rounded bg-bg-elevated border border-border-subtle space-y-1.5">
+        <div className="mx-3 mb-2 p-2 rounded bg-surface-elevated border border-border-subtle space-y-1.5">
           <input
             type="text"
             placeholder="Action name"
             value={action}
             onChange={(e) => setAction(e.target.value)}
             aria-label="Action name"
-            className="w-full p-1.5 text-xs bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary"
+            className="w-full p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary focus:outline-none focus:border-accent"
           />
           <div className="flex gap-1.5">
             <input
@@ -195,17 +195,17 @@ export function KeyboardShortcutsPanel() {
               onChange={(e) => setKeys(e.target.value)}
               onFocus={() => setListening(true)}
               readOnly={listening}
-              className="flex-1 p-1.5 text-xs font-mono bg-bg-tertiary border border-border-subtle rounded text-text-primary focus:outline-none focus:border-accent-primary"
+              className="flex-1 p-1.5 text-xs font-mono bg-surface-elevated border border-border-subtle rounded text-fg-primary focus:outline-none focus:border-accent"
             />
             <button
               onClick={() => setListening(!listening)}
-              className={`px-2 text-[10px] rounded border transition-fast ${listening ? "bg-accent-primary text-white border-accent-primary" : "bg-bg-tertiary text-text-muted border-border-subtle hover:text-text-primary"}`}
+              className={`px-2 text-[10px] rounded border transition-fast ${listening ? "bg-accent text-white border-accent" : "bg-surface-elevated text-fg-muted border-border-subtle hover:text-fg-primary"}`}
             >
               {listening ? "Listening…" : "Record"}
             </button>
           </div>
           <button onClick={handleAdd} disabled={!action.trim() || !keys.trim()}
-            className="w-full px-3 py-1.5 text-xs bg-accent-primary text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast">
+            className="w-full px-3 py-1.5 text-xs bg-accent text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast">
             Add
           </button>
         </div>
@@ -216,14 +216,14 @@ export function KeyboardShortcutsPanel() {
           const key = s.keys.toLowerCase().replace(/\s/g, "");
           const hasConflict = conflicts.has(key);
           return (
-            <div key={s.id} className="px-3 py-2 border-b border-border-subtle hover:bg-bg-elevated transition-fast group flex items-center justify-between">
+            <div key={s.id} className="px-3 py-2 border-b border-border-subtle hover:bg-surface-elevated transition-fast group flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
-                <span className="text-xs text-text-primary truncate">{s.action}</span>
+                <span className="text-xs text-fg-primary truncate">{s.action}</span>
                 {hasConflict && <AlertTriangle size={11} className="text-warning shrink-0" />}
               </div>
               <div className="flex items-center gap-2">
-                <kbd className="text-[10px] font-mono text-text-muted bg-bg-tertiary px-1.5 py-0.5 rounded border border-border-subtle">{s.keys}</kbd>
-                <button onClick={() => remove(s.id)} className="p-1 text-text-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
+                <kbd className="text-[10px] font-mono text-fg-muted bg-surface-elevated px-1.5 py-0.5 rounded border border-border-subtle">{s.keys}</kbd>
+                <button onClick={() => remove(s.id)} className="p-1 text-fg-muted hover:text-error opacity-0 group-hover:opacity-100 transition-fast">
                   <Trash2 size={11} />
                 </button>
               </div>

@@ -14,12 +14,12 @@ interface TagProps {
 }
 
 const VARIANT_CLASSES: Record<TagVariant, string> = {
-  default: "bg-bg-elevated text-text-secondary border-border-subtle",
-  accent: "bg-accent-primary/10 text-accent-primary border-accent-primary/20",
-  success: "bg-success/10 text-success border-success/20",
-  warning: "bg-warning/10 text-warning border-warning/20",
-  danger: "bg-error/10 text-error border-error/20",
-  info: "bg-info/10 text-info border-info/20",
+  default: "bg-surface-elevated text-fg-secondary border-border-subtle",
+  accent: "bg-accent-subtle text-accent border-accent/20",
+  success: "bg-success-muted text-success border-success/20",
+  warning: "bg-warning-muted text-warning border-warning/20",
+  danger: "bg-error-muted text-error border-error/20",
+  info: "bg-info-muted text-info border-info/20",
 };
 
 export function Tag({

@@ -60,7 +60,7 @@ export function EditHistoryButton({ messageId, role, onEdit, onUndo }: EditHisto
             }
             if (e.key === "Escape") handleCancel();
           }}
-          className="px-2 py-1 text-xs rounded border border-accent-primary/40 bg-accent-primary/8 text-text-primary outline-none resize-none min-h-[28px] max-h-20 w-48"
+          className="px-2 py-1 text-xs rounded border border-accent/40 bg-accent/8 text-fg-primary outline-none resize-none min-h-[28px] max-h-20 w-48"
         />
         <button onClick={handleCommitEdit} className="msg-action text-success">
           <Check size={12} />

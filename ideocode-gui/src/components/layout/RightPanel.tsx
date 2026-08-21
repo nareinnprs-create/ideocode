@@ -1,9 +1,11 @@
 import { Suspense, lazy, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useAppStore } from "../../stores/appStore";
 import { useDragResize } from "../../hooks/useDragResize";
 import { ErrorBoundary } from "../ErrorBoundary";
 import { X } from "lucide-react";
 import { IconButton } from "../ui/IconButton";
+import { pageTransition, transitions } from "../../lib/motion";
 import { FileExplorer } from "../panels/FileExplorer";
 import { GitPanel } from "../panels/GitPanel";
 import { ProviderPanel } from "../panels/ProviderPanel";
@@ -99,8 +101,11 @@ export function RightPanel() {
 
   return (
     <aside
-      className="flex border-l border-border-default bg-transparent flex-col relative animate-slide-in-right z-10"
-      style={{ width: rightPanelWidth }}
+      className="flex flex-col relative animate-slide-in-right z-10 surface-blur hairline-left"
+      style={{
+        width: rightPanelWidth,
+        background: "color-mix(in srgb, var(--color-surface) 70%, transparent)",
+      }}
     >
       {/* Drag handle on the left edge */}
       <div
@@ -109,9 +114,10 @@ export function RightPanel() {
         aria-label="Resize panel"
         className="absolute left-0 top-0 bottom-0 w-[3px] -ml-[1px] cursor-col-resize touch-none z-10 resize-handle-x"
       />
+
       {/* Header */}
-      <div className="flex items-center justify-between h-10 pl-3 pr-2 border-b border-border-default">
-        <span className="text-[13px] font-medium text-text-primary">
+      <div className="flex items-center justify-between h-10 pl-3 pr-2 border-b border-border-subtle">
+        <span className="text-[13px] font-medium text-fg-primary">
           {title}
         </span>
         <IconButton size="sm" label="Close panel" onClick={() => setRightPanelOpen(false)}>
@@ -121,9 +127,21 @@ export function RightPanel() {
 
       {/* Content */}
       <div className="flex-1 overflow-hidden panel-enter">
-        <Suspense fallback={<div className="p-4 text-center text-text-muted text-xs animate-pulse">Loading...</div>}>
-          <PanelContent panel={rightPanel} />
-        </Suspense>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={rightPanel}
+            variants={pageTransition}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={transitions.gentle}
+            className="h-full"
+          >
+            <Suspense fallback={<div className="p-4 text-center text-fg-muted text-xs animate-pulse">Loading...</div>}>
+              <PanelContent panel={rightPanel} />
+            </Suspense>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </aside>
   );
@@ -213,7 +231,7 @@ function PanelContent({ panel }: { panel: string }) {
       return wrapped(<ThemeMarketplacePanel />);
     default:
       return (
-        <div className="p-4 text-text-muted text-xs text-center">
+        <div className="p-4 text-fg-muted text-xs text-center">
           {panel} coming soon
         </div>
       );

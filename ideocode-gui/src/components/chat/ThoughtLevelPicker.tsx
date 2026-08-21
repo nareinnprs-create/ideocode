@@ -58,7 +58,7 @@ export function ThoughtLevelPicker() {
       <Tooltip label={`Thought level: ${LEVEL_LABELS[thoughtLevel]} (Ctrl+T to cycle)`}>
         <button
           onClick={() => setOpen(!open)}
-          className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-text-muted hover:text-text-secondary hover:bg-bg-hover transition-all duration-150"
+          className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-fg-muted hover:text-fg-secondary hover:bg-surface-hover transition-all duration-150"
         >
           <CurrentIcon size={13} />
           {LEVEL_LABELS[thoughtLevel]}
@@ -66,7 +66,7 @@ export function ThoughtLevelPicker() {
       </Tooltip>
 
       {open && (
-        <div className="absolute bottom-full left-0 mb-1 z-30 min-w-[120px] py-1 rounded-lg border border-border-subtle bg-bg-secondary shadow-xl animate-scale-in">
+        <div className="absolute bottom-full left-0 mb-1 z-30 min-w-[120px] py-1 rounded-lg border border-border-subtle bg-surface shadow-xl animate-scale-in">
           {LEVELS.map(({ id, label, icon: LevelIcon, hint }) => (
             <button
               key={id}
@@ -76,13 +76,13 @@ export function ThoughtLevelPicker() {
               }}
               className={`w-full flex items-center gap-2 px-3 py-1.5 text-left transition-fast ${
                 thoughtLevel === id
-                  ? "bg-accent-primary/10 text-accent-primary"
-                  : "text-text-secondary hover:bg-bg-hover"
+                  ? "bg-accent/10 text-accent"
+                  : "text-fg-secondary hover:bg-surface-hover"
               }`}
             >
               <LevelIcon size={13} className="shrink-0" />
               <span className="text-xs font-medium">{label}</span>
-              <span className="text-[10px] text-text-muted flex-1 text-right truncate">{hint}</span>
+              <span className="text-[10px] text-fg-muted flex-1 text-right truncate">{hint}</span>
             </button>
           ))}
         </div>

@@ -4,8 +4,8 @@ import { useGoalStore, type Task, type TaskStatus } from "../../stores/goalStore
 import { ContextMenu } from "../ui/ContextMenu";
 
 const STATUS_COLORS: Record<TaskStatus, string> = {
-  pending: "text-text-muted",
-  in_progress: "text-accent-primary",
+  pending: "text-fg-muted",
+  in_progress: "text-accent",
   blocked: "text-warning",
   done: "text-success",
 };
@@ -46,7 +46,7 @@ export function GoalTaskList() {
     return (
       <button
         onClick={() => setAdding(true)}
-        className="w-full flex items-center gap-2 px-2.5 py-2 text-xs text-text-muted hover:text-text-primary hover:bg-bg-hover rounded-lg transition-colors"
+        className="w-full flex items-center gap-2 px-2.5 py-2 text-xs text-fg-muted hover:text-fg-primary hover:bg-surface-hover rounded-lg transition-colors"
       >
         <Plus size={12} />
         Add a task
@@ -66,17 +66,17 @@ export function GoalTaskList() {
             { id: "delete", label: "Delete task", danger: true, onSelect: () => removeTask(task.id) },
           ]}
         >
-          <div className="group flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-bg-hover transition-colors">
+          <div className="group flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-surface-hover transition-colors">
             <button onClick={() => cycleStatus(task)} className={`shrink-0 ${STATUS_COLORS[task.status]}`}>
               {task.status === "done" ? <CheckCircle2 size={14} /> : <Circle size={14} />}
             </button>
-            <span className={`flex-1 text-xs leading-snug ${task.status === "done" ? "line-through text-text-muted" : "text-text-primary"}`}>
+            <span className={`flex-1 text-xs leading-snug ${task.status === "done" ? "line-through text-fg-muted" : "text-fg-primary"}`}>
               {task.title}
             </span>
             <button onClick={() => cyclePriority(task)} className={`shrink-0 text-[9px] font-semibold px-1.5 py-0.5 rounded ${PRIORITY_COLORS[task.priority]}`}>
               {task.priority[0].toUpperCase()}
             </button>
-            <button onClick={() => removeTask(task.id)} className="shrink-0 opacity-0 group-hover:opacity-100 text-text-muted hover:text-error transition-all">
+            <button onClick={() => removeTask(task.id)} className="shrink-0 opacity-0 group-hover:opacity-100 text-fg-muted hover:text-error transition-all">
               <Trash2 size={11} />
             </button>
           </div>
@@ -94,13 +94,13 @@ export function GoalTaskList() {
             }}
             onBlur={() => { if (!newTitle.trim()) setAdding(false); else handleAdd(); }}
             placeholder="Task title..."
-            className="flex-1 px-2 py-1 text-xs rounded border border-border-subtle bg-bg-tertiary text-text-primary focus:outline-none focus:border-accent-primary"
+            className="flex-1 px-2 py-1 text-xs rounded border border-border-subtle bg-surface-elevated text-fg-primary focus:outline-none focus:border-accent"
           />
         </div>
       ) : (
         <button
           onClick={() => setAdding(true)}
-          className="w-full flex items-center gap-2 px-2.5 py-1.5 text-[11px] text-text-muted hover:text-text-primary hover:bg-bg-hover rounded-lg transition-colors"
+          className="w-full flex items-center gap-2 px-2.5 py-1.5 text-[11px] text-fg-muted hover:text-fg-primary hover:bg-surface-hover rounded-lg transition-colors"
         >
           <Plus size={11} />
           Add task

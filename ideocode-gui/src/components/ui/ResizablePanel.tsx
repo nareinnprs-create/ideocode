@@ -67,7 +67,7 @@ export function ResizablePanel({
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
-        className={`shrink-0 bg-border-subtle hover:bg-accent-primary/40 active:bg-accent-primary/60 transition-colors ${handleClass}`}
+        className={`shrink-0 bg-border-subtle hover:bg-accent/40 active:bg-accent/60 transition-colors ${handleClass}`}
         style={handleStyle}
       />
       <div className="flex-1 overflow-hidden min-w-0 min-h-0">

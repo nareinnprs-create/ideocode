@@ -84,7 +84,7 @@ export function DropdownMenu({
       {open && (
         <div
           role="menu"
-          className={`absolute z-50 mt-1.5 min-w-48 py-1 rounded-lg border border-border-default bg-bg-elevated shadow-pop animate-scale-in ${alignClass}`}
+          className={`absolute z-50 mt-1.5 min-w-48 py-1 rounded-lg border border-border-subtle bg-surface-elevated shadow-pop animate-scale-in ${alignClass}`}
           style={width ? { width } : undefined}
         >
           {items.map((item, index) => {
@@ -113,12 +113,12 @@ export function DropdownMenu({
                   item.disabled
                     ? "opacity-40 cursor-not-allowed"
                     : item.danger
-                      ? "text-error hover:bg-error/10"
-                      : "text-text-secondary hover:text-text-primary hover:bg-bg-hover",
+                      ? "text-error hover:bg-error-muted"
+                      : "text-fg-secondary hover:text-fg-primary hover:bg-surface-hover",
                   activeIndex === index && !item.disabled
                     ? item.danger
-                      ? "bg-error/10"
-                      : "bg-bg-hover"
+                      ? "bg-error-muted"
+                      : "bg-surface-hover"
                     : "",
                 ].join(" ")}
               >
@@ -127,7 +127,7 @@ export function DropdownMenu({
                 )}
                 <span className="flex-1 text-left truncate">{item.label}</span>
                 {item.shortcut && (
-                  <span className="shrink-0 text-[11px] font-mono text-text-muted">
+                  <span className="shrink-0 text-[11px] font-mono text-fg-muted">
                     {item.shortcut}
                   </span>
                 )}

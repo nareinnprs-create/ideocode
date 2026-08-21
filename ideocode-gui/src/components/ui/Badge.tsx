@@ -4,26 +4,26 @@ export type BadgeTone = "default" | "accent" | "success" | "warning" | "error" |
 export type BadgeStyle = "solid" | "soft" | "outline";
 
 const TONE_SOLID: Record<BadgeTone, string> = {
-  default: "bg-bg-elevated text-text-secondary border-border-subtle",
-  accent: "bg-accent-primary text-white border-transparent",
-  success: "bg-success/20 text-success border-success/30",
-  warning: "bg-warning/15 text-warning border-warning/30",
-  error: "bg-error/15 text-error border-error/30",
-  info: "bg-info/15 text-info border-info/30",
+  default: "bg-surface-elevated text-fg-secondary border-border-subtle",
+  accent: "bg-accent text-white border-transparent",
+  success: "bg-success-muted text-success border-success/30",
+  warning: "bg-warning-muted text-warning border-warning/30",
+  error: "bg-error-muted text-error border-error/30",
+  info: "bg-info-muted text-info border-info/30",
 };
 
 const TONE_SOFT: Record<BadgeTone, string> = {
-  default: "bg-bg-elevated/60 text-text-secondary border-border-subtle",
-  accent: "bg-accent-primary/15 text-accent-primary border-accent-primary/25",
-  success: "bg-success/10 text-success border-success/20",
-  warning: "bg-warning/10 text-warning border-warning/20",
-  error: "bg-error/10 text-error border-error/20",
-  info: "bg-info/10 text-info border-info/20",
+  default: "bg-surface-elevated/60 text-fg-secondary border-border-subtle",
+  accent: "bg-accent-subtle text-accent border-accent/25",
+  success: "bg-success-muted text-success border-success/20",
+  warning: "bg-warning-muted text-warning border-warning/20",
+  error: "bg-error-muted text-error border-error/20",
+  info: "bg-info-muted text-info border-info/20",
 };
 
 const TONE_OUTLINE: Record<BadgeTone, string> = {
-  default: "bg-transparent text-text-secondary border-border-default",
-  accent: "bg-transparent text-accent-primary border-accent-primary/40",
+  default: "bg-transparent text-fg-secondary border-border-default",
+  accent: "bg-transparent text-accent border-accent/40",
   success: "bg-transparent text-success border-success/40",
   warning: "bg-transparent text-warning border-warning/40",
   error: "bg-transparent text-error border-error/40",
