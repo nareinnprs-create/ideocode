@@ -4072,7 +4072,7 @@ checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
 name = "ideocode"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "async-stream",
@@ -4407,7 +4407,7 @@ dependencies = [
 
 [[package]]
 name = "ideocode-gui"
-version = "0.66.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "chrono",
@@ -5040,7 +5040,7 @@ dependencies = [
 
 [[package]]
 name = "ideocode-tui"
-version = "0.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "arboard",

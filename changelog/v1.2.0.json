@@ -1,0 +1,24 @@
+{
+  "version": "1.2.0",
+  "date": "2026-08-22",
+  "title": "Design system overhaul, production hardening, and GUI release",
+  "highlights": [
+    "Complete design system overhaul: light-first glass morphism, Electric Violet accent, motion system, and accessibility improvements across all 36 panels and 117 components.",
+    "Production-hardened GUI: devtools disabled, CSP tightened, RemoteDev stub hidden, consistent versioning across TUI and GUI.",
+    "New workspace packages: @ideocode/types, @ideocode/automations, @ideocode/enterprise-mcp-client, @ideocode/mcp-apps with typed contracts."
+  ],
+  "improvements": [
+    "215 aria-labels and semantic roles across 64 files for WCAG-compliant accessibility.",
+    "Manual Vite code splitting for Monaco, Mermaid, KaTeX, xterm, and Cytoscape vendor bundles.",
+    "Clean TypeScript typecheck across 5 workspace packages with zero errors.",
+    "All 64 tests passing across 15 test files.",
+    "Consistent v1.2.0 versioning across TUI binary, Tauri GUI, and all workspace packages."
+  ],
+  "fixes": [
+    "Resolved all TypeScript compilation errors in workspace packages.",
+    "Removed accidentally committed node_modules symlinks and added proper .gitignore.",
+    "Fixed CSP to scope connect-src to known API endpoints only.",
+    "Removed stale package-lock.json in favor of pnpm workspace.",
+    "Fixed version fallback in App.tsx to match release version."
+  ]
+}
