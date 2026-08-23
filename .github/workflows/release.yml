@@ -426,7 +426,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: create-release
     continue-on-error: true
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -468,9 +468,15 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: ideocode-gui/pnpm-lock.yaml
 
       - name: Build GUI frontend + backend
         shell: bash
@@ -479,20 +485,21 @@ jobs:
           IDEOCODE_RELEASE_BUILD: "1"
           IDEOCODE_BUILD_SEMVER: ${{ github.ref_name }}
         run: |
-          npm install
-          npx tauri build
+          pnpm install --frozen-lockfile
+          pnpm tauri build
 
       - name: Package GUI bundle
         shell: bash
         run: |
           set -euo pipefail
-          # $OLDPWD is not reliable inside `find -exec sh -c` subshells (empty on
-          # macOS bash 3.2), so use $GITHUB_WORKSPACE, which the runner always
-          # exports as the absolute path to the repo root.
           mkdir -p "$GITHUB_WORKSPACE/dist"
           cd ideocode-gui/src-tauri/target/release
 
           if [ "$RUNNER_OS" = "Windows" ]; then
+            if [ ! -f "ideocode-gui.exe" ]; then
+              echo "ERROR: Tauri build did not produce ideocode-gui.exe"
+              exit 1
+            fi
             cp ideocode-gui.exe "$GITHUB_WORKSPACE/dist/${ARTIFACT}.exe"
             bundle_dir="bundle/msi"
             if [ -d "$bundle_dir" ]; then
@@ -503,7 +510,6 @@ jobs:
             if [ -d "$bundle_dir" ]; then
               find "$bundle_dir" -name '*.dmg' -exec cp {} "$GITHUB_WORKSPACE/dist/${ARTIFACT}.dmg" \;
             else
-              # Fallback: app bundle inside macos dir
               bundle_dir="bundle/macos"
               if [ -d "$bundle_dir" ]; then
                 dmg_name="$(ls "$bundle_dir"/*.app 2>/dev/null | head -1)"
@@ -529,6 +535,12 @@ jobs:
             done
           fi
 
+          if [ -z "$(ls -A "$GITHUB_WORKSPACE/dist/" 2>/dev/null)" ]; then
+            echo "ERROR: No GUI artifacts were produced"
+            exit 1
+          fi
+
+          echo "GUI artifacts produced:"
           ls -la "$GITHUB_WORKSPACE/dist/"
 
       - name: Upload GUI artifacts
@@ -760,7 +772,8 @@ jobs:
 
           files = sorted(
               p for p in Path("artifacts").rglob("*")
-              if p.is_file() and (p.name.endswith(".tar.gz") or p.name.endswith(".exe"))
+              if p.is_file() and any(p.name.endswith(ext) for ext in
+                  (".tar.gz", ".exe", ".msi", ".dmg", ".AppImage", ".deb"))
           )
           if not files:
               raise SystemExit("No release assets found for checksum generation")
