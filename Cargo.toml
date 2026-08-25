@@ -1,6 +1,6 @@
 [package]
 name = "ideocode"
-version = "1.2.0"
+version = "1.2.1"
 license = "MIT"
 description = "Possibly the greatest coding agent ever built — blazing-fast TUI, multi-model, swarm coordination, 30+ tools"
 edition = "2024"

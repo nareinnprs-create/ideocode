@@ -1,0 +1,22 @@
+{
+  "version": "1.2.1",
+  "date": "2026-08-25",
+  "title": "Full GUI release with desktop installers",
+  "highlights": [
+    "IDEOCODE GUI desktop installers now ship on all platforms: Windows (NSIS + MSI), macOS (DMG for Apple Silicon and Intel), and Linux (AppImage).",
+    "CI pipeline fully fixed: build-gui job now builds, packages, and publishes GUI installers alongside TUI binaries on every release.",
+    "SHA256SUMS now covers all release assets including .msi, .dmg, .AppImage, and .deb formats."
+  ],
+  "improvements": [
+    "Switched GUI CI from npm to pnpm to support workspace protocol dependencies.",
+    "Increased Tauri build timeout to 120 minutes for full Rust workspace compilation.",
+    "Added binary existence verification before packaging to fail fast on build errors.",
+    "Fixed packaging step to use root workspace target/ directory (cargo workspace member behavior)."
+  ],
+  "fixes": [
+    "Fixed build-gui CI job: replaced npm with pnpm and added pnpm/action-setup step.",
+    "Fixed package step path: cargo uses root target/ when src-tauri is a workspace member.",
+    "Added .msi, .dmg, .AppImage, .deb to SHA256SUMS checksum generation.",
+    "Added error output on packaging failure for easier CI debugging."
+  ]
+}
