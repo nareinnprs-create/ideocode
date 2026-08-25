@@ -37,7 +37,7 @@ function App() {
   useEffect(() => {
     initTauriEventBridge();
     useThemeStore.getState().init();
-    getVersion().then(setVersion).catch(() => setVersion("1.2.1"));
+    getVersion().then(setVersion).catch(() => setVersion("1.2.2"));
     getSettings()
       .then((s) => {
         useAppStore.getState().setAccentColor(s.accent_color ?? "#6366F1");

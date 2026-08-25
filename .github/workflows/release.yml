@@ -443,6 +443,9 @@ jobs:
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact: IDEOCODE-gui-windows-x86_64
+          - os: windows-11-arm
+            target: aarch64-pc-windows-msvc
+            artifact: IDEOCODE-gui-windows-aarch64
 
     steps:
       - uses: actions/checkout@v4
@@ -467,6 +470,14 @@ jobs:
             librsvg2-dev
 
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Setup MSVC for Windows ARM64 cross-compilation
+        if: runner.os == 'Windows' && matrix.target == 'aarch64-pc-windows-msvc'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64_arm64
 
       - uses: pnpm/action-setup@v4
         with:
@@ -486,7 +497,14 @@ jobs:
           IDEOCODE_BUILD_SEMVER: ${{ github.ref_name }}
         run: |
           pnpm install --frozen-lockfile
-          pnpm tauri build
+          target="${{ matrix.target }}"
+          # Cross-compile when the Rust target differs from the host
+          host_target="$(rustc -vV | sed -n 's/^host: //p')"
+          if [ "$target" != "$host_target" ]; then
+            pnpm tauri build --target "$target"
+          else
+            pnpm tauri build
+          fi
 
       - name: Package GUI bundle
         shell: bash
@@ -495,8 +513,16 @@ jobs:
           mkdir -p "$GITHUB_WORKSPACE/dist"
 
           # src-tauri is a root Cargo workspace member, so cargo uses the
-          # root target/ directory — not ideocode-gui/src-tauri/target/.
-          target_dir="$GITHUB_WORKSPACE/target/release"
+          # root target/ directory. When cross-compiling, the output is in
+          # target/<triple>/release/ instead of target/release/.
+          host_target="$(rustc -vV | sed -n 's/^host: //p')"
+          target="${{ matrix.target }}"
+          if [ "$target" != "$host_target" ]; then
+            target_dir="$GITHUB_WORKSPACE/target/$target/release"
+          else
+            target_dir="$GITHUB_WORKSPACE/target/release"
+          fi
+
           if [ ! -d "$target_dir" ]; then
             echo "ERROR: Tauri build target dir not found at $target_dir"
             exit 1
@@ -511,9 +537,15 @@ jobs:
               exit 1
             fi
             cp ideocode-gui.exe "$GITHUB_WORKSPACE/dist/${ARTIFACT}.exe"
+            # MSI installer
             bundle_dir="bundle/msi"
             if [ -d "$bundle_dir" ]; then
               find "$bundle_dir" -name '*.msi' -exec cp {} "$GITHUB_WORKSPACE/dist/${ARTIFACT}.msi" \;
+            fi
+            # NSIS installer
+            bundle_dir="bundle/nsis"
+            if [ -d "$bundle_dir" ]; then
+              find "$bundle_dir" -name '*.exe' ! -name 'ideocode-gui.exe' -exec cp {} "$GITHUB_WORKSPACE/dist/${ARTIFACT}-nsis.exe" \;
             fi
           elif [ "$RUNNER_OS" = "macOS" ]; then
             bundle_dir="bundle/dmg"
@@ -675,9 +707,14 @@ jobs:
             artifacts/IDEOCODE-windows-aarch64/IDEOCODE-${{ github.ref_name }}-windows-aarch64.exe
             artifacts/IDEOCODE-windows-aarch64/IDEOCODE-${{ github.ref_name }}-windows-aarch64.tar.gz
             artifacts/IDEOCODE-gui-windows-x86_64/IDEOCODE-${{ github.ref_name }}-gui-windows-x86_64.exe
+            artifacts/IDEOCODE-gui-windows-x86_64/IDEOCODE-${{ github.ref_name }}-gui-windows-x86_64.msi
+            artifacts/IDEOCODE-gui-windows-x86_64/IDEOCODE-${{ github.ref_name }}-gui-windows-x86_64-nsis.exe
+            artifacts/IDEOCODE-gui-windows-aarch64/IDEOCODE-${{ github.ref_name }}-gui-windows-aarch64.exe
+            artifacts/IDEOCODE-gui-windows-aarch64/IDEOCODE-${{ github.ref_name }}-gui-windows-aarch64.msi
             artifacts/IDEOCODE-gui-macos-aarch64/IDEOCODE-${{ github.ref_name }}-gui-macos-aarch64.dmg
             artifacts/IDEOCODE-gui-macos-x86_64/IDEOCODE-${{ github.ref_name }}-gui-macos-x86_64.dmg
             artifacts/IDEOCODE-gui-linux-x86_64/IDEOCODE-${{ github.ref_name }}-gui-linux-x86_64.AppImage
+            artifacts/IDEOCODE-gui-linux-x86_64/IDEOCODE-${{ github.ref_name }}-gui-linux-x86_64.deb
           )
 
           missing=()
@@ -707,7 +744,7 @@ jobs:
         run: |
           set -euo pipefail
           mapfile -d '' assets < <(
-            find artifacts -type f \( -name '*.tar.gz' -o -name '*.exe' -o -name '*.msi' -o -name '*.dmg' -o -name '*.AppImage' -o -name '*.deb' \) -print0
+            find artifacts -type f \( -name '*.tar.gz' -o -name '*.exe' -o -name '*.msi' -o -name '*.dmg' -o -name '*.AppImage' -o -name '*.deb' -o -name '*-nsis.exe' \) -print0
           )
           if [ "${#assets[@]}" -eq 0 ]; then
             echo "No completed release assets found" >&2
@@ -731,6 +768,7 @@ jobs:
           windows_aarch64=$(available artifacts/IDEOCODE-windows-aarch64/IDEOCODE-${{ github.ref_name }}-windows-aarch64.exe)
           freebsd_x86_64=$(available artifacts/IDEOCODE-freebsd-x86_64/IDEOCODE-${{ github.ref_name }}-freebsd-x86_64.tar.gz)
           gui_windows_x86_64=$(available artifacts/IDEOCODE-gui-windows-x86_64/IDEOCODE-${{ github.ref_name }}-gui-windows-x86_64.exe)
+          gui_windows_aarch64=$(available artifacts/IDEOCODE-gui-windows-aarch64/IDEOCODE-${{ github.ref_name }}-gui-windows-aarch64.exe)
           gui_macos_aarch64=$(available artifacts/IDEOCODE-gui-macos-aarch64/IDEOCODE-${{ github.ref_name }}-gui-macos-aarch64.dmg)
           gui_macos_x86_64=$(available artifacts/IDEOCODE-gui-macos-x86_64/IDEOCODE-${{ github.ref_name }}-gui-macos-x86_64.dmg)
           gui_linux_x86_64=$(available artifacts/IDEOCODE-gui-linux-x86_64/IDEOCODE-${{ github.ref_name }}-gui-linux-x86_64.AppImage)
@@ -754,6 +792,7 @@ jobs:
             echo "WINDOWS_AARCH64_AVAILABLE=$windows_aarch64"
             echo "FREEBSD_X86_64_AVAILABLE=$freebsd_x86_64"
             echo "GUI_WINDOWS_X86_64_AVAILABLE=$gui_windows_x86_64"
+            echo "GUI_WINDOWS_AARCH64_AVAILABLE=$gui_windows_aarch64"
             echo "GUI_MACOS_AARCH64_AVAILABLE=$gui_macos_aarch64"
             echo "GUI_MACOS_X86_64_AVAILABLE=$gui_macos_x86_64"
             echo "GUI_LINUX_X86_64_AVAILABLE=$gui_linux_x86_64"
@@ -770,6 +809,7 @@ jobs:
             echo "- Windows ARM64: $windows_aarch64"
             echo "- FreeBSD x86_64: $freebsd_x86_64"
             echo "- GUI Windows x86_64: $gui_windows_x86_64"
+            echo "- GUI Windows ARM64: $gui_windows_aarch64"
             echo "- GUI macOS Apple Silicon: $gui_macos_aarch64"
             echo "- GUI macOS Intel: $gui_macos_x86_64"
             echo "- GUI Linux x86_64: $gui_linux_x86_64"
@@ -844,6 +884,7 @@ jobs:
               - Windows ARM64: {status('WINDOWS_AARCH64_AVAILABLE')}
               - FreeBSD x86_64: {status('FREEBSD_X86_64_AVAILABLE')}
               - GUI Windows x86_64: {status('GUI_WINDOWS_X86_64_AVAILABLE')}
+              - GUI Windows ARM64: {status('GUI_WINDOWS_AARCH64_AVAILABLE')}
               - GUI macOS Apple Silicon: {status('GUI_MACOS_AARCH64_AVAILABLE')}
               - GUI macOS Intel: {status('GUI_MACOS_X86_64_AVAILABLE')}
               - GUI Linux x86_64: {status('GUI_LINUX_X86_64_AVAILABLE')}

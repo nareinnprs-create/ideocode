@@ -1,0 +1,24 @@
+{
+  "version": "1.2.2",
+  "date": "2026-08-25",
+  "title": "Universal GUI release — Windows ARM64, NSIS installers, .deb packages",
+  "highlights": [
+    "GUI now builds for Windows ARM64 alongside x86_64, bringing full desktop coverage to 5 platform targets: Linux x86_64, macOS Apple Silicon, macOS Intel, Windows x86_64, and Windows ARM64.",
+    "NSIS installer enabled on Windows for a lighter, faster install experience alongside the existing MSI.",
+    "Debian .deb package now produced for Linux, in addition to AppImage.",
+    "TUI binary coverage remains at 7 targets: Linux x86_64/aarch64, macOS aarch64/x86_64, Windows x86_64/aarch64, FreeBSD x86_64."
+  ],
+  "improvements": [
+    "Cross-compilation support in CI: build-gui auto-detects host vs target architecture and passes --target to tauri build when needed.",
+    "MSVC cross-tools step added for Windows ARM64 GUI builds.",
+    "Package step handles cross-compiled target directories (target/<triple>/release/).",
+    "SHA256SUMS and platform availability updated to cover all new artifact formats.",
+    "Bundle config updated: nsis, msi, dmg, appimage, deb all enabled."
+  ],
+  "fixes": [
+    "Added NSIS installer output handling in package step.",
+    "Added .deb to Linux artifact collection in package step.",
+    "Windows ARM64 GUI cross-compilation uses same MSVC setup as TUI build.",
+    "Asset attach step updated to include .nsis.exe files."
+  ]
+}
