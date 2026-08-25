@@ -443,7 +443,7 @@ jobs:
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact: IDEOCODE-gui-windows-x86_64
-          - os: windows-11-arm
+          - os: windows-latest
             target: aarch64-pc-windows-msvc
             artifact: IDEOCODE-gui-windows-aarch64
 
@@ -473,11 +473,11 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      - name: Setup MSVC for Windows ARM64 cross-compilation
-        if: runner.os == 'Windows' && matrix.target == 'aarch64-pc-windows-msvc'
+      - name: Setup MSVC build environment
+        if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
         with:
-          arch: amd64_arm64
+          arch: ${{ matrix.target == 'aarch64-pc-windows-msvc' && 'amd64_arm64' || 'amd64' }}
 
       - uses: pnpm/action-setup@v4
         with:
