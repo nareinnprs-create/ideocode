@@ -493,11 +493,21 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$GITHUB_WORKSPACE/dist"
-          cd ideocode-gui/src-tauri/target/release
+
+          # src-tauri is a root Cargo workspace member, so cargo uses the
+          # root target/ directory — not ideocode-gui/src-tauri/target/.
+          target_dir="$GITHUB_WORKSPACE/target/release"
+          if [ ! -d "$target_dir" ]; then
+            echo "ERROR: Tauri build target dir not found at $target_dir"
+            exit 1
+          fi
+          cd "$target_dir"
 
           if [ "$RUNNER_OS" = "Windows" ]; then
             if [ ! -f "ideocode-gui.exe" ]; then
               echo "ERROR: Tauri build did not produce ideocode-gui.exe"
+              echo "Contents of $target_dir:"
+              ls -la
               exit 1
             fi
             cp ideocode-gui.exe "$GITHUB_WORKSPACE/dist/${ARTIFACT}.exe"
@@ -512,9 +522,9 @@ jobs:
             else
               bundle_dir="bundle/macos"
               if [ -d "$bundle_dir" ]; then
-                dmg_name="$(ls "$bundle_dir"/*.app 2>/dev/null | head -1)"
-                if [ -n "$dmg_name" ]; then
-                  echo "App bundle found at $dmg_name, creating tar.gz"
+                app_name="$(ls "$bundle_dir"/*.app 2>/dev/null | head -1)"
+                if [ -n "$app_name" ]; then
+                  echo "App bundle found at $app_name, creating tar.gz"
                   tar czf "$GITHUB_WORKSPACE/dist/${ARTIFACT}.tar.gz" "$bundle_dir"
                 fi
               fi
@@ -537,6 +547,8 @@ jobs:
 
           if [ -z "$(ls -A "$GITHUB_WORKSPACE/dist/" 2>/dev/null)" ]; then
             echo "ERROR: No GUI artifacts were produced"
+            echo "Contents of $target_dir:"
+            ls -la
             exit 1
           fi
 
