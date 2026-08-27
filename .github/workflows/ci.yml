@@ -292,6 +292,21 @@ jobs:
         run: |
           scripts/check_warning_budget.sh
 
+      - name: Enforce source guardrail ratchets (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        # The quality job enforces these on Linux; running the pure-source
+        # ratchets here too covers the "guardrails on all 3 OS" intent
+        # (macOS job) at negligible cost (no cargo build needed). The scripts
+        # only count/scan source, so they behave identically across OSes.
+        run: |
+          python3 scripts/check_panic_budget.py
+          python3 scripts/check_swallowed_error_budget.py
+          python3 scripts/check_code_size_budget.py
+          python3 scripts/check_test_size_budget.py
+          python3 scripts/check_dependency_boundaries.py
+          python3 scripts/check_wildcard_reexport_budget.py
+
       - name: Security preflight (Linux)
         if: runner.os == 'Linux'
         shell: bash
@@ -353,6 +368,26 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             throw 'Windows library/binary test compilation failed'
           }
+
+      - name: Run source guardrail ratchets (Windows)
+        shell: pwsh
+        # The quality job enforces these on Linux; running the pure-source
+        # ratchets here too covers the "guardrails on all 3 OS" intent
+        # (Windows job). They scan/count source or call `cargo metadata`, so
+        # they behave identically on Windows without extra toolchain setup.
+        run: |
+          python scripts/check_panic_budget.py
+          if ($LASTEXITCODE -ne 0) { throw 'panic budget failed' }
+          python scripts/check_swallowed_error_budget.py
+          if ($LASTEXITCODE -ne 0) { throw 'swallowed-error budget failed' }
+          python scripts/check_code_size_budget.py
+          if ($LASTEXITCODE -ne 0) { throw 'code-size budget failed' }
+          python scripts/check_test_size_budget.py
+          if ($LASTEXITCODE -ne 0) { throw 'test-size budget failed' }
+          python scripts/check_dependency_boundaries.py
+          if ($LASTEXITCODE -ne 0) { throw 'dependency-boundary check failed' }
+          python scripts/check_wildcard_reexport_budget.py
+          if ($LASTEXITCODE -ne 0) { throw 'wildcard re-export budget failed' }
 
       - name: Run targeted Windows validation tests
         shell: pwsh
