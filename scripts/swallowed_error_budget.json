@@ -1,8 +1,8 @@
 {
-  "total": 3263,
+  "total": 3266,
   "totals_by_pattern": {
-    "dot_ok": 1180,
-    "let_underscore": 1213,
+    "dot_ok": 1181,
+    "let_underscore": 1215,
     "unwrap_or_default": 870
   },
   "tracked_files": {
@@ -1492,7 +1492,7 @@
       "unwrap_or_default": 1
     },
     "crates/ideocode-provider-baanzon/src/daemon.rs": {
-      "dot_ok": 1,
+      "dot_ok": 2,
       "let_underscore": 11,
       "unwrap_or_default": 1
     },
@@ -1707,7 +1707,7 @@
       "unwrap_or_default": 14
     },
     "crates/ideocode-setup-hints/src/macos_launcher.rs": {
-      "dot_ok": 1,
+      "dot_ok": 0,
       "let_underscore": 3,
       "unwrap_or_default": 0
     },
@@ -2148,7 +2148,7 @@
     },
     "crates/ideocode-tui/src/tui/app/turn.rs": {
       "dot_ok": 0,
-      "let_underscore": 14,
+      "let_underscore": 16,
       "unwrap_or_default": 2
     },
     "crates/ideocode-tui/src/tui/app/turn_memory.rs": {
@@ -2522,7 +2522,7 @@
       "unwrap_or_default": 0
     },
     "src/cli/omniroute.rs": {
-      "dot_ok": 0,
+      "dot_ok": 1,
       "let_underscore": 9,
       "unwrap_or_default": 0
     },
