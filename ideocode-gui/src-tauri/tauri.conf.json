@@ -21,7 +21,8 @@
         "decorations": false,
         "transparent": false,
         "center": true,
-        "devtools": false
+        "devtools": false,
+        "skipTaskbar": false
       }
     ],
     "security": {
