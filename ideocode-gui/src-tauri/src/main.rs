@@ -65,13 +65,15 @@ fn main() {
     if let Err(e) = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_http::init())
         .setup(|app| {
             use tauri::Emitter;
             let app_handle_status = app.handle().clone();
             ideocode_provider_baanzon::set_status_callback(move |status| {
                 let _ = app_handle_status.emit("baanzon://status_changed", status);
             });
-            
+
             let app_handle_log = app.handle().clone();
             ideocode_provider_baanzon::set_log_callback(move |log_line| {
                 let _ = app_handle_log.emit("baanzon://log_line", log_line);

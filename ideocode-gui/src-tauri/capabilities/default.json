@@ -6,6 +6,20 @@
   "permissions": [
     "core:default",
     "shell:allow-open",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "fs:allow-read",
+    "fs:allow-write",
+    "fs:allow-read-text",
+    "fs:allow-write-text",
+    "fs:allow-remove",
+    "fs:allow-rename",
+    "fs:allow-copy",
+    "fs:allow-create",
+    "fs:allow-exists",
+    "fs:allow-metadata-read",
+    "fs:allow-metadata-write",
+    "http:allow-request",
     {
       "identifier": "shell:allow-spawn",
       "allow": [
