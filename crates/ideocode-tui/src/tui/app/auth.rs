@@ -292,7 +292,10 @@ impl App {
         }
 
         let result: anyhow::Result<String> = (|| match provider.target {
-            LoginProviderTarget::IDEOCODE => unreachable!("handled above"),
+            LoginProviderTarget::IDEOCODE => {
+                // Handled above, but included for exhaustiveness
+                anyhow::bail!("IDEOCODE logout handled separately")
+            }
             LoginProviderTarget::Claude => {
                 let removed = crate::auth::claude::clear_accounts()?;
                 Ok(format!("Logged out of {} Anthropic account(s).", removed))

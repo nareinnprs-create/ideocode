@@ -543,7 +543,12 @@ pub(super) fn handle_dev_command(app: &mut App, trimmed: &str) -> bool {
                     "Onboarding simulator stopped.".to_string(),
                 ));
             }
-            _ => unreachable!("guarded by command matcher"),
+            other => {
+                // Shouldn't happen given command matcher guard
+                app.push_display_message(DisplayMessage::system(format!(
+                    "Unknown onboarding-sim mode `{other}`."
+                )));
+            }
         }
         return true;
     }
@@ -588,7 +593,12 @@ pub(super) fn handle_dev_command(app: &mut App, trimmed: &str) -> bool {
         let enable = match mode {
             "" | "on" => true,
             "off" => false,
-            _ => unreachable!("guarded by command matcher"),
+            other => {
+                app.push_display_message(DisplayMessage::system(format!(
+                    "Unknown onboarding-preview mode `{other}`."
+                )));
+                false
+            }
         };
         app.onboarding_preview_mode = enable;
         if enable {

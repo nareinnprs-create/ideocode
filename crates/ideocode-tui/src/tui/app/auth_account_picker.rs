@@ -415,7 +415,13 @@ impl App {
             "all" => self.build_all_inline_account_picker(),
             "claude" => self.build_claude_inline_account_picker(),
             "openai" => self.build_openai_inline_account_picker(),
-            _ => unreachable!(),
+            other => {
+                // Fallback to all providers for unknown scope
+                self.push_display_message(DisplayMessage::system(format!(
+                    "Unknown account picker scope `{other}`; showing all providers."
+                )));
+                self.build_all_inline_account_picker()
+            }
         };
 
         self.inline_view_state = None;

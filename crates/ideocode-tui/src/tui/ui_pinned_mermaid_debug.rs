@@ -177,7 +177,7 @@ pub fn debug_probe_side_panel_mermaid(
     let render = mermaid::render_mermaid_untracked(mermaid_source, Some(pane_width_cells));
     let mermaid::RenderResult::Image { width, height, .. } = render else {
         let mermaid::RenderResult::Error(error) = render else {
-            unreachable!("non-image mermaid render result")
+            anyhow::bail!("unexpected mermaid render result (not Image or Error)")
         };
         anyhow::bail!(error);
     };
