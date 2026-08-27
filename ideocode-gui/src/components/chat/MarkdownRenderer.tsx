@@ -2,10 +2,11 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { lazy, Suspense, useState } from "react";
-import { Copy, Check, FileCode2, Play } from "lucide-react";
+import { Copy, Check, FileCode2, Play, Terminal } from "lucide-react";
 import { useFileStore } from "../../stores/fileStore";
 import { useEditStore } from "../../stores/editStore";
 import { notify } from "../../stores/toastStore";
+import { runCommand } from "../../lib/tauri-commands";
 
 const MermaidDiagram = lazy(() =>
   import("./MermaidDiagram").then((m) => ({ default: m.MermaidDiagram })),
@@ -149,11 +150,17 @@ export function MarkdownRenderer({ content, onFileClick }: Props) {
   );
 }
 
+const RUNNABLE_LANGS = new Set(["bash", "sh", "shell", "zsh", "powershell", "ps1", "cmd", "bat"]);
+
 function CodeBlock({ children, lang }: { children: React.ReactNode; lang: string | null }) {
   const [copied, setCopied] = useState(false);
+  const [running, setRunning] = useState(false);
   const activeFile = useFileStore(s => s.activeFile);
   const contents = useFileStore(s => s.contents);
+  const rootPath = useFileStore(s => s.rootPath);
   const stageEdit = useEditStore(s => s.stageEdit);
+
+  const isRunnable = lang && RUNNABLE_LANGS.has(lang.toLowerCase());
 
   const handleCopy = () => {
     const text = extractText(children);
@@ -173,11 +180,43 @@ function CodeBlock({ children, lang }: { children: React.ReactNode; lang: string
     notify("success", "Edit staged", `Staged edit for ${activeFile.split(/[/\\]/).pop()}`);
   };
 
+  const handleRun = async () => {
+    if (!rootPath) {
+      notify("error", "No workspace", "Open a workspace to run commands.");
+      return;
+    }
+    const text = extractText(children).trim();
+    if (!text) return;
+    setRunning(true);
+    try {
+      const res = await runCommand(text, rootPath);
+      if (res.success) {
+        notify("success", "Command succeeded", res.stdout || "No output");
+      } else {
+        notify("error", "Command failed", res.stderr || `exit code ${res.exit_code}`);
+      }
+    } catch (e) {
+      notify("error", "Command error", `${e}`);
+    }
+    setRunning(false);
+  };
+
   return (
     <div className="group/cb my-2 rounded-lg overflow-hidden border border-border-subtle">
       <div className="flex items-center justify-between px-3 py-1.5 bg-surface-elevated/60 border-b border-border-subtle">
         <span className="text-[11px] text-fg-muted font-mono">{lang || "code"}</span>
         <div className="flex items-center gap-2">
+          {isRunnable && (
+            <button
+              onClick={handleRun}
+              disabled={running}
+              className="flex items-center gap-1.5 p-1 rounded-md text-success hover:bg-success/10 opacity-60 group-hover/cb:opacity-100 focus-visible:opacity-100 transition-fast disabled:opacity-40"
+              title="Run in terminal"
+            >
+              <Terminal size={12} />
+              <span className="text-[11px] font-medium">{running ? "Running…" : "Run"}</span>
+            </button>
+          )}
           <button
             onClick={handleApply}
             className="flex items-center gap-1.5 p-1 rounded-md text-accent hover:bg-accent/10 opacity-60 group-hover/cb:opacity-100 focus-visible:opacity-100 transition-fast"

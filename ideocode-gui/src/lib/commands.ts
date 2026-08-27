@@ -95,6 +95,10 @@ const PANELS: { id: string; label: string; icon: CommandIcon }[] = [
   { id: "safety", label: "Safety", icon: Shield },
   { id: "idle-tasks", label: "Idle Tasks", icon: Timer },
   { id: "timeline", label: "Timeline", icon: Clock },
+  { id: "context", label: "Context", icon: ClipboardCopy },
+  { id: "templates", label: "Templates", icon: LayoutTemplate },
+  { id: "snippets", label: "Snippets", icon: ClipboardCopy },
+  { id: "themes", label: "Themes", icon: Palette },
 ];
 
 export const COMMANDS: CommandAction[] = [
@@ -230,6 +234,45 @@ export const COMMANDS: CommandAction[] = [
       const rootPath = useFileStore.getState().rootPath;
       if (rootPath) useGitStore.getState().loadStatus(rootPath);
     },
+  },
+  {
+    id: "cycle-exec-mode",
+    label: "Cycle Execution Mode",
+    category: "Chat",
+    icon: Zap,
+    shortcut: "Shift+Tab",
+    keywords: ["execution", "mode", "confirm", "auto", "plan", "full"],
+    run: () => {
+      const s = useChatStore.getState();
+      const order: Array<"confirm" | "auto-edit" | "plan" | "full-access"> = ["confirm", "auto-edit", "plan", "full-access"];
+      const idx = order.indexOf(s.executionMode);
+      s.setExecutionMode(order[(idx + 1) % order.length]);
+      notify("success", "Execution mode", `${order[(idx + 1) % order.length]}`);
+    },
+  },
+  {
+    id: "cycle-thought-level",
+    label: "Cycle Thought Level",
+    category: "Chat",
+    icon: Brain,
+    shortcut: "Ctrl+T",
+    keywords: ["thought", "reasoning", "low", "high", "max"],
+    run: () => {
+      const s = useChatStore.getState();
+      const order: Array<"low" | "high" | "max"> = ["low", "high", "max"];
+      const idx = order.indexOf(s.thoughtLevel);
+      s.setThoughtLevel(order[(idx + 1) % order.length]);
+      notify("success", "Thought level", `${order[(idx + 1) % order.length]}`);
+    },
+  },
+  {
+    id: "open-compose",
+    label: "Open Composer",
+    category: "Chat",
+    icon: LayoutTemplate,
+    shortcut: "Ctrl+I",
+    keywords: ["compose", "editor", "inline"],
+    run: () => store().setComposerOpen(true),
   },
 ];
 

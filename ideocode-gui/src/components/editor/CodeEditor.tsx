@@ -10,7 +10,7 @@ import { IconButton } from "../ui/IconButton";
 import { Tooltip } from "../ui/Tooltip";
 import { ChevronRight, Columns2, WrapText, Map, Save, Loader2 } from "lucide-react";
 import { CmdKOverlay } from "./CmdKOverlay";
-import { listen } from "@tauri-apps/api/event";
+import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 
 // Configure Monaco to use the bundled files (copied to public/monaco/vs by
 // scripts/copy-monaco.mjs so the editor works fully offline and matches the
@@ -113,7 +113,7 @@ export function CodeEditor({ file: overrideFile }: { file?: string } = {}) {
 
   const handleMount: OnMount = useCallback((editor, monaco) => {
     editorRef.current = editor;
-    
+
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyK, () => {
       const position = editor.getPosition();
       if (position) {
@@ -126,6 +126,41 @@ export function CodeEditor({ file: overrideFile }: { file?: string } = {}) {
       }
       setCmdKOpen(true);
     });
+
+    const unlisteners: UnlistenFn[] = [];
+    listen<{ file: string; line: number; column: number; message: string; severity: "error" | "warning" | "info" }[]>(
+      "build://diagnostics",
+      (e) => {
+        const diagnostics = e.payload;
+        const grouped: Record<string, any[]> = {};
+        for (const d of diagnostics) {
+          if (!grouped[d.file]) grouped[d.file] = [];
+          grouped[d.file].push({
+            severity:
+              d.severity === "error"
+                ? monaco.MarkerSeverity.Error
+                : d.severity === "warning"
+                  ? monaco.MarkerSeverity.Warning
+                  : monaco.MarkerSeverity.Info,
+            startLineNumber: d.line,
+            startColumn: d.column,
+            endLineNumber: d.line,
+            endColumn: d.column + 1,
+            message: d.message,
+          });
+        }
+        for (const [file, markers] of Object.entries(grouped)) {
+          const model = monaco.editor.getModel(monaco.Uri.file(file));
+          if (model) {
+            monaco.editor.setModelMarkers(model, "build", markers);
+          }
+        }
+      },
+    ).then((unlisten) => unlisteners.push(unlisten));
+
+    return () => {
+      for (const unlisten of unlisteners) unlisten();
+    };
   }, []);
 
   const handleBeforeMount = useCallback((monaco: typeof import("monaco-editor")) => {

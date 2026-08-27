@@ -41,7 +41,8 @@ export type PanelId =
   | "git-graph"
   | "snippets"
   | "templates"
-  | "themes";
+  | "themes"
+  | "context";
 
 interface AppState {
   version: string;

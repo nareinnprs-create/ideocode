@@ -147,6 +147,8 @@ export const useFileStore = create<FileState>((set, get) => ({
       set({ rootPath: path });
       await tauriSaveWorkspace(path);
       await get().loadTree();
+      const { useContextStore } = await import("./contextStore");
+      await useContextStore.getState().loadAutoContext(path);
       notify("success", "Workspace opened", path.split(/[/\\]/).pop());
     } catch (e) {
       if (e !== "No folder selected") {
@@ -162,6 +164,8 @@ export const useFileStore = create<FileState>((set, get) => ({
       if (saved) {
         set({ rootPath: saved });
         await get().loadTree();
+        const { useContextStore } = await import("./contextStore");
+        await useContextStore.getState().loadAutoContext(saved);
       }
     } catch {
       // No saved workspace — start fresh

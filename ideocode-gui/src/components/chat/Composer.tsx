@@ -10,7 +10,6 @@ import {
   Command,
   Scissors,
   Plus,
-  ChevronDown,
   Loader2,
   Mic,
 } from "lucide-react";
@@ -24,6 +23,8 @@ import { ExecutionModePicker } from "./ExecutionModePicker";
 import { ThoughtLevelPicker } from "./ThoughtLevelPicker";
 import { CommandAutocomplete } from "./CommandAutocomplete";
 import { GoalCommandHandler } from "./GoalCommandHandler";
+import { ModelSelector } from "./ModelSelector";
+import { ComposerTabs } from "./ComposerTabs";
 
 const MODES: { id: ComposerMode; label: string; icon: typeof Zap; hint: string }[] = [
   { id: "normal", label: "Ask", icon: Zap, hint: "Ask a question" },
@@ -67,9 +68,6 @@ export function Composer() {
   const [mentionCandidates, setMentionCandidates] = useState<string[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const [focused, setFocused] = useState(false);
-  const [tabs, setTabs] = useState([{ id: "tab-1", label: "Chat 1" }]);
-  const [activeTabId, setActiveTabId] = useState("tab-1");
-  const [tabInputs, setTabInputs] = useState<Map<string, string>>(new Map([["tab-1", ""]]));
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selEndRef = useRef(0);
@@ -83,12 +81,10 @@ export function Composer() {
   const interrupt = useChatStore((s) => s.interrupt);
   const compact = useChatStore((s) => s.compact);
   const clearMessages = useChatStore((s) => s.clearMessages);
-  const model = useChatStore((s) => s.model);
   const setModel = useChatStore((s) => s.setModel);
   const mode = useChatStore((s) => s.mode);
   const setMode = useChatStore((s) => s.setMode);
   const setReasoningEffort = useChatStore((s) => s.setReasoningEffort);
-  const providers = useProviderStore((s) => s.providers);
   const loadProviders = useProviderStore((s) => s.loadProviders);
   const openFiles = useFileStore((s) => s.openFiles);
   const activeFile = useFileStore((s) => s.activeFile);
@@ -410,46 +406,7 @@ export function Composer() {
       )}
 
       {/* Tab bar header */}
-      <div className="flex items-center gap-1 overflow-x-auto pb-2 scrollbar-none border-b border-border-subtle mb-2">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => {
-              setTabInputs((prev) => {
-                const next = new Map(prev);
-                next.set(activeTabId, input);
-                return next;
-              });
-              setInput(tabInputs.get(tab.id) ?? "");
-              setActiveTabId(tab.id);
-            }}
-            className={`px-3 py-1 text-xs font-medium rounded-t-md border-b-2 transition-all ${
-              activeTabId === tab.id
-                ? "border-accent text-fg-primary bg-surface/50"
-                : "border-transparent text-fg-muted hover:text-fg-secondary hover:bg-surface-hover"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-        <button
-          onClick={() => {
-            setTabInputs((prev) => {
-              const next = new Map(prev);
-              next.set(activeTabId, input);
-              return next;
-            });
-            const newId = `tab-${tabs.length + 1}`;
-            setTabs([...tabs, { id: newId, label: `Chat ${tabs.length + 1}` }]);
-            setActiveTabId(newId);
-            setInput("");
-          }}
-          className="ml-1 p-1 text-fg-muted hover:text-fg-primary rounded hover:bg-surface-hover"
-          aria-label="New Chat Tab"
-        >
-          <Plus size={14} />
-        </button>
-      </div>
+      <ComposerTabs />
 
       {/* Mode + reasoning row (above composer, Cursor-style) */}
       <div className="flex items-center justify-between gap-2 pb-2">
@@ -478,29 +435,7 @@ export function Composer() {
         </div>
 
         <div className="flex items-center gap-3">
-          <select
-            value={model}
-            onChange={(e) => {
-              const newModel = e.target.value;
-              setModel(newModel);
-              persistPatch({ active_model: newModel });
-              const p = providers.find(prov => prov.models.some(m => m.id === newModel));
-              if (p) {
-                useProviderStore.getState().setActiveProvider(p.id, newModel);
-              }
-            }}
-            className="model-select bg-transparent text-fg-muted hover:text-fg-primary text-[11px] outline-none cursor-pointer border border-transparent hover:border-border-subtle rounded px-1 py-0.5 transition-fast max-w-[130px] truncate appearance-none"
-            aria-label="Select AI Model"
-          >
-            <option value="auto">Auto (Default)</option>
-            {providers.map(p => (
-              <optgroup key={p.id} label={p.name}>
-                {p.models.map(m => (
-                  <option key={m.id} value={m.id}>{m.name}</option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
+          <ModelSelector />
 
           <div className="hidden sm:flex items-center">
             <ThoughtLevelPicker />
@@ -635,7 +570,7 @@ export function Composer() {
           )}
         </div>
 
-        {/* Footer row: context + model */}
+        {/* Footer row: context + hint */}
         <div className="flex items-center justify-between gap-2 px-2.5 pb-2">
           {activeFileName ? (
             <span className="flex items-center gap-1 min-w-0 text-[11px] text-fg-muted">
@@ -646,35 +581,13 @@ export function Composer() {
             <span className="text-[11px] text-fg-muted/70">Ctrl+Shift+P for commands</span>
           )}
 
-          <div className="relative shrink-0">
-            <select
-              value={model}
-              onChange={(e) => {
-                const newModel = e.target.value;
-                setModel(newModel);
-                persistPatch({ active_model: newModel });
-                const p = providers.find(prov => prov.models.some(m => m.id === newModel));
-                if (p) {
-                  useProviderStore.getState().setActiveProvider(p.id, newModel);
-                }
-              }}
-              aria-label="Select model"
-              className="model-select appearance-none bg-transparent border border-transparent rounded-md pl-2 pr-6 py-0.5 text-[11px] font-medium text-fg-secondary outline-none hover:border-border-subtle hover:bg-surface-hover focus:border-accent cursor-pointer max-w-44 min-w-0"
-            >
-              {model === "auto" && <option value="auto">auto</option>}
-              {providers
-                .flatMap((p) => p.models.map((m) => ({ id: m.id, provider: p.name })))
-                .map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.id}
-                  </option>
-                ))}
-            </select>
-            <ChevronDown
-              size={11}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-fg-muted pointer-events-none"
-            />
-          </div>
+          <span className="text-[10px] text-fg-muted">
+            <kbd className="px-1 py-0.5 rounded bg-surface-elevated/50 border border-border-subtle text-[9px]">Enter</kbd>
+            {" "}send
+            {" · "}
+            <kbd className="px-1 py-0.5 rounded bg-surface-elevated/50 border border-border-subtle text-[9px]">Shift+Enter</kbd>
+            {" "}newline
+          </span>
         </div>
       </div>
     </div>

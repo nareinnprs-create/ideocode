@@ -4,6 +4,47 @@ import { runBuild, runCargoCheck } from "../../lib/tauri-commands";
 import { useFileStore } from "../../stores/fileStore";
 import { notify } from "../../stores/toastStore";
 import type { BuildOutput } from "../../lib/tauri-commands";
+import { emit } from "@tauri-apps/api/event";
+
+interface Diagnostic {
+  file: string;
+  line: number;
+  column: number;
+  message: string;
+  severity: "error" | "warning" | "info";
+}
+
+const CARGO_DIAG_RE = /^\s*--> (.+?):(\d+):(\d+)\s*$/;
+const CARGO_SEV_RE = /^(error|warning)\[?\w*\]?\s*:\s*(.+)/;
+
+function parseDiagnostics(stderr: string): Diagnostic[] {
+  const diags: Diagnostic[] = [];
+  const lines = stderr.split("\n");
+  let currentFile = "";
+  let currentLine = 0;
+  let currentCol = 0;
+  for (const line of lines) {
+    const fileMatch = CARGO_DIAG_RE.exec(line);
+    if (fileMatch) {
+      currentFile = fileMatch[1];
+      currentLine = parseInt(fileMatch[2], 10);
+      currentCol = parseInt(fileMatch[3], 10);
+      continue;
+    }
+    const sevMatch = CARGO_SEV_RE.exec(line);
+    if (sevMatch && currentFile) {
+      diags.push({
+        file: currentFile,
+        line: currentLine,
+        column: currentCol,
+        message: sevMatch[2].trim(),
+        severity: sevMatch[1] === "error" ? "error" : "warning",
+      });
+      currentFile = "";
+    }
+  }
+  return diags;
+}
 
 export function BuildPanel() {
   const rootPath = useFileStore((s) => s.rootPath);
@@ -18,6 +59,9 @@ export function BuildPanel() {
     try {
       const res = await runBuild(rootPath);
       setOutput(res);
+      if (res.stderr) {
+        emit("build://diagnostics", parseDiagnostics(res.stderr));
+      }
       notify(
         res.success ? "success" : "error",
         res.success ? "Build passed" : "Build failed",
@@ -38,6 +82,9 @@ export function BuildPanel() {
     try {
       const res = await runCargoCheck(rootPath);
       setOutput(res);
+      if (res.stderr) {
+        emit("build://diagnostics", parseDiagnostics(res.stderr));
+      }
       notify(
         res.success ? "success" : "error",
         res.success ? "Cargo check passed" : "Cargo check failed",

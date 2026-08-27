@@ -24,6 +24,7 @@ import { Checklist } from "./Checklist";
 import { Kbd } from "../ui/Kbd";
 import { ForkButton } from "./ForkButton";
 import { EditHistoryButton } from "./EditHistoryButton";
+import { PermissionPrompt } from "./PermissionPrompt";
 import type { Message } from "../../lib/tauri-commands";
 
 export function ChatMessageList() {
@@ -99,6 +100,8 @@ export function ChatMessageList() {
         )}
 
         {loading && <AgentReasoningVisualizer />}
+
+        <PermissionPrompt />
 
         {branches.length > 0 && (
           <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-surface/60 border border-border-subtle" role="tablist" aria-label="Chat branches">

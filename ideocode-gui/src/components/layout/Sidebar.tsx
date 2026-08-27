@@ -43,6 +43,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: "task-management", label: "Tasks", icon: Layers, panel: "task-management" },
   { id: "wiki", label: "Wiki", icon: BookOpen, panel: "wiki" },
   { id: "memory", label: "Memory", icon: Brain, panel: "memory" },
+  { id: "context", label: "Context", icon: FileCode2, panel: "context" },
   { id: "snippets", label: "Snippets", icon: FileCode2, panel: "snippets" },
   { id: "templates", label: "Templates", icon: LayoutTemplate, panel: "templates" },
   { id: "themes", label: "Themes", icon: Palette, panel: "themes" },

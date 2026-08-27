@@ -35,6 +35,7 @@ import { CodeSnippetsPanel } from "../panels/CodeSnippetsPanel";
 import { ProjectTemplatesPanel } from "../panels/ProjectTemplatesPanel";
 import { GoalSummaryPanel } from "../goal/GoalSummaryPanel";
 import { ThemeMarketplacePanel } from "../panels/ThemeMarketplacePanel";
+import { ContextPanel } from "../panels/ContextPanel";
 
 const BuildPanel = lazy(() => import("../panels/BuildPanel").then((m) => ({ default: m.BuildPanel })));
 const DebugPanel = lazy(() => import("../panels/DebugPanel").then((m) => ({ default: m.DebugPanel })));
@@ -83,6 +84,7 @@ const PANEL_TITLES: Record<string, string> = {
   snippets: "Code Snippets",
   templates: "Project Templates",
   themes: "Theme Marketplace",
+  context: "Context",
 };
 
 export function RightPanel() {
@@ -231,6 +233,8 @@ function PanelContent({ panel }: { panel: string }) {
       return wrapped(<ProjectTemplatesPanel />);
     case "themes":
       return wrapped(<ThemeMarketplacePanel />);
+    case "context":
+      return wrapped(<ContextPanel />);
     default:
       return (
         <div className="p-4 text-fg-muted text-xs text-center">

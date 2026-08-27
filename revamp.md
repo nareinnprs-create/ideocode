@@ -36,20 +36,20 @@ Codex, Claude Code, and Zcode.
 - [x] P1.4 Streaming markdown (syntax highlight, tables, mermaid, copy) — mermaid diagrams (lazy), file-path chips open files, avatars + typing dots + framer entrance, code copy
 
 ### Phase 2 — Cursor / Codex / Claude Code / Zcode feature parity
-- [ ] P2.1 Multi-tab composer, model selector, agent mode
-- [ ] P2.2 Inline AI diff accept/reject in Monaco
-- [ ] P2.3 Cmd+K quick edit + ghost autocomplete
-- [ ] P2.4 Codebase indexing + embeddings + semantic search
-- [ ] P2.5 @-mentions, slash commands, MCP config
-- [ ] P2.6 Plan mode + tool permission prompts
-- [ ] P2.7 Session history UX (load/clear/list/rename/resume/export/delete)
-- [ ] P2.8 Multi-file edit tree + per-file Monaco diff
-- [ ] P2.9 Terminal panel polish + AI-run commands
-- [ ] P2.10 Build/Debug panel wired to editor diagnostics
-- [ ] P2.11 Git panel staging UX
-- [ ] P2.12 Usage/cost overlay in GUI
-- [ ] P2.13 Command palette upgrade + keyboard-first/vim
-- [ ] P2.14 Voice dictation (mic)
+- [x] P2.1 Multi-tab composer, model selector, agent mode
+- [x] P2.2 Inline AI diff accept/reject in Monaco
+- [x] P2.3 Cmd+K quick edit + ghost autocomplete
+- [x] P2.4 Codebase indexing + embeddings + semantic search
+- [x] P2.5 @-mentions, slash commands, MCP config
+- [x] P2.6 Plan mode + tool permission prompts
+- [x] P2.7 Session history UX (load/clear/list/rename/resume/export/delete)
+- [x] P2.8 Multi-file edit tree + per-file Monaco diff
+- [x] P2.9 Terminal panel polish + AI-run commands
+- [x] P2.10 Build/Debug panel wired to editor diagnostics
+- [x] P2.11 Git panel staging UX
+- [x] P2.12 Usage/cost overlay in GUI
+- [x] P2.13 Command palette upgrade + keyboard-first/vim
+- [x] P2.14 Voice dictation (mic)
 
 ### Phase 3 — TUI polish + full verification
 - [ ] P3.1 TUI layout/theme cleanup + zero-error sweep

@@ -195,6 +195,17 @@ export const useChatStore = create<ChatState>((set) => ({
         }
       }
 
+      // Add context store files (non-mentioned, non-active files)
+      const { useContextStore } = await import("./contextStore");
+      const ctxFiles = useContextStore.getState().files;
+      const activeSet = new Set(mentionedFiles.map((f) => f.path));
+      if (fs.activeFile) activeSet.add(fs.activeFile);
+      for (const cf of ctxFiles) {
+        if (!activeSet.has(cf.path) && cf.content) {
+          mentionedFiles.push({ path: cf.path, content: cf.content });
+        }
+      }
+
       const ctx = buildFileContext(content, fs.activeFile, fs.activeFile ? fs.contents[fs.activeFile] : undefined, mentionedFiles);
       const userMsg = await tauriStream(ctx?.payload ?? content, { model, mode, reasoningEffort });
       const displayMsg = ctx ? { ...userMsg, content: ctx.strip(userMsg.content) } : userMsg;

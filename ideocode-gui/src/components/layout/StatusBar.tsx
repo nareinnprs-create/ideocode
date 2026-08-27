@@ -6,12 +6,12 @@ import { useChatStore, type ExecutionMode, type ThoughtLevel } from "../../store
 import { useFileStore } from "../../stores/fileStore";
 import { getGatewayStatus, type GatewayStatus } from "../../lib/tauri-commands";
 import { Tooltip } from "../ui/Tooltip";
+import { UsageOverlay } from "../chat/UsageOverlay";
 
 export function StatusBar() {
   const version = useAppStore((s) => s.version);
   const model = useChatStore((s) => s.model);
   const busy = useChatStore((s) => s.loading || s.streaming);
-  const messages = useChatStore((s) => s.messages);
   const executionMode = useChatStore((s) => s.executionMode);
   const setExecutionMode = useChatStore((s) => s.setExecutionMode);
   const thoughtLevel = useChatStore((s) => s.thoughtLevel);
@@ -107,8 +107,6 @@ export function StatusBar() {
   const ExecIcon = EXEC_MODE_ICONS[executionMode];
   const ThoughtIcon = THOUGHT_ICONS[thoughtLevel];
 
-  const totalTokens = messages.reduce((acc, m) => acc + (m.usage?.total_tokens ?? 0), 0);
-
   return (
     <footer className="flex items-center justify-between h-7 px-3 surface-blur hairline-top text-[11px] text-fg-secondary select-none gap-3"
       style={{ background: "color-mix(in srgb, var(--color-surface) 70%, transparent)" }}
@@ -178,13 +176,7 @@ export function StatusBar() {
             <span>{THOUGHT_LABELS[thoughtLevel]}</span>
           </button>
         </Tooltip>
-        {totalTokens > 0 && (
-          <span className="flex items-center gap-1 text-accent">
-            <Zap size={10} />
-            <span className="font-mono font-semibold">{totalTokens.toLocaleString()}</span>
-            <span className="text-fg-muted">tokens</span>
-          </span>
-        )}
+        <UsageOverlay />
       </div>
 
       {/* Right — privacy, version */}
