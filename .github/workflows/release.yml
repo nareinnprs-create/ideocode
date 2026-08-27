@@ -496,6 +496,26 @@ jobs:
           IDEOCODE_RELEASE_BUILD: "1"
           IDEOCODE_BUILD_SEMVER: ${{ github.ref_name }}
         run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            # Git Bash prepends /usr/bin which contains a GNU link.exe that
+            # shadows MSVC's link.exe.  Prepend MSVC's bin directory to PATH
+            # so cargo/rustc find the correct linker.
+            MSVC_BASE="$(cygpath "$VCINSTALLDIR")/Tools/MSVC"
+            MSVC_VER=$(ls "$MSVC_BASE" | sort -V | tail -1)
+            MSVC_LINK_DIR="$MSVC_BASE/$MSVC_VER/bin/Hostx64/x64"
+            export PATH="$(cygpath "$MSVC_LINK_DIR"):$PATH"
+            echo "Prepended MSVC tools to PATH: $(cygpath "$MSVC_LINK_DIR")"
+            echo "link.exe resolved to: $(which link.exe)"
+
+            # ARM64 cross-compilation: ensure cargo uses the right linker
+            if [ "${{ matrix.target }}" = "aarch64-pc-windows-msvc" ]; then
+              ARM64_LINK_DIR="$MSVC_BASE/$MSVC_VER/bin/Hostx64/arm64"
+              export PATH="$(cygpath "$ARM64_LINK_DIR"):$PATH"
+              export CARGO_TARGET_AARCH64_PC_WINDOWS_MSVC_LINKER="$(cygpath "$ARM64_LINK_DIR/link.exe")"
+              echo "ARM64 cross-linker: $(which link.exe)"
+            fi
+          fi
+
           pnpm install --frozen-lockfile
           target="${{ matrix.target }}"
           # Cross-compile when the Rust target differs from the host
