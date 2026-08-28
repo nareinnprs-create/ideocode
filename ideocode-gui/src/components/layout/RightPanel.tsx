@@ -31,6 +31,7 @@ import { IdleTasksPanel } from "../panels/IdleTasksPanel";
 import { EditReviewPanel } from "../panels/EditReviewPanel";
 import { TaskManagementPanel } from "../panels/TaskManagementPanel";
 import { GitGraphPanel } from "../panels/GitGraphPanel";
+import { RemoteDevPanel } from "../panels/RemoteDevPanel";
 import { CodeSnippetsPanel } from "../panels/CodeSnippetsPanel";
 import { ProjectTemplatesPanel } from "../panels/ProjectTemplatesPanel";
 import { GoalSummaryPanel } from "../goal/GoalSummaryPanel";
@@ -205,10 +206,7 @@ function PanelContent({ panel }: { panel: string }) {
     case "bot-channel":
       return wrapped(<BotChannelPanel />);
     case "remote-dev":
-      return wrapped(<div className="flex flex-col items-center justify-center h-full text-fg-muted p-6 text-center">
-        <p className="text-sm font-medium text-fg-primary mb-1">Remote Dev</p>
-        <p className="text-xs">SSH/WSL/Docker connections coming in a future release.</p>
-      </div>);
+      return wrapped(<RemoteDevPanel />);
     case "remote-control":
       return wrapped(<RemoteControlPanel />);
     case "shortcuts":

@@ -574,6 +574,17 @@ export async function getBrowserContextText(): Promise<string> {
 // Goal Commands
 // ============================================
 
+export interface GoalState {
+  goal: string;
+  status: string;
+  set_at: number;
+  updated_at: number;
+}
+
+export async function getGoal(): Promise<GoalState> {
+  return invoke<GoalState>("get_goal");
+}
+
 export async function setGoal(goal: string): Promise<void> {
   return invoke<void>("set_goal", { goal });
 }
@@ -620,7 +631,7 @@ export async function gitGraph(path: string, maxCount?: number): Promise<GitComm
 // ============================================
 
 export async function sshConnect(host: string, port: number, user: string, keyPath?: string): Promise<boolean> {
-  return invoke<boolean>("ssh_connect", { host, port, user, key_path: keyPath ?? null });
+  return invoke<boolean>("ssh_connect", { config: { host, port, user, key_path: keyPath ?? null } });
 }
 
 export async function sshDisconnect(host: string): Promise<void> {

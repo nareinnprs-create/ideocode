@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useFileStore } from "./fileStore";
 
 export interface RunRecord {
   id: string;
@@ -170,17 +171,17 @@ export const useAutomationStore = create<AutomationStore>((set, get) => ({
 
     try {
       const { invoke } = await import("@tauri-apps/api/core");
-      const result = await invoke<string>("run_automation", {
-        command: auto.command,
-        model: auto.model,
-        mode: auto.mode,
-      });
+      const rootPath = useFileStore.getState().rootPath;
+      const result = await invoke<{ id: string; status: string; output: string }>(
+        "run_automation",
+        { name: auto.name, command: auto.command, cwd: rootPath },
+      );
 
       const completedAutomations = get().automations.map((a) => {
         if (a.id !== id) return a;
         const history = a.runHistory.map((r) =>
           r.id === runId
-            ? { ...r, completedAt: Date.now(), output: result, status: "success" as const }
+            ? { ...r, completedAt: Date.now(), output: result.output || result.status, status: "success" as const }
             : r,
         );
         return { ...a, runHistory: history };

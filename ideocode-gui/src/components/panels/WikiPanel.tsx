@@ -1,7 +1,10 @@
 import React from "react";
 import { useState } from "react";
-import { BookOpen, Plus, Search, Trash2, Edit3, Save, X, Download, Upload } from "lucide-react";
+import { BookOpen, Plus, Search, Trash2, Edit3, Save, X, Download, Upload, Sparkles, Loader2 } from "lucide-react";
 import { useAppStore } from "../../stores/appStore";
+import { useFileStore } from "../../stores/fileStore";
+import { generateWiki } from "../../lib/tauri-commands";
+import { notify } from "../../stores/toastStore";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 
 function renderInline(text: string): React.ReactNode[] {
@@ -161,6 +164,7 @@ function savePages(pages: WikiPage[]) {
 
 export function WikiPanel() {
   const setRightPanelOpen = useAppStore((s) => s.setRightPanelOpen);
+  const { rootPath } = useFileStore();
   const [pages, setPages] = useState<WikiPage[]>(loadPages);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -169,6 +173,7 @@ export function WikiPanel() {
   const [editContent, setEditContent] = useState("");
   const [editCategory, setEditCategory] = useState("general");
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
 
   const importRef = React.useRef<HTMLInputElement>(null);
 
@@ -249,6 +254,34 @@ export function WikiPanel() {
     setEditing(true);
   };
 
+  const handleGenerate = async () => {
+    if (!rootPath) {
+      notify("warning", "No workspace", "Open a project to generate a wiki from its source files");
+      return;
+    }
+    setGenerating(true);
+    try {
+      const markdown = await generateWiki(rootPath, undefined);
+      const id = `wiki-${Date.now()}`;
+      const page: WikiPage = {
+        id,
+        title: "Project Wiki",
+        content: markdown,
+        category: "reference",
+        updatedAt: Date.now(),
+      };
+      const next = [...pages, page];
+      setPages(next);
+      savePages(next);
+      setSelectedId(id);
+      setEditCategory(page.category);
+      notify("success", "Wiki generated", "Project wiki generated from source files");
+    } catch (e) {
+      notify("error", "Wiki generation failed", `${e}`);
+    }
+    setGenerating(false);
+  };
+
   return (
     <div className="flex flex-col h-full" role="region" aria-label="Wiki panel">
       <div className="px-1 pt-1 flex items-center justify-between">
@@ -258,6 +291,10 @@ export function WikiPanel() {
         <div className="flex items-center gap-1">
           <button onClick={handleNew} aria-label="New wiki page" className="flex items-center gap-1 px-2 py-1 text-xs text-accent hover:text-accent-hover transition-fast rounded hover:bg-surface-elevated">
             <Plus size={14} /> New
+          </button>
+          <button onClick={handleGenerate} disabled={generating} aria-label="Generate wiki from project" title="Generate a wiki from project source files"
+            className="flex items-center gap-1 px-2 py-1 text-xs text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated disabled:opacity-50">
+            {generating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />} Generate
           </button>
           <button onClick={handleExport} aria-label="Export wiki" className="flex items-center gap-1 px-2 py-1 text-xs text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated">
             <Download size={14} /> Export

@@ -119,3 +119,59 @@ pub fn get_browser_context_text() -> String {
         parts.join("\n")
     }
 }
+
+/// Navigates the browser to a URL and records it in the active browser context.
+/// Live DOM automation is not yet wired (requires WebView2/CEF); this command
+/// keeps the recorded navigation in sync so the Browser panel reflects intent.
+#[tauri::command]
+pub fn browser_navigate(url: String) -> Result<(), String> {
+    if url.trim().is_empty() {
+        return Err("URL cannot be empty".to_string());
+    }
+    let title = url
+        .split('/')
+        .nth(2)
+        .unwrap_or(&url)
+        .to_string();
+    set_browser_tab(url, title);
+    Ok(())
+}
+
+/// Takes a screenshot of the browser.
+///
+/// Requires an embedded WebView2/CEF integration (or a CDP-connected browser),
+/// which is not yet available. Returns a descriptive error until that lands.
+#[tauri::command]
+pub fn browser_screenshot() -> Result<String, String> {
+    Err(
+        "browser_screenshot is not available: no embedded browser (WebView2/CEF) is wired yet. \
+         Connect a CDP browser via Settings → Remote Dev to enable screenshots."
+            .to_string(),
+    )
+}
+
+/// Clicks an element by selector.
+///
+/// Requires an embedded WebView2/CEF integration (or a CDP-connected browser),
+/// which is not yet available.
+#[tauri::command]
+pub fn browser_click(_selector: String) -> Result<(), String> {
+    Err(
+        "browser_click is not available: no embedded browser (WebView2/CEF) is wired yet. \
+         DOM automation requires a connected browser via CDP."
+            .to_string(),
+    )
+}
+
+/// Types text into an element by selector.
+///
+/// Requires an embedded WebView2/CEF integration (or a CDP-connected browser),
+/// which is not yet available.
+#[tauri::command]
+pub fn browser_type(_selector: String, _text: String) -> Result<(), String> {
+    Err(
+        "browser_type is not available: no embedded browser (WebView2/CEF) is wired yet. \
+         DOM automation requires a connected browser via CDP."
+            .to_string(),
+    )
+}

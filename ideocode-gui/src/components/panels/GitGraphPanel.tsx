@@ -48,11 +48,12 @@ export function GitGraphPanel() {
     setLoading(true);
     try {
       const { invoke } = await import("@tauri-apps/api/core");
-      const result = await invoke<{ hash: string; message: string; author: string; date: string; parents: string[]; tags: string[] }[]>("git_log_graph", { path: rootPath, maxCount: 50 });
+      const result = await invoke<{ hash: string; message: string; author: string; date: number; parents: string[]; branch?: string | null }[]>("git_log_graph", { path: rootPath, maxCount: 50 });
       const colorMap = new Map<string, string>();
       let colorIdx = 0;
       const graph: GitCommitNode[] = result.map((c) => {
-        const branch = c.tags?.[0] ?? "main";
+        const branch = c.branch ?? "main";
+        const tags = branch && branch !== "" ? [branch] : [];
         if (!colorMap.has(branch)) {
           colorMap.set(branch, BRANCH_COLORS[colorIdx % BRANCH_COLORS.length]);
           colorIdx++;
@@ -65,22 +66,23 @@ export function GitGraphPanel() {
           date: formatDate(c.date),
           branchColor: colorMap.get(branch) ?? BRANCH_COLORS[0],
           parents: c.parents,
-          tags: c.tags,
+          tags,
         };
       });
       setCommits(graph);
-    } catch {
+    } catch (err) {
+      console.error("Failed to load git graph:", err);
       setCommits([]);
     }
     setLoading(false);
   };
 
-  const formatDate = (d: string) => {
+  const formatDate = (epoch: number) => {
     try {
-      const dt = new Date(d);
+      const dt = new Date(epoch * 1000);
       return dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     } catch {
-      return d;
+      return `${epoch}`;
     }
   };
 

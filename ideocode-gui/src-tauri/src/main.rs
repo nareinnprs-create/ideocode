@@ -163,6 +163,28 @@ fn main() {
             commands::set_browser_tab,
             commands::clear_browser_context,
             commands::get_browser_context_text,
+            // Git Graph
+            commands::git_graph,
+            commands::git_log_graph,
+            // Browser Automation
+            commands::browser_navigate,
+            commands::browser_screenshot,
+            commands::browser_click,
+            commands::browser_type,
+            // Goals
+            commands::get_goal,
+            commands::set_goal,
+            commands::pause_goal,
+            commands::resume_goal,
+            commands::clear_goal,
+            // Wiki
+            commands::generate_wiki,
+            // SSH/Remote
+            commands::ssh_connect,
+            commands::ssh_disconnect,
+            commands::ssh_exec,
+            // Automation
+            commands::run_automation,
         ])
         .run(tauri::generate_context!())
     {

@@ -1,4 +1,10 @@
 import { create } from "zustand";
+import {
+  setGoal as backendSetGoal,
+  pauseGoal as backendPauseGoal,
+  resumeGoal as backendResumeGoal,
+  clearGoal as backendClearGoal,
+} from "../lib/tauri-commands";
 
 export type TaskStatus = "pending" | "in_progress" | "blocked" | "done";
 
@@ -86,16 +92,25 @@ export const useGoalStore = create<GoalStore>((set, get) => ({
   setGoal: (goal) => {
     set({ goal });
     saveState({ ...get(), goal });
+    backendSetGoal(goal).catch((err) => {
+      console.error("Failed to persist goal to backend:", err);
+    });
   },
 
   startGoal: () => {
     set({ status: "in_progress" });
     saveState({ ...get(), status: "in_progress" });
+    backendResumeGoal().catch((err) => {
+      console.error("Failed to resume goal on backend:", err);
+    });
   },
 
   pauseGoal: () => {
     set({ status: "paused" });
     saveState({ ...get(), status: "paused" });
+    backendPauseGoal().catch((err) => {
+      console.error("Failed to pause goal on backend:", err);
+    });
   },
 
   completeGoal: () => {
@@ -111,6 +126,9 @@ export const useGoalStore = create<GoalStore>((set, get) => ({
     const fresh = { goal: "", status: "idle" as GoalStatus, tasks: [], selectedTaskId: null };
     set(fresh);
     saveState(fresh);
+    backendClearGoal().catch((err) => {
+      console.error("Failed to clear goal on backend:", err);
+    });
   },
 
   addTask: (task) => {
