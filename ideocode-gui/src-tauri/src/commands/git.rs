@@ -300,10 +300,7 @@ pub fn git_graph(path: String, max_count: usize) -> Result<Vec<GitCommit>, Strin
             let message = parts[1].to_string();
             let author = parts[2].to_string();
             let date = parts[3].parse().unwrap_or(0);
-            let parents = parts[4]
-                .split_whitespace()
-                .map(|s| s.to_string())
-                .collect();
+            let parents = parts[4].split_whitespace().map(|s| s.to_string()).collect();
             let branch = parts[5].to_string();
 
             commits.push(GitCommit {
@@ -312,7 +309,11 @@ pub fn git_graph(path: String, max_count: usize) -> Result<Vec<GitCommit>, Strin
                 author,
                 date,
                 parents,
-                branch: if branch.is_empty() { None } else { Some(branch) },
+                branch: if branch.is_empty() {
+                    None
+                } else {
+                    Some(branch)
+                },
             });
         }
     }

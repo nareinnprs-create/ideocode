@@ -128,11 +128,7 @@ pub fn browser_navigate(url: String) -> Result<(), String> {
     if url.trim().is_empty() {
         return Err("URL cannot be empty".to_string());
     }
-    let title = url
-        .split('/')
-        .nth(2)
-        .unwrap_or(&url)
-        .to_string();
+    let title = url.split('/').nth(2).unwrap_or(&url).to_string();
     set_browser_tab(url, title);
     Ok(())
 }

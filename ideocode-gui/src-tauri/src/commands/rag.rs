@@ -75,9 +75,11 @@ pub fn search_semantic(path: String, query: String) -> Result<Vec<CodeSearchResu
         .collect();
 
     // Normalize scores to 0.0..1.0
-    if let Some(max_score) = results.iter().map(|r| r.score).fold(None, |acc, s| {
-        Some(acc.map_or(s, |a: f64| a.max(s)))
-    }) {
+    if let Some(max_score) = results
+        .iter()
+        .map(|r| r.score)
+        .fold(None, |acc, s| Some(acc.map_or(s, |a: f64| a.max(s))))
+    {
         if max_score > 0.0 {
             for r in &mut results {
                 r.score /= max_score;
@@ -123,8 +125,8 @@ fn collect_semantic(
                             score += 1.0;
                             // Bonus for word boundary match (not substring of larger word)
                             let pos = line_lower.find(token.as_str()).unwrap_or(0);
-                            let before_ok = pos == 0
-                                || !line_lower.as_bytes()[pos - 1].is_ascii_alphanumeric();
+                            let before_ok =
+                                pos == 0 || !line_lower.as_bytes()[pos - 1].is_ascii_alphanumeric();
                             let after_pos = pos + token.len();
                             let after_ok = after_pos >= line_lower.len()
                                 || !line_lower.as_bytes()[after_pos].is_ascii_alphanumeric();

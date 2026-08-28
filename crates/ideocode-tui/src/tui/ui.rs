@@ -3607,7 +3607,7 @@ fn draw_inner(frame: &mut Frame, app: &dyn TuiState) {
     crate::tui::ui_integration::render_provider_panel(frame, area);
 
     // Quick actions are now integrated into the bottom status bar
-    
+
     // Scroll position indicator
     crate::tui::ui_integration::render_scroll_position(frame, area, app);
 

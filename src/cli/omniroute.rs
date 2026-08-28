@@ -704,7 +704,10 @@ mod tests {
     fn candidate_ports_always_include_default_and_are_deduped() {
         let ports = candidate_probe_ports();
         assert!(ports.contains(&OMNIROUTE_PORT));
-        assert!(ports.windows(2).all(|w| w[0] < w[1]), "candidate ports must be sorted + deduped");
+        assert!(
+            ports.windows(2).all(|w| w[0] < w[1]),
+            "candidate ports must be sorted + deduped"
+        );
     }
 
     #[test]

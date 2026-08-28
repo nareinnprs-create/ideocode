@@ -3,8 +3,8 @@
 // Developer: Narein Rao
 // SPDX-License-Identifier: MIT
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
 use std::collections::HashMap;
+use std::path::PathBuf;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppSettings {

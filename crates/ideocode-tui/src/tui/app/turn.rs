@@ -51,7 +51,7 @@ impl App {
                 self.status = ProcessingStatus::Installing;
                 status_spinner_renderer.draw_full(self, terminal)?;
                 super::run_shell::reset_status_spinner_interval(&mut status_spinner_interval, self);
-                
+
                 // Wait for installation to complete while maintaining responsive UI
                 loop {
                     tokio::select! {

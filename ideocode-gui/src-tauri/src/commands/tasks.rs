@@ -234,7 +234,11 @@ fn spawn_command(command: &str, cwd: &str) -> Result<std::process::Child, std::i
 
 /// Runs an automation script/command as a background task.
 #[tauri::command]
-pub fn run_automation(name: String, command: String, cwd: String) -> Result<BackgroundTask, String> {
+pub fn run_automation(
+    name: String,
+    command: String,
+    cwd: String,
+) -> Result<BackgroundTask, String> {
     // Create and start the task immediately
     let task = create_task(name, command.clone(), cwd.clone());
     start_task(task.id.clone())

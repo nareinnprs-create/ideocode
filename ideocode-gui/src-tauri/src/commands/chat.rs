@@ -292,8 +292,10 @@ async fn chat_completion(
             extract_openai_completion(resp).await
         }
         "openai" => {
-            let key = resolve_api_key("OPENAI_API_KEY")
-                .ok_or_else(|| "OPENAI_API_KEY is not set. Set it in environment or Settings → Providers.".to_string())?;
+            let key = resolve_api_key("OPENAI_API_KEY").ok_or_else(|| {
+                "OPENAI_API_KEY is not set. Set it in environment or Settings → Providers."
+                    .to_string()
+            })?;
             let body = serde_json::json!({ "model": model, "messages": messages });
             let resp = client
                 .post("https://api.openai.com/v1/chat/completions")
@@ -305,8 +307,10 @@ async fn chat_completion(
             extract_openai_completion(resp).await
         }
         "anthropic" => {
-            let key = resolve_api_key("ANTHROPIC_API_KEY")
-                .ok_or_else(|| "ANTHROPIC_API_KEY is not set. Set it in environment or Settings → Providers.".to_string())?;
+            let key = resolve_api_key("ANTHROPIC_API_KEY").ok_or_else(|| {
+                "ANTHROPIC_API_KEY is not set. Set it in environment or Settings → Providers."
+                    .to_string()
+            })?;
             let anthropic_messages: Vec<serde_json::Value> = messages
                 .iter()
                 .filter_map(|m| {
@@ -350,8 +354,10 @@ async fn chat_completion(
             Ok(content.to_string())
         }
         "gemini" => {
-            let key = resolve_api_key("GOOGLE_API_KEY")
-                .ok_or_else(|| "GOOGLE_API_KEY is not set. Set it in environment or Settings → Providers.".to_string())?;
+            let key = resolve_api_key("GOOGLE_API_KEY").ok_or_else(|| {
+                "GOOGLE_API_KEY is not set. Set it in environment or Settings → Providers."
+                    .to_string()
+            })?;
             let contents: Vec<serde_json::Value> = messages
                 .iter()
                 .filter_map(|m| {
@@ -392,8 +398,10 @@ async fn chat_completion(
             Ok(content.to_string())
         }
         "openrouter" => {
-            let key = resolve_api_key("OPENROUTER_API_KEY")
-                .ok_or_else(|| "OPENROUTER_API_KEY is not set. Set it in environment or Settings → Providers.".to_string())?;
+            let key = resolve_api_key("OPENROUTER_API_KEY").ok_or_else(|| {
+                "OPENROUTER_API_KEY is not set. Set it in environment or Settings → Providers."
+                    .to_string()
+            })?;
             let body = serde_json::json!({ "model": model, "messages": messages });
             let resp = client
                 .post("https://openrouter.ai/api/v1/chat/completions")
@@ -492,12 +500,15 @@ async fn stream_openai_completion(
 
     let mut req = client.post(&url).json(&body);
     if provider == "openai" {
-        let key = resolve_api_key("OPENAI_API_KEY")
-            .ok_or_else(|| "OPENAI_API_KEY is not set. Set it in environment or Settings → Providers.".to_string())?;
+        let key = resolve_api_key("OPENAI_API_KEY").ok_or_else(|| {
+            "OPENAI_API_KEY is not set. Set it in environment or Settings → Providers.".to_string()
+        })?;
         req = req.bearer_auth(&key);
     } else if provider == "openrouter" {
-        let key = resolve_api_key("OPENROUTER_API_KEY")
-            .ok_or_else(|| "OPENROUTER_API_KEY is not set. Set it in environment or Settings → Providers.".to_string())?;
+        let key = resolve_api_key("OPENROUTER_API_KEY").ok_or_else(|| {
+            "OPENROUTER_API_KEY is not set. Set it in environment or Settings → Providers."
+                .to_string()
+        })?;
         req = req.bearer_auth(&key);
     }
 
@@ -633,7 +644,10 @@ fn emit_sse_event_with_tools(
             );
         }
         // Parse tool calls from streaming delta
-        if let Some(arr) = v.pointer("/choices/0/delta/tool_calls").and_then(|a| a.as_array()) {
+        if let Some(arr) = v
+            .pointer("/choices/0/delta/tool_calls")
+            .and_then(|a| a.as_array())
+        {
             for tc in arr {
                 let idx = tc.get("index").and_then(|i| i.as_u64()).unwrap_or(0) as u32;
                 let entry = tool_calls.entry(idx).or_insert_with(|| {
@@ -653,19 +667,13 @@ fn emit_sse_event_with_tools(
                     }
                 }
                 // Update function name if present
-                if let Some(name) = tc
-                    .pointer("/function/name")
-                    .and_then(|s| s.as_str())
-                {
+                if let Some(name) = tc.pointer("/function/name").and_then(|s| s.as_str()) {
                     if !name.is_empty() {
                         entry.1 = name.to_string();
                     }
                 }
                 // Append arguments delta
-                if let Some(args) = tc
-                    .pointer("/function/arguments")
-                    .and_then(|s| s.as_str())
-                {
+                if let Some(args) = tc.pointer("/function/arguments").and_then(|s| s.as_str()) {
                     entry.2.push_str(args);
                 }
             }
@@ -770,14 +778,9 @@ fn execute_tool(name: &str, args: &str) -> String {
                 return "Error: empty command".to_string();
             }
             let output = if cfg!(target_os = "windows") {
-                std::process::Command::new("cmd")
-                    .args(["/C", cmd])
-                    .output()
+                std::process::Command::new("cmd").args(["/C", cmd]).output()
             } else {
-                std::process::Command::new("sh")
-                    .arg("-c")
-                    .arg(cmd)
-                    .output()
+                std::process::Command::new("sh").arg("-c").arg(cmd).output()
             };
             match output {
                 Ok(output) => {
@@ -1507,21 +1510,22 @@ pub fn export_session(id: String, format: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-pub async fn inline_completion(
-    prefix: String,
-    suffix: String,
-) -> Result<String, String> {
+pub async fn inline_completion(prefix: String, suffix: String) -> Result<String, String> {
     // Don't complete if the cursor is mid-line with non-whitespace after it
     if let Some(last_line) = prefix.lines().last() {
         let trimmed = last_line.trim_end();
-        if !trimmed.is_empty() && !trimmed.ends_with('{') && !trimmed.ends_with('(')
-            && !trimmed.ends_with(':') && !trimmed.ends_with(',')
-            && !trimmed.ends_with('=') && !trimmed.ends_with('>')
+        if !trimmed.is_empty()
+            && !trimmed.ends_with('{')
+            && !trimmed.ends_with('(')
+            && !trimmed.ends_with(':')
+            && !trimmed.ends_with(',')
+            && !trimmed.ends_with('=')
+            && !trimmed.ends_with('>')
             && !trimmed.ends_with('[')
         {
             // Check if there's non-whitespace content right after cursor in suffix
             let suffix_start = suffix.chars().next();
-            if suffix_start.map_or(false, |c| !c.is_whitespace() && c != '\n') {
+            if suffix_start.is_some_and(|c| !c.is_whitespace() && c != '\n') {
                 return Ok(String::new());
             }
         }
@@ -1594,7 +1598,11 @@ pub async fn stream_inline_edit(
     let req_messages = vec![serde_json::json!({"role": "user", "content": user_msg})];
     let assistant_id = format!("inline-{}", new_id());
 
-    let StreamResult { content: full, usage, .. } = match provider.as_str() {
+    let StreamResult {
+        content: full,
+        usage,
+        ..
+    } = match provider.as_str() {
         "baanzon-verso" | "omniroute" | "openai" | "openrouter" => {
             stream_openai_completion(
                 &provider,
@@ -1613,7 +1621,11 @@ pub async fn stream_inline_edit(
                 "chat://delta",
                 serde_json::json!({ "id": assistant_id, "content": &text }),
             );
-            StreamResult { content: text, usage: None, tool_calls: Vec::new() }
+            StreamResult {
+                content: text,
+                usage: None,
+                tool_calls: Vec::new(),
+            }
         }
     };
 

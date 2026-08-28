@@ -8,9 +8,9 @@
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
+use std::sync::Mutex;
 use std::sync::atomic::{AtomicU16, Ordering};
 use std::time::{Duration, Instant};
-use std::sync::Mutex;
 
 use serde::{Deserialize, Serialize};
 
@@ -89,7 +89,7 @@ fn log(message: &str) {
             cb(message.to_string());
         }
     }
-    
+
     let path = gateway_log_path();
     if let Some(parent) = path.parent() {
         let _ = std::fs::create_dir_all(parent);
@@ -635,7 +635,7 @@ pub fn spawn_supervisor() {
                     }
                     previous_status = current_status;
                 }
-                
+
                 std::thread::sleep(Duration::from_secs(10));
                 if gateway_healthy() {
                     if recovery_started.take().is_some() {
@@ -732,7 +732,10 @@ mod tests {
     fn candidate_ports_always_include_default_and_are_deduped() {
         let ports = candidate_probe_ports();
         assert!(ports.contains(&OMNIROUTE_PORT));
-        assert!(ports.windows(2).all(|w| w[0] < w[1]), "candidate ports must be sorted + deduped");
+        assert!(
+            ports.windows(2).all(|w| w[0] < w[1]),
+            "candidate ports must be sorted + deduped"
+        );
     }
 
     #[test]
