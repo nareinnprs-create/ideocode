@@ -88,7 +88,11 @@ export function CodeEditor({ file: overrideFile }: { file?: string } = {}) {
   } | null>(null);
 
   useEffect(() => {
-    getSettings().then(setEditorSettings).catch(() => {});
+    getSettings()
+      .then(setEditorSettings)
+      .catch((err) => {
+        console.error("Failed to load editor settings:", err);
+      });
   }, []);
 
   const persistSetting = useCallback((patch: Partial<AppSettings>) => {
@@ -96,7 +100,9 @@ export function CodeEditor({ file: overrideFile }: { file?: string } = {}) {
       .then((s) => updateSettings({ ...s, ...patch }))
       .then(() => getSettings())
       .then(setEditorSettings)
-      .catch(() => {});
+      .catch((err) => {
+        console.error("Failed to persist editor settings:", err);
+      });
   }, []);
 
   const toggleMinimap = () => {

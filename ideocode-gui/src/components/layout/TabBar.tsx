@@ -32,7 +32,9 @@ export function TabBar() {
   };
 
   const copyPath = (path: string) => {
-    navigator.clipboard.writeText(path).catch(() => {});
+    navigator.clipboard.writeText(path).catch((err) => {
+      console.error("Failed to copy path to clipboard:", err);
+    });
     setContextMenu(null);
   };
 

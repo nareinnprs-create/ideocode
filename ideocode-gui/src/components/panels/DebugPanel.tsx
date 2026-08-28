@@ -60,7 +60,9 @@ export function DebugPanel() {
 
   useEffect(() => {
     return () => {
-      childRef.current?.kill().catch(() => {});
+      childRef.current?.kill().catch((err) => {
+        console.error("Failed to kill child process:", err);
+      });
     };
   }, []);
 

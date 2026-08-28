@@ -141,7 +141,9 @@ export function MemoryPanel() {
   );
 
   const copyContent = useCallback((content: string) => {
-    navigator.clipboard.writeText(content).catch(() => {});
+    navigator.clipboard.writeText(content).catch((err) => {
+      console.error("Failed to copy to clipboard:", err);
+    });
   }, []);
 
   const buildContextMenuItems = useCallback(

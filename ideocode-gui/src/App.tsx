@@ -43,7 +43,9 @@ function App() {
         useAppStore.getState().setAccentColor(s.accent_color ?? "#6366F1");
         useAppStore.getState().setUiFontSize(s.ui_font_size ?? 13);
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error("Failed to load settings:", err);
+      });
     useFileStore.getState().loadSavedWorkspace();
     isFirstLaunch()
       .then((first) => setOnboarding(first))

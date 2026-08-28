@@ -38,7 +38,9 @@ export function TopBar() {
         /* not available in webview yet */
       }
       const unlisten = await win.onResized(() => {
-        win.isMaximized().then(setIsMaximized).catch(() => {});
+        win.isMaximized().then(setIsMaximized).catch((err) => {
+          console.error("Failed to check maximized state:", err);
+        });
       });
       if (disposed) unlisten();
     })();

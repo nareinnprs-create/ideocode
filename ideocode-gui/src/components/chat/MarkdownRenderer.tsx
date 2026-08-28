@@ -167,7 +167,9 @@ function CodeBlock({ children, lang }: { children: React.ReactNode; lang: string
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
+    }).catch((err) => {
+      console.error("Failed to copy to clipboard:", err);
+    });
   };
 
   const handleApply = () => {

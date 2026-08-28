@@ -42,8 +42,14 @@ export function StatusBar() {
 
   useEffect(() => {
     if (!rootPath) return;
-    loadGitStatus(rootPath).catch(() => {});
-    const timer = setInterval(() => loadGitStatus(rootPath).catch(() => {}), 30000);
+    loadGitStatus(rootPath).catch((err) => {
+      console.error("Failed to load git status:", err);
+    });
+    const timer = setInterval(() => {
+      loadGitStatus(rootPath).catch((err) => {
+        console.error("Failed to load git status (interval):", err);
+      });
+    }, 30000);
     return () => clearInterval(timer);
   }, [rootPath, loadGitStatus]);
 

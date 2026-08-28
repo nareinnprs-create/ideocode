@@ -101,7 +101,9 @@ export function Composer() {
         }
         if (s.reasoning_effort) setReasoningEffort(s.reasoning_effort);
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error("Failed to load settings in Composer:", err);
+      });
   }, [loadProviders, setModel, setMode, setReasoningEffort]);
 
   const persistPatch = (patch: {
@@ -113,7 +115,9 @@ export function Composer() {
     persistSelection.current = setTimeout(() => {
       getSettings()
         .then((s) => updateSettings({ ...s, ...patch }))
-        .catch(() => {});
+        .catch((err) => {
+          console.error("Failed to persist settings:", err);
+        });
     }, 300);
   };
 

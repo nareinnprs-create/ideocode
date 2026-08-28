@@ -34,7 +34,9 @@ export function BrowserPanel() {
     try {
       const t = await getBrowserContextText();
       setText(t);
-    } catch (_) {}
+    } catch (err) {
+      console.error("Failed to load browser context text:", err);
+    }
   };
 
   useEffect(() => {
@@ -68,7 +70,9 @@ export function BrowserPanel() {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(text).catch(() => {});
+    navigator.clipboard.writeText(text).catch((err) => {
+      console.error("Failed to copy to clipboard:", err);
+    });
   };
 
   return (
