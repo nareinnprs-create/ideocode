@@ -39,6 +39,16 @@ pub struct GitHunk {
     pub content: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GitCommit {
+    pub hash: String,
+    pub message: String,
+    pub author: String,
+    pub date: u64,
+    pub parents: Vec<String>,
+    pub branch: Option<String>,
+}
+
 fn run_git(args: &[&str], cwd: &str) -> Result<String, String> {
     let output = std::process::Command::new("git")
         .args(args)
@@ -265,4 +275,53 @@ pub fn git_pull(path: String) -> Result<String, String> {
 pub fn git_push(path: String) -> Result<String, String> {
     let cwd = PathBuf::from(&path).to_string_lossy().to_string();
     run_git(&["push"], &cwd)
+}
+
+/// Returns a list of commits for the git graph visualization.
+#[tauri::command]
+pub fn git_graph(path: String, max_count: usize) -> Result<Vec<GitCommit>, String> {
+    let cwd = PathBuf::from(&path).to_string_lossy().to_string();
+
+    let output = run_git(
+        &[
+            "log",
+            &format!("--max-count={}", max_count),
+            "--pretty=format:%H%x00%s%x00%an%x00%at%x00%P%x00%d",
+            "--all",
+        ],
+        &cwd,
+    )?;
+
+    let mut commits = Vec::new();
+    for line in output.lines() {
+        let parts: Vec<&str> = line.split('\0').collect();
+        if parts.len() >= 6 {
+            let hash = parts[0].to_string();
+            let message = parts[1].to_string();
+            let author = parts[2].to_string();
+            let date = parts[3].parse().unwrap_or(0);
+            let parents = parts[4]
+                .split_whitespace()
+                .map(|s| s.to_string())
+                .collect();
+            let branch = parts[5].to_string();
+
+            commits.push(GitCommit {
+                hash,
+                message,
+                author,
+                date,
+                parents,
+                branch: if branch.is_empty() { None } else { Some(branch) },
+            });
+        }
+    }
+
+    Ok(commits)
+}
+
+/// Returns a list of commits for the git log graph (alias for git_graph with different default).
+#[tauri::command]
+pub fn git_log_graph(path: String, max_count: usize) -> Result<Vec<GitCommit>, String> {
+    git_graph(path, max_count)
 }

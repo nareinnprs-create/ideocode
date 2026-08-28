@@ -95,7 +95,10 @@ pub fn create_task(name: String, command: String, cwd: String) -> BackgroundTask
 #[tauri::command]
 pub fn start_task(id: String) -> Result<BackgroundTask, String> {
     let mut tasks = load_tasks();
-    let idx = tasks.iter().position(|t| t.id == id).ok_or("Task not found")?;
+    let idx = tasks
+        .iter()
+        .position(|t| t.id == id)
+        .ok_or("Task not found")?;
     if tasks[idx].status != TaskStatus::Pending {
         return Err("Task is not pending".into());
     }
@@ -159,7 +162,10 @@ pub fn start_task(id: String) -> Result<BackgroundTask, String> {
 #[tauri::command]
 pub fn cancel_task(id: String) -> Result<BackgroundTask, String> {
     let mut tasks = load_tasks();
-    let idx = tasks.iter().position(|t| t.id == id).ok_or("Task not found")?;
+    let idx = tasks
+        .iter()
+        .position(|t| t.id == id)
+        .ok_or("Task not found")?;
     tasks[idx].status = TaskStatus::Cancelled;
     tasks[idx].finished_at = Some(now_secs());
     let result = tasks[idx].clone();
@@ -170,7 +176,10 @@ pub fn cancel_task(id: String) -> Result<BackgroundTask, String> {
 #[tauri::command]
 pub fn update_task_progress(id: String, progress: f64) -> Result<BackgroundTask, String> {
     let mut tasks = load_tasks();
-    let idx = tasks.iter().position(|t| t.id == id).ok_or("Task not found")?;
+    let idx = tasks
+        .iter()
+        .position(|t| t.id == id)
+        .ok_or("Task not found")?;
     tasks[idx].progress = progress.clamp(0.0, 100.0);
     let result = tasks[idx].clone();
     save_tasks(&tasks);
@@ -201,10 +210,7 @@ pub fn clear_finished_tasks() {
     save_tasks(&tasks);
 }
 
-fn spawn_command(
-    command: &str,
-    cwd: &str,
-) -> Result<std::process::Child, std::io::Error> {
+fn spawn_command(command: &str, cwd: &str) -> Result<std::process::Child, std::io::Error> {
     #[cfg(target_os = "windows")]
     {
         std::process::Command::new("cmd")
@@ -224,4 +230,12 @@ fn spawn_command(
             .stderr(std::process::Stdio::piped())
             .spawn()
     }
+}
+
+/// Runs an automation script/command as a background task.
+#[tauri::command]
+pub fn run_automation(name: String, command: String, cwd: String) -> Result<BackgroundTask, String> {
+    // Create and start the task immediately
+    let task = create_task(name, command.clone(), cwd.clone());
+    start_task(task.id.clone())
 }
