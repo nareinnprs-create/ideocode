@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { Message } from "../lib/tauri-commands";
+import { saveSideSession, loadSideSession } from "../lib/tauri-commands";
 
 export interface SideConversationTab {
   id: string;
@@ -18,13 +19,53 @@ interface SideConversationState {
   setTabMessages: (id: string, messages: Message[]) => void;
   getTabMessages: (id: string) => Message[];
   hasTabs: () => boolean;
+  init: () => Promise<void>;
 }
 
 let counter = 0;
 
+function persistTab(tab: SideConversationTab) {
+  if (!/^side-/.test(tab.id)) {
+    return;
+  }
+  void saveSideSession(tab.id, tab.title, tab.messages).catch(() => {
+    // best-effort persistence; failures don't break the in-memory tabs
+  });
+}
+
 export const useSideConversationStore = create<SideConversationState>((set, get) => ({
   tabs: [],
   activeTabId: null,
+
+  init: async () => {
+    try {
+      const { listSessions } = await import("../lib/tauri-commands");
+      const sessions = await listSessions();
+      const sideIds = sessions
+        .filter((s) => (s as { side?: boolean }).side)
+        .map((s) => s.id);
+      if (sideIds.length === 0) return;
+      const loaded: SideConversationTab[] = [];
+      for (const id of sideIds) {
+        try {
+          const [title, messages] = await loadSideSession(id);
+          if (messages.length > 0) {
+            loaded.push({ id, title, created: Date.now() - 1000, messages });
+          }
+        } catch {
+          // skip unreadable side session
+        }
+      }
+      if (loaded.length > 0) {
+        set((s) => ({
+          tabs: [...s.tabs, ...loaded],
+          activeTabId: s.activeTabId ?? loaded[loaded.length - 1]?.id ?? null,
+        }));
+      }
+    } catch {
+      // no persistence backend available
+    }
+  },
 
   addTab: (title?: string, messages?: Message[]) => {
     counter += 1;
@@ -39,6 +80,7 @@ export const useSideConversationStore = create<SideConversationState>((set, get)
       tabs: [...s.tabs, tab],
       activeTabId: id,
     }));
+    persistTab(tab);
     return id;
   },
 
@@ -51,6 +93,11 @@ export const useSideConversationStore = create<SideConversationState>((set, get)
           : s.activeTabId;
       return { tabs: remaining, activeTabId: activeId };
     });
+    void import("../lib/tauri-commands").then(({ deleteSession }) =>
+      deleteSession(id).catch(() => {
+        // ignore removal failure
+      }),
+    );
   },
 
   setActiveTab: (id) => set({ activeTabId: id }),
@@ -59,12 +106,16 @@ export const useSideConversationStore = create<SideConversationState>((set, get)
     set((s) => ({
       tabs: s.tabs.map((t) => (t.id === id ? { ...t, title } : t)),
     }));
+    const tab = get().tabs.find((t) => t.id === id);
+    if (tab) persistTab({ ...tab, title });
   },
 
   setTabMessages: (id, messages) => {
     set((s) => ({
       tabs: s.tabs.map((t) => (t.id === id ? { ...t, messages } : t)),
     }));
+    const tab = get().tabs.find((t) => t.id === id);
+    if (tab) persistTab({ ...tab, messages });
   },
 
   getTabMessages: (id) => {

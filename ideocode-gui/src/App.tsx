@@ -5,6 +5,7 @@ import { useAppStore } from "./stores/appStore";
 import { useFileStore } from "./stores/fileStore";
 import { useAchievementStore } from "./stores/achievementStore";
 import { useThemeStore } from "./stores/themeStore";
+import { useSideConversationStore } from "./stores/sideConversationStore";
 import { isFirstLaunch, getVersion, getSettings } from "./lib/tauri-commands";
 import { initTauriEventBridge } from "./lib/tauri-events";
 import { startAutomationScheduler } from "./stores/automationStore";
@@ -38,6 +39,7 @@ function App() {
   useEffect(() => {
     initTauriEventBridge();
     startAutomationScheduler();
+    void useSideConversationStore.getState().init();
     useThemeStore.getState().init();
     getVersion().then(setVersion).catch(() => setVersion("1.2.2"));
     getSettings()

@@ -37,6 +37,7 @@ export interface Session {
   updated_at: number;
   message_count: number;
   save_label?: string;
+  side?: boolean;
 }
 
 export interface FileNode {
@@ -206,6 +207,20 @@ export async function listSessions(): Promise<Session[]> {
 
 export async function deleteSession(id: string): Promise<void> {
   return invoke<void>("delete_session", { id });
+}
+
+export async function saveSideSession(
+  id: string,
+  title: string,
+  messages: Message[],
+): Promise<void> {
+  return invoke<void>("save_side_session", { id, title, messages });
+}
+
+export async function loadSideSession(
+  id: string,
+): Promise<[string, Message[]]> {
+  return invoke<[string, Message[]]>("load_side_session", { id });
 }
 
 export async function exportSession(id: string, format: string): Promise<string> {

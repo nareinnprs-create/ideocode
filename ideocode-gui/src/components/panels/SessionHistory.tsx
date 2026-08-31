@@ -26,6 +26,7 @@ export function SessionHistory() {
 
   const filtered = sessions
     .filter((s) => {
+      if (s.side) return false;
       if (filter === "saved" && !s.save_label) return false;
       if (search) {
         const q = search.toLowerCase();
@@ -91,7 +92,7 @@ export function SessionHistory() {
 
       {/* Count */}
       <div className="px-3 py-1.5 border-t border-border-subtle text-[11px] text-fg-muted">
-        {sessions.length} total sessions
+        {sessions.filter((s) => !s.side).length} total sessions
       </div>
     </div>
   );

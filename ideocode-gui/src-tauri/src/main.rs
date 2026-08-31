@@ -110,6 +110,8 @@ fn main() {
             commands::rename_session,
             commands::list_sessions,
             commands::delete_session,
+            commands::save_side_session,
+            commands::load_side_session,
             commands::export_session,
             commands::inline_completion,
             commands::get_file_tree,

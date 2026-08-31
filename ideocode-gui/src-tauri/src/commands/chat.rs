@@ -48,6 +48,8 @@ pub struct Session {
     pub message_count: usize,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub save_label: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub side: Option<bool>,
 }
 
 #[derive(Clone)]
@@ -78,7 +80,7 @@ impl ChatState {
     pub fn new() -> Self {
         Self {
             messages: Arc::new(Mutex::new(Vec::new())),
-            current_session_id: Arc::new(Mutex::new(new_id())),
+            current_session_id: Arc::new(Mutex::new(new_session_id())),
             active_task: Arc::new(Mutex::new(None)),
             approval: Arc::new(Mutex::new(None)),
         }
@@ -101,6 +103,13 @@ fn new_id() -> String {
         .unwrap_or_default()
         .as_nanos();
     format!("{:x}", t)
+}
+
+/// Generates a collision-resistant session identifier. Timestamps alone can
+/// collide under fast clocks; a UUID v4 guarantees global uniqueness for the
+/// on-disk session files.
+fn new_session_id() -> String {
+    uuid::Uuid::new_v4().to_string()
 }
 
 fn now_ms() -> u64 {
@@ -137,7 +146,7 @@ fn save_session(state: &ChatState) -> Result<(), String> {
     let now = now_ms() / 1000;
     let value = serde_json::json!({
         "id": session_id,
-        "title": format!("Session {}", &session_id[..8]),
+        "title": format!("Session {}", &session_id[..session_id.len().min(8)]),
         "created_at": now,
         "updated_at": now,
         "messages": messages,
@@ -1382,7 +1391,7 @@ pub fn clear_messages(state: State<'_, ChatState>) {
     *state
         .current_session_id
         .lock()
-        .unwrap_or_else(|e| e.into_inner()) = new_id();
+        .unwrap_or_else(|e| e.into_inner()) = new_session_id();
 }
 
 /// Collapses the active conversation into a short summary plus the most recent
@@ -1450,6 +1459,12 @@ pub async fn compact_session(state: State<'_, ChatState>) -> Result<Vec<Message>
 /// Loads a saved session into the active chat so the user can resume it.
 #[tauri::command]
 pub fn load_session(id: String, state: State<'_, ChatState>) -> Result<Vec<Message>, String> {
+    // Persist the current session first so switching doesn't lose unsaved changes.
+    if !state.messages.lock().unwrap_or_else(|e| e.into_inner()).is_empty() {
+        if let Err(e) = save_session(&state) {
+            eprintln!("[save_session] {}", e);
+        }
+    }
     let path = sessions_dir().join(format!("{}.json", super::sanitize_id(&id)));
     let content =
         std::fs::read_to_string(&path).map_err(|e| format!("Failed to read session: {}", e))?;
@@ -1511,6 +1526,63 @@ pub fn delete_session(id: String) -> Result<(), String> {
     }
 }
 
+/// Persists a side-conversation tab's message buffer (independent of the main
+/// ChatState) so it survives an app restart.
+#[tauri::command]
+pub fn save_side_session(id: String, title: String, messages: Vec<Message>) -> Result<(), String> {
+    let safe_id = super::sanitize_id(&id);
+    if safe_id.is_empty() {
+        return Err("Invalid side-session id".into());
+    }
+    let dir = sessions_dir();
+    std::fs::create_dir_all(&dir)
+        .map_err(|e| format!("Failed to create sessions dir: {}", e))?;
+    let now = now_ms() / 1000;
+    let value = serde_json::json!({
+        "id": safe_id,
+        "title": title,
+        "side": true,
+        "created_at": now,
+        "updated_at": now,
+        "messages": messages,
+    });
+    let path = dir.join(format!("{}.json", safe_id));
+    let json = serde_json::to_string_pretty(&value)
+        .map_err(|e| format!("Failed to serialize side session: {}", e))?;
+    std::fs::write(&path, json).map_err(|e| format!("Failed to write side session: {}", e))
+}
+
+/// Loads a side-conversation tab's persisted messages, if any.
+#[tauri::command]
+pub fn load_side_session(
+    id: String,
+) -> Result<(String, Vec<Message>), String> {
+    let safe_id = super::sanitize_id(&id);
+    let path = sessions_dir().join(format!("{}.json", safe_id));
+    if !path.exists() {
+        return Ok((format!("Tab {}", &safe_id[safe_id.len().min(8)..]), Vec::new()));
+    }
+    let content =
+        std::fs::read_to_string(&path).map_err(|e| format!("Failed to read side session: {}", e))?;
+    let parsed: serde_json::Value =
+        serde_json::from_str(&content).map_err(|e| format!("Invalid side session JSON: {}", e))?;
+    let title = parsed
+        .get("title")
+        .and_then(|v| v.as_str())
+        .unwrap_or("Untitled")
+        .to_string();
+    let messages: Vec<Message> = parsed
+        .get("messages")
+        .and_then(|v| v.as_array())
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|m| serde_json::from_value(m.clone()).ok())
+                .collect()
+        })
+        .unwrap_or_default();
+    Ok((title, messages))
+}
+
 #[tauri::command]
 pub fn list_sessions() -> Vec<Session> {
     let dir = sessions_dir();
@@ -1555,6 +1627,7 @@ pub fn list_sessions() -> Vec<Session> {
                         .and_then(|v| v.as_array())
                         .map(|a| a.len())
                         .unwrap_or(0);
+                    let side = parsed.get("side").and_then(|v| v.as_bool());
                     Some(Session {
                         id,
                         title,
@@ -1562,6 +1635,7 @@ pub fn list_sessions() -> Vec<Session> {
                         updated_at: updated,
                         message_count,
                         save_label,
+                        side,
                     })
                 })
                 .collect()
