@@ -111,6 +111,12 @@ export function AutomationsPanel() {
                 )}
               </div>
             )}
+            {a.enabled && a.status === "active" && a.nextRun && (
+              <div className="flex items-center gap-1 mt-1 ml-6">
+                <Clock size={10} className="text-accent" />
+                <span className="text-[10px] text-accent">Next: {new Date(a.nextRun).toLocaleString()}</span>
+              </div>
+            )}
           </div>
         ))}
       </div>

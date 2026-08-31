@@ -9,6 +9,7 @@ import { useSideConversationStore } from "./stores/sideConversationStore";
 import { isFirstLaunch, getVersion, getSettings } from "./lib/tauri-commands";
 import { initTauriEventBridge } from "./lib/tauri-events";
 import { startAutomationScheduler } from "./stores/automationStore";
+import { startGlobalShortcutDispatcher } from "./components/panels/KeyboardShortcutsPanel";
 
 function AchievementToast() {
   const showNotification = useAchievementStore((s) => s.showNotification);
@@ -39,6 +40,7 @@ function App() {
   useEffect(() => {
     initTauriEventBridge();
     startAutomationScheduler();
+    startGlobalShortcutDispatcher();
     void useSideConversationStore.getState().init();
     useThemeStore.getState().init();
     getVersion().then(setVersion).catch(() => setVersion("1.2.2"));

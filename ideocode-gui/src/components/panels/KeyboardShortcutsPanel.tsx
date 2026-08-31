@@ -3,6 +3,7 @@ import { Keyboard, Plus, Trash2, Download, Upload, AlertTriangle } from "lucide-
 import { useAppStore } from "../../stores/appStore";
 import { useChatStore } from "../../stores/chatStore";
 import { useFileStore } from "../../stores/fileStore";
+import { eventBus } from "../../lib/eventBus";
 
 interface Shortcut { id: string; action: string; keys: string; }
 const STORAGE_KEY = "idc-shortcuts";
@@ -42,6 +43,61 @@ function registerActions() {
   ACTION_MAP["Save File"] = () => { void file.saveFile(); };
   ACTION_MAP["Quick Open File"] = () => app.setFileQuickOpenOpen(!app.fileQuickOpenOpen);
   ACTION_MAP["Toggle Composer"] = () => app.setComposerOpen(!app.composerOpen);
+}
+
+function normalizeCombo(e: KeyboardEvent): string {
+  const parts: string[] = [];
+  if (e.ctrlKey || e.metaKey) parts.push(e.metaKey ? "Cmd" : "Ctrl");
+  if (e.shiftKey) parts.push("Shift");
+  if (e.altKey) parts.push("Alt");
+  if (e.key && !["Control", "Meta", "Shift", "Alt"].includes(e.key)) {
+    parts.push(e.key.length === 1 ? e.key.toUpperCase() : e.key);
+  }
+  return parts.join("+");
+}
+
+interface CustomCommand {
+  id: string;
+  name: string;
+  description: string;
+  command: string;
+  shortcut?: string;
+}
+
+function findActionForKey(combo: string): (() => void) | undefined {
+  const shortcuts = loadShortcuts();
+  const match = shortcuts.find((s) => s.keys === combo);
+  if (match && ACTION_MAP[match.action]) return ACTION_MAP[match.action];
+
+  // Custom terminal commands defined in the Commands panel can also bind a shortcut.
+  let commands: CustomCommand[] = [];
+  try { commands = JSON.parse(localStorage.getItem("idc-commands") || "[]"); } catch {}
+  const cmd = commands.find((c) => c.shortcut === combo);
+  if (cmd) {
+    return () => {
+      eventBus.emit("terminal://execute", cmd.command);
+    };
+  }
+  return undefined;
+}
+
+// App-wide dispatcher. Registers ONE persistent keydown listener so user-defined
+// shortcuts fire from anywhere, not just while the shortcuts panel is open.
+let dispatcherInstalled = false;
+export function startGlobalShortcutDispatcher() {
+  if (dispatcherInstalled) return;
+  dispatcherInstalled = true;
+  window.addEventListener("keydown", (e: KeyboardEvent) => {
+    registerActions();
+    const combo = normalizeCombo(e);
+    if (!combo) return;
+    const action = findActionForKey(combo);
+    if (action) {
+      e.preventDefault();
+      e.stopPropagation();
+      action();
+    }
+  }, true);
 }
 
 function findConflicts(shortcuts: Shortcut[]): Map<string, string[]> {
