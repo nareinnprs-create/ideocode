@@ -73,15 +73,44 @@ pub fn run_command(command: String, cwd: String) -> BuildOutput {
         }
     };
 
+    // Drain stdout/stderr on background threads so a chatty process can never
+    // fill the OS pipe buffer and stall (which previously made large outputs
+    // hit the timeout).
+    let stdout_pipe = child.stdout.take();
+    let stderr_pipe = child.stderr.take();
+    let stdout_handle = stdout_pipe.map(|mut pipe| {
+        std::thread::spawn(move || {
+            use std::io::Read;
+            let mut buf = String::new();
+            let _ = pipe.read_to_string(&mut buf);
+            buf
+        })
+    });
+    let stderr_handle = stderr_pipe.map(|mut pipe| {
+        std::thread::spawn(move || {
+            use std::io::Read;
+            let mut buf = String::new();
+            let _ = pipe.read_to_string(&mut buf);
+            buf
+        })
+    });
+
     let timeout = Duration::from_secs(timeout_secs);
     let start = std::time::Instant::now();
     let status = loop {
         if start.elapsed() >= timeout {
             let _ = child.kill();
+            let _ = child.wait();
             return BuildOutput {
                 success: false,
-                stdout: String::new(),
-                stderr: format!("Command timed out after {}s", timeout_secs),
+                stdout: stdout_handle
+                    .and_then(|h| h.join().ok())
+                    .unwrap_or_default(),
+                stderr: if let Some(stderr) = stderr_handle.and_then(|h| h.join().ok()) {
+                    format!("Command timed out after {}s\n{}", timeout_secs, stderr)
+                } else {
+                    format!("Command timed out after {}s", timeout_secs)
+                },
                 exit_code: -1,
             };
         }
@@ -89,9 +118,13 @@ pub fn run_command(command: String, cwd: String) -> BuildOutput {
             Ok(Some(status)) => break status,
             Ok(None) => std::thread::sleep(Duration::from_millis(100)),
             Err(e) => {
+                let _ = child.kill();
+                let _ = child.wait();
                 return BuildOutput {
                     success: false,
-                    stdout: String::new(),
+                    stdout: stdout_handle
+                        .and_then(|h| h.join().ok())
+                        .unwrap_or_default(),
                     stderr: format!("Process error: {}", e),
                     exit_code: -1,
                 }
@@ -99,17 +132,12 @@ pub fn run_command(command: String, cwd: String) -> BuildOutput {
         }
     };
 
-    let output = child.wait_with_output().ok();
+    let stdout = stdout_handle.and_then(|h| h.join().ok()).unwrap_or_default();
+    let stderr = stderr_handle.and_then(|h| h.join().ok()).unwrap_or_default();
     BuildOutput {
         success: status.success(),
-        stdout: output
-            .as_ref()
-            .map(|o| String::from_utf8_lossy(&o.stdout).to_string())
-            .unwrap_or_default(),
-        stderr: output
-            .as_ref()
-            .map(|o| String::from_utf8_lossy(&o.stderr).to_string())
-            .unwrap_or_default(),
+        stdout,
+        stderr,
         exit_code: status.code().unwrap_or(-1),
     }
 }
