@@ -335,6 +335,7 @@ function MessageBubble({
   const regenerate = useChatStore((s) => s.regenerate);
   const createBranch = useChatStore((s) => s.createBranch);
   const editLast = useChatStore((s) => s.editLast);
+  const undoAssistantChanges = useChatStore((s) => s.undoAssistantChanges);
   const time = message.timestamp
     ? new Date(message.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     : "";
@@ -459,7 +460,7 @@ function MessageBubble({
           <Copy size={12} />
         </button>
         <ForkButton messageId={message.id} messageIndex={messageIndex} messages={allMessages} />
-        <EditHistoryButton messageId={message.id} role="assistant" />
+        <EditHistoryButton messageId={message.id} role="assistant" onUndo={() => void undoAssistantChanges(message.id)} />
         {isLast && (
           <>
             <button onClick={() => { createBranch(); }} title="Create branch" aria-label="Create branch" className="msg-action">
@@ -484,18 +485,25 @@ function MessageBubble({
                     Same model
                   </button>
                   <button
-                    onClick={() => { void regenerate("openai/gpt-4o"); setShowRegenerateMenu(false); }}
+                    onClick={() => { void regenerate("gpt-4o"); setShowRegenerateMenu(false); }}
                     className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-fg-secondary hover:bg-accent/10 hover:text-accent transition-fast"
                   >
                     <Sparkles size={11} />
                     GPT-4o
                   </button>
                   <button
-                    onClick={() => { void regenerate("anthropic/claude-sonnet-4-20250514"); setShowRegenerateMenu(false); }}
+                    onClick={() => { void regenerate("claude-sonnet-4-20250514"); setShowRegenerateMenu(false); }}
                     className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-fg-secondary hover:bg-accent/10 hover:text-accent transition-fast"
                   >
                     <Sparkles size={11} />
                     Claude Sonnet
+                  </button>
+                  <button
+                    onClick={() => { void regenerate("gemini-2.5-flash"); setShowRegenerateMenu(false); }}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-fg-secondary hover:bg-accent/10 hover:text-accent transition-fast"
+                  >
+                    <Sparkles size={11} />
+                    Gemini 2.5 Flash
                   </button>
                 </div>
               )}

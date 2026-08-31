@@ -4429,8 +4429,10 @@ name = "ideocode-gui"
 version = "1.2.2"
 dependencies = [
  "anyhow",
+ "base64 0.22.1",
  "chrono",
  "dirs 5.0.1",
+ "futures-util",
  "ideocode-provider-baanzon",
  "reqwest 0.12.28",
  "serde",
@@ -4442,6 +4444,7 @@ dependencies = [
  "tauri-plugin-http",
  "tauri-plugin-shell",
  "tokio",
+ "tokio-tungstenite",
 ]
 
 [[package]]

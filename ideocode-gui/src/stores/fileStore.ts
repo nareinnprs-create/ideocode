@@ -3,6 +3,10 @@ import {
   getFileTree,
   readFile,
   writeFile,
+  deletePath,
+  createFile,
+  createDirectory,
+  renamePath,
   openWorkspace as tauriOpenWorkspace,
   saveWorkspacePath as tauriSaveWorkspace,
   loadWorkspacePath as tauriLoadWorkspace,
@@ -30,6 +34,8 @@ interface FileState {
   setContent: (path: string, content: string) => void;
   saveFile: (path?: string, opts?: { silent?: boolean }) => Promise<void>;
   deleteFile: (path: string) => Promise<void>;
+  createEntry: (type: "file" | "directory", path: string) => Promise<void>;
+  renameEntry: (from: string, to: string) => Promise<void>;
   pickWorkspace: () => Promise<void>;
   loadSavedWorkspace: () => Promise<void>;
 }
@@ -122,6 +128,7 @@ export const useFileStore = create<FileState>((set, get) => ({
   deleteFile: async (path: string) => {
     if (!await confirmSafetyRule("file-delete")) return;
     try {
+      await deletePath(path);
       const { openFiles, activeFile, contents, dirty } = get();
       const next = closeTab({ openFiles, activeFile }, path);
       const nextContents = { ...contents };
@@ -134,10 +141,59 @@ export const useFileStore = create<FileState>((set, get) => ({
         contents: nextContents,
         dirty: nextDirty,
       });
-      notify("success", "File closed", path.split(/[/\\]/).pop());
+      await get().loadTree();
+      notify("success", "Deleted", path.split(/[/\\]/).pop());
     } catch (e) {
       set({ error: `Failed to delete file: ${e}` });
       notify("error", "Failed to delete file", `${e}`);
+    }
+  },
+
+  createEntry: async (type, path) => {
+    try {
+      if (type === "directory") {
+        await createDirectory(path);
+      } else {
+        await createFile(path);
+        const { openFiles, activeFile } = get();
+        const next = openTab({ openFiles, activeFile }, path);
+        set({ openFiles: next.openFiles, activeFile: next.activeFile });
+      }
+      await get().loadTree();
+      notify("success", "Created", path.split(/[/\\]/).pop());
+    } catch (e) {
+      set({ error: `Failed to create: ${e}` });
+      notify("error", "Failed to create", `${e}`);
+    }
+  },
+
+  renameEntry: async (from, to) => {
+    if (!from || !to || from === to) return;
+    try {
+      await renamePath(from, to);
+      const { contents, dirty } = get();
+      const nextContents = { ...contents };
+      const nextDirty = { ...dirty };
+      if (nextContents[from] !== undefined) {
+        nextContents[to] = nextContents[from];
+        delete nextContents[from];
+        nextDirty[to] = nextDirty[from] ?? false;
+        delete nextDirty[from];
+      }
+      set((s) => {
+        const renameTab = (f: string) => (f === from ? to : f);
+        return {
+          contents: nextContents,
+          dirty: nextDirty,
+          openFiles: s.openFiles.map(renameTab),
+          activeFile: s.activeFile === from ? to : s.activeFile,
+        };
+      });
+      await get().loadTree();
+      notify("success", "Renamed", from.split(/[/\\]/).pop());
+    } catch (e) {
+      set({ error: `Failed to rename: ${e}` });
+      notify("error", "Failed to rename", `${e}`);
     }
   },
 

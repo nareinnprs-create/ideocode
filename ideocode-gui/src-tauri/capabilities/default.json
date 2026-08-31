@@ -23,10 +23,6 @@
     "fs:allow-read-file",
     "fs:allow-write-file",
     "fs:allow-mkdir",
-    "http:default",
-    "http:allow-fetch",
-    "http:allow-fetch-send",
-    "http:allow-fetch-read-body",
     {
       "identifier": "shell:allow-spawn",
       "allow": [

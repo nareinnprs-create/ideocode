@@ -118,14 +118,32 @@ export async function sendMessage(
 
 export async function streamChat(
   content: string,
-  opts?: { model?: string; mode?: "normal" | "plan" | "agent"; reasoningEffort?: string },
+  opts?: { model?: string; mode?: "normal" | "plan" | "agent"; reasoningEffort?: string; executionMode?: string },
 ): Promise<Message> {
   return invoke<Message>("stream_chat", {
     content,
     model: opts?.model ?? null,
     mode: opts?.mode ?? null,
     reasoning_effort: opts?.reasoningEffort ?? null,
+    execution_mode: opts?.executionMode ?? null,
   });
+}
+
+export async function approveTools(): Promise<void> {
+  return invoke<void>("approve_tools");
+}
+
+export async function denyTools(): Promise<void> {
+  return invoke<void>("deny_tools");
+}
+
+export interface FileSnapshot {
+  path: string;
+  content: string | null;
+}
+
+export async function undoFileSnapshots(snapshots: FileSnapshot[]): Promise<void> {
+  return invoke<void>("undo_file_snapshots", { snapshots });
 }
 
 export async function streamInlineEdit(
@@ -163,8 +181,8 @@ export async function clearMessages(): Promise<void> {
   return invoke<void>("clear_messages");
 }
 
-export async function regenerateLastMessage(): Promise<Message> {
-  return invoke<Message>("regenerate_last_message");
+export async function regenerateLastMessage(model?: string): Promise<Message> {
+  return invoke<Message>("regenerate_last_message", { model: model || null });
 }
 
 export async function editLastMessage(content: string): Promise<Message> {
@@ -224,6 +242,22 @@ export async function fileExists(path: string): Promise<boolean> {
   return invoke<boolean>("file_exists", { path });
 }
 
+export async function createFile(path: string): Promise<void> {
+  return invoke<void>("create_file", { path });
+}
+
+export async function createDirectory(path: string): Promise<void> {
+  return invoke<void>("create_directory", { path });
+}
+
+export async function deletePath(path: string): Promise<void> {
+  return invoke<void>("delete_path", { path });
+}
+
+export async function renamePath(from: string, to: string): Promise<void> {
+  return invoke<void>("rename_path", { from, to });
+}
+
 export async function searchFiles(
   pattern: string,
   path: string,
@@ -265,8 +299,9 @@ export async function gitDiff(
 export async function gitCommit(
   path: string,
   message: string,
+  amend?: boolean,
 ): Promise<void> {
-  return invoke<void>("git_commit", { path, message });
+  return invoke<void>("git_commit", { path, message, amend: amend || null });
 }
 
 export async function gitAdd(path: string, file: string): Promise<void> {
@@ -660,4 +695,8 @@ export async function browserClick(selector: string): Promise<void> {
 
 export async function browserType(selector: string, text: string): Promise<void> {
   return invoke<void>("browser_type", { selector, text });
+}
+
+export async function browserStop(): Promise<void> {
+  return invoke<void>("browser_stop");
 }

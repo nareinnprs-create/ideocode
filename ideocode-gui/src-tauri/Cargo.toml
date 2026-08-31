@@ -23,6 +23,9 @@ anyhow = "1"
 dirs = "5"
 reqwest = { version = "0.12", features = ["blocking", "json"] }
 chrono = { version = "0.4", features = ["serde"] }
+tokio-tungstenite = "0.24"
+futures-util = "0.3"
+base64 = "0.22"
 ideocode-provider-baanzon = { path = "../../crates/ideocode-provider-baanzon" }
 
 [package.metadata.cargo-machete]

@@ -55,6 +55,23 @@ pub struct ChatState {
     pub messages: Arc<Mutex<Vec<Message>>>,
     pub current_session_id: Arc<Mutex<String>>,
     pub active_task: Arc<Mutex<Option<tauri::async_runtime::JoinHandle<()>>>>,
+    pub approval: Arc<Mutex<Option<ApprovalGate>>>,
+}
+
+/// A pending tool-call approval waiting on a frontend decision. The completing
+/// half is the resolve/runners waiting for a `Some(true)` (approved) or
+/// `Some(false)` (denied) decision.
+#[derive(Clone)]
+pub struct ApprovalGate {
+    pub tx: Arc<std::sync::Mutex<Option<tokio::sync::oneshot::Sender<bool>>>>,
+}
+
+impl ApprovalGate {
+    fn new(tx: tokio::sync::oneshot::Sender<bool>) -> Self {
+        Self {
+            tx: Arc::new(std::sync::Mutex::new(Some(tx))),
+        }
+    }
 }
 
 impl ChatState {
@@ -63,7 +80,17 @@ impl ChatState {
             messages: Arc::new(Mutex::new(Vec::new())),
             current_session_id: Arc::new(Mutex::new(new_id())),
             active_task: Arc::new(Mutex::new(None)),
+            approval: Arc::new(Mutex::new(None)),
         }
+    }
+}
+
+/// Registers a pending `ApprovalGate` for `chat://tool` confirmation and
+/// returns true if the caller should proceed. If no gate is recorded (e.g. a
+/// stale echo), the operation is refused.
+pub fn set_approval(state:&ChatState, gate: ApprovalGate) {
+    if let Ok(mut cur) = state.approval.lock() {
+        *cur = Some(gate);
     }
 }
 
@@ -228,7 +255,7 @@ async fn extract_openai_completion(resp: reqwest::Response) -> Result<String, St
 
 /// Resolve an API key for a provider: first check env vars, then fall back to
 /// the keys persisted in settings.json.
-fn resolve_api_key(provider_env: &str) -> Option<String> {
+pub fn resolve_api_key(provider_env: &str) -> Option<String> {
     if let Ok(k) = std::env::var(provider_env) {
         if !k.is_empty() {
             return Some(k);
@@ -764,6 +791,29 @@ fn tools_for_mode(mode: Option<&str>) -> Option<serde_json::Value> {
     }
 }
 
+/// Captures the current on-disk content of files that a tool call will modify
+/// (`write_file`/`edit_file`), so the frontend can revert them on undo.
+fn capture_file_snapshots(name: &str, args: &str) -> Vec<serde_json::Value> {
+    let parsed: serde_json::Value = match serde_json::from_str(args) {
+        Ok(v) => v,
+        Err(_) => return Vec::new(),
+    };
+    let path = match name {
+        "write_file" | "edit_file" => parsed["path"].as_str().unwrap_or("").to_string(),
+        _ => return Vec::new(),
+    };
+    if path.is_empty() {
+        return Vec::new();
+    }
+    match std::fs::read_to_string(&path) {
+        Ok(prior) => vec![serde_json::json!({ "path": path, "content": prior })],
+        Err(_) => {
+            // File does not exist yet (write_file create); undo means deleting it.
+            vec![serde_json::json!({ "path": path, "content": null })]
+        }
+    }
+}
+
 /// Executes a single agent tool call and returns the output string.
 fn execute_tool(name: &str, args: &str) -> String {
     let parsed: serde_json::Value = match serde_json::from_str(args) {
@@ -875,7 +925,7 @@ async fn run_completion(
     let provider = if settings.active_provider.is_empty() {
         "baanzon-verso".to_string()
     } else {
-        settings.active_provider
+        super::providers::normalize_provider(&settings.active_provider)
     };
     let model = if let Some(model) = model_override.filter(|m| !m.is_empty()) {
         model
@@ -905,14 +955,16 @@ async fn run_streaming_completion(
     model_override: Option<String>,
     mode: Option<&str>,
     reasoning_effort: Option<&str>,
+    execution_mode: Option<&str>,
     app: &tauri::AppHandle,
     assistant_id: &str,
+    state: &ChatState,
 ) -> Result<Message, String> {
     let settings = super::settings::get_settings();
     let provider = if settings.active_provider.is_empty() {
         "baanzon-verso".to_string()
     } else {
-        settings.active_provider
+        super::providers::normalize_provider(&settings.active_provider)
     };
     let model = if let Some(model) = model_override.filter(|m| !m.is_empty()) {
         model
@@ -984,6 +1036,26 @@ async fn run_streaming_completion(
             }),
         );
 
+        // Gate execution on explicit approval for confirm mode. Other modes
+        // (plan) never carry tools; auto-edit / full-access proceed directly.
+        let confirm = matches!(execution_mode, Some("confirm") | None);
+        if confirm {
+            let approved = await_approval(state, assistant_id, &tool_names, app).await;
+            match approved {
+                Some(true) => {}
+                Some(false) | None => {
+                    return Ok(Message {
+                        id: assistant_id.to_string(),
+                        role: "assistant".into(),
+                        content: "[Tools denied by user; stopping agent execution]".to_string(),
+                        tool_calls: None,
+                        timestamp: Some(now_ms()),
+                        usage: None,
+                    });
+                }
+            }
+        }
+
         // Build assistant message with tool_calls and push to conversation
         let tc_json: Vec<serde_json::Value> = stream_result
             .tool_calls
@@ -1007,6 +1079,9 @@ async fn run_streaming_completion(
 
         // Execute each tool and add results to conversation
         for tc in &stream_result.tool_calls {
+            // Capture any file-change snapshot so the frontend can offer
+            // one-click undo (prior content of modified files).
+            let snapshots = capture_file_snapshots(&tc.name, &tc.arguments);
             let output = execute_tool(&tc.name, &tc.arguments);
 
             let _ = app.emit(
@@ -1016,6 +1091,7 @@ async fn run_streaming_completion(
                     "tool_id": tc.id,
                     "tool_name": tc.name,
                     "output": truncate(&output),
+                    "file_snapshots": snapshots,
                 }),
             );
 
@@ -1093,6 +1169,7 @@ pub async fn stream_chat(
     model: Option<String>,
     mode: Option<String>,
     reasoning_effort: Option<String>,
+    execution_mode: Option<String>,
 ) -> Result<Message, String> {
     let user_msg = Message {
         id: new_id(),
@@ -1122,8 +1199,10 @@ pub async fn stream_chat(
             model,
             mode.as_deref(),
             reasoning_effort.as_deref(),
+            execution_mode.as_deref(),
             &task_app,
             &assistant_id,
+            &task_state,
         )
         .await
         {
@@ -1195,7 +1274,10 @@ pub fn save_partial_message(
 /// Re-runs the last exchange: drops the trailing assistant response(s) and
 /// produces a fresh completion from the remaining history.
 #[tauri::command]
-pub async fn regenerate_last_message(state: State<'_, ChatState>) -> Result<Message, String> {
+pub async fn regenerate_last_message(
+    state: State<'_, ChatState>,
+    model: Option<String>,
+) -> Result<Message, String> {
     {
         let mut msgs = state.messages.lock().unwrap_or_else(|e| e.into_inner());
         while matches!(msgs.last(), Some(m) if m.role == "assistant") {
@@ -1212,7 +1294,7 @@ pub async fn regenerate_last_message(state: State<'_, ChatState>) -> Result<Mess
         return Err("Nothing to regenerate".to_string());
     }
 
-    let assistant_msg = run_completion(&history, None, None).await?;
+    let assistant_msg = run_completion(&history, model, None).await?;
     state
         .messages
         .lock()
@@ -1296,11 +1378,11 @@ pub fn clear_messages(state: State<'_, ChatState>) {
 #[tauri::command]
 pub async fn compact_session(state: State<'_, ChatState>) -> Result<Vec<Message>, String> {
     let settings = super::settings::get_settings();
-    let provider = if settings.active_provider.is_empty() {
-        "baanzon-verso".to_string()
+    let provider = super::providers::normalize_provider(if settings.active_provider.is_empty() {
+        "baanzon-verso"
     } else {
-        settings.active_provider
-    };
+        &settings.active_provider
+    });
     let model = if settings.active_model.is_empty() {
         "auto".to_string()
     } else {
@@ -1535,7 +1617,7 @@ pub async fn inline_completion(prefix: String, suffix: String) -> Result<String,
     let provider = if settings.active_provider.is_empty() {
         "baanzon-verso".to_string()
     } else {
-        settings.active_provider
+        super::providers::normalize_provider(&settings.active_provider)
     };
     let model = if settings.active_model.is_empty() {
         "auto".to_string()
@@ -1586,7 +1668,7 @@ pub async fn stream_inline_edit(
     let provider = if settings.active_provider.is_empty() {
         "baanzon-verso".to_string()
     } else {
-        settings.active_provider
+        super::providers::normalize_provider(&settings.active_provider)
     };
     let model = if settings.active_model.is_empty() {
         "auto".to_string()
@@ -1639,4 +1721,80 @@ pub async fn stream_inline_edit(
         timestamp: Some(now_ms()),
         usage,
     })
+}
+
+/// Restores files to a prior state captured as `[{path, content|null}]`
+/// snapshots. A `null` content means the file did not exist before and is
+/// deleted on undo.
+#[tauri::command]
+pub fn undo_file_snapshots(snapshots: Vec<serde_json::Value>) -> Result<(), String> {
+    for snap in snapshots {
+        let Some(path) = snap.get("path").and_then(|p| p.as_str()) else {
+            continue;
+        };
+        match snap.get("content") {
+            Some(content) if !content.is_null() => {
+                let text = content
+                    .as_str()
+                    .ok_or_else(|| "Invalid snapshot content".to_string())?;
+                std::fs::write(path, text)
+                    .map_err(|e| format!("Failed to restore {}: {}", path, e))?;
+            }
+            _ => {
+                let _ = std::fs::remove_file(path);
+            }
+        }
+    }
+    Ok(())
+}
+
+/// Approves a pending tool-call approval, unblocking the waiting agent loop.
+#[tauri::command]
+pub fn approve_tools(state: State<'_, ChatState>) -> Result<(), String> {
+    resolve_approval(&state, true)
+}
+
+/// Denies a pending tool-call approval, cancelling the waiting agent loop.
+#[tauri::command]
+pub fn deny_tools(state: State<'_, ChatState>) -> Result<(), String> {
+    resolve_approval(&state, false)
+}
+
+fn resolve_approval(state: &ChatState, decision: bool) -> Result<(), String> {
+    let gate = state
+        .approval
+        .lock()
+        .map_err(|_| "Approval lock poisoned".to_string())?
+        .take()
+        .ok_or_else(|| "No tool approval is currently pending".to_string())?;
+    let sender = gate
+        .tx
+        .lock()
+        .map_err(|_| "Approval sender lock poisoned".to_string())?
+        .take()
+        .ok_or_else(|| "Approval was already resolved".to_string())?;
+    sender
+        .send(decision)
+        .map_err(|_| "Agent no longer waiting for approval".to_string())
+}
+
+/// Waits for the frontend decision on a pending approval. Returns `Some(true)`
+/// when approved and `Some(false)` when denied; `None` when denied or aborted.
+async fn await_approval(
+    state: &ChatState,
+    assistant_id: &str,
+    tool_names: &[String],
+    app: &tauri::AppHandle,
+) -> Option<bool> {
+    let (tx, rx) = tokio::sync::oneshot::channel();
+    set_approval(&state, ApprovalGate::new(tx));
+    let _ = app.emit(
+        "chat://tool",
+        serde_json::json!({
+            "assistant_id": assistant_id,
+            "tools": tool_names,
+            "status": "pending_approval",
+        }),
+    );
+    rx.await.ok()
 }

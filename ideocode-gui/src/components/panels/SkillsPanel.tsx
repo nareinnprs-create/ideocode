@@ -41,6 +41,11 @@ export function SkillsPanel() {
           + Add
         </button>
       </div>
+      <div className="mx-3 my-1.5 p-2 rounded bg-warning/10 border border-warning/30">
+        <div className="text-[11px] text-warning">
+          The skill engine is not yet wired to the backend. Skills are stored locally and are not yet injected into prompts.
+        </div>
+      </div>
       {showAdd && (
         <div className="mx-3 mb-2 p-2 rounded bg-surface-elevated border border-border-subtle space-y-1.5">
           <input type="text" placeholder="Skill name" value={name} onChange={(e) => setName(e.target.value)}

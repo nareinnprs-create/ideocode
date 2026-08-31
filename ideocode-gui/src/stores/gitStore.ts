@@ -70,8 +70,7 @@ export const useGitStore = create<GitState>((set) => ({
   commit: async (path: string, message: string, amend?: boolean) => {
     if (amend && !await confirmSafetyRule("git-force")) return;
     try {
-      const finalMsg = amend ? `--amend -m "${message}"` : message;
-      await tauriGitCommit(path, finalMsg);
+      await tauriGitCommit(path, message, amend);
     } catch (e) {
       set({ error: `Git commit failed: ${e}` });
       notify("error", "Git commit failed", `${e}`);

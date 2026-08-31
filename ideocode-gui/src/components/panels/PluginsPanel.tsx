@@ -43,6 +43,11 @@ export function PluginsPanel() {
           + Add
         </button>
       </div>
+      <div className="mx-3 my-1.5 p-2 rounded bg-warning/10 border border-warning/30">
+        <div className="text-[11px] text-warning">
+          Plugin runtime is not yet wired to the backend. Entries are stored locally as a design preview and do not load executable code.
+        </div>
+      </div>
       {showAdd && (
         <div className="mx-3 mb-2 p-2 rounded bg-surface-elevated border border-border-subtle space-y-1.5">
           <input type="text" placeholder="Plugin name" value={name} onChange={(e) => setName(e.target.value)} aria-label="Plugin name"

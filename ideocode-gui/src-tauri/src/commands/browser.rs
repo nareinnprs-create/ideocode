@@ -120,54 +120,259 @@ pub fn get_browser_context_text() -> String {
     }
 }
 
-/// Navigates the browser to a URL and records it in the active browser context.
-/// Live DOM automation is not yet wired (requires WebView2/CEF); this command
-/// keeps the recorded navigation in sync so the Browser panel reflects intent.
+// ============================================================================
+// Live browser automation via the Chrome DevTools Protocol (CDP).
+//
+// A managed Chrome/Edge instance is launched headless with a fixed remote
+// debugging port. Commands talk to it over CDP (JSON over WebSocket) to
+// navigate, click, type, and screenshot. This replaces the previous
+// "intent recording only" behavior.
+// ============================================================================
+
+use std::process::{Command as ProcCommand, Child};
+use std::sync::Mutex;
+use std::sync::OnceLock;
+
+const CDP_PORT: u16 = 9222;
+
+struct CdpState {
+    child: Mutex<Option<Child>>,
+}
+
+fn cdp_state() -> &'static CdpState {
+    static STATE: OnceLock<CdpState> = OnceLock::new();
+    STATE.get_or_init(|| CdpState {
+        child: Mutex::new(None),
+    })
+}
+
+fn find_chrome() -> Option<String> {
+    let candidates: &[&str] = if cfg!(target_os = "windows") {
+        &[
+            "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+            "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+            "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+        ]
+    } else if cfg!(target_os = "macos") {
+        &[
+            "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+        ]
+    } else {
+        &["google-chrome", "chromium", "chromium-browser", "microsoft-edge"]
+    };
+    candidates
+        .iter()
+        .find(|p| std::path::Path::new(p).exists() || which(p))
+        .copied()
+        .map(|s| s.to_string())
+}
+
+fn which(name: &str) -> bool {
+    // On non-Windows, check PATH via `command -v`.
+    if cfg!(target_os = "windows") {
+        return false;
+    }
+    ProcCommand::new("sh")
+        .args(["-c", &format!("command -v {}", name)])
+        .output()
+        .map(|o| o.status.success())
+        .unwrap_or(false)
+}
+
+/// Launches a managed browser instance with remote debugging enabled. Safe to
+/// call repeatedly — it returns true if already running.
+fn ensure_browser() -> Result<bool, String> {
+    if cdp_ping().is_ok() {
+        return Ok(false);
+    }
+    let exe = find_chrome().ok_or_else(|| {
+        "No supported browser (Chrome/Edge) found to drive for automation".to_string()
+    })?;
+    let user_dir = dirs::home_dir()
+        .map(|h| h.join(".IDEOCODE").join("browser-profile"))
+        .unwrap_or_default();
+    let child = ProcCommand::new(&exe)
+        .args([
+            "--headless=new",
+            &format!("--remote-debugging-port={}", CDP_PORT),
+            "--no-first-run",
+            "--no-default-browser-check",
+            "--disable-gpu",
+            "--remote-allow-origins=*",
+            &format!("--user-data-dir={}", user_dir.to_string_lossy()),
+            "about:blank",
+        ])
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .spawn()
+        .map_err(|e| format!("Failed to launch browser: {e}"))?;
+    *cdp_state()
+        .child
+        .lock()
+        .map_err(|_| "browser lock poisoned")? = Some(child);
+    // Wait for the debugging endpoint to come up.
+    for _ in 0..50 {
+        if cdp_ping().is_ok() {
+            return Ok(true);
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+    Err("Browser launched but debugging endpoint did not come up".to_string())
+}
+
+fn cdp_ping() -> Result<(), String> {
+    let url = format!("http://127.0.0.1:{}/json/version", CDP_PORT);
+    let resp = reqwest::blocking::get(&url).map_err(|e| e.to_string())?;
+    if resp.status().is_success() {
+        Ok(())
+    } else {
+        Err(format!("CDP not ready: HTTP {}", resp.status()))
+    }
+}
+
+/// Returns the WebSocket debugger URL for the current page.
+fn get_page_ws() -> Result<String, String> {
+    let url = format!("http://127.0.0.1:{}/json", CDP_PORT);
+    let resp = reqwest::blocking::get(&url).map_err(|e| e.to_string())?;
+    let targets: Vec<serde_json::Value> = resp
+        .json()
+        .map_err(|e| format!("Invalid CDP targets: {e}"))?;
+    let page = targets
+        .iter()
+        .find(|t| t.get("type").and_then(|v| v.as_str()) == Some("page"))
+        .or_else(|| targets.first());
+    page.and_then(|t| t.get("webSocketDebuggerUrl")?.as_str().map(|s| s.to_string()))
+        .ok_or_else(|| "No debuggable page target available".to_string())
+}
+
+/// Sends one CDP command and returns the `result` object (or error).
+async fn cdp_call(method: &str, params: serde_json::Value) -> Result<serde_json::Value, String> {
+    let ws_url = get_page_ws()?;
+    let (mut ws, _) = tokio_tungstenite::connect_async(&ws_url)
+        .await
+        .map_err(|e| format!("CDP connect failed: {e}"))?;
+    use futures_util::{SinkExt, StreamExt};
+    let id = 1u64;
+    let req = serde_json::json!({
+        "id": id,
+        "method": method,
+        "params": params,
+    });
+    ws.send(tokio_tungstenite::tungstenite::Message::Text(
+        req.to_string().into(),
+    ))
+    .await
+    .map_err(|e| format!("CDP send failed: {e}"))?;
+    let timeout = std::time::Duration::from_secs(15);
+    let started = std::time::Instant::now();
+    loop {
+        if started.elapsed() > timeout {
+            return Err("CDP command timed out".to_string());
+        }
+        match ws.next().await {
+            Some(Ok(tokio_tungstenite::tungstenite::Message::Text(text))) => {
+                let v: serde_json::Value = serde_json::from_str(&text).unwrap_or_default();
+                if v.get("id").and_then(|x| x.as_u64()) == Some(id) {
+                    if let Some(err) = v.get("error") {
+                        return Err(format!("CDP error: {err}"));
+                    }
+                    return Ok(v.get("result").cloned().unwrap_or(serde_json::Value::Null));
+                }
+            }
+            Some(Ok(_)) => continue,
+            Some(Err(e)) => return Err(format!("CDP read error: {e}")),
+            None => return Err("CDP connection closed".to_string()),
+        }
+    }
+}
+
 #[tauri::command]
-pub fn browser_navigate(url: String) -> Result<(), String> {
+pub async fn browser_navigate(url: String) -> Result<(), String> {
     if url.trim().is_empty() {
         return Err("URL cannot be empty".to_string());
     }
-    let title = url.split('/').nth(2).unwrap_or(&url).to_string();
-    set_browser_tab(url, title);
+    let launched = ensure_browser()?;
+    let normalized = if url.contains("://") { url.clone() } else { format!("https://{}", url) };
+    cdp_call(
+        "Page.navigate",
+        serde_json::json!({ "url": normalized }),
+    )
+    .await?;
+    // Give the page a moment to load, then update recorded context.
+    tokio::time::sleep(std::time::Duration::from_millis(800)).await;
+    let title = normalized.split('/').nth(2).unwrap_or(&normalized).to_string();
+    let _ = launched;
+    set_browser_tab(normalized, title);
     Ok(())
 }
 
-/// Takes a screenshot of the browser.
-///
-/// Requires an embedded WebView2/CEF integration (or a CDP-connected browser),
-/// which is not yet available. Returns a descriptive error until that lands.
 #[tauri::command]
-pub fn browser_screenshot() -> Result<String, String> {
-    Err(
-        "browser_screenshot is not available: no embedded browser (WebView2/CEF) is wired yet. \
-         Connect a CDP browser via Settings → Remote Dev to enable screenshots."
-            .to_string(),
+pub async fn browser_screenshot() -> Result<String, String> {
+    ensure_browser()?;
+    let result = cdp_call(
+        "Page.captureScreenshot",
+        serde_json::json!({ "format": "png" }),
     )
+    .await?;
+    let b64 = result
+        .get("data")
+        .and_then(|d| d.as_str())
+        .ok_or_else(|| "No screenshot data returned".to_string())?
+        .to_string();
+    // Persist to disk and return the local path (data URL if that fails).
+    let dir = dirs::home_dir()
+        .map(|h| h.join(".IDEOCODE").join("browser"))
+        .unwrap_or_default();
+    let _ = std::fs::create_dir_all(&dir);
+    let path = dir.join(format!("shot-{}.png", now_secs()));
+    if let Ok(bytes) = base64::Engine::decode(&base64::engine::general_purpose::STANDARD, &b64) {
+        if std::fs::write(&path, bytes).is_ok() {
+            return Ok(path.to_string_lossy().to_string());
+        }
+    }
+    Ok(format!("data:image/png;base64,{}", b64))
 }
 
-/// Clicks an element by selector.
-///
-/// Requires an embedded WebView2/CEF integration (or a CDP-connected browser),
-/// which is not yet available.
 #[tauri::command]
-pub fn browser_click(_selector: String) -> Result<(), String> {
-    Err(
-        "browser_click is not available: no embedded browser (WebView2/CEF) is wired yet. \
-         DOM automation requires a connected browser via CDP."
-            .to_string(),
+pub async fn browser_click(selector: String) -> Result<(), String> {
+    ensure_browser()?;
+    let js = format!(
+        r#"(function(){{ const el = document.querySelector({:?}); if(!el) return "not-found"; el.scrollIntoView(); const r=el.getBoundingClientRect(); el.dispatchEvent(new MouseEvent('click',{{bubbles:true,clientX:r.x+r.width/2,clientY:r.y+r.height/2}})); return "ok"; }})()"#,
+        selector
+    );
+    cdp_call(
+        "Runtime.evaluate",
+        serde_json::json!({ "expression": js, "returnByValue": true }),
     )
+    .await?;
+    Ok(())
 }
 
-/// Types text into an element by selector.
-///
-/// Requires an embedded WebView2/CEF integration (or a CDP-connected browser),
-/// which is not yet available.
 #[tauri::command]
-pub fn browser_type(_selector: String, _text: String) -> Result<(), String> {
-    Err(
-        "browser_type is not available: no embedded browser (WebView2/CEF) is wired yet. \
-         DOM automation requires a connected browser via CDP."
-            .to_string(),
+pub async fn browser_type(selector: String, text: String) -> Result<(), String> {
+    ensure_browser()?;
+    let js = format!(
+        r#"(function(){{ const el = document.querySelector({:?}); if(!el) return "not-found"; el.focus(); const setter=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set; if (setter && el.tagName==='INPUT') setter.call(el, {:?}); el.dispatchEvent(new Event('input',{{bubbles:true}})); el.dispatchEvent(new Event('change',{{bubbles:true}})); return "ok"; }})()"#,
+        selector,
+        text
+    );
+    cdp_call(
+        "Runtime.evaluate",
+        serde_json::json!({ "expression": js, "returnByValue": true }),
     )
+    .await?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn browser_stop() -> Result<(), String> {
+    if let Ok(mut guard) = cdp_state().child.lock() {
+        if let Some(mut child) = guard.take() {
+            let _ = child.kill();
+            let _ = child.wait();
+        }
+    }
+    Ok(())
 }

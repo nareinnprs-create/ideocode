@@ -1,9 +1,19 @@
 import { useEffect, useState, useRef } from "react";
 import { useProviderStore } from "../../stores/providerStore";
 import { useAppStore } from "../../stores/appStore";
-import { getGatewayStatus, type GatewayStatus } from "../../lib/tauri-commands";
+import { getGatewayStatus, getSettings, updateSettings, type GatewayStatus } from "../../lib/tauri-commands";
+import { notify } from "../../stores/toastStore";
 import { Cpu, Check, ArrowLeft, RefreshCw, Eye, EyeOff, Zap, Terminal } from "lucide-react";
 import { listen } from "@tauri-apps/api/event";
+
+const ENV_KEY_MAP: Record<string, string> = {
+  "baanzon-verso": "OMNIROUTE_API_KEY",
+  omniroute: "OMNIROUTE_API_KEY",
+  openai: "OPENAI_API_KEY",
+  anthropic: "ANTHROPIC_API_KEY",
+  gemini: "GOOGLE_API_KEY",
+  openrouter: "OPENROUTER_API_KEY",
+};
 
 export function ProviderPanel() {
   const { providers, status, loading, error, loadProviders, loadStatus, setActiveProvider } =
@@ -212,10 +222,21 @@ export function ProviderPanel() {
             </button>
           </div>
           <button
-            onClick={() => {
-              if (apiKeyInput.trim()) {
-                loadStatus();
+            onClick={async () => {
+              if (!apiKeyInput.trim()) return;
+              try {
+                const settings = await getSettings();
+                const activeProvider = status?.active_provider ?? settings.active_provider ?? "openai";
+                // Key map uses the env-var names that resolve_api_key reads.
+                const envKey = ENV_KEY_MAP[activeProvider] ?? "OPENAI_API_KEY";
+                settings.api_keys = { ...(settings.api_keys || {}), [envKey]: apiKeyInput.trim() };
+                await updateSettings(settings);
+                notify("success", "API key saved", envKey);
                 setApiKeyInput("");
+                void loadStatus();
+                void loadProviders();
+              } catch (e) {
+                notify("error", "Failed to save key", `${e}`);
               }
             }}
             disabled={!apiKeyInput.trim()}
@@ -225,7 +246,7 @@ export function ProviderPanel() {
           </button>
         </div>
         <div className="text-[11px] text-fg-muted mt-1">
-          API keys are set via environment variables (not saved through this UI). Clicking Save refreshes status.
+          API keys are stored locally in your settings and used by the active provider.
         </div>
       </div>
 

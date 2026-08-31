@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useFileStore } from "../../stores/fileStore";
 import { useGitStore } from "../../stores/gitStore";
+import { useAppStore } from "../../stores/appStore";
 import {
   ChevronRight,
   ChevronDown,
@@ -80,6 +81,8 @@ export function FileExplorer() {
   const [creatingPath, setCreatingPath] = useState("");
   const [renamingPath, setRenamingPath] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
+
+  const { deleteFile, createEntry, renameEntry } = useFileStore();
 
   useEffect(() => {
     if (rootPath) {
@@ -188,7 +191,7 @@ export function FileExplorer() {
                   { id: "new-folder", label: "New Folder", icon: <FolderPlus size={13} />, onSelect: () => { setCreating("folder"); setCreatingPath(rootPath); } },
                   { id: "sep", label: "", separator: true },
                   { id: "copy-path", label: "Copy Path", icon: <Copy size={13} />, onSelect: () => navigator.clipboard.writeText(rootPath) },
-                  { id: "open-terminal", label: "Open in Terminal", icon: <Terminal size={13} /> },
+                  { id: "open-terminal", label: "Open in Terminal", icon: <Terminal size={13} />, onSelect: () => { useAppStore.getState().setBottomPanel("terminal"); useAppStore.getState().setBottomPanelOpen(true); } },
                   { id: "refresh", label: "Refresh", icon: <RefreshCw size={13} />, onSelect: loadTree },
                 ]}
               >
@@ -204,6 +207,9 @@ export function FileExplorer() {
                 activeFile={activeFile}
                 onToggle={toggleExpanded}
                 onSelect={openFile}
+                onDelete={deleteFile}
+                onRename={renameEntry}
+                onCreate={createEntry}
                 sortBy={sortBy}
                 creatingPath={creatingPath}
                 creating={creating}
@@ -234,7 +240,7 @@ function TreeNode({
   node, depth, expandedPaths, activeFile, onToggle, onSelect, sortBy,
   creatingPath, creating, setCreating, setCreatingPath,
   renamingPath, setRenamingPath, renameValue, setRenameValue,
-  gitStatusMap,
+  gitStatusMap, onDelete, onRename, onCreate,
 }: {
   node: FileNode; depth: number; expandedPaths: Set<string>; activeFile: string | null;
   onToggle: (path: string) => void; onSelect: (path: string) => void; sortBy: string;
@@ -243,6 +249,9 @@ function TreeNode({
   renamingPath: string | null; setRenamingPath: (p: string | null) => void;
   renameValue: string; setRenameValue: (v: string) => void;
   gitStatusMap: Map<string, GitFileStatus>;
+  onDelete: (path: string) => Promise<void>;
+  onRename: (from: string, to: string) => Promise<void>;
+  onCreate: (type: "file" | "directory", path: string) => Promise<void>;
 }) {
   const isExpanded = expandedPaths.has(node.path);
   const isSelected = activeFile === node.path;
@@ -264,6 +273,15 @@ function TreeNode({
     else onSelect(node.path);
   };
 
+  const commitRename = () => {
+    const newName = renameValue.trim();
+    const oldPath = renamingPath;
+    setRenamingPath(null);
+    if (!oldPath || !newName || newName === node.name) return;
+    const parentPath = oldPath.slice(0, oldPath.length - node.name.length);
+    void onRename(oldPath, `${parentPath}${newName}`);
+  };
+
   const contextItems: ContextMenuItem[] = [
     ...(node.is_dir ? [
       { id: "new-file", label: "New File", icon: <FilePlus size={13} />, onSelect: () => { setCreating("file"); setCreatingPath(node.path); } },
@@ -274,7 +292,7 @@ function TreeNode({
     { id: "copy-name", label: "Copy Name", icon: <CopyPlus size={13} />, onSelect: () => navigator.clipboard.writeText(node.name) },
     { id: "rename", label: "Rename", icon: <Pencil size={13} />, onSelect: () => { setRenamingPath(node.path); setRenameValue(node.name); } },
     { id: "sep2", label: "", separator: true },
-    { id: "delete", label: "Delete", icon: <Trash2 size={13} />, danger: true },
+    { id: "delete", label: "Delete", icon: <Trash2 size={13} />, danger: true, onSelect: () => void onDelete(node.path) },
   ];
 
   const sortChildren = (children: FileNode[]): FileNode[] => {
@@ -303,10 +321,10 @@ function TreeNode({
                 value={renameValue}
                 onChange={(e) => setRenameValue(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && renameValue.trim()) { setRenamingPath(null); }
+                  if (e.key === "Enter" && renameValue.trim()) { commitRename(); }
                   if (e.key === "Escape") setRenamingPath(null);
                 }}
-                onBlur={() => setRenamingPath(null)}
+                onBlur={() => commitRename()}
                 className="flex-1 bg-surface text-fg-primary text-xs px-1 py-0.5 rounded border border-accent outline-none"
               />
             </div>
@@ -341,6 +359,7 @@ function TreeNode({
           type={creating!}
           parentPath={node.path}
           depth={depth + 1}
+          onCreate={onCreate}
           onDone={() => { setCreating(null); setCreatingPath(""); }}
         />
       )}
@@ -367,6 +386,9 @@ function TreeNode({
               renameValue={renameValue}
               setRenameValue={setRenameValue}
               gitStatusMap={gitStatusMap}
+              onDelete={onDelete}
+              onRename={onRename}
+              onCreate={onCreate}
             />
           ))}
         </div>
@@ -375,9 +397,18 @@ function TreeNode({
   );
 }
 
-function NewEntryForm({ type, depth, onDone }: { type: "file" | "folder"; parentPath: string; depth: number; onDone: () => void }) {
+function NewEntryForm({ type, parentPath, depth, onCreate, onDone }: { type: "file" | "folder"; parentPath: string; depth: number; onCreate: (t: "file" | "directory", path: string) => Promise<void>; onDone: () => void }) {
   const [name, setName] = useState("");
   const Icon = type === "file" ? FilePlus : FolderPlus;
+
+  const commit = () => {
+    const entryName = name.trim();
+    onDone();
+    if (!entryName) return;
+    const sep = parentPath.includes("\\") ? "\\" : "/";
+    const path = `${parentPath.replace(/[\\/]+$/, "")}${sep}${entryName}`;
+    void onCreate(type === "file" ? "file" : "directory", path);
+  };
 
   return (
     <div className="flex items-center gap-1 py-0.5" style={{ paddingLeft: `${depth * 12 + 8}px` }}>
@@ -387,10 +418,10 @@ function NewEntryForm({ type, depth, onDone }: { type: "file" | "folder"; parent
         value={name}
         onChange={(e) => setName(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter" && name.trim()) { onDone(); }
+          if (e.key === "Enter" && name.trim()) { commit(); }
           if (e.key === "Escape") onDone();
         }}
-        onBlur={() => onDone()}
+        onBlur={() => commit()}
         placeholder={`${type} name`}
         className="flex-1 bg-surface text-fg-primary text-xs px-1 py-0.5 rounded border border-accent outline-none placeholder:text-fg-muted"
       />

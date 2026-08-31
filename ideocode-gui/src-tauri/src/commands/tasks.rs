@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::path::PathBuf;
+use std::sync::{Mutex, OnceLock};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -71,6 +73,47 @@ fn rand_suffix() -> String {
     format!("{:08x}", h.finish())
 }
 
+/// Registry of running task processes (`task id` -> OS pid) so `cancel_task`
+/// can terminate the real process instead of only flipping a status flag.
+fn running_children() -> &'static Mutex<HashMap<String, u32>> {
+    static REGISTRY: OnceLock<Mutex<HashMap<String, u32>>> = OnceLock::new();
+    REGISTRY.get_or_init(|| Mutex::new(HashMap::new()))
+}
+
+fn register_child(id: String, pid: u32) {
+    if let Ok(mut map) = running_children().lock() {
+        map.insert(id, pid);
+    }
+}
+
+/// Terminates a task's process tree. Returns the recorded pid on success.
+fn kill_child(id: &str) -> Option<u32> {
+    let pid = running_children().lock().ok().and_then(|mut map| {
+        let pid = map.remove(id);
+        pid
+    })?;
+    let ok = if cfg!(target_os = "windows") {
+        let pid_str = pid.to_string();
+        std::process::Command::new("taskkill")
+            .args(["/PID", pid_str.as_str(), "/T", "/F"])
+            .output()
+            .map(|o| o.status.success())
+            .unwrap_or(false)
+    } else {
+        let pid_str = pid.to_string();
+        std::process::Command::new("kill")
+            .args(["-9", pid_str.as_str()])
+            .output()
+            .map(|o| o.status.success())
+            .unwrap_or(false)
+    };
+    if ok {
+        Some(pid)
+    } else {
+        None
+    }
+}
+
 #[tauri::command]
 pub fn create_task(name: String, command: String, cwd: String) -> BackgroundTask {
     let task = BackgroundTask {
@@ -113,9 +156,19 @@ pub fn start_task(id: String) -> Result<BackgroundTask, String> {
         let child = spawn_command(&command, &cwd);
         match child {
             Ok(proc) => {
+                let pid = proc.id();
+                register_child(task_id.clone(), pid);
                 let output = proc.wait_with_output();
+                let _ = running_children().lock().map(|mut map| map.remove(&task_id));
                 let mut tasks = load_tasks();
                 if let Some(task) = tasks.iter_mut().find(|t| t.id == task_id) {
+                    // A cancelled task never gets overwritten by the completion
+                    // handler: the user explicitly stopped it.
+                    if task.status == TaskStatus::Cancelled {
+                        let _ = running_children().lock().map(|mut map| map.remove(&task_id));
+                        save_tasks(&tasks);
+                        return;
+                    }
                     task.finished_at = Some(now_secs());
                     match output {
                         Ok(o) => {
@@ -161,6 +214,9 @@ pub fn start_task(id: String) -> Result<BackgroundTask, String> {
 
 #[tauri::command]
 pub fn cancel_task(id: String) -> Result<BackgroundTask, String> {
+    // Terminate the underlying OS process tree (if still running).
+    kill_child(&id);
+
     let mut tasks = load_tasks();
     let idx = tasks
         .iter()
@@ -168,6 +224,7 @@ pub fn cancel_task(id: String) -> Result<BackgroundTask, String> {
         .ok_or("Task not found")?;
     tasks[idx].status = TaskStatus::Cancelled;
     tasks[idx].finished_at = Some(now_secs());
+    tasks[idx].exit_code = None;
     let result = tasks[idx].clone();
     save_tasks(&tasks);
     Ok(result)

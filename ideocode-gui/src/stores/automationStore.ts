@@ -93,6 +93,76 @@ function makeRunId() {
   return `run-${Date.now()}-${idCounter}`;
 }
 
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
+const WEEK_MS = 7 * DAY_MS;
+const MONTH_MS = 30 * DAY_MS;
+
+function computeNextRun(a: Pick<Automation, "frequency" | "cronExpr" | "lastRun">): number {
+  const base = a.lastRun ?? Date.now();
+  switch (a.frequency) {
+    case "hourly":
+      return base + HOUR_MS;
+    case "daily":
+      return base + DAY_MS;
+    case "weekly":
+      return base + WEEK_MS;
+    case "monthly":
+      return base + MONTH_MS;
+    case "custom": {
+      // basic cron-like: "HH:MM" or "m h * * *" -> treat as daily at HH:MM
+      const m = /^(\d{1,2}):(\d{2})$/.exec(a.cronExpr ?? "");
+      if (m) {
+        const next = new Date();
+        next.setHours(parseInt(m[1], 10), parseInt(m[2], 10), 0, 0);
+        if (next.getTime() <= Date.now()) next.setDate(next.getDate() + 1);
+        return next.getTime();
+      }
+      return base + DAY_MS;
+    }
+  }
+}
+
+let schedulerTimer: ReturnType<typeof setInterval> | null = null;
+
+export function startAutomationScheduler() {
+  if (schedulerTimer) return;
+  // Recompute next runs for any automations missing one.
+  const state = useAutomationStore.getState();
+  const needsUpdate = state.automations
+    .filter((a) => a.enabled && a.status === "active")
+    .filter((a) => !a.nextRun);
+  if (needsUpdate.length > 0) {
+    const next = state.automations.map((a) => {
+      if (!a.enabled || a.status !== "active" || a.nextRun) return a;
+      return { ...a, nextRun: computeNextRun(a) };
+    });
+    useAutomationStore.setState({ automations: next });
+  }
+  schedulerTimer = setInterval(() => {
+    const now = Date.now();
+    const st = useAutomationStore.getState();
+    const due = st.automations.filter(
+      (a) => a.enabled && a.status === "active" && a.nextRun && a.nextRun <= now,
+    );
+    for (const a of due) {
+      // Run and schedule the next occurrence.
+      void st.runNow(a.id);
+      const updated = useAutomationStore.getState().automations.map((x) =>
+        x.id === a.id ? { ...x, nextRun: computeNextRun({ ...x, lastRun: now }) } : x,
+      );
+      useAutomationStore.setState({ automations: updated });
+    }
+  }, 60 * 1000);
+}
+
+export function stopAutomationScheduler() {
+  if (schedulerTimer) {
+    clearInterval(schedulerTimer);
+    schedulerTimer = null;
+  }
+}
+
 export const useAutomationStore = create<AutomationStore>((set, get) => ({
   ...loadState(),
 
@@ -109,6 +179,14 @@ export const useAutomationStore = create<AutomationStore>((set, get) => ({
     const automations = [...get().automations, newAuto];
     set({ automations });
     saveState({ ...get(), automations });
+    // Schedule the first run for a newly-created active automation.
+    if (newAuto.enabled && newAuto.status === "active") {
+      const nextRun = computeNextRun(newAuto);
+      const updated = useAutomationStore.getState().automations.map((a) =>
+        a.id === newAuto.id ? { ...a, nextRun } : a,
+      );
+      useAutomationStore.setState({ automations: updated });
+    }
     return newAuto;
   },
 
@@ -128,7 +206,13 @@ export const useAutomationStore = create<AutomationStore>((set, get) => ({
 
   toggle: (id) => {
     const automations = get().automations.map((a) =>
-      a.id === id ? { ...a, enabled: !a.enabled } : a,
+      a.id === id
+        ? {
+            ...a,
+            enabled: !a.enabled,
+            nextRun: !a.enabled ? computeNextRun(a) : undefined,
+          }
+        : a,
     );
     set({ automations });
     saveState({ ...get(), automations });
@@ -136,7 +220,7 @@ export const useAutomationStore = create<AutomationStore>((set, get) => ({
 
   pause: (id) => {
     const automations = get().automations.map((a) =>
-      a.id === id ? { ...a, status: "paused" as AutomationStatus } : a,
+      a.id === id ? { ...a, status: "paused" as AutomationStatus, nextRun: undefined } : a,
     );
     set({ automations });
     saveState({ ...get(), automations });
@@ -144,7 +228,7 @@ export const useAutomationStore = create<AutomationStore>((set, get) => ({
 
   resume: (id) => {
     const automations = get().automations.map((a) =>
-      a.id === id ? { ...a, status: "active" as AutomationStatus } : a,
+      a.id === id ? { ...a, status: "active" as AutomationStatus, nextRun: computeNextRun(a) } : a,
     );
     set({ automations });
     saveState({ ...get(), automations });
@@ -184,7 +268,7 @@ export const useAutomationStore = create<AutomationStore>((set, get) => ({
             ? { ...r, completedAt: Date.now(), output: result.output || result.status, status: "success" as const }
             : r,
         );
-        return { ...a, runHistory: history };
+        return { ...a, runHistory: history, nextRun: computeNextRun({ ...a, lastRun: Date.now() }) };
       });
       set({ automations: completedAutomations });
       saveState({ ...get(), automations: completedAutomations });
@@ -196,7 +280,7 @@ export const useAutomationStore = create<AutomationStore>((set, get) => ({
             ? { ...r, completedAt: Date.now(), status: "failed" as const, output: String(e) }
             : r,
         );
-        return { ...a, runHistory: history };
+        return { ...a, runHistory: history, nextRun: computeNextRun({ ...a, lastRun: Date.now() }) };
       });
       set({ automations: failedAutomations });
       saveState({ ...get(), automations: failedAutomations });

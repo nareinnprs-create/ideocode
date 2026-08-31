@@ -153,7 +153,7 @@ pub fn list_providers() -> Vec<Provider> {
             ],
         },
         Provider {
-            id: "anthropic-api".into(),
+            id: "anthropic".into(),
             name: "Anthropic".into(),
             api_key_env: "ANTHROPIC_API_KEY".into(),
             is_configured: std::env::var("ANTHROPIC_API_KEY")
@@ -181,7 +181,7 @@ pub fn list_providers() -> Vec<Provider> {
             ],
         },
         Provider {
-            id: "gemini-api".into(),
+            id: "gemini".into(),
             name: "Google Gemini".into(),
             api_key_env: "GOOGLE_API_KEY".into(),
             is_configured: std::env::var("GOOGLE_API_KEY")
@@ -209,7 +209,7 @@ pub fn list_providers() -> Vec<Provider> {
             ],
         },
         Provider {
-            id: "openrouter-api".into(),
+            id: "openrouter".into(),
             name: "OpenRouter".into(),
             api_key_env: "OPENROUTER_API_KEY".into(),
             is_configured: std::env::var("OPENROUTER_API_KEY")
@@ -241,24 +241,42 @@ pub fn list_providers() -> Vec<Provider> {
 
 #[tauri::command]
 pub fn get_provider_status() -> ProviderStatus {
-    let active_provider =
-        std::env::var("IDEOCODE_PROVIDER").unwrap_or_else(|_| "baanzon-verso".into());
-    let active_provider = if active_provider == "omniroute" {
-        "baanzon-verso".into()
+    let settings = super::settings::get_settings();
+    let provider = if settings.active_provider.is_empty() {
+        "baanzon-verso".to_string()
     } else {
-        active_provider
+        settings.active_provider
     };
-    let api_key_configured = active_provider == "baanzon-verso"
-        || std::env::var("OPENAI_API_KEY")
-            .map(|k| !k.is_empty())
-            .unwrap_or(false)
-        || std::env::var("ANTHROPIC_API_KEY")
-            .map(|k| !k.is_empty())
-            .unwrap_or(false);
+    let provider = normalize_provider(&provider);
+    let api_key_configured = match provider.as_str() {
+        "baanzon-verso" | "omniroute" => true,
+        "openai" => {
+            super::chat::resolve_api_key("OPENAI_API_KEY").is_some()
+        }
+        "anthropic" => super::chat::resolve_api_key("ANTHROPIC_API_KEY").is_some(),
+        "gemini" => super::chat::resolve_api_key("GOOGLE_API_KEY").is_some(),
+        "openrouter" => super::chat::resolve_api_key("OPENROUTER_API_KEY").is_some(),
+        _ => false,
+    };
     ProviderStatus {
-        active_provider,
-        active_model: std::env::var("IDEOCODE_MODEL").unwrap_or_else(|_| "auto".into()),
+        active_provider: provider,
+        active_model: if settings.active_model.is_empty() {
+            "auto".to_string()
+        } else {
+            settings.active_model
+        },
         api_key_configured,
+    }
+}
+
+/// Maps legacy/aliased provider ids persisted in settings.json to the ids
+/// recognized by the chat dispatch.
+pub fn normalize_provider(provider: &str) -> String {
+    match provider {
+        "anthropic-api" => "anthropic".to_string(),
+        "gemini-api" => "gemini".to_string(),
+        "openrouter-api" => "openrouter".to_string(),
+        other => other.to_string(),
     }
 }
 

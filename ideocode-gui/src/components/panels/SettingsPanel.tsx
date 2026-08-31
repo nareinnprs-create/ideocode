@@ -541,15 +541,20 @@ function ProvidersTab({
           Enter your API keys for the providers you wish to use. Keys are stored locally.
         </p>
         <div className="space-y-3">
-          {(["openai", "anthropic", "gemini"]).map((provider) => (
-            <div key={provider} className="flex flex-col gap-1">
-              <label className="text-xs text-fg-primary capitalize">{provider}</label>
+          {([
+            { id: "OPENAI_API_KEY", label: "OpenAI" },
+            { id: "ANTHROPIC_API_KEY", label: "Anthropic" },
+            { id: "GOOGLE_API_KEY", label: "Google Gemini" },
+            { id: "OPENROUTER_API_KEY", label: "OpenRouter" },
+          ]).map((provider) => (
+            <div key={provider.id} className="flex flex-col gap-1">
+              <label className="text-xs text-fg-primary">{provider.label}</label>
               <input
                 type="password"
-                value={settings.api_keys?.[provider] || ""}
-                onChange={(e) => handleKeyChange(provider, e.target.value)}
-                placeholder={`sk-...`}
-                aria-label={`${provider} API key`}
+                value={settings.api_keys?.[provider.id] || ""}
+                onChange={(e) => handleKeyChange(provider.id, e.target.value)}
+                placeholder={`${provider.id.toLowerCase()}...`}
+                aria-label={`${provider.label} API key`}
                 className="w-full bg-surface border border-border-subtle rounded px-2 py-1.5 text-xs text-fg-primary outline-none font-mono"
               />
             </div>

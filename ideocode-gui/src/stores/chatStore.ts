@@ -13,14 +13,17 @@ import {
   interruptStream as tauriInterrupt,
   savePartialMessage,
   compactSession as tauriCompact,
+  undoFileSnapshots,
   readFile,
   fileExists,
   type Message,
   type Session,
+  type FileSnapshot,
 } from "../lib/tauri-commands";
 import { notify } from "./toastStore";
 import { useFileStore } from "./fileStore";
 import { useAchievementStore } from "./achievementStore";
+import { useSideConversationStore } from "./sideConversationStore";
 import { buildFileContext } from "../lib/context";
 
 export type ComposerMode = "normal" | "plan" | "agent";
@@ -50,6 +53,8 @@ interface ChatState {
   reasoningEffort: string;
   branches: MessageBranch[];
   activeBranchId: string | null;
+  fileSnapshots: Record<string, FileSnapshot[]>;
+  undoAssistantChanges: (messageId: string) => Promise<void>;
   setModel: (model: string) => void;
   setMode: (mode: ComposerMode) => void;
   setExecutionMode: (mode: ExecutionMode) => void;
@@ -113,6 +118,10 @@ function ensureStreamListeners(): Promise<void> {
             error: null,
           };
         });
+        useSideConversationStore.getState().setTabMessages(
+          useSideConversationStore.getState().activeTabId ?? "",
+          useChatStore.getState().messages,
+        );
         void refreshSessions();
       });
       await listen<{ error: string }>("chat://error", (e) => {
@@ -125,6 +134,23 @@ function ensureStreamListeners(): Promise<void> {
         });
         notify("error", "Stream failed", e.payload.error);
       });
+      await listen<{ assistant_id: string; file_snapshots?: { path: string; content: string | null }[] }>(
+        "chat://tool_result",
+        (e) => {
+          const snaps = e.payload.file_snapshots;
+          if (snaps && snaps.length > 0) {
+            useChatStore.setState((s) => ({
+              fileSnapshots: {
+                ...s.fileSnapshots,
+                [e.payload.assistant_id]: [
+                  ...(s.fileSnapshots[e.payload.assistant_id] ?? []),
+                  ...snaps,
+                ],
+              },
+            }));
+          }
+        },
+      );
     })();
   }
   return listenersReady;
@@ -145,6 +171,33 @@ export const useChatStore = create<ChatState>((set) => ({
   reasoningEffort: "medium",
   branches: [],
   activeBranchId: null,
+  fileSnapshots: {},
+  undoAssistantChanges: async (messageId: string) => {
+    const { fileSnapshots } = useChatStore.getState();
+    const snaps = fileSnapshots[messageId];
+    if (!snaps || snaps.length === 0) {
+      notify("info", "Nothing to undo", "No file changes recorded for this message");
+      return;
+    }
+    try {
+      await undoFileSnapshots(snaps);
+      notify("success", "Changes undone", `Reverted ${snaps.length} file(s)`);
+      const next = { ...fileSnapshots };
+      delete next[messageId];
+      useChatStore.setState({ fileSnapshots: next });
+      const fs = useFileStore.getState();
+      for (const s of snaps) {
+        if (fs.openFiles.includes(s.path)) {
+          try {
+            const content = s.content ?? "";
+            fs.setContent(s.path, content);
+          } catch { /* ignore */ }
+        }
+      }
+    } catch (e) {
+      notify("error", "Undo failed", `${e}`);
+    }
+  },
   setModel: (model) => set({ model }),
   setMode: (mode) => set({ mode }),
   setExecutionMode: (executionMode) => set({ executionMode }),
@@ -152,7 +205,7 @@ export const useChatStore = create<ChatState>((set) => ({
   setReasoningEffort: (effort) => set({ reasoningEffort: effort }),
 
   sendMessage: async (content: string) => {
-    const { model, mode, reasoningEffort, streaming } = useChatStore.getState();
+    const { model, mode, reasoningEffort, streaming, executionMode } = useChatStore.getState();
     if (streaming) return;
     set((s) => ({
       loading: true,
@@ -207,7 +260,25 @@ export const useChatStore = create<ChatState>((set) => ({
       }
 
       const ctx = buildFileContext(content, fs.activeFile, fs.activeFile ? fs.contents[fs.activeFile] : undefined, mentionedFiles);
-      const userMsg = await tauriStream(ctx?.payload ?? content, { model, mode, reasoningEffort });
+
+      // Inject relevant stored memories into the request so the model can
+      // act on them (the memory feature now actually influences chat).
+      let memoryBlock = "";
+      try {
+        const { searchMemories: tauriSearchMemories } = await import("../lib/tauri-commands");
+        const matches = await tauriSearchMemories(content);
+        if (matches.length > 0) {
+          memoryBlock =
+            "\n\n--- Relevant stored memories ---\n" +
+            matches.map((m) => `[${m.category || "note"}] ${m.content}`).join("\n") +
+            "\n--- End of memories ---";
+        }
+      } catch {
+        memoryBlock = "";
+      }
+      const effectiveContent = memoryBlock ? `${content}\n${memoryBlock}` : content;
+
+      const userMsg = await tauriStream(ctx?.payload ?? effectiveContent, { model, mode, reasoningEffort, executionMode });
       const displayMsg = ctx ? { ...userMsg, content: ctx.strip(userMsg.content) } : userMsg;
       set((s) => ({
         messages: [...s.messages, displayMsg],
@@ -302,7 +373,7 @@ export const useChatStore = create<ChatState>((set) => ({
     }
   },
 
-  regenerate: async (_model?: string) => {
+  regenerate: async (model?: string) => {
     const { messages } = useChatStore.getState();
     const lastIdx = messages.map((m) => m.role).lastIndexOf("assistant");
     if (lastIdx === -1) {
@@ -312,7 +383,7 @@ export const useChatStore = create<ChatState>((set) => ({
     const head = messages.slice(0, lastIdx);
     set({ messages: head, loading: true, error: null });
     try {
-      const assistant = await regenerateLast();
+      const assistant = await regenerateLast(model);
       set({ messages: [...head, assistant], loading: false, error: null });
       void refreshSessions();
     } catch (e) {
@@ -416,3 +487,40 @@ export const useChatStore = create<ChatState>((set) => ({
     set({ branches: [...branches, branch], activeBranchId: branch.id });
   },
 }));
+
+// Side conversation buffer synchronization. Each side tab owns an independent
+// message buffer; chatStore.messages is the "active" working buffer.
+export function syncChatToSideTabs() {
+  const { messages, streaming, streamingContent } = useChatStore.getState();
+  const side = useSideConversationStore.getState();
+  const activeId = side.activeTabId;
+  if (activeId && !streaming) {
+    side.setTabMessages(activeId, messages);
+    void streamingContent;
+  }
+}
+
+export function switchSideTab(tabId: string) {
+  const chat = useChatStore.getState();
+  const side = useSideConversationStore.getState();
+  // Stash current working buffer into whatever tab is active right now.
+  const prevActive = side.activeTabId;
+  if (prevActive && prevActive !== tabId) {
+    side.setTabMessages(prevActive, chat.messages);
+  }
+  // Load the target tab's buffer as the working buffer.
+  const targetMessages = side.getTabMessages(tabId);
+  useChatStore.setState({ messages: targetMessages });
+  side.setActiveTab(tabId);
+}
+
+export function openSideTab(title?: string) {
+  const chat = useChatStore.getState();
+  const side = useSideConversationStore.getState();
+  const prevActive = side.activeTabId;
+  if (prevActive) {
+    side.setTabMessages(prevActive, chat.messages);
+  }
+  const id = side.addTab(title, [...chat.messages]);
+  return id;
+}

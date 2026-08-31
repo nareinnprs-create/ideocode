@@ -156,9 +156,13 @@ pub fn git_diff(path: String, file: Option<String>) -> Result<String, String> {
 }
 
 #[tauri::command]
-pub fn git_commit(path: String, message: String) -> Result<(), String> {
+pub fn git_commit(path: String, message: String, amend: Option<bool>) -> Result<(), String> {
     let cwd = PathBuf::from(&path).to_string_lossy().to_string();
-    run_git(&["commit", "-am", &message], &cwd)?;
+    if amend.unwrap_or(false) {
+        run_git(&["commit", "--amend", "-m", &message], &cwd)?;
+    } else {
+        run_git(&["commit", "-am", &message], &cwd)?;
+    }
     Ok(())
 }
 

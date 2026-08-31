@@ -81,10 +81,13 @@ export function CommandsPanel() {
             <button onClick={() => setRunTarget(null)} className="px-3 py-1.5 text-xs text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated">Cancel</button>
             <button onClick={() => {
               const command = runTarget?.command || "";
-              eventBus.emit("output", `[Command] ${command}\n`);
-              eventBus.emit("output", `> Executed at ${new Date().toLocaleTimeString()}\n`);
               useAppStore.getState().setBottomPanel("terminal");
               useAppStore.getState().setBottomPanelOpen(true);
+              // Give the (lazy-mounted) terminal a moment to be ready, then push
+              // the command so it actually executes in the shell.
+              setTimeout(() => {
+                eventBus.emit("terminal://execute", command);
+              }, 60);
               setRunTarget(null);
             }} aria-label="Run command" className="px-3 py-1.5 text-xs bg-accent text-white rounded hover:bg-accent-hover transition-fast">Run</button>
           </div>

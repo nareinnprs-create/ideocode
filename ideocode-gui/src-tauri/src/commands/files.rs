@@ -154,6 +154,85 @@ pub fn file_exists(path: String) -> bool {
     sanitize_path(&path).is_ok() && std::path::Path::new(&path).exists()
 }
 
+/// Validates that a path (which may not exist yet, e.g. for create/rename
+/// targets) does not contain traversal components.
+fn sanitize_target(path: &str) -> Result<PathBuf, String> {
+    let p = PathBuf::from(path);
+    for component in p.components() {
+        if matches!(component, std::path::Component::ParentDir) {
+            return Err("Path traversal detected".into());
+        }
+    }
+    if path.trim().is_empty() {
+        return Err("Path cannot be empty".into());
+    }
+    Ok(p)
+}
+
+/// Creates a new empty file, including any missing parent directories.
+#[tauri::command]
+pub fn create_file(path: String) -> Result<(), String> {
+    let target = sanitize_target(&path)?;
+    if let Some(parent) = target.parent() {
+        if !parent.as_os_str().is_empty() {
+            std::fs::create_dir_all(parent).map_err(|e| format!("Failed to create dirs: {}", e))?;
+        }
+    }
+    if target.exists() {
+        return Err(format!("Path already exists: {}", path));
+    }
+    std::fs::write(&target, "")
+        .map_err(|e| format!("Failed to create file {}: {}", path, e))
+}
+
+/// Creates a new directory (and any missing parents).
+#[tauri::command]
+pub fn create_directory(path: String) -> Result<(), String> {
+    let target = sanitize_target(&path)?;
+    if target.exists() {
+        return Err(format!("Path already exists: {}", path));
+    }
+    std::fs::create_dir_all(&target).map_err(|e| format!("Failed to create directory: {}", e))
+}
+
+/// Deletes a file or directory (recursively). Never allows deleting the root
+/// of a drive or empty paths.
+#[tauri::command]
+pub fn delete_path(path: String) -> Result<(), String> {
+    let target = sanitize_target(&path)?;
+    if !target.exists() {
+        return Err(format!("Path does not exist: {}", path));
+    }
+    if target.parent().map(|p| p.as_os_str().is_empty()).unwrap_or(true) {
+        return Err("Refusing to delete a filesystem root".into());
+    }
+    let metadata = std::fs::metadata(&target).map_err(|e| e.to_string())?;
+    if metadata.is_dir() {
+        std::fs::remove_dir_all(&target).map_err(|e| format!("Failed to delete directory: {}", e))
+    } else {
+        std::fs::remove_file(&target).map_err(|e| format!("Failed to delete file: {}", e))
+    }
+}
+
+/// Renames or moves a file/directory.
+#[tauri::command]
+pub fn rename_path(from: String, to: String) -> Result<(), String> {
+    let source = sanitize_target(&from)?;
+    let dest = sanitize_target(&to)?;
+    if !source.exists() {
+        return Err(format!("Path does not exist: {}", from));
+    }
+    if dest.exists() {
+        return Err(format!("Destination already exists: {}", to));
+    }
+    if let Some(parent) = dest.parent() {
+        if !parent.as_os_str().is_empty() {
+            std::fs::create_dir_all(parent).map_err(|e| format!("Failed to create dirs: {}", e))?;
+        }
+    }
+    std::fs::rename(&source, &dest).map_err(|e| format!("Failed to rename: {}", e))
+}
+
 #[tauri::command]
 pub fn search_files(pattern: String, path: String) -> Result<Vec<SearchResult>, String> {
     let root = sanitize_path(&path)?;

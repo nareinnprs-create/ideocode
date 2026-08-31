@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChevronDown, ChevronRight, Wrench, CheckCircle2, Loader2, AlertCircle, Clock } from "lucide-react";
 import type { ToolCall } from "../../lib/tauri-commands";
+import { approveTools, denyTools } from "../../lib/tauri-commands";
 
 interface Props {
   toolCall: ToolCall;
@@ -133,10 +134,16 @@ export function ToolCallCard({ toolCall }: Props) {
           {/* Pending Approval Controls */}
           {status === "pending_approval" && (
             <div className="px-3 py-2 border-t border-border-subtle flex items-center justify-end gap-2 bg-surface/50">
-              <button className="px-3 py-1.5 rounded-md text-xs font-medium text-fg-secondary bg-surface-elevated border border-border-subtle hover:text-fg-primary hover:bg-surface-hover transition-fast">
+              <button
+                onClick={() => void denyTools()}
+                className="px-3 py-1.5 rounded-md text-xs font-medium text-fg-secondary bg-surface-elevated border border-border-subtle hover:text-fg-primary hover:bg-surface-hover transition-fast"
+              >
                 Reject
               </button>
-              <button className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-accent hover:brightness-110 transition-fast shadow-[inset_0_1px_0_0_rgba(255,255,255,0.18)]">
+              <button
+                onClick={() => void approveTools()}
+                className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-accent hover:brightness-110 transition-fast shadow-[inset_0_1px_0_0_rgba(255,255,255,0.18)]"
+              >
                 Approve
               </button>
             </div>

@@ -1,13 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { Plus, X, MessageSquare } from "lucide-react";
 import { useSideConversationStore } from "../../stores/sideConversationStore";
+import { switchSideTab, openSideTab } from "../../stores/chatStore";
 
 export function ComposerTabs() {
   const tabs = useSideConversationStore((s) => s.tabs);
   const activeTabId = useSideConversationStore((s) => s.activeTabId);
-  const addTab = useSideConversationStore((s) => s.addTab);
   const removeTab = useSideConversationStore((s) => s.removeTab);
-  const setActiveTab = useSideConversationStore((s) => s.setActiveTab);
   const renameTab = useSideConversationStore((s) => s.renameTab);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -42,7 +41,7 @@ export function ComposerTabs() {
     return (
       <div className="flex items-center gap-1 px-2 py-1 border-b border-border-subtle">
         <button
-          onClick={() => addTab("Chat 1")}
+          onClick={() => openSideTab("Chat 1")}
           className="flex items-center gap-1.5 px-2 py-1 text-[11px] font-medium text-fg-muted hover:text-fg-primary hover:bg-surface-hover rounded-md transition-fast"
         >
           <Plus size={12} />
@@ -57,7 +56,7 @@ export function ComposerTabs() {
       {tabs.map((tab) => (
         <button
           key={tab.id}
-          onClick={() => setActiveTab(tab.id)}
+          onClick={() => switchSideTab(tab.id)}
           onDoubleClick={() => startRename(tab.id, tab.title)}
           className={`group flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-all duration-150 shrink-0 ${
             activeTabId === tab.id
@@ -93,7 +92,7 @@ export function ComposerTabs() {
         </button>
       ))}
       <button
-        onClick={() => addTab()}
+        onClick={() => openSideTab()}
         className="ml-1 p-1 text-fg-muted hover:text-fg-primary rounded hover:bg-surface-hover transition-fast shrink-0"
         title="New conversation tab (Ctrl+T)"
         aria-label="New chat tab"

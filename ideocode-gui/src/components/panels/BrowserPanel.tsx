@@ -2,21 +2,31 @@ import { useEffect, useState } from "react";
 import { useAppStore } from "../../stores/appStore";
 import {
   getBrowserContext,
-  setBrowserTab,
-  clearBrowserContext,
   getBrowserContextText,
+  browserNavigate,
+  browserScreenshot,
+  browserClick,
+  browserType,
+  browserStop,
   type BrowserContext,
 } from "../../lib/tauri-commands";
-import { ArrowLeft, Globe, Trash2, RefreshCw, ExternalLink, Copy } from "lucide-react";
+import { notify } from "../../stores/toastStore";
+import { ArrowLeft, Globe, Trash2, RefreshCw, ExternalLink, Copy, Play, Camera, StopCircle, MousePointerClick } from "lucide-react";
 
 export function BrowserPanel() {
   const setRightPanelOpen = useAppStore((s) => s.setRightPanelOpen);
   const [ctx, setCtx] = useState<BrowserContext | null>(null);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [navigating, setNavigating] = useState(false);
   const [url, setUrl] = useState("");
-  const [title, setTitle] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [screenshot, setScreenshot] = useState<string | null>(null);
+  const [capturing, setCapturing] = useState(false);
+  const [selector, setSelector] = useState("");
+  const [clicking, setClicking] = useState(false);
+  const [typingText, setTypingText] = useState("");
+  const [typing, setTyping] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -44,22 +54,78 @@ export function BrowserPanel() {
     loadText();
   }, []);
 
-  const handleSetTab = async () => {
+  const handleNavigate = async () => {
     if (!url.trim()) return;
+    setNavigating(true);
+    setError(null);
     try {
-      await setBrowserTab(url.trim(), title.trim() || url.trim());
+      await browserNavigate(url.trim());
+      notify("success", "Navigated", url.trim());
+      setUrl("");
       await load();
       await loadText();
-      setUrl("");
-      setTitle("");
     } catch (e) {
-      setError(`Failed to set tab: ${e}`);
+      setError(`Navigation failed: ${e}`);
+      notify("error", "Navigation failed", `${e}`);
+    }
+    setNavigating(false);
+  };
+
+  const handleScreenshot = async () => {
+    setCapturing(true);
+    setError(null);
+    try {
+      const path = await browserScreenshot();
+      setScreenshot(path);
+      notify("success", "Screenshot captured");
+    } catch (e) {
+      setError(`Screenshot failed: ${e}`);
+      notify("error", "Screenshot failed", `${e}`);
+    }
+    setCapturing(false);
+  };
+
+  const handleClick = async () => {
+    if (!selector.trim()) return;
+    setClicking(true);
+    setError(null);
+    try {
+      await browserClick(selector.trim());
+      notify("success", "Clicked", selector.trim());
+    } catch (e) {
+      setError(`Click failed: ${e}`);
+      notify("error", "Click failed", `${e}`);
+    }
+    setClicking(false);
+  };
+
+  const handleType = async () => {
+    if (!selector.trim() || !typingText.trim()) return;
+    setTyping(true);
+    setError(null);
+    try {
+      await browserType(selector.trim(), typingText);
+      notify("success", "Typed into", selector.trim());
+      setTypingText("");
+    } catch (e) {
+      setError(`Typing failed: ${e}`);
+      notify("error", "Typing failed", `${e}`);
+    }
+    setTyping(false);
+  };
+
+  const handleStop = async () => {
+    try {
+      await browserStop();
+      setScreenshot(null);
+      notify("success", "Browser stopped");
+    } catch (e) {
+      setError(`${e}`);
     }
   };
 
   const handleClear = async () => {
     try {
-      await clearBrowserContext();
       setCtx(null);
       setText("");
       await load();
@@ -88,11 +154,19 @@ export function BrowserPanel() {
         <div className="flex gap-1">
           <button
             onClick={load}
-            aria-label="Refresh page"
+            aria-label="Refresh browser context"
             className="p-1.5 text-fg-muted hover:text-fg-primary transition-fast rounded hover:bg-surface-elevated"
             title="Refresh"
           >
             <RefreshCw size={14} />
+          </button>
+          <button
+            onClick={handleStop}
+            aria-label="Stop the managed browser"
+            className="p-1.5 text-fg-muted hover:text-error transition-fast rounded hover:bg-surface-elevated"
+            title="Stop managed browser"
+          >
+            <StopCircle size={14} />
           </button>
           <button
             onClick={handleClear}
@@ -105,40 +179,114 @@ export function BrowserPanel() {
         </div>
       </div>
 
-      {/* Manual tab input */}
+      {/* Real navigation */}
       <div className="px-3 py-2 border-b border-border-subtle surface-blur">
         <div className="text-[11px] uppercase tracking-wider text-fg-muted mb-1.5">
-          Add Tab Manually
+          Navigate (managed Chromium)
         </div>
-        <input
-          type="text"
-          placeholder="URL"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          className="w-full p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted focus:outline-none focus:border-accent mb-1"
-        />
         <div className="flex gap-1">
           <input
             type="text"
-            placeholder="Page title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            placeholder="https://example.com"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleNavigate();
+            }}
             className="flex-1 p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted focus:outline-none focus:border-accent"
           />
           <button
-            onClick={handleSetTab}
-            disabled={!url.trim()}
-            className="px-2 py-1.5 text-xs bg-accent text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast"
+            onClick={handleNavigate}
+            disabled={!url.trim() || navigating}
+            className="px-2 py-1.5 text-xs bg-accent text-white rounded hover:bg-accent-hover disabled:opacity-50 transition-fast flex items-center gap-1"
           >
-            Add
+            <Play size={11} />
+            {navigating ? "Opening..." : "Open"}
           </button>
+          <button
+            onClick={handleScreenshot}
+            disabled={capturing}
+            className="px-2 py-1.5 text-xs bg-surface-elevated border border-border-subtle text-fg-primary rounded hover:bg-surface-hover disabled:opacity-50 transition-fast flex items-center gap-1"
+            title="Capture screenshot of current page"
+          >
+            <Camera size={11} />
+            {capturing ? "..." : "Shot"}
+          </button>
+        </div>
+
+        {/* Selector action bar */}
+        <div className="flex gap-1 mt-1.5">
+          <input
+            type="text"
+            placeholder="CSS selector (e.g. #login-email)"
+            value={selector}
+            onChange={(e) => setSelector(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleClick();
+            }}
+            className="flex-1 p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted focus:outline-none focus:border-accent font-mono"
+          />
+          <button
+            onClick={handleClick}
+            disabled={!selector.trim() || clicking}
+            className="px-2 py-1.5 text-xs bg-surface-elevated border border-border-subtle text-fg-primary rounded hover:bg-surface-hover disabled:opacity-50 transition-fast flex items-center gap-1"
+            title="Click the element matched by the selector"
+          >
+            <MousePointerClick size={11} />
+            {clicking ? "..." : "Click"}
+          </button>
+          <input
+            type="text"
+            placeholder="Text to type"
+            value={typingText}
+            onChange={(e) => setTypingText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleType();
+            }}
+            className="flex-1 p-1.5 text-xs bg-surface-elevated border border-border-subtle rounded text-fg-primary placeholder-text-muted focus:outline-none focus:border-accent"
+          />
+          <button
+            onClick={handleType}
+            disabled={!selector.trim() || !typingText.trim() || typing}
+            className="px-2 py-1.5 text-xs bg-surface-elevated border border-border-subtle text-fg-primary rounded hover:bg-surface-hover disabled:opacity-50 transition-fast"
+            title="Type into the element matched by the selector"
+          >
+            {typing ? "..." : "Type"}
+          </button>
+        </div>
+        <div className="text-[11px] text-fg-muted mt-1">
+          A headless Chrome/Edge is launched automatically on first navigation.
         </div>
       </div>
 
       {/* Error */}
       {error && (
-        <div className="mx-3 mb-2 p-2 rounded bg-surface-elevated border border-border-subtle">
+        <div className="mx-3 my-2 p-2 rounded bg-surface-elevated border border-border-subtle">
           <div className="text-xs text-error">{error}</div>
+        </div>
+      )}
+
+      {/* Screenshot */}
+      {screenshot && (
+        <div className="px-3 py-2 border-b border-border-subtle">
+          <div className="text-[11px] uppercase tracking-wider text-fg-muted mb-1.5">
+            Page Screenshot
+          </div>
+          {screenshot.startsWith("data:") ? (
+            <img src={screenshot} alt="Browser screenshot" className="w-full rounded border border-border-subtle" />
+          ) : (
+            <div className="flex items-center gap-2 text-[11px] text-fg-secondary">
+              <span className="truncate">{screenshot}</span>
+              <a
+                href={`file://${screenshot.replace(/\\/g, "/")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent hover:underline shrink-0"
+              >
+                Open
+              </a>
+            </div>
+          )}
         </div>
       )}
 
@@ -222,7 +370,7 @@ export function BrowserPanel() {
         </div>
         <div className="flex-1 overflow-y-auto px-3 pb-2">
           <pre className="text-[11px] text-fg-secondary font-mono whitespace-pre-wrap bg-surface-elevated p-2 rounded">
-            {text || "No browser context available. Use the browser extension to share tabs."}
+            {text || "No browser context available. Navigate to a page to begin."}
           </pre>
         </div>
       </div>
@@ -230,7 +378,7 @@ export function BrowserPanel() {
       {/* Instructions */}
       <div className="px-3 py-2 border-t border-border-subtle bg-surface-elevated">
         <div className="text-[11px] text-fg-muted">
-          Install the browser extension or use the manual tab input above to share your browsing context with IDEOCODE.
+          Enter a URL and press Open to drive a managed Chromium browser via CDP. Use a CSS selector to click elements and capture screenshots.
         </div>
       </div>
     </div>

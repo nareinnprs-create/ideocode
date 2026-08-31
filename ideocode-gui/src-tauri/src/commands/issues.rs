@@ -118,7 +118,7 @@ pub fn fetch_github_issues(
     );
 
     let client = reqwest::blocking::Client::builder()
-        .user_agent("IDEOCODE/0.61.0")
+        .user_agent("IDEOCODE-desktop")
         .build()
         .map_err(|e| format!("Failed to create HTTP client: {}", e))?;
 

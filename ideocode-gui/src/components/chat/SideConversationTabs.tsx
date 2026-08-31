@@ -1,12 +1,11 @@
 import { Plus, X } from "lucide-react";
 import { useSideConversationStore } from "../../stores/sideConversationStore";
+import { switchSideTab, openSideTab } from "../../stores/chatStore";
 
 export function SideConversationTabs() {
   const tabs = useSideConversationStore((s) => s.tabs);
   const activeTabId = useSideConversationStore((s) => s.activeTabId);
-  const addTab = useSideConversationStore((s) => s.addTab);
   const removeTab = useSideConversationStore((s) => s.removeTab);
-  const setActiveTab = useSideConversationStore((s) => s.setActiveTab);
 
   if (tabs.length === 0) return null;
 
@@ -15,7 +14,7 @@ export function SideConversationTabs() {
       {tabs.map((tab) => (
         <button
           key={tab.id}
-          onClick={() => setActiveTab(tab.id)}
+          onClick={() => switchSideTab(tab.id)}
           className={`group flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md transition-all duration-150 shrink-0 ${
             activeTabId === tab.id
               ? "bg-accent/10 text-accent border border-accent/25"
@@ -35,7 +34,7 @@ export function SideConversationTabs() {
         </button>
       ))}
       <button
-        onClick={() => addTab()}
+        onClick={() => openSideTab()}
         className="ml-1 p-1 text-fg-muted hover:text-fg-primary rounded hover:bg-surface-hover transition-fast shrink-0"
         title="New conversation tab"
       >

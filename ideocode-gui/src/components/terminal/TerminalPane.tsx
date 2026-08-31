@@ -9,6 +9,7 @@ import { useAppStore } from "../../stores/appStore";
 import { useTerminalStore, type TerminalInstance } from "../../stores/terminalStore";
 import type { Theme } from "../../lib/theme-registry";
 import { getThemeColors } from "../../lib/theme-palettes";
+import { eventBus } from "../../lib/eventBus";
 import { Plus, X, Search } from "lucide-react";
 
 interface Props {
@@ -110,16 +111,20 @@ function SingleTerminal({
     let currentLine = "";
     let running = false;
 
+    const runInput = async (input: string) => {
+      const trimmed = input.trim();
+      if (trimmed && !running) {
+        running = true;
+        await runCommand(term, rootPathRef, disposedRef, trimmed).catch(() => {});
+        running = false;
+      }
+    };
+
     term.onData(async (data) => {
       switch (data) {
         case "\r": {
           term.writeln("");
-          const trimmed = currentLine.trim();
-          if (trimmed && !running) {
-            running = true;
-            await runCommand(term, rootPathRef, disposedRef, trimmed);
-            running = false;
-          }
+          await runInput(currentLine);
           currentLine = "";
           showPrompt(term, rootPathRef.current);
           break;
@@ -144,11 +149,25 @@ function SingleTerminal({
       }
     });
 
+    // Let other parts of the UI (e.g. CommandsPanel) push a command into the
+    // active terminal rather than only faking output.
+    const onExecute = (data: unknown) => {
+      const cmd = typeof data === "string" ? data : "";
+      void (async () => {
+        if (running || !cmd) return;
+        term.writeln("");
+        await runInput(cmd);
+        showPrompt(term, rootPathRef.current);
+      })();
+    };
+    const disposeExecute = eventBus.on("terminal://execute", onExecute);
+
     xtermRef.current = term;
     setTimeout(() => { try { fitAddon.fit(); } catch {} }, 100);
 
     return () => {
       disposedRef.current = true;
+      disposeExecute();
       term.dispose();
       xtermRef.current = null;
     };

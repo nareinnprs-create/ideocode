@@ -70,6 +70,11 @@ export function HooksPanel() {
           <Plus size={14} /> Add
         </button>
       </div>
+      <div className="mx-3 my-1.5 p-2 rounded bg-warning/10 border border-warning/30">
+        <div className="text-[11px] text-warning">
+          Backend hooks are not yet wired. Hook definitions are stored locally and are not fired by the agent runtime.
+        </div>
+      </div>
       {showAdd && (
         <div className="mx-3 mb-2 p-2 rounded bg-surface-elevated border border-border-subtle space-y-1.5">
           <select value={event} onChange={(e) => setEvent(e.target.value as HookEvent)}

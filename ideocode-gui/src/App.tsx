@@ -7,6 +7,7 @@ import { useAchievementStore } from "./stores/achievementStore";
 import { useThemeStore } from "./stores/themeStore";
 import { isFirstLaunch, getVersion, getSettings } from "./lib/tauri-commands";
 import { initTauriEventBridge } from "./lib/tauri-events";
+import { startAutomationScheduler } from "./stores/automationStore";
 
 function AchievementToast() {
   const showNotification = useAchievementStore((s) => s.showNotification);
@@ -36,12 +37,16 @@ function App() {
 
   useEffect(() => {
     initTauriEventBridge();
+    startAutomationScheduler();
     useThemeStore.getState().init();
     getVersion().then(setVersion).catch(() => setVersion("1.2.2"));
     getSettings()
       .then((s) => {
         useAppStore.getState().setAccentColor(s.accent_color ?? "#6366F1");
         useAppStore.getState().setUiFontSize(s.ui_font_size ?? 13);
+        if (s.theme) {
+          useAppStore.getState().setTheme(s.theme as never);
+        }
       })
       .catch((err) => {
         console.error("Failed to load settings:", err);

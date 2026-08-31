@@ -3,6 +3,7 @@ import { Shield, Check, X, Terminal, FileEdit, FilePlus, Search } from "lucide-r
 import { listen } from "@tauri-apps/api/event";
 import { useChatStore } from "../../stores/chatStore";
 import { notify } from "../../stores/toastStore";
+import { approveTools, denyTools } from "../../lib/tauri-commands";
 
 interface PendingTool {
   assistantId: string;
@@ -40,6 +41,10 @@ export function PermissionPrompt() {
       setPending(null);
     }).then((u) => unlisteners.push(u));
 
+    listen("chat://error", () => {
+      setPending(null);
+    }).then((u) => unlisteners.push(u));
+
     return () => {
       for (const u of unlisteners) u();
     };
@@ -47,14 +52,24 @@ export function PermissionPrompt() {
 
   if (!pending || executionMode !== "confirm") return null;
 
-  const handleApprove = () => {
+  const handleApprove = async () => {
     setPending(null);
-    notify("success", "Tools approved", `${pending.tools.length} tool(s) approved`);
+    try {
+      await approveTools();
+      notify("success", "Tools approved", `${pending.tools.length} tool(s) approved`);
+    } catch (e) {
+      notify("warning", "Could not approve", `${e}`);
+    }
   };
 
-  const handleDeny = () => {
+  const handleDeny = async () => {
     setPending(null);
-    notify("info", "Tools denied", "Tool execution was denied");
+    try {
+      await denyTools();
+      notify("info", "Tools denied", "Tool execution was denied");
+    } catch (e) {
+      notify("warning", "Could not deny", `${e}`);
+    }
   };
 
   return (
