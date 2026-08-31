@@ -161,6 +161,13 @@ function PanelContent({ panel }: { panel: string }) {
       return wrapped(<FileExplorer />);
     case "git":
       return wrapped(<GitPanel />);
+    case "terminal":
+      // Terminal lives in the bottom dock; redirect there instead of showing
+      // a dead "coming soon" panel.
+      useAppStore.getState().setBottomPanel("terminal");
+      useAppStore.getState().setBottomPanelOpen(true);
+      useAppStore.getState().setRightPanelOpen(false);
+      return null;
     case "search":
       return wrapped(<SearchPanel />);
     case "providers":
