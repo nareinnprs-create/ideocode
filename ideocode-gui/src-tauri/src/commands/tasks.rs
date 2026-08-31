@@ -88,10 +88,10 @@ fn register_child(id: String, pid: u32) {
 
 /// Terminates a task's process tree. Returns the recorded pid on success.
 fn kill_child(id: &str) -> Option<u32> {
-    let pid = running_children().lock().ok().and_then(|mut map| {
-        let pid = map.remove(id);
-        pid
-    })?;
+    let pid = running_children()
+        .lock()
+        .ok()
+        .and_then(|mut map| map.remove(id))?;
     let ok = if cfg!(target_os = "windows") {
         let pid_str = pid.to_string();
         std::process::Command::new("taskkill")

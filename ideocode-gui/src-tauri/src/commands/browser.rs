@@ -260,9 +260,7 @@ async fn cdp_call(method: &str, params: serde_json::Value) -> Result<serde_json:
         "method": method,
         "params": params,
     });
-    ws.send(tokio_tungstenite::tungstenite::Message::Text(
-        req.to_string().into(),
-    ))
+    ws.send(tokio_tungstenite::tungstenite::Message::Text(req.to_string()))
     .await
     .map_err(|e| format!("CDP send failed: {e}"))?;
     let timeout = std::time::Duration::from_secs(15);

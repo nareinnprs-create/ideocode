@@ -950,6 +950,7 @@ async fn run_completion(
 /// Runs a completion, streaming `chat://delta` events to the frontend as text
 /// arrives, and returns the produced assistant message. In agent mode, executes
 /// tool calls in a loop until the model produces a final text response.
+#[allow(clippy::too_many_arguments)]
 async fn run_streaming_completion(
     history: &[Message],
     model_override: Option<String>,
@@ -1787,7 +1788,7 @@ async fn await_approval(
     app: &tauri::AppHandle,
 ) -> Option<bool> {
     let (tx, rx) = tokio::sync::oneshot::channel();
-    set_approval(&state, ApprovalGate::new(tx));
+    set_approval(state, ApprovalGate::new(tx));
     let _ = app.emit(
         "chat://tool",
         serde_json::json!({
