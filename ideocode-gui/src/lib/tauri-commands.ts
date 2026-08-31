@@ -475,6 +475,10 @@ export async function updateSettings(settings: AppSettings): Promise<void> {
   return invoke<void>("update_settings", { settings });
 }
 
+export async function resetSettings(): Promise<AppSettings> {
+  return invoke<AppSettings>("reset_settings");
+}
+
 export async function isFirstLaunch(): Promise<boolean> {
   return invoke<boolean>("is_first_launch");
 }

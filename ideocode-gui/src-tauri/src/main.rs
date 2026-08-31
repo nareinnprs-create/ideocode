@@ -143,6 +143,7 @@ fn main() {
             commands::gateway_status,
             commands::get_settings,
             commands::update_settings,
+            commands::reset_settings,
             commands::is_first_launch,
             // Memory
             commands::list_memories,

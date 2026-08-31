@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { AlertCircle } from "lucide-react";
-import { getSettings, updateSettings } from "../../lib/tauri-commands";
+import { AlertCircle, RotateCcw } from "lucide-react";
+import { getSettings, updateSettings, resetSettings } from "../../lib/tauri-commands";
 import type { AppSettings } from "../../lib/tauri-commands";
 import { useAppStore } from "../../stores/appStore";
 import { useProviderStore } from "../../stores/providerStore";
@@ -462,6 +462,24 @@ function EditorTab({
 
 function AboutTab() {
   const version = useAppStore((s) => s.version);
+  const [confirming, setConfirming] = useState(false);
+  const [resetting, setResetting] = useState(false);
+
+  const handleReset = async () => {
+    setResetting(true);
+    try {
+      await resetSettings();
+      // Clear theme cache too so defaults take effect immediately.
+      localStorage.removeItem("ideocode.scheme");
+      localStorage.removeItem("ideocode.theme");
+      notify("success", "Settings reset", "Settings restored to defaults");
+      setConfirming(false);
+    } catch (e) {
+      notify("error", "Reset failed", `${e}`);
+    }
+    setResetting(false);
+  };
+
   return (
     <div className="p-6 text-center space-y-4">
       <div className="text-xl font-semibold text-fg-primary">IDEOCODE</div>
@@ -471,6 +489,40 @@ function AboutTab() {
         <p className="mt-4 text-fg-muted">
           Built with Tauri 2.x + React 19 + TypeScript
         </p>
+      </div>
+
+      <div className="pt-4 border-t border-border-subtle mt-6">
+        <div className="text-[11px] text-fg-secondary font-medium mb-2">Danger Zone</div>
+        {confirming ? (
+          <div className="space-y-2">
+            <p className="text-[11px] text-fg-muted">
+              This will clear all settings, including API keys. Continue?
+            </p>
+            <div className="flex justify-center gap-2">
+              <button
+                onClick={handleReset}
+                disabled={resetting}
+                className="px-3 py-1.5 text-[11px] bg-error text-white rounded hover:opacity-90 disabled:opacity-50 transition-fast"
+              >
+                {resetting ? "Resetting..." : "Yes, reset"}
+              </button>
+              <button
+                onClick={() => setConfirming(false)}
+                className="px-3 py-1.5 text-[11px] bg-surface-elevated border border-border-subtle text-fg-primary rounded hover:bg-surface-hover transition-fast"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setConfirming(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] border border-error/40 text-error rounded hover:bg-error/10 transition-fast"
+          >
+            <RotateCcw size={12} />
+            Reset settings to defaults
+          </button>
+        )}
       </div>
     </div>
   );

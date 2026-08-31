@@ -118,6 +118,15 @@ pub fn update_settings(settings: AppSettings) -> Result<(), String> {
     Ok(())
 }
 
+/// Restores all settings to their defaults by removing the persisted settings
+/// file. Returns the default settings object.
+#[tauri::command]
+pub fn reset_settings() -> AppSettings {
+    let path = settings_path();
+    let _ = std::fs::remove_file(&path);
+    AppSettings::default()
+}
+
 #[tauri::command]
 pub fn is_first_launch() -> bool {
     let path = settings_path();
