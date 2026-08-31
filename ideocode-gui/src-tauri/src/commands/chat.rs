@@ -117,12 +117,13 @@ fn sessions_dir() -> PathBuf {
         .unwrap_or_default()
 }
 
-fn save_session(state: &ChatState) {
+fn save_session(state: &ChatState) -> Result<(), String> {
     let dir = sessions_dir();
     if dir.as_os_str().is_empty() {
-        return;
+        return Ok(());
     }
-    let _ = std::fs::create_dir_all(&dir);
+    std::fs::create_dir_all(&dir)
+        .map_err(|e| format!("Failed to create sessions dir: {}", e))?;
     let session_id = state
         .current_session_id
         .lock()
@@ -142,9 +143,9 @@ fn save_session(state: &ChatState) {
         "messages": messages,
     });
     let path = dir.join(format!("{}.json", session_id));
-    if let Ok(json) = serde_json::to_string_pretty(&value) {
-        let _ = std::fs::write(&path, json);
-    }
+    let json = serde_json::to_string_pretty(&value)
+        .map_err(|e| format!("Failed to serialize session: {}", e))?;
+    std::fs::write(&path, json).map_err(|e| format!("Failed to write session: {}", e))
 }
 
 const SYSTEM_PROMPT: &str = "You are IDEOCODE, an expert software engineering assistant \
@@ -1155,7 +1156,9 @@ pub async fn send_message(
         .lock()
         .unwrap_or_else(|e| e.into_inner())
         .push(assistant_msg.clone());
-    save_session(&state);
+    if let Err(e) = save_session(&state) {
+        eprintln!("[save_session] {}", e);
+    }
     Ok(assistant_msg)
 }
 
@@ -1213,7 +1216,9 @@ pub async fn stream_chat(
                     .lock()
                     .unwrap_or_else(|e| e.into_inner())
                     .push(assistant_msg.clone());
-                save_session(&task_state);
+                if let Err(e) = save_session(&task_state) {
+                    eprintln!("[save_session] {}", e);
+                }
                 let _ = task_app.emit(
                     "chat://done",
                     serde_json::json!({ "message": assistant_msg }),
@@ -1268,7 +1273,9 @@ pub fn save_partial_message(
         .lock()
         .unwrap_or_else(|e| e.into_inner())
         .push(msg.clone());
-    save_session(&state);
+    if let Err(e) = save_session(&state) {
+        eprintln!("[save_session] {}", e);
+    }
     Ok(msg)
 }
 
@@ -1301,7 +1308,9 @@ pub async fn regenerate_last_message(
         .lock()
         .unwrap_or_else(|e| e.into_inner())
         .push(assistant_msg.clone());
-    save_session(&state);
+    if let Err(e) = save_session(&state) {
+        eprintln!("[save_session] {}", e);
+    }
     Ok(assistant_msg)
 }
 
@@ -1347,7 +1356,9 @@ pub async fn edit_last_message(
         .lock()
         .unwrap_or_else(|e| e.into_inner())
         .push(assistant_msg.clone());
-    save_session(&state);
+    if let Err(e) = save_session(&state) {
+        eprintln!("[save_session] {}", e);
+    }
     Ok(assistant_msg)
 }
 
@@ -1430,7 +1441,9 @@ pub async fn compact_session(state: State<'_, ChatState>) -> Result<Vec<Message>
     compacted.extend_from_slice(recent);
 
     *state.messages.lock().unwrap_or_else(|e| e.into_inner()) = compacted.clone();
-    save_session(&state);
+    if let Err(e) = save_session(&state) {
+        eprintln!("[save_session] {}", e);
+    }
     Ok(compacted)
 }
 

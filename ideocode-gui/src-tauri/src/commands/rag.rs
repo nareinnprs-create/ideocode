@@ -260,12 +260,14 @@ pub fn index_directory(path: String) -> Result<IndexProgress, String> {
                 let idx_dir = dirs::home_dir()
                     .map(|h| h.join(".IDEOCODE").join("rag-index"))
                     .unwrap_or_else(|| PathBuf::from(".IDEOCODE/rag-index"));
-                let _ = std::fs::create_dir_all(&idx_dir);
+                std::fs::create_dir_all(&idx_dir)
+                    .map_err(|e| format!("Failed to create RAG index dir: {}", e))?;
                 let safe_name = rel.replace(['/', '\\'], "__");
                 let idx_path = idx_dir.join(format!("{safe_name}.json"));
-                if let Ok(json) = serde_json::to_string_pretty(&idx_entry) {
-                    let _ = std::fs::write(&idx_path, json);
-                }
+                let json = serde_json::to_string_pretty(&idx_entry)
+                    .map_err(|e| format!("Failed to serialize RAG index: {}", e))?;
+                std::fs::write(&idx_path, json)
+                    .map_err(|e| format!("Failed to write RAG index: {}", e))?;
                 indexed += 1;
             }
         }

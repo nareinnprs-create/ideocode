@@ -66,19 +66,20 @@ fn load_issues() -> Vec<Issue> {
     issues
 }
 
-fn save_issues(issues: &[Issue]) {
+fn save_issues(issues: &[Issue]) -> Result<(), String> {
     let dir = issues_dir();
-    let _ = std::fs::create_dir_all(&dir);
+    std::fs::create_dir_all(&dir).map_err(|e| format!("Failed to create issues dir: {}", e))?;
     for issue in issues {
         let path = dir.join(format!(
             "{}_{}.json",
             super::sanitize_id(&issue.source),
             super::sanitize_id(&issue.id)
         ));
-        if let Ok(json) = serde_json::to_string_pretty(issue) {
-            let _ = std::fs::write(&path, json);
-        }
+        let json = serde_json::to_string_pretty(issue)
+            .map_err(|e| format!("Failed to serialize issue: {}", e))?;
+        std::fs::write(&path, json).map_err(|e| format!("Failed to write issue: {}", e))?;
     }
+    Ok(())
 }
 
 #[tauri::command]
@@ -195,7 +196,7 @@ pub fn fetch_github_issues(
         }
     }
 
-    save_issues(&issues);
+    save_issues(&issues)?;
     Ok(FetchResult {
         fetched: json.len(),
         source: "github".into(),

@@ -665,6 +665,10 @@ export async function gitGraph(path: string, maxCount?: number): Promise<GitComm
   return invoke<GitCommit[]>("git_graph", { path, max_count: maxCount ?? 100 });
 }
 
+export async function gitLogGraph(path: string, maxCount?: number): Promise<GitCommit[]> {
+  return invoke<GitCommit[]>("git_log_graph", { path, max_count: maxCount ?? 50 });
+}
+
 // ============================================
 // Remote Development
 // ============================================

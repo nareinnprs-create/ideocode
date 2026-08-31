@@ -63,13 +63,13 @@ fn load_entries() -> Vec<MemoryEntry> {
     entries
 }
 
-fn save_entry(entry: &MemoryEntry) {
+fn save_entry(entry: &MemoryEntry) -> Result<(), String> {
     let dir = memories_dir();
-    let _ = std::fs::create_dir_all(&dir);
+    std::fs::create_dir_all(&dir).map_err(|e| format!("Failed to create memories dir: {}", e))?;
     let path = dir.join(format!("{}.json", entry.id));
-    if let Ok(json) = serde_json::to_string_pretty(entry) {
-        let _ = std::fs::write(&path, json);
-    }
+    let json = serde_json::to_string_pretty(entry)
+        .map_err(|e| format!("Failed to serialize memory: {}", e))?;
+    std::fs::write(&path, json).map_err(|e| format!("Failed to write memory: {}", e))
 }
 
 #[tauri::command]
@@ -78,7 +78,7 @@ pub fn list_memories() -> Vec<MemoryEntry> {
 }
 
 #[tauri::command]
-pub fn store_memory(content: String, tags: Vec<String>, category: String) -> MemoryEntry {
+pub fn store_memory(content: String, tags: Vec<String>, category: String) -> Result<MemoryEntry, String> {
     let entry = MemoryEntry {
         id: new_id(),
         content,
@@ -87,8 +87,8 @@ pub fn store_memory(content: String, tags: Vec<String>, category: String) -> Mem
         created_at: now_secs(),
         updated_at: now_secs(),
     };
-    save_entry(&entry);
-    entry
+    save_entry(&entry)?;
+    Ok(entry)
 }
 
 #[tauri::command]

@@ -19,7 +19,6 @@ tauri-plugin-http = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
-anyhow = "1"
 dirs = "5"
 reqwest = { version = "0.12", features = ["blocking", "json"] }
 chrono = { version = "0.4", features = ["serde"] }
@@ -29,7 +28,7 @@ base64 = "0.22"
 ideocode-provider-baanzon = { path = "../../crates/ideocode-provider-baanzon" }
 
 [package.metadata.cargo-machete]
-ignored = ["anyhow", "tokio"]
+ignored = ["tokio"]
 
 
 [[bin]]

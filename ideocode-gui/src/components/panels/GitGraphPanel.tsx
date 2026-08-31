@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useGitStore } from "../../stores/gitStore";
 import { useFileStore } from "../../stores/fileStore";
+import { gitLogGraph } from "../../lib/tauri-commands";
 import { GitBranch, RefreshCw, ChevronDown, ChevronRight } from "lucide-react";
 
 interface GitCommitNode {
@@ -47,8 +48,7 @@ export function GitGraphPanel() {
     if (!rootPath) return;
     setLoading(true);
     try {
-      const { invoke } = await import("@tauri-apps/api/core");
-      const result = await invoke<{ hash: string; message: string; author: string; date: number; parents: string[]; branch?: string | null }[]>("git_log_graph", { path: rootPath, maxCount: 50 });
+      const result = await gitLogGraph(rootPath, 50);
       const colorMap = new Map<string, string>();
       let colorIdx = 0;
       const graph: GitCommitNode[] = result.map((c) => {

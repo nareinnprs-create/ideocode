@@ -47,14 +47,15 @@ fn load_tasks() -> Vec<BackgroundTask> {
     }
 }
 
-fn save_tasks(tasks: &[BackgroundTask]) {
+fn save_tasks(tasks: &[BackgroundTask]) -> Result<(), String> {
     let path = tasks_path();
     if let Some(dir) = path.parent() {
-        let _ = std::fs::create_dir_all(dir);
+        std::fs::create_dir_all(dir)
+            .map_err(|e| format!("Failed to create tasks dir: {}", e))?;
     }
-    if let Ok(json) = serde_json::to_string_pretty(tasks) {
-        let _ = std::fs::write(&path, json);
-    }
+    let json = serde_json::to_string_pretty(tasks)
+        .map_err(|e| format!("Failed to serialize tasks: {}", e))?;
+    std::fs::write(&path, json).map_err(|e| format!("Failed to write tasks: {}", e))
 }
 
 fn now_secs() -> u64 {
@@ -131,7 +132,7 @@ pub fn create_task(name: String, command: String, cwd: String) -> BackgroundTask
     };
     let mut tasks = load_tasks();
     tasks.push(task.clone());
-    save_tasks(&tasks);
+    let _ = save_tasks(&tasks);
     task
 }
 
@@ -149,7 +150,7 @@ pub fn start_task(id: String) -> Result<BackgroundTask, String> {
     let cwd = tasks[idx].cwd.clone();
     tasks[idx].status = TaskStatus::Running;
     tasks[idx].started_at = Some(now_secs());
-    save_tasks(&tasks);
+    let _ = save_tasks(&tasks);
 
     let task_id = id.clone();
     std::thread::spawn(move || {
@@ -166,7 +167,9 @@ pub fn start_task(id: String) -> Result<BackgroundTask, String> {
                     // handler: the user explicitly stopped it.
                     if task.status == TaskStatus::Cancelled {
                         let _ = running_children().lock().map(|mut map| map.remove(&task_id));
-                        save_tasks(&tasks);
+                        if let Err(e) = save_tasks(&tasks) {
+                            eprintln!("[save_tasks] {}", e);
+                        }
                         return;
                     }
                     task.finished_at = Some(now_secs());
@@ -191,7 +194,7 @@ pub fn start_task(id: String) -> Result<BackgroundTask, String> {
                         }
                     }
                 }
-                save_tasks(&tasks);
+                let _ = save_tasks(&tasks);
             }
             Err(e) => {
                 let mut tasks = load_tasks();
@@ -200,7 +203,7 @@ pub fn start_task(id: String) -> Result<BackgroundTask, String> {
                     task.output = format!("Failed to spawn: {e}");
                     task.finished_at = Some(now_secs());
                 }
-                save_tasks(&tasks);
+                let _ = save_tasks(&tasks);
             }
         }
     });
@@ -226,7 +229,7 @@ pub fn cancel_task(id: String) -> Result<BackgroundTask, String> {
     tasks[idx].finished_at = Some(now_secs());
     tasks[idx].exit_code = None;
     let result = tasks[idx].clone();
-    save_tasks(&tasks);
+    let _ = save_tasks(&tasks);
     Ok(result)
 }
 
@@ -239,7 +242,7 @@ pub fn update_task_progress(id: String, progress: f64) -> Result<BackgroundTask,
         .ok_or("Task not found")?;
     tasks[idx].progress = progress.clamp(0.0, 100.0);
     let result = tasks[idx].clone();
-    save_tasks(&tasks);
+    let _ = save_tasks(&tasks);
     Ok(result)
 }
 
@@ -256,7 +259,7 @@ pub fn delete_task(id: String) -> Result<(), String> {
     if tasks.len() == before {
         return Err("Task not found".into());
     }
-    save_tasks(&tasks);
+    let _ = save_tasks(&tasks);
     Ok(())
 }
 
@@ -264,7 +267,7 @@ pub fn delete_task(id: String) -> Result<(), String> {
 pub fn clear_finished_tasks() {
     let mut tasks = load_tasks();
     tasks.retain(|t| t.status == TaskStatus::Pending || t.status == TaskStatus::Running);
-    save_tasks(&tasks);
+    let _ = save_tasks(&tasks);
 }
 
 fn spawn_command(command: &str, cwd: &str) -> Result<std::process::Child, std::io::Error> {

@@ -22,23 +22,6 @@ pub struct GitFile {
     pub status: String,
 }
 
-#[allow(dead_code)]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GitDiff {
-    pub file: String,
-    pub hunks: Vec<GitHunk>,
-}
-
-#[allow(dead_code)]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GitHunk {
-    pub old_start: u32,
-    pub old_lines: u32,
-    pub new_start: u32,
-    pub new_lines: u32,
-    pub content: String,
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GitCommit {
     pub hash: String,
