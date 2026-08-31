@@ -50,7 +50,9 @@ export const useEditStore = create<EditState>((set, get) => ({
     try {
       const fs = useFileStore.getState();
       fs.setContent(edit.path, edit.modified);
-      
+      // Persist the accepted change to disk so it survives a reload (not just
+      // the in-memory editor buffer).
+      await fs.saveFile(edit.path, { silent: true });
       set((state) => ({
         edits: state.edits.map((e) =>
           e.id === id ? { ...e, status: "accepted" } : e

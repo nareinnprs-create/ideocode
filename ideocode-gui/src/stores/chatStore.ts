@@ -261,22 +261,39 @@ export const useChatStore = create<ChatState>((set) => ({
 
       const ctx = buildFileContext(content, fs.activeFile, fs.activeFile ? fs.contents[fs.activeFile] : undefined, mentionedFiles);
 
-      // Inject relevant stored memories into the request so the model can
-      // act on them (the memory feature now actually influences chat).
-      let memoryBlock = "";
+      // Inject relevant stored memories AND enabled skills into the request so
+      // they actually influence the agent (not just stored in localStorage).
+      let contextBlock = "";
       try {
         const { searchMemories: tauriSearchMemories } = await import("../lib/tauri-commands");
         const matches = await tauriSearchMemories(content);
         if (matches.length > 0) {
-          memoryBlock =
+          contextBlock +=
             "\n\n--- Relevant stored memories ---\n" +
             matches.map((m) => `[${m.category || "note"}] ${m.content}`).join("\n") +
             "\n--- End of memories ---";
         }
       } catch {
-        memoryBlock = "";
+        // memory injection is best-effort
       }
-      const effectiveContent = memoryBlock ? `${content}\n${memoryBlock}` : content;
+      try {
+        const { useSkillStore } = await import("./skillStore");
+        const enabled = useSkillStore.getState().getEnabled();
+        const relevant = enabled.filter(
+          (s) => !s.triggers.length || s.triggers.some((t) => content.toLowerCase().includes(t.toLowerCase())),
+        );
+        if (relevant.length > 0) {
+          contextBlock +=
+            "\n\n--- Active skills (follow these instructions) ---\n" +
+            relevant
+              .map((s) => `Skill "${s.name}":\n${s.content}`)
+              .join("\n\n") +
+            "\n--- End of skills ---";
+        }
+      } catch {
+        // skill injection is best-effort
+      }
+      const effectiveContent = contextBlock ? `${content}\n${contextBlock}` : content;
 
       const userMsg = await tauriStream(ctx?.payload ?? effectiveContent, { model, mode, reasoningEffort, executionMode });
       const displayMsg = ctx ? { ...userMsg, content: ctx.strip(userMsg.content) } : userMsg;
