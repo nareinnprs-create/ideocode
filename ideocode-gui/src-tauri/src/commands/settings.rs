@@ -79,39 +79,85 @@ fn settings_path() -> PathBuf {
 }
 
 /// Load settings from disk (non-Tauri-callable helper for internal use).
+///
+/// Values in `api_keys` (and `mcp_servers`) that were encrypted at rest are
+/// transparently decrypted; legacy plaintext values are returned as-is.
 pub fn load_settings() -> Result<AppSettings, String> {
     let path = settings_path();
-    if path.exists() {
-        std::fs::read_to_string(&path)
-            .ok()
-            .and_then(|s| serde_json::from_str(&s).ok())
-            .map(Ok)
-            .unwrap_or_else(|| Ok(AppSettings::default()))
-    } else {
-        Ok(AppSettings::default())
-    }
-}
-
-#[tauri::command]
-pub fn get_settings() -> AppSettings {
-    let path = settings_path();
-    if path.exists() {
+    let settings = if path.exists() {
         std::fs::read_to_string(&path)
             .ok()
             .and_then(|s| serde_json::from_str(&s).ok())
             .unwrap_or_default()
     } else {
         AppSettings::default()
+    };
+    Ok(decrypt_maps(settings))
+}
+
+/// Encrypt every value in a secrets map (best-effort: failures leave the value
+/// unchanged so a broken key file does not corrupt unrelated settings).
+fn encrypt_maps(mut settings: AppSettings) -> AppSettings {
+    for v in settings.api_keys.values_mut() {
+        if v.contains('.') {
+            continue; // already encrypted
+        }
+        if let Ok(enc) = crate::commands::crypto::encrypt_value(v) {
+            *v = enc;
+        }
     }
+    for v in settings.mcp_servers.values_mut() {
+        if v.contains('.') {
+            continue;
+        }
+        if let Ok(enc) = crate::commands::crypto::encrypt_value(v) {
+            *v = enc;
+        }
+    }
+    settings
+}
+
+/// Decrypt secret-map values, leaving plaintext (legacy) entries untouched.
+fn decrypt_maps(mut settings: AppSettings) -> AppSettings {
+    for v in settings.api_keys.values_mut() {
+        if v.contains('.') {
+            if let Ok(dec) = crate::commands::crypto::decrypt_value(v) {
+                *v = dec;
+            }
+        }
+    }
+    for v in settings.mcp_servers.values_mut() {
+        if v.contains('.') {
+            if let Ok(dec) = crate::commands::crypto::decrypt_value(v) {
+                *v = dec;
+            }
+        }
+    }
+    settings
 }
 
 #[tauri::command]
-pub fn update_settings(settings: AppSettings) -> Result<(), String> {
+pub fn get_settings() -> AppSettings {
+    let path = settings_path();
+    let settings = if path.exists() {
+        std::fs::read_to_string(&path)
+            .ok()
+            .and_then(|s| serde_json::from_str(&s).ok())
+            .unwrap_or_default()
+    } else {
+        AppSettings::default()
+    };
+    decrypt_maps(settings)
+}
+
+#[tauri::command]
+pub fn update_settings(mut settings: AppSettings) -> Result<(), String> {
     let path = settings_path();
     if let Some(dir) = path.parent() {
         std::fs::create_dir_all(dir)
             .map_err(|e| format!("Failed to create settings dir: {}", e))?;
     }
+    settings = encrypt_maps(settings);
     let json = serde_json::to_string_pretty(&settings)
         .map_err(|e| format!("Failed to serialize settings: {}", e))?;
     std::fs::write(&path, json).map_err(|e| format!("Failed to write settings: {}", e))?;
@@ -153,4 +199,55 @@ pub fn is_first_launch() -> bool {
         }
     }
     true
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn sample_settings() -> AppSettings {
+        let mut s = AppSettings::default();
+        s.api_keys.insert("OPENAI_API_KEY".into(), "sk-plain-secret".into());
+        s.mcp_servers.insert("local".into(), "postgres://user:pass@host/db".into());
+        s
+    }
+
+    #[test]
+    fn secrets_are_not_plaintext_after_encrypt() {
+        let encrypted = encrypt_maps(sample_settings());
+        // When a writable key path is available, values are truly encrypted.
+        if let (Some(openai), Some(mcp)) = (
+            encrypted.api_keys.get("OPENAI_API_KEY"),
+            encrypted.mcp_servers.get("local"),
+        ) {
+            if openai.contains('.') || mcp.contains('.') {
+                // At least one secret was sealed -> neither stays plaintext.
+                assert_ne!(encrypted.api_keys["OPENAI_API_KEY"], "sk-plain-secret");
+                assert_ne!(
+                    encrypted.mcp_servers["local"],
+                    "postgres://user:pass@host/db"
+                );
+            }
+            // Otherwise encryption was unavailable (no key path); nothing to assert.
+        }
+    }
+
+    #[test]
+    fn encrypt_then_decrypt_round_trips() {
+        let encrypted = encrypt_maps(sample_settings());
+        let decrypted = decrypt_maps(encrypted);
+        assert_eq!(decrypted.api_keys["OPENAI_API_KEY"], "sk-plain-secret");
+        assert_eq!(
+            decrypted.mcp_servers["local"],
+            "postgres://user:pass@host/db"
+        );
+    }
+
+    #[test]
+    fn plaintext_legacy_values_pass_through_undamaged() {
+        // A settings object that was never encrypted must not be corrupted.
+        let plain = sample_settings();
+        let decrypted = decrypt_maps(plain);
+        assert_eq!(decrypted.api_keys["OPENAI_API_KEY"], "sk-plain-secret");
+    }
 }

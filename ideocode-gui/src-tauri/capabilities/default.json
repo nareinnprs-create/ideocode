@@ -37,21 +37,6 @@
         { "name": "npm", "cmd": "npm", "args": true },
         { "name": "node", "cmd": "node", "args": true }
       ]
-    },
-    {
-      "identifier": "shell:allow-execute",
-      "allow": [
-        { "name": "cmd", "cmd": "cmd", "args": true },
-        { "name": "cmd.exe", "cmd": "cmd.exe", "args": true },
-        { "name": "sh", "cmd": "sh", "args": true },
-        { "name": "bash", "cmd": "bash", "args": true },
-        { "name": "zsh", "cmd": "zsh", "args": true },
-        { "name": "pwsh", "cmd": "pwsh", "args": true },
-        { "name": "powershell", "cmd": "powershell", "args": true },
-        { "name": "cargo", "cmd": "cargo", "args": true },
-        { "name": "npm", "cmd": "npm", "args": true },
-        { "name": "node", "cmd": "node", "args": true }
-      ]
     }
   ]
 }

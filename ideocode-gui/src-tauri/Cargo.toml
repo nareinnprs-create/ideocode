@@ -26,6 +26,8 @@ tokio-tungstenite = "0.24"
 futures-util = "0.3"
 base64 = "0.22"
 uuid = { version = "1", features = ["v4"] }
+chacha20poly1305 = "0.10"
+rand = "0.8"
 ideocode-provider-baanzon = { path = "../../crates/ideocode-provider-baanzon" }
 
 [package.metadata.cargo-machete]

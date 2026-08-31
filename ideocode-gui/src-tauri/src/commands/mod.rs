@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 mod browser;
 mod chat;
+pub(crate) mod crypto;
 mod files;
 mod git;
 mod issues;
