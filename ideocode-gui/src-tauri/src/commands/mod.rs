@@ -43,3 +43,31 @@ pub(crate) fn sanitize_id(id: &str) -> String {
         })
         .collect()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::sanitize_id;
+
+    #[test]
+    fn keeps_safe_characters() {
+        assert_eq!(sanitize_id("abc-123_def"), "abc-123_def");
+    }
+
+    #[test]
+    fn neutralizes_path_separators() {
+        assert_eq!(sanitize_id("..\\..\\etc\\passwd"), "______etc_passwd");
+        assert_eq!(sanitize_id("../secret"), "___secret");
+    }
+
+    #[test]
+    fn sanitizes_all_special_characters() {
+        assert_eq!(sanitize_id("a:b*c?d\"e<f>g|h"), "a_b_c_d_e_f_g_h");
+    }
+
+    #[test]
+    fn handles_empty_and_unicode() {
+        assert_eq!(sanitize_id(""), "");
+        // Non-ASCII (unicode) chars become underscores -> path-safe.
+        assert_eq!(sanitize_id("café"), "caf_");
+    }
+}
