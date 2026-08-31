@@ -685,6 +685,31 @@ export async function gitLogGraph(path: string, maxCount?: number): Promise<GitC
 }
 
 // ============================================
+// Code Snippets
+// ============================================
+export interface SnippetEntry {
+  id: string;
+  name: string;
+  description: string;
+  language: string;
+  code: string;
+  tags: string[];
+  created_at: number;
+}
+
+export async function listSnippets(): Promise<SnippetEntry[]> {
+  return invoke<SnippetEntry[]>("list_snippets");
+}
+
+export async function saveSnippet(snippet: SnippetEntry): Promise<void> {
+  return invoke<void>("save_snippet", { snippet });
+}
+
+export async function deleteSnippet(id: string): Promise<void> {
+  return invoke<void>("delete_snippet", { id });
+}
+
+// ============================================
 // Remote Development
 // ============================================
 

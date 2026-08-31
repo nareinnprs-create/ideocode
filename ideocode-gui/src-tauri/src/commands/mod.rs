@@ -11,6 +11,7 @@ mod memory;
 mod providers;
 mod rag;
 mod settings;
+mod snippets;
 mod tasks;
 mod tools;
 
@@ -23,6 +24,7 @@ pub use memory::*;
 pub use providers::*;
 pub use rag::*;
 pub use settings::*;
+pub use snippets::*;
 pub use tasks::*;
 pub use tools::*;
 

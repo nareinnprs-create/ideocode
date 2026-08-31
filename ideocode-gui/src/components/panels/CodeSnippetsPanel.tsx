@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { FileCode2, Plus, Trash2, Copy, Search, Edit3 } from "lucide-react";
+import { listSnippets, saveSnippet, deleteSnippet } from "../../lib/tauri-commands";
+import { notify } from "../../stores/toastStore";
 
 interface SnippetEntry {
   id: string;
@@ -13,18 +15,25 @@ interface SnippetEntry {
 
 const STORAGE_KEY = "idc-snippets";
 
-function loadSnippets(): SnippetEntry[] {
+function loadLocal(): SnippetEntry[] {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch { return []; }
 }
 
-function saveSnippets(items: SnippetEntry[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+function persistLocal(items: SnippetEntry[]) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch {}
 }
 
 const LANGUAGES = ["typescript", "javascript", "rust", "python", "go", "html", "css", "sql", "bash", "json", "yaml", "markdown", "other"];
 
+function toBackend(e: SnippetEntry): {
+  id: string; name: string; description: string; language: string; code: string;
+  tags: string[]; created_at: number;
+} {
+  return { ...e, created_at: e.createdAt };
+}
+
 export function CodeSnippetsPanel() {
-  const [snippets, setSnippets] = useState<SnippetEntry[]>(loadSnippets);
+  const [snippets, setSnippets] = useState<SnippetEntry[]>(loadLocal);
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -33,6 +42,38 @@ export function CodeSnippetsPanel() {
   const [lang, setLang] = useState("typescript");
   const [code, setCode] = useState("");
   const [tags, setTags] = useState("");
+  const [backendError, setBackendError] = useState<string | null>(null);
+
+  // Load snippets from the backend (persisted on disk) on mount.
+  useState(() => {
+    void listSnippets()
+      .then((items) => {
+        const mapped: SnippetEntry[] = items.map((s) => ({
+          id: s.id,
+          name: s.name,
+          description: s.description,
+          language: s.language,
+          code: s.code,
+          tags: s.tags ?? [],
+          createdAt: Number(s.created_at) || Date.now(),
+        }));
+        if (mapped.length > 0) {
+          setSnippets(mapped);
+          persistLocal(mapped);
+        }
+      })
+      .catch(() => setBackendError("Snippet backend unavailable; using local storage"));
+  });
+
+  const syncBackend = async (items: SnippetEntry[], notified = false) => {
+    persistLocal(items);
+    try {
+      for (const it of items) await saveSnippet(toBackend(it));
+      if (notified) notify("success", "Snippet saved");
+    } catch (e) {
+      setBackendError(`Failed to persist snippet: ${e}`);
+    }
+  };
 
   const filtered = snippets.filter((s) => {
     const q = search.toLowerCase();
@@ -51,14 +92,14 @@ export function CodeSnippetsPanel() {
       createdAt: Date.now(),
     };
     const next = [...snippets, entry];
-    setSnippets(next); saveSnippets(next);
+    setSnippets(next); void syncBackend(next, true);
     resetForm();
   };
 
   const handleUpdate = () => {
     if (!editingId || !name.trim() || !code.trim()) return;
     const next = snippets.map((s) => s.id === editingId ? { ...s, name, description: desc, language: lang, code, tags: tags.split(",").map((t) => t.trim()).filter(Boolean) } : s);
-    setSnippets(next); saveSnippets(next);
+    setSnippets(next); void syncBackend(next, true);
     resetForm();
   };
 
@@ -72,7 +113,9 @@ export function CodeSnippetsPanel() {
 
   const remove = (id: string) => {
     const next = snippets.filter((s) => s.id !== id);
-    setSnippets(next); saveSnippets(next);
+    setSnippets(next);
+    persistLocal(next);
+    void deleteSnippet(id).then(() => notify("success", "Snippet deleted")).catch((e) => setBackendError(`Failed to delete snippet: ${e}`));
   };
 
   const copyCode = (c: string) => navigator.clipboard.writeText(c);
@@ -89,6 +132,12 @@ export function CodeSnippetsPanel() {
           </button>
         </div>
       </div>
+
+      {backendError && (
+        <div className="mx-3 mt-2 px-2 py-1.5 rounded border border-error/40 bg-error/10 text-error text-[11px]" role="alert">
+          {backendError}
+        </div>
+      )}
 
       <div className="px-3 py-2 border-b border-border-subtle surface-blur">
         <div className="flex items-center gap-2 bg-bg-surface rounded border border-border-subtle px-2 py-1">
