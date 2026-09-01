@@ -1,0 +1,146 @@
+name: Cross-Platform Verify
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: xplat-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+  # The GUI frontend is built with pnpm (lockfile is committed).
+  GUI_DIR: ideocode-gui
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # TUI + workspace crates: check / test / lint on every OS and CPU architecture
+  # ---------------------------------------------------------------------------
+  tui-backend:
+    name: TUI (${{ matrix.label }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos-13,                label: "macOS Intel" }
+          - { os: macos-14,                label: "macOS Apple Silicon" }
+          - { os: windows-latest,          label: "Windows x64" }
+          - { os: windows-11-arm,          label: "Windows ARM64", best_effort: true }
+          - { os: ubuntu-latest,           label: "Linux x64" }
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.best_effort == true }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: . --target-dir target
+
+      - name: Check (workspace)
+        run: cargo check --workspace
+
+      - name: Clippy (workspace, warnings denied)
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Test (workspace)
+        run: cargo test --workspace
+
+  # ---------------------------------------------------------------------------
+  # GUI desktop app (Tauri): frontend checks + Rust crate verification + package
+  # ---------------------------------------------------------------------------
+  gui-desktop:
+    name: GUI (${{ matrix.label }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos-13,     label: "macOS Intel",        bundle: true }
+          - { os: macos-14,     label: "macOS Apple Silicon", bundle: true }
+          - { os: windows-latest, label: "Windows x64",      bundle: true }
+          - { os: windows-11-arm, label: "Windows ARM64",     bundle: false, best_effort: true }
+          - { os: ubuntu-latest,  label: "Linux x64",         bundle: true }
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.best_effort == true }}
+    defaults:
+      run:
+        working-directory: ${{ env.GUI_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node (20)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        run: corepack enable && corepack prepare pnpm@9 --activate
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: pnpm-${{ runner.os }}-
+
+      - name: Install frontend deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Frontend typecheck
+        run: pnpm exec tsc --noEmit
+
+      - name: Frontend tests
+        run: pnpm test -- --pool=threads
+
+      - name: Frontend build (tsc + vite, runs prebuild monaco copy)
+        run: pnpm build
+
+      - name: Install Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ../Cargo.lock
+
+      # The GUI crate is a member of the ROOT Cargo workspace
+      # (ideocode-gui/src-tauri), so cargo runs from the repo root using the
+      # -p ideocode-gui package selector, matching local verification.
+      - name: GUI crate check
+        working-directory: .
+        run: cargo check -p ideocode-gui --message-format short
+
+      - name: GUI crate clippy (warnings denied)
+        working-directory: .
+        run: cargo clippy -p ideocode-gui -- -D warnings
+
+      - name: GUI crate tests
+        working-directory: .
+        run: cargo test -p ideocode-gui --bin ideocode-gui
+
+      - name: Tauri build / bundle (best-effort)
+        if: ${{ matrix.bundle == true }}
+        continue-on-error: true
+        working-directory: ${{ env.GUI_DIR }}
+        run: pnpm tauri build
+
+      - name: Upload GUI bundle (best-effort)
+        if: ${{ matrix.bundle == true && github.event_name == 'push' }}
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: ideocode-gui-${{ matrix.label }}-${{ github.sha }}
+          path: |
+            ${{ env.GUI_DIR }}/src-tauri/target/release/bundle/
+          if-no-files-found: ignore
