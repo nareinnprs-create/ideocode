@@ -16,9 +16,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::config::BaanzonConfig;
 
+/// Callback invoked whenever the engine's gateway status changes.
+pub type StatusCallback = dyn Fn(crate::GatewayStatus) + Send + Sync + 'static;
+/// Callback invoked for each engine log line.
+pub type LogCallback = dyn Fn(String) + Send + Sync + 'static;
+
 lazy_static::lazy_static! {
-    pub static ref STATUS_CALLBACK: Mutex<Option<Box<dyn Fn(crate::GatewayStatus) + Send + Sync + 'static>>> = Mutex::new(None);
-    pub static ref LOG_CALLBACK: Mutex<Option<Box<dyn Fn(String) + Send + Sync + 'static>>> = Mutex::new(None);
+    pub static ref STATUS_CALLBACK: Mutex<Option<Box<StatusCallback>>> = Mutex::new(None);
+    pub static ref LOG_CALLBACK: Mutex<Option<Box<LogCallback>>> = Mutex::new(None);
 }
 
 pub fn set_status_callback(cb: impl Fn(crate::GatewayStatus) + Send + Sync + 'static) {
@@ -84,10 +89,8 @@ fn gateway_log_path() -> PathBuf {
 }
 
 fn log(message: &str) {
-    if let Ok(lock) = LOG_CALLBACK.lock() {
-        if let Some(cb) = lock.as_ref() {
-            cb(message.to_string());
-        }
+    if let Some(cb) = LOG_CALLBACK.lock().ok().as_ref().and_then(|g| g.as_ref()) {
+        cb(message.to_string());
     }
 
     let path = gateway_log_path();
@@ -628,10 +631,8 @@ pub fn spawn_supervisor() {
             loop {
                 let current_status = crate::gateway_status_blocking();
                 if current_status != previous_status {
-                    if let Ok(lock) = STATUS_CALLBACK.lock() {
-                        if let Some(cb) = lock.as_ref() {
-                            cb(current_status.clone());
-                        }
+                    if let Some(cb) = STATUS_CALLBACK.lock().ok().as_ref().and_then(|g| g.as_ref()) {
+                        cb(current_status.clone());
                     }
                     previous_status = current_status;
                 }
